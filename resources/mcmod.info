@@ -1,0 +1,16 @@
+[
+{
+  "modid": "naturalbabyanimals",
+  "name": "Natural Baby Animals",
+  "description": "Animals in the world have a chance to be baby. Like Minecraft:Pocket Edition does!",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://minecraft.curseforge.com/projects/natural-baby-animals",
+  "updateUrl": "",
+  "authorList": ["Insane96MCP"],
+  "credits": "The Forge and Minecraft forum for help :P",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
