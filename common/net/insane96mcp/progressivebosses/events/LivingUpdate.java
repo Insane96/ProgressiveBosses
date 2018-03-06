@@ -11,7 +11,6 @@ public class LivingUpdate {
 	public static void EventLivingUpdate(LivingUpdateEvent event) {
 		if (event.getEntity().world.isRemote)
 			return;
-
 		
 		Wither.Update(event);
 		Dragon.Update(event);

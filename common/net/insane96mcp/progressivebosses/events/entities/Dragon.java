@@ -6,8 +6,6 @@ import net.insane96mcp.progressivebosses.lib.Properties;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.boss.EntityWither;
-import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -35,7 +33,7 @@ public class Dragon {
 		
 		tags.setBoolean("progressivebosses:spawned", true);
 
-		int radius = 256;
+		int radius = 160;
 		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
 		BlockPos pos2 = new BlockPos(radius, radius, radius);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
@@ -57,19 +55,34 @@ public class Dragon {
 		if (!Properties.Dragon.sumKilledDragons && killedCount > 0)
 			killedCount /= players.size();
 		
-		SetHealth(dragon, killedCount);
+		IAttributeInstance health = dragon.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
+		health.setBaseValue(health.getBaseValue() + (killedCount * Properties.Dragon.bonusHealthPerKilled));
+		dragon.setHealth((float) health.getBaseValue());
 		
 		tags.setInteger("progressivebosses:difficulty", (int) killedCount);
 	}
 	
-	private static void OnDeath(LivingDeathEvent event) {
+	public static void OnDeath(LivingDeathEvent event) {
+		if (!(event.getEntity() instanceof EntityDragon))
+			return;
 		
-	}
-	
-	private static void SetHealth(EntityDragon dragon, float killedCount) {
-		IAttributeInstance health = dragon.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-		health.setBaseValue(health.getBaseValue() + (killedCount * Properties.Dragon.bonusHealthPerKilled));
-		dragon.setHealth((float) health.getBaseValue());
+		EntityDragon dragon = (EntityDragon)event.getEntity();
+
+		int radius = 160;
+		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
+		BlockPos pos2 = new BlockPos(radius, radius, radius);
+		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+				
+		List<EntityPlayerMP> players = dragon.world.getEntitiesWithinAABB(EntityPlayerMP.class, bb);
+		if (players.size() == 0)
+			return;
+		
+		int c = 0;
+		for (EntityPlayerMP player : players) {
+			NBTTagCompound playerTags = player.getEntityData();
+			c = playerTags.getInteger("progressivebosses:killeddragons");
+			playerTags.setInteger("progressivebosses:killeddragons", c + 1);
+		}
 	}
 
 	public static void Update(LivingUpdateEvent event) {
@@ -81,20 +94,30 @@ public class Dragon {
 		EntityDragon dragon = (EntityDragon)event.getEntity();
 		NBTTagCompound tags = dragon.getEntityData();
 		
+		Heal(dragon, tags);
+	}
+	
+	public static void Heal(EntityDragon dragon, NBTTagCompound tags) {
+		if (Properties.Dragon.maximumHealthRegeneration == 0.0f)
+			return;
+		
+		float maxHeal = Properties.Dragon.maximumHealthRegeneration;
+		
+		if (dragon.ticksExisted % 20 != 0)
+			return;
+		
 		int difficulty = tags.getInteger("progressivebosses:difficulty");
 		
 		if (difficulty == 0)
 			return;
 		
 		float health = dragon.getHealth();
-		float heal = difficulty / 100f;
+		float heal = difficulty / 10f;
 		
-		if (heal > 0.1f)
-			heal = 0.1f;
+		if (heal > maxHeal)
+			heal = maxHeal;
 
-		if (dragon.ticksExisted % 2 == 0 && dragon.getHealth() < dragon.getMaxHealth() && dragon.getHealth() > 0.0f)
+		if (dragon.getHealth() < dragon.getMaxHealth() && dragon.getHealth() > 0.0f)
             dragon.setHealth(health + heal);
-		
-		System.out.println("hp " + dragon.getHealth());
 	}
 }
