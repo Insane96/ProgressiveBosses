@@ -55,11 +55,24 @@ public class Dragon {
 		if (!Properties.Dragon.sumKilledDragons && killedCount > 0)
 			killedCount /= players.size();
 		
-		IAttributeInstance health = dragon.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-		health.setBaseValue(health.getBaseValue() + (killedCount * Properties.Dragon.bonusHealthPerKilled));
-		dragon.setHealth((float) health.getBaseValue());
+		SetHealth(dragon, killedCount);
+		SetArmor(dragon, killedCount);
 		
 		tags.setInteger("progressivebosses:difficulty", (int) killedCount);
+	}
+	
+	public static void SetHealth(EntityDragon dragon, float killedCount) {
+		IAttributeInstance attribute = dragon.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
+		attribute.setBaseValue(attribute.getBaseValue() + (killedCount * Properties.Dragon.bonusHealthPerKilled));
+		dragon.setHealth((float) attribute.getBaseValue());
+	}
+	
+	public static void SetArmor(EntityDragon dragon, float killedCount) {
+		IAttributeInstance attribute = dragon.getEntityAttribute(SharedMonsterAttributes.ARMOR);
+		float armor = killedCount * Properties.Dragon.bonusArmorPerKilled;
+		if (armor > Properties.Dragon.maximumArmor)
+			armor = Properties.Dragon.maximumArmor;
+		attribute.setBaseValue(armor);
 	}
 	
 	public static void OnDeath(LivingDeathEvent event) {
@@ -119,5 +132,7 @@ public class Dragon {
 
 		if (dragon.getHealth() < dragon.getMaxHealth() && dragon.getHealth() > 0.0f)
             dragon.setHealth(health + heal);
+		
+		//System.out.println(dragon.getHealth());
 	}
 }

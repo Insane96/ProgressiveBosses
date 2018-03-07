@@ -5,6 +5,7 @@ import java.util.List;
 import net.insane96mcp.progressivebosses.lib.Properties;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -58,7 +59,7 @@ public class Wither {
 			spawnedCount /= players.size();
 		
 		SetHealth(wither, spawnedCount);
-		
+		SetArmor(wither, spawnedCount);
 		
 		tags.setInteger("progressivebosses:difficulty", (int) spawnedCount);
 		tags.setInteger("progressivebosses:skeletons_cooldown", Properties.Wither.spawnWitherSkeletonsMinCooldown);
@@ -73,6 +74,14 @@ public class Wither {
 			health.setBaseValue(health.getBaseValue() + (spawnedCount * Properties.Wither.bonusHealthPerSpawned));
 		}
 		wither.setHealth((float) health.getBaseValue());
+	}
+	
+	public static void SetArmor(EntityWither wither, float killedCount) {
+		IAttributeInstance attribute = wither.getEntityAttribute(SharedMonsterAttributes.ARMOR);
+		float armor = killedCount * Properties.Wither.bonusArmorPerKilled;
+		if (armor > Properties.Wither.maximumArmor)
+			armor = Properties.Wither.maximumArmor;
+		attribute.setBaseValue(armor);
 	}
 	
 	public static void Update(LivingUpdateEvent event) {
