@@ -47,11 +47,13 @@ public class Properties {
 		public static float bonusHealthPerKilled;
 		public static boolean sumKilledDragons;
 		public static float maximumHealthRegeneration;
+		public static float healthRegenerationRate;
 		
 		public static void Init() {
 			bonusHealthPerKilled = Config.LoadFloatProperty(CATEGORY, "bonus_health_per_killed", "How much health will have the ender dragon for each ender dragon that has been killed", 40f);
 			sumKilledDragons = Config.LoadBoolProperty(CATEGORY, "sum_spawned_dragon", "If true and there are more players around the dragon that has spawned, the dragon will have his stats based on the sum of both players killed dragons. If false, the dragon stats will be based on the average of the killed dragons count of the players around", false);
-			maximumHealthRegeneration = Config.LoadFloatProperty(CATEGORY, "max_health_regeneration", "For every dragon killed, the dragon will regenerate health (without crystals). He regenerates (killed_dragons / 10) per second. Up to a maximum of this value. Set to 0 to disable health regeneration. It's not recommended to go over the default value.", 1.0f);
+			maximumHealthRegeneration = Config.LoadFloatProperty(CATEGORY, "max_health_regeneration", "For every dragon killed, the dragon will regenerate health (without crystals). He regenerates (killed_dragons / 10) per second. Up to a maximum of this value. Set to 0 to disable health regeneration. It's not recommended to go over 1.0f without mods that adds stronger items, potions, etc..", 1.0f);
+			healthRegenerationRate = Config.LoadFloatProperty(CATEGORY, "health_regeneration_rate", "Increases (or decreases) the amount of health that the dragon heals for each dragon killed. Setting this to 1.0 will make dragon heal at normal regeneration rate (killed_dragons / 10)", 1.0f);
 		}
 	}
 }

@@ -112,7 +112,7 @@ public class Dragon {
 			return;
 		
 		float health = dragon.getHealth();
-		float heal = difficulty / 10f;
+		float heal = difficulty / 10f * Properties.Dragon.healthRegenerationRate;
 		
 		if (heal > maxHeal)
 			heal = maxHeal;
