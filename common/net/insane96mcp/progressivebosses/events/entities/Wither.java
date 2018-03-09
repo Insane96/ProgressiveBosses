@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.insane96mcp.progressivebosses.lib.Properties;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
@@ -152,6 +153,10 @@ public class Wither {
 					}
 					if (world.rand.nextFloat() < (Properties.Wither.spawnWitherSkeletonsSword + difficulty) / 100f)
 						witherSkeleton.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
+					IAttributeInstance instance = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.ARMOR);
+					instance.setBaseValue(MathHelper.getInt(world.rand, Properties.Wither.skeletonMinArmor, Properties.Wither.skeletonMaxArmor));
+					instance = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+					instance.setBaseValue(instance.getBaseValue() * (Math.random() + 1f));
 					witherSkeleton.setPosition(x, y, z);
 					world.spawnEntity(witherSkeleton);
 				}

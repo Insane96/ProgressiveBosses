@@ -26,6 +26,8 @@ public class Properties {
 		public static int spawnWitherSkeletonsMinCooldown;
 		public static int spawnWitherSkeletonsMaxCooldown;
 		public static float spawnWitherSkeletonsSword;
+		public static int skeletonMinArmor;
+		public static int skeletonMaxArmor;
 		public static int normalWitherCount;
 		public static float bonusArmorPerKilled;
 		public static float maximumArmor;
@@ -40,6 +42,8 @@ public class Properties {
 			spawnWitherSkeletonsMinCooldown = Config.LoadIntProperty(CATEGORY, "spawn_wither_skeleton_min_cooldown", "After how many minimum ticks (20 ticks = 1 second) the wither will try to spawn wither skeletons", 150);
 			spawnWitherSkeletonsMaxCooldown = Config.LoadIntProperty(CATEGORY, "spawn_wither_skeleton_max_cooldown", "After how many maximum ticks (20 ticks = 1 second) the wither will try to spawn wither skeletons", 250);
 			spawnWitherSkeletonsSword = Config.LoadFloatProperty(CATEGORY, "spawn_wither_skeletons_sword", "Base Chance for wither skeletons  to spawn with swords. The chance is increased by 1 for each spawned wither. Set this to a really low value (e.g. -1000000, don't go below -2 billions) to disable", 20.0f);
+			skeletonMinArmor = Config.LoadIntProperty(CATEGORY, "skeleton_min_armor", "Minimum armor value that wither skeletons should spawn with", 0);
+			skeletonMaxArmor = Config.LoadIntProperty(CATEGORY, "skeleton_max_armor", "Maximum armor value that wither skeletons should spawn with", 20);
 			normalWitherCount = Config.LoadIntProperty(CATEGORY, "normal_wither_count", "After how many withers spawned the wither will have the same health as vanilla? (e.g The spawned count for the player is 0, this is 2; the wither will have 1/3rd of the stats (1/-(-'normal_wither_count' + spawned_count - 1))). By default, the first withers spawned is easier", 1);
 			bonusArmorPerKilled = Config.LoadFloatProperty(CATEGORY, "bonus_armor_per_killed", "How much armor points will have withers for each time a wither is spawned", 1.0f);
 			maximumArmor = Config.LoadFloatProperty(CATEGORY, "maximum_armor", "Maximum armor points that withers can spawn with. It's not recommended to go over 30", 15f);
