@@ -29,6 +29,8 @@ public class Properties {
 		public static int normalWitherCount;
 		public static float bonusArmorPerKilled;
 		public static float maximumArmor;
+		public static float maximumHealthRegeneration;
+		public static float healthRegenerationRate;
 		
 		public static void Init() {
 			spawnRadiusPlayerCheck = Config.LoadIntProperty(CATEGORY, "spawn_radius_player_check", "How much blocks from wither will be scanned for players to check", 96);
@@ -41,7 +43,9 @@ public class Properties {
 			normalWitherCount = Config.LoadIntProperty(CATEGORY, "normal_wither_count", "After how many withers spawned the wither will have the same health as vanilla? (e.g The spawned count for the player is 0, this is 2; the wither will have 1/3rd of the stats (1/-(-'normal_wither_count' + spawned_count - 1))). By default, the first withers spawned is easier", 1);
 			bonusArmorPerKilled = Config.LoadFloatProperty(CATEGORY, "bonus_armor_per_killed", "How much armor points will have withers for each time a wither is spawned", 1.0f);
 			maximumArmor = Config.LoadFloatProperty(CATEGORY, "maximum_armor", "Maximum armor points that withers can spawn with. It's not recommended to go over 30", 15f);
-		}
+			maximumHealthRegeneration = Config.LoadFloatProperty(CATEGORY, "max_health_regeneration", "For every wither spawned, the wither will regenerate health (without crystals). He regenerates (killed_dragons / 10) per second. Up to a maximum of this value. Set to 0 to disable health regeneration. It's not recommended to go over 1.0f without mods that adds stronger items, potions, etc.", 1.0f);
+			healthRegenerationRate = Config.LoadFloatProperty(CATEGORY, "health_regeneration_rate", "Increases (or decreases) the amount of health that the wither heals for each wither killed. Setting this to 1.0 will make wither heal at normal regeneration rate (spawned_wither / 10)", 1.0f);
+			}
 	}
 	
 	public static class Dragon{

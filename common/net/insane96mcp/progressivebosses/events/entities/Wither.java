@@ -91,10 +91,39 @@ public class Wither {
 		World world = event.getEntity().world;
 		
 		EntityWither wither = (EntityWither)event.getEntity();
+		NBTTagCompound tags = wither.getEntityData();
+		
 		if (wither.getInvulTime() > 0)
 			return;
 		
 		SpawnSkeletons(wither, world);
+		Heal(wither, tags);
+	}
+	
+	public static void Heal(EntityWither wither, NBTTagCompound tags) {
+		if (Properties.Wither.maximumHealthRegeneration == 0.0f)
+			return;
+		
+		float maxHeal = Properties.Wither.maximumHealthRegeneration;
+		
+		if (wither.ticksExisted % 20 != 0)
+			return;
+		
+		int difficulty = tags.getInteger("progressivebosses:difficulty");
+		
+		if (difficulty == 0)
+			return;
+		
+		float health = wither.getHealth();
+		float heal = difficulty / 10f * Properties.Wither.healthRegenerationRate;
+		
+		if (heal > maxHeal)
+			heal = maxHeal;
+
+		if (wither.getHealth() < wither.getMaxHealth() && wither.getHealth() > 0.0f)
+			wither.setHealth(health + heal);
+		
+		//System.out.println(dragon.getHealth());
 	}
 	
 	private static void SpawnSkeletons(EntityWither wither, World world) {
