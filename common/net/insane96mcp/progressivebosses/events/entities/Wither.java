@@ -36,7 +36,7 @@ public class Wither {
 		
 		tags.setBoolean("progressivebosses:spawned", true);
 
-		int radius = Properties.Wither.spawnRadiusPlayerCheck;
+		int radius = Properties.Wither.General.spawnRadiusPlayerCheck;
 		BlockPos pos1 = wither.getPosition().add(-radius, -radius, -radius);
 		BlockPos pos2 = wither.getPosition().add(radius, radius, radius);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
@@ -45,7 +45,7 @@ public class Wither {
 		if (players.size() == 0)
 			return;
 		
-		float spawnedCount = -Properties.Wither.normalWitherCount;
+		float spawnedCount = -Properties.Wither.General.normalWitherCount;
 		for (EntityPlayerMP player : players) {
 			NBTTagCompound playerTags = player.getEntityData();
 			int c = playerTags.getInteger("progressivebosses:spawnedwithers");
@@ -56,14 +56,16 @@ public class Wither {
 		if (spawnedCount == 0)
 			return;
 		
-		if (!Properties.Wither.sumSpawnedWither && spawnedCount > 0)
+		if (!Properties.Wither.General.sumSpawnedWither && spawnedCount > 0)
 			spawnedCount /= players.size();
 		
 		SetHealth(wither, spawnedCount);
 		SetArmor(wither, spawnedCount);
 		
 		tags.setInteger("progressivebosses:difficulty", (int) spawnedCount);
-		tags.setInteger("progressivebosses:skeletons_cooldown", Properties.Wither.spawnWitherSkeletonsMinCooldown);
+		
+		int cooldown = MathHelper.getInt(wither.getRNG(), Properties.Wither.Skeletons.spawnMinCooldown, Properties.Wither.Skeletons.spawnMaxCooldown);
+		tags.setInteger("progressivebosses:skeletons_cooldown", Properties.Wither.Skeletons.spawnMinCooldown);
 	}
 	
 	private static void SetHealth(EntityWither wither, float spawnedCount) {
@@ -72,16 +74,16 @@ public class Wither {
 			health.setBaseValue(health.getBaseValue() / -(spawnedCount - 1));
 		}
 		else {
-			health.setBaseValue(health.getBaseValue() + (spawnedCount * Properties.Wither.bonusHealthPerSpawned));
+			health.setBaseValue(health.getBaseValue() + (spawnedCount * Properties.Wither.Health.bonusPerSpawned));
 		}
 		wither.setHealth((float) health.getBaseValue());
 	}
 	
 	public static void SetArmor(EntityWither wither, float killedCount) {
 		IAttributeInstance attribute = wither.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-		float armor = killedCount * Properties.Wither.bonusArmorPerKilled;
-		if (armor > Properties.Wither.maximumArmor)
-			armor = Properties.Wither.maximumArmor;
+		float armor = killedCount * Properties.Wither.Armor.bonusPerSpawned;
+		if (armor > Properties.Wither.Armor.maximum)
+			armor = Properties.Wither.Armor.maximum;
 		attribute.setBaseValue(armor);
 	}
 	
@@ -102,10 +104,10 @@ public class Wither {
 	}
 	
 	public static void Heal(EntityWither wither, NBTTagCompound tags) {
-		if (Properties.Wither.maximumHealthRegeneration == 0.0f)
+		if (Properties.Wither.Health.maximumRegeneration == 0.0f)
 			return;
 		
-		float maxHeal = Properties.Wither.maximumHealthRegeneration;
+		float maxHeal = Properties.Wither.Health.maximumRegeneration;
 		
 		if (wither.ticksExisted % 20 != 0)
 			return;
@@ -116,7 +118,7 @@ public class Wither {
 			return;
 		
 		float health = wither.getHealth();
-		float heal = difficulty / 10f * Properties.Wither.healthRegenerationRate;
+		float heal = difficulty / 10f * Properties.Wither.Health.regenerationRate;
 		
 		if (heal > maxHeal)
 			heal = maxHeal;
@@ -130,7 +132,7 @@ public class Wither {
 	private static void SpawnSkeletons(EntityWither wither, World world) {
 		NBTTagCompound tags = wither.getEntityData();
 		int difficulty = tags.getInteger("progressivebosses:difficulty");
-		if (difficulty < Properties.Wither.spawnWitherSkeletonsAt)
+		if (difficulty < Properties.Wither.Skeletons.spawnAt)
 			return;
 		
 		int cooldown = tags.getInteger("progressivebosses:skeletons_cooldown");
@@ -138,10 +140,10 @@ public class Wither {
 			tags.setInteger("progressivebosses:skeletons_cooldown", cooldown - 1);
 		}
 		else {
-			cooldown = MathHelper.getInt(world.rand, Properties.Wither.spawnWitherSkeletonsMinCooldown, Properties.Wither.spawnWitherSkeletonsMaxCooldown);
+			cooldown = MathHelper.getInt(world.rand, Properties.Wither.Skeletons.spawnMinCooldown, Properties.Wither.Skeletons.spawnMaxCooldown);
 			tags.setInteger("progressivebosses:skeletons_cooldown", cooldown);
 			for (int i = 1; i <= difficulty; i++) {
-				if (i % Properties.Wither.spawnWitherSkeletonsAt == 0) {
+				if (i % Properties.Wither.Skeletons.spawnAt == 0) {
 					EntityWitherSkeleton witherSkeleton = new EntityWitherSkeleton(world);
 					float x = (float) (wither.posX + (world.rand.nextFloat() * 3f - 1.5f));
 					float y = (float) (wither.posY + (world.rand.nextFloat()));
@@ -151,10 +153,10 @@ public class Wither {
 						if (y + 4 > wither.posY)
 							break;
 					}
-					if (world.rand.nextFloat() < (Properties.Wither.spawnWitherSkeletonsSword + difficulty) / 100f)
+					if (world.rand.nextFloat() < (Properties.Wither.Skeletons.spawnWithSword + difficulty) / 100f)
 						witherSkeleton.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
 					IAttributeInstance instance = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-					instance.setBaseValue(MathHelper.getInt(world.rand, Properties.Wither.skeletonMinArmor, Properties.Wither.skeletonMaxArmor));
+					instance.setBaseValue(MathHelper.getInt(world.rand, Properties.Wither.Skeletons.minArmor, Properties.Wither.Skeletons.maxArmor));
 					instance = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
 					instance.setBaseValue(instance.getBaseValue() * (Math.random() + 1f));
 					witherSkeleton.setPosition(x, y, z);

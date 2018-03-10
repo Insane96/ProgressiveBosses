@@ -6,10 +6,15 @@ import net.insane96mcp.progressivebosses.lib.Properties;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -52,7 +57,7 @@ public class Dragon {
 		if (killedCount == 0)
 			return;
 		
-		if (!Properties.Dragon.sumKilledDragons && killedCount > 0)
+		if (!Properties.Dragon.General.sumKilledDragons && killedCount > 0)
 			killedCount /= players.size();
 		
 		SetHealth(dragon, killedCount);
@@ -63,15 +68,15 @@ public class Dragon {
 	
 	public static void SetHealth(EntityDragon dragon, float killedCount) {
 		IAttributeInstance attribute = dragon.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-		attribute.setBaseValue(attribute.getBaseValue() + (killedCount * Properties.Dragon.bonusHealthPerKilled));
+		attribute.setBaseValue(attribute.getBaseValue() + (killedCount * Properties.Dragon.Health.bonusPerKilled));
 		dragon.setHealth((float) attribute.getBaseValue());
 	}
 	
 	public static void SetArmor(EntityDragon dragon, float killedCount) {
 		IAttributeInstance attribute = dragon.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-		float armor = killedCount * Properties.Dragon.bonusArmorPerKilled;
-		if (armor > Properties.Dragon.maximumArmor)
-			armor = Properties.Dragon.maximumArmor;
+		float armor = killedCount * Properties.Dragon.Armor.bonusPerKilled;
+		if (armor > Properties.Dragon.Armor.maximum)
+			armor = Properties.Dragon.Armor.maximum;
 		attribute.setBaseValue(armor);
 	}
 	
@@ -107,14 +112,15 @@ public class Dragon {
 		EntityDragon dragon = (EntityDragon)event.getEntity();
 		NBTTagCompound tags = dragon.getEntityData();
 		
+		SpawnEndermites(dragon, world);
 		Heal(dragon, tags);
 	}
 	
-	public static void Heal(EntityDragon dragon, NBTTagCompound tags) {
-		if (Properties.Dragon.maximumHealthRegeneration == 0.0f)
+	private static void Heal(EntityDragon dragon, NBTTagCompound tags) {
+		if (Properties.Dragon.Health.maximumRegeneration == 0.0f)
 			return;
 		
-		float maxHeal = Properties.Dragon.maximumHealthRegeneration;
+		float maxHeal = Properties.Dragon.Health.maximumRegeneration;
 		
 		if (dragon.ticksExisted % 20 != 0)
 			return;
@@ -125,7 +131,7 @@ public class Dragon {
 			return;
 		
 		float health = dragon.getHealth();
-		float heal = difficulty / 10f * Properties.Dragon.healthRegenerationRate;
+		float heal = difficulty / 10f * Properties.Dragon.Health.regenerationRate;
 		
 		if (heal > maxHeal)
 			heal = maxHeal;
@@ -134,5 +140,51 @@ public class Dragon {
             dragon.setHealth(health + heal);
 		
 		//System.out.println(dragon.getHealth());
+	}
+	
+	private static void SpawnEndermites(EntityDragon dragon, World world) {
+		NBTTagCompound tags = dragon.getEntityData();
+		int difficulty = tags.getInteger("progressivebosses:difficulty");
+		if (difficulty < Properties.Dragon.Endermites.spawnAt)
+			return;
+		
+		int cooldown = tags.getInteger("progressivebosses:endermites_cooldown");
+		if (cooldown > 0) {
+			tags.setInteger("progressivebosses:endermites_cooldown", cooldown - 1);
+		}
+		else {
+			int cooldownReduction = difficulty * Properties.Dragon.Endermites.spawnCooldownReduction;
+			cooldown = MathHelper.getInt(world.rand, Properties.Dragon.Endermites.spawnMinCooldown - cooldownReduction, Properties.Dragon.Endermites.spawnMaxCooldown - cooldownReduction);
+			tags.setInteger("progressivebosses:endermites_cooldown", cooldown);
+			for (int i = 1; i <= difficulty; i++) {
+				if (i % Properties.Dragon.Endermites.spawnAt == 0) {
+					EntityEndermite endermite = new EntityEndermite(world);
+					float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
+					float x = (float) (Math.cos(angle) * 3.1f);
+					float z = (float) (Math.sin(angle) * 3.1f);
+					BlockPos getY = world.getTopSolidOrLiquidBlock(new BlockPos(0, 255, 0));
+					int bedrockCounter = 0;
+					float y = 64;
+					for (int yLevel = getY.getY(); yLevel > 0; yLevel--) {
+						if (world.getBlockState(new BlockPos(0, yLevel, 0)).getBlock().equals(Blocks.BEDROCK))
+							bedrockCounter++;
+						
+						if (bedrockCounter == 3) {
+							y = yLevel;
+							break;
+						}
+					}
+					IAttributeInstance instance = endermite.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+					instance.setBaseValue(instance.getBaseValue() * 1.75f);
+					instance = endermite.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+					instance.setBaseValue(64f);
+					endermite.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:wither"), 2000, MathHelper.getInt(world.rand, 1, 2), true, true));
+					endermite.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("resistance"), 100, 4, true, true));
+					endermite.setPosition(x, y, z);
+					endermite.setCustomNameTag("Dragon's Larvae");
+					world.spawnEntity(endermite);
+				}
+			}
+		}
 	}
 }
