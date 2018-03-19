@@ -1,5 +1,7 @@
 package net.insane96mcp.progressivebosses.lib;
 
+import net.minecraft.item.crafting.ShulkerBoxRecipes;
+
 public class Properties {
 	
 	public static void Init() {
@@ -104,6 +106,7 @@ public class Properties {
 			Health.Init();
 			Armor.Init();
 			Endermites.Init();
+			Shulkers.Init();
 		}
 		
 		public static class General {
@@ -130,8 +133,8 @@ public class Properties {
 				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
 				
 				spawnAt = Config.LoadIntProperty(SUBCATEGORY, "spawn_at", "After how many dragons killed, the dragon will start spawning ultrafast endermites (Dragon's Larvae) at the center island. The ender dragon will spawn x endermites based on this value (by default 1 endermite at 3 killed dragons, 2 endermite at 6 killed dragons, etc.)", 3);
-				spawnMinCooldown = Config.LoadIntProperty(SUBCATEGORY, "spawn_min_cooldown", "After how many minimum ticks (20 ticks = 1 second) the enderdragon will spawn endermites", 350);
-				spawnMaxCooldown = Config.LoadIntProperty(SUBCATEGORY, "spawn_max_cooldown", "After how many maximum ticks (20 ticks = 1 second) the enderdragon will spawn endermites", 450);
+				spawnMinCooldown = Config.LoadIntProperty(SUBCATEGORY, "spawn_min_cooldown", "After how many minimum ticks (20 ticks = 1 second) the enderdragon will spawn endermites", 600);
+				spawnMaxCooldown = Config.LoadIntProperty(SUBCATEGORY, "spawn_max_cooldown", "After how many maximum ticks (20 ticks = 1 second) the enderdragon will spawn endermites", 1200);
 				spawnCooldownReduction = Config.LoadIntProperty(SUBCATEGORY, "spawn_cooldown_reduction", "For each killed dragon the spawn endermites cooldown min and max will be reduced by this value (E.g. with 10 killed dragons and this set to 5, the spawn endermites cooldown min will be 300 and max 400)", 5);
 			}
 		}
@@ -163,6 +166,25 @@ public class Properties {
 				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
 				bonusPerKilled = Config.LoadFloatProperty(SUBCATEGORY, "bonus_armor_per_killed", "How much armor points will have ender dragons for each time a dragon is killed", 0.5f);
 				maximum = Config.LoadFloatProperty(SUBCATEGORY, "maximum_armor", "Maximum armor points that enderdragons can spawn with. It's not recommended to go over 30", 10f);
+			}
+		}
+	
+		public static class Shulkers {
+			public static String SUBCATEGORY = CATEGORY + ".shulkers";
+			public static String SUBDESCRIPTION = "Set here every parameter for dragon's shulkers";
+
+			public static int spawnAt;
+			public static int spawnMinCooldown;
+			public static int spawnMaxCooldown;
+			public static int spawnCooldownReduction;
+			
+			public static void Init() {
+				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
+				
+				spawnAt = Config.LoadIntProperty(SUBCATEGORY, "spawn_at", "After how many dragons killed, the dragon will start spawning shulkers (Dragon's Minion).", 5);
+				spawnMinCooldown = Config.LoadIntProperty(SUBCATEGORY, "spawn_min_cooldown", "After how many minimum ticks (20 ticks = 1 second) the enderdragon will spawn shulkers", 600);
+				spawnMaxCooldown = Config.LoadIntProperty(SUBCATEGORY, "spawn_max_cooldown", "After how many maximum ticks (20 ticks = 1 second) the enderdragon will spawn shulkers", 1200);
+				spawnCooldownReduction = Config.LoadIntProperty(SUBCATEGORY, "spawn_cooldown_reduction", "For each killed dragon the spawn shulkers cooldown min and max will be reduced by this value (E.g. with 10 killed dragons and this set to 5, the spawn shulkers cooldown min will be 300 and max 400)", 10);
 			}
 		}
 	}

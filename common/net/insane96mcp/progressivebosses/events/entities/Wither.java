@@ -1,12 +1,13 @@
 package net.insane96mcp.progressivebosses.events.entities;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import net.insane96mcp.progressivebosses.lib.Properties;
+import net.insane96mcp.progressivebosses.lib.Utils;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -14,12 +15,14 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class Wither {
 	public static void SetStats(EntityJoinWorldEvent event) {
@@ -68,6 +71,22 @@ public class Wither {
 		tags.setInteger("progressivebosses:skeletons_cooldown", Properties.Wither.Skeletons.spawnMinCooldown);
 	}
 	
+	public static void Update(LivingUpdateEvent event) {
+		if (!(event.getEntity() instanceof EntityWither))
+			return;
+		
+		World world = event.getEntity().world;
+		
+		EntityWither wither = (EntityWither)event.getEntity();
+		NBTTagCompound tags = wither.getEntityData();
+		
+		if (wither.getInvulTime() > 0)
+			return;
+		
+		SpawnSkeletons(wither, world);
+		Heal(wither, tags);
+	}
+	
 	private static void SetHealth(EntityWither wither, float spawnedCount) {
 		IAttributeInstance health = wither.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
 		if (spawnedCount < 0) {
@@ -85,22 +104,6 @@ public class Wither {
 		if (armor > Properties.Wither.Armor.maximum)
 			armor = Properties.Wither.Armor.maximum;
 		attribute.setBaseValue(armor);
-	}
-	
-	public static void Update(LivingUpdateEvent event) {
-		if (!(event.getEntity() instanceof EntityWither))
-			return;
-		
-		World world = event.getEntity().world;
-		
-		EntityWither wither = (EntityWither)event.getEntity();
-		NBTTagCompound tags = wither.getEntityData();
-		
-		if (wither.getInvulTime() > 0)
-			return;
-		
-		SpawnSkeletons(wither, world);
-		Heal(wither, tags);
 	}
 	
 	public static void Heal(EntityWither wither, NBTTagCompound tags) {
@@ -155,11 +158,34 @@ public class Wither {
 					}
 					if (world.rand.nextFloat() < (Properties.Wither.Skeletons.spawnWithSword + difficulty) / 100f)
 						witherSkeleton.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
-					IAttributeInstance instance = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-					instance.setBaseValue(MathHelper.getInt(world.rand, Properties.Wither.Skeletons.minArmor, Properties.Wither.Skeletons.maxArmor));
-					instance = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-					instance.setBaseValue(instance.getBaseValue() * (Math.random() + 1f));
+					
+					IAttributeInstance armor = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.ARMOR);
+					int minArmor = Properties.Wither.Skeletons.minArmor;
+					int maxArmor = difficulty;
+					if (maxArmor > Properties.Wither.Skeletons.maxArmor)
+						maxArmor = Properties.Wither.Skeletons.maxArmor;
+					armor.setBaseValue(MathHelper.getInt(world.rand, minArmor, maxArmor));
+					
+					IAttributeInstance speed = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+					float minSpeedMultiplier = 1.0f;
+					float maxSpeedMultiplier = 1.25f;
+					speed.setBaseValue(speed.getBaseValue() * (Utils.Math.getFloat(world.rand, minSpeedMultiplier, maxSpeedMultiplier)));
+					
 					witherSkeleton.setPosition(x, y, z);
+					witherSkeleton.setCustomNameTag("Wither's Minion");
+					
+					try {
+						Field deathLootTable = ReflectionHelper.findField(EntityLiving.class, "deathLootTable", "field_184659_bA", "bC");
+						deathLootTable.set(witherSkeleton, new ResourceLocation("minecraft:empty"));
+						
+						Field experienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
+						int xp = 1;
+						experienceValue.set(witherSkeleton, xp);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					
 					world.spawnEntity(witherSkeleton);
 				}
 			}

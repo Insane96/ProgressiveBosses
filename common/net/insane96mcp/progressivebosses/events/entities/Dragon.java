@@ -1,17 +1,22 @@
 package net.insane96mcp.progressivebosses.events.entities;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import net.insane96mcp.progressivebosses.lib.Properties;
+import net.insane96mcp.progressivebosses.lib.Utils;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.monster.EntityEndermite;
+import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -19,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class Dragon {
 	public static void SetStats(EntityJoinWorldEvent event) {
@@ -113,6 +119,7 @@ public class Dragon {
 		NBTTagCompound tags = dragon.getEntityData();
 		
 		SpawnEndermites(dragon, world);
+		SpawnShulkers(dragon, world);
 		Heal(dragon, tags);
 	}
 	
@@ -160,8 +167,8 @@ public class Dragon {
 				if (i % Properties.Dragon.Endermites.spawnAt == 0) {
 					EntityEndermite endermite = new EntityEndermite(world);
 					float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
-					float x = (float) (Math.cos(angle) * 3.1f);
-					float z = (float) (Math.sin(angle) * 3.1f);
+					float x = (float) (Math.cos(angle) * 3.15f);
+					float z = (float) (Math.sin(angle) * 3.15f);
 					BlockPos getY = world.getTopSolidOrLiquidBlock(new BlockPos(0, 255, 0));
 					int bedrockCounter = 0;
 					float y = 64;
@@ -175,16 +182,55 @@ public class Dragon {
 						}
 					}
 					IAttributeInstance instance = endermite.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-					instance.setBaseValue(instance.getBaseValue() * 1.75f);
+					instance.setBaseValue(instance.getBaseValue() * 1.55f);
 					instance = endermite.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
 					instance.setBaseValue(64f);
-					endermite.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:wither"), 2000, MathHelper.getInt(world.rand, 1, 2), true, true));
 					endermite.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("resistance"), 100, 4, true, true));
 					endermite.setPosition(x, y, z);
 					endermite.setCustomNameTag("Dragon's Larvae");
 					world.spawnEntity(endermite);
 				}
 			}
+		}
+	}
+
+	private static void SpawnShulkers(EntityDragon dragon, World world) {
+		NBTTagCompound tags = dragon.getEntityData();
+		int difficulty = tags.getInteger("progressivebosses:difficulty");
+		if (difficulty < Properties.Dragon.Shulkers.spawnAt)
+			return;
+		
+		int cooldown = tags.getInteger("progressivebosses:shulkers_cooldown");
+		if (cooldown > 0) {
+			tags.setInteger("progressivebosses:shulkers_cooldown", cooldown - 1);
+		}
+		else {
+			int cooldownReduction = difficulty * Properties.Dragon.Shulkers.spawnCooldownReduction;
+			cooldown = MathHelper.getInt(world.rand, Properties.Dragon.Shulkers.spawnMinCooldown - cooldownReduction, Properties.Dragon.Shulkers.spawnMaxCooldown - cooldownReduction);
+			tags.setInteger("progressivebosses:shulkers_cooldown", cooldown);
+			
+			EntityShulker shulker = new EntityShulker(world);
+			float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
+			float x = (float) (Math.cos(angle) * (Utils.Math.getFloat(world.rand, 15f, 25f)));
+			float y = 68;
+			float z = (float) (Math.sin(angle) * (Utils.Math.getFloat(world.rand, 15f, 25f)));
+			IAttributeInstance followRange = shulker.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+			followRange.setBaseValue(64f);
+			shulker.setPosition(x, y, z);
+			shulker.setCustomNameTag("Dragon's Minion");
+			
+			try {
+				Field deathLootTable = ReflectionHelper.findField(EntityLiving.class, "deathLootTable", "field_184659_bA", "bC");
+				deathLootTable.set(shulker, new ResourceLocation("minecraft:empty"));
+				
+				Field experienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
+				int xp = 1;
+				experienceValue.set(shulker, xp);
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+			}
+			world.spawnEntity(shulker);
 		}
 	}
 }
