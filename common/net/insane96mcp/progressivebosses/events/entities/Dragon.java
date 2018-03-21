@@ -86,6 +86,10 @@ public class Dragon {
 		attribute.setBaseValue(armor);
 	}
 	
+	public static void SetExperience(EntityDragon dragon, float killedCount) {
+		//???
+	}
+	
 	public static void OnDeath(LivingDeathEvent event) {
 		if (!(event.getEntity() instanceof EntityDragon))
 			return;
@@ -221,7 +225,7 @@ public class Dragon {
 			
 			try {
 				Field deathLootTable = ReflectionHelper.findField(EntityLiving.class, "deathLootTable", "field_184659_bA", "bC");
-				deathLootTable.set(shulker, new ResourceLocation("minecraft:empty"));
+				deathLootTable.set(shulker, new ResourceLocation("progressivebosses:entities/dragon_minion"));
 				
 				Field experienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
 				int xp = 1;

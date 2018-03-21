@@ -64,11 +64,23 @@ public class Wither {
 		
 		SetHealth(wither, spawnedCount);
 		SetArmor(wither, spawnedCount);
+		SetExperience(wither, spawnedCount);
 		
 		tags.setInteger("progressivebosses:difficulty", (int) spawnedCount);
 		
 		int cooldown = MathHelper.getInt(wither.getRNG(), Properties.Wither.Skeletons.spawnMinCooldown, Properties.Wither.Skeletons.spawnMaxCooldown);
 		tags.setInteger("progressivebosses:skeletons_cooldown", Properties.Wither.Skeletons.spawnMinCooldown);
+	}
+	
+	public static void SetExperience(EntityWither wither, float difficulty) {
+		try {
+			Field experienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
+			int xp = (int) (50 * (Properties.Wither.Rewards.bonusExperience * difficulty / 100f));
+			experienceValue.set(wither, xp);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void Update(LivingUpdateEvent event) {

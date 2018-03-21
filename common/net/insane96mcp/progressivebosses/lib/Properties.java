@@ -27,6 +27,7 @@ public class Properties {
 			Skeletons.Init();
 			Health.Init();
 			Armor.Init();
+			Rewards.Init();
 		}
 		
 		public static class General{
@@ -40,6 +41,18 @@ public class Properties {
 				spawnRadiusPlayerCheck = Config.LoadIntProperty(SUBCATEGORY, "spawn_radius_player_check", "How much blocks from wither will be scanned for players to check", 96);
 				sumSpawnedWither = Config.LoadBoolProperty(SUBCATEGORY, "sum_spawned_wither", "If true and there are more players around the wither, the wither will have his stats based on the sum of both players spawned withers. If false, the wither stats will be based on the average of the spawned wither count of the players around", false);
 				normalWitherCount = Config.LoadIntProperty(SUBCATEGORY, "normal_wither_count", "After how many withers spawned the wither will have the same health as vanilla? (e.g The spawned count for the player is 0, this is 2; the wither will have less stats. By default, the first wither spawned is easier", 1);
+			}
+		}
+		
+		public static class Rewards{
+			public static String SUBCATEGORY = CATEGORY + ".rewards";
+			public static String SUBDESCRIPTION = "Set here every parameter for wither skeletons more rewards";
+			
+			public static float bonusExperience;
+			
+			public static void Init() {
+				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
+				bonusExperience = Config.LoadFloatProperty(SUBCATEGORY, "bonus_experience", "How much more percentage experience will wither drop per wither spawned. The percentage is additive (e.g. 10% experience boost, 7 withers killed = 70% more experience)", 10.0f);
 			}
 		}
 		
@@ -61,7 +74,7 @@ public class Properties {
 				spawnMaxCooldown = Config.LoadIntProperty(SUBCATEGORY, "spawn_max_cooldown", "After how many maximum ticks (20 ticks = 1 second) the wither will try to spawn wither skeletons", 250);
 				spawnWithSword = Config.LoadFloatProperty(SUBCATEGORY, "spawn_with_sword", "Base Chance for wither skeletons  to spawn with swords. The chance is increased by 1 for each spawned wither. Set this to a really low value (e.g. -1000000, don't go below -2 billions) to disable", 20.0f);
 				minArmor = Config.LoadIntProperty(SUBCATEGORY, "min_armor", "Minimum armor value that wither skeletons should spawn with", 0);
-				maxArmor = Config.LoadIntProperty(SUBCATEGORY, "max_armor", "Maximum armor value that wither skeletons should spawn with", 20);
+				maxArmor = Config.LoadIntProperty(SUBCATEGORY, "max_armor", "Maximum armor value that wither skeletons should spawn with. The maximum armor is actually the difficulty, up to this value", 20);
 			}
 		}
 		
