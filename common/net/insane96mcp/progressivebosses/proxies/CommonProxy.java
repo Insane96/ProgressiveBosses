@@ -2,6 +2,7 @@ package net.insane96mcp.progressivebosses.proxies;
 
 import net.insane96mcp.progressivebosses.events.EntityJoinWorld;
 import net.insane96mcp.progressivebosses.events.LivingDeath;
+import net.insane96mcp.progressivebosses.events.LivingExperienceDrop;
 import net.insane96mcp.progressivebosses.events.LivingUpdate;
 import net.insane96mcp.progressivebosses.lib.Config;
 import net.insane96mcp.progressivebosses.lib.Properties;
@@ -23,6 +24,7 @@ public class CommonProxy {
 		MinecraftForge.EVENT_BUS.register(EntityJoinWorld.class);
 		MinecraftForge.EVENT_BUS.register(LivingUpdate.class);
 		MinecraftForge.EVENT_BUS.register(LivingDeath.class);
+		MinecraftForge.EVENT_BUS.register(LivingExperienceDrop.class);
 	}
 	
 	public void PostInit(FMLPostInitializationEvent event) {
