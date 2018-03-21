@@ -46,13 +46,13 @@ public class Properties {
 		
 		public static class Rewards{
 			public static String SUBCATEGORY = CATEGORY + ".rewards";
-			public static String SUBDESCRIPTION = "Set here every parameter for wither skeletons more rewards";
+			public static String SUBDESCRIPTION = "Set here every parameter for wither's rewards";
 			
 			public static float bonusExperience;
 			
 			public static void Init() {
 				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
-				bonusExperience = Config.LoadFloatProperty(SUBCATEGORY, "bonus_experience", "How much more percentage experience will wither drop per wither spawned. The percentage is additive (e.g. 10% experience boost, 7 withers killed = 70% more experience)", 10.0f);
+				bonusExperience = Config.LoadFloatProperty(SUBCATEGORY, "bonus_experience", "How much more percentage experience will wither drop per wither spawned. The percentage is additive (e.g. 10% experience boost, 7 withers spawned = 70% more experience)", 10.0f);
 			}
 		}
 		
@@ -131,6 +131,18 @@ public class Properties {
 				sumKilledDragons = Config.LoadBoolProperty(SUBCATEGORY, "sum_spawned_dragon", "If true and there are more players around the dragon that has spawned, the dragon will have his stats based on the sum of both players killed dragons. If false, the dragon stats will be based on the average of the killed dragons count of the players around", false);
 			}
 			
+		}
+		
+		public static class Rewards{
+			public static String SUBCATEGORY = CATEGORY + ".rewards";
+			public static String SUBDESCRIPTION = "Set here every parameter for dragon's rewards";
+			
+			public static float bonusExperience;
+			
+			public static void Init() {
+				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
+				bonusExperience = Config.LoadFloatProperty(SUBCATEGORY, "bonus_experience", "How much more percentage experience will ender dragon drop per dragon killed. The percentage is additive (e.g. 5% experience boost, 7 dragons killed = 35% more experience)", 35.0f);
+			}
 		}
 		
 		public static class Endermites {

@@ -66,7 +66,7 @@ public class Wither {
 		SetArmor(wither, spawnedCount);
 		SetExperience(wither, spawnedCount);
 		
-		tags.setInteger("progressivebosses:difficulty", (int) spawnedCount);
+		tags.setFloat("progressivebosses:difficulty", spawnedCount);
 		
 		int cooldown = MathHelper.getInt(wither.getRNG(), Properties.Wither.Skeletons.spawnMinCooldown, Properties.Wither.Skeletons.spawnMaxCooldown);
 		tags.setInteger("progressivebosses:skeletons_cooldown", Properties.Wither.Skeletons.spawnMinCooldown);
@@ -75,7 +75,7 @@ public class Wither {
 	public static void SetExperience(EntityWither wither, float difficulty) {
 		try {
 			Field experienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
-			int xp = (int) (50 * (Properties.Wither.Rewards.bonusExperience * difficulty / 100f));
+			int xp = 50 + (int) (50 * (Properties.Wither.Rewards.bonusExperience * difficulty / 100f));
 			experienceValue.set(wither, xp);
 		}
 		catch (Exception e) {
@@ -127,7 +127,7 @@ public class Wither {
 		if (wither.ticksExisted % 20 != 0)
 			return;
 		
-		int difficulty = tags.getInteger("progressivebosses:difficulty");
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		
 		if (difficulty == 0)
 			return;
@@ -146,7 +146,7 @@ public class Wither {
 	
 	private static void SpawnSkeletons(EntityWither wither, World world) {
 		NBTTagCompound tags = wither.getEntityData();
-		int difficulty = tags.getInteger("progressivebosses:difficulty");
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < Properties.Wither.Skeletons.spawnAt)
 			return;
 		
@@ -173,7 +173,7 @@ public class Wither {
 					
 					IAttributeInstance armor = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.ARMOR);
 					int minArmor = Properties.Wither.Skeletons.minArmor;
-					int maxArmor = difficulty;
+					int maxArmor = Math.round(difficulty);
 					if (maxArmor > Properties.Wither.Skeletons.maxArmor)
 						maxArmor = Properties.Wither.Skeletons.maxArmor;
 					armor.setBaseValue(MathHelper.getInt(world.rand, minArmor, maxArmor));

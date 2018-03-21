@@ -24,6 +24,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class Dragon {
@@ -69,7 +70,7 @@ public class Dragon {
 		SetHealth(dragon, killedCount);
 		SetArmor(dragon, killedCount);
 		
-		tags.setInteger("progressivebosses:difficulty", (int) killedCount);
+		tags.setFloat("progressivebosses:difficulty", killedCount);
 	}
 	
 	public static void SetHealth(EntityDragon dragon, float killedCount) {
@@ -86,8 +87,18 @@ public class Dragon {
 		attribute.setBaseValue(armor);
 	}
 	
-	public static void SetExperience(EntityDragon dragon, float killedCount) {
-		//???
+	public static void SetExperience(LivingExperienceDropEvent event) {
+		if (!(event.getEntityLiving() instanceof EntityDragon))
+			return;
+		
+		EntityDragon dragon = (EntityDragon)event.getEntityLiving();
+		
+		NBTTagCompound tags = dragon.getEntityData();
+		
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		int baseXp = event.getOriginalExperience();
+		float increase = (baseXp * (Properties.Dragon.Rewards.bonusExperience * difficulty / 100f));
+		event.setDroppedExperience((int) (baseXp + increase));
 	}
 	
 	public static void OnDeath(LivingDeathEvent event) {
@@ -136,7 +147,7 @@ public class Dragon {
 		if (dragon.ticksExisted % 20 != 0)
 			return;
 		
-		int difficulty = tags.getInteger("progressivebosses:difficulty");
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		
 		if (difficulty == 0)
 			return;
@@ -155,7 +166,7 @@ public class Dragon {
 	
 	private static void SpawnEndermites(EntityDragon dragon, World world) {
 		NBTTagCompound tags = dragon.getEntityData();
-		int difficulty = tags.getInteger("progressivebosses:difficulty");
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < Properties.Dragon.Endermites.spawnAt)
 			return;
 		
@@ -164,7 +175,7 @@ public class Dragon {
 			tags.setInteger("progressivebosses:endermites_cooldown", cooldown - 1);
 		}
 		else {
-			int cooldownReduction = difficulty * Properties.Dragon.Endermites.spawnCooldownReduction;
+			int cooldownReduction = (int) (difficulty * Properties.Dragon.Endermites.spawnCooldownReduction);
 			cooldown = MathHelper.getInt(world.rand, Properties.Dragon.Endermites.spawnMinCooldown - cooldownReduction, Properties.Dragon.Endermites.spawnMaxCooldown - cooldownReduction);
 			tags.setInteger("progressivebosses:endermites_cooldown", cooldown);
 			for (int i = 1; i <= difficulty; i++) {
@@ -200,7 +211,7 @@ public class Dragon {
 
 	private static void SpawnShulkers(EntityDragon dragon, World world) {
 		NBTTagCompound tags = dragon.getEntityData();
-		int difficulty = tags.getInteger("progressivebosses:difficulty");
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < Properties.Dragon.Shulkers.spawnAt)
 			return;
 		
@@ -209,7 +220,7 @@ public class Dragon {
 			tags.setInteger("progressivebosses:shulkers_cooldown", cooldown - 1);
 		}
 		else {
-			int cooldownReduction = difficulty * Properties.Dragon.Shulkers.spawnCooldownReduction;
+			int cooldownReduction = (int) (difficulty * Properties.Dragon.Shulkers.spawnCooldownReduction);
 			cooldown = MathHelper.getInt(world.rand, Properties.Dragon.Shulkers.spawnMinCooldown - cooldownReduction, Properties.Dragon.Shulkers.spawnMaxCooldown - cooldownReduction);
 			tags.setInteger("progressivebosses:shulkers_cooldown", cooldown);
 			
