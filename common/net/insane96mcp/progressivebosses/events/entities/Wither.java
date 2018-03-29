@@ -4,12 +4,15 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import net.insane96mcp.progressivebosses.lib.Properties;
+import net.insane96mcp.progressivebosses.lib.Reflection;
 import net.insane96mcp.progressivebosses.lib.Utils;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityWitherSkeleton;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -21,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
@@ -48,7 +52,7 @@ public class Wither {
 		if (players.size() == 0)
 			return;
 		
-		float spawnedCount = -Properties.Wither.General.normalWitherCount;
+		float spawnedCount = 1;
 		for (EntityPlayerMP player : players) {
 			NBTTagCompound playerTags = player.getEntityData();
 			int c = playerTags.getInteger("progressivebosses:spawnedwithers");
@@ -56,10 +60,10 @@ public class Wither {
 			playerTags.setInteger("progressivebosses:spawnedwithers", c + 1);
 		}
 		
-		if (spawnedCount == 0)
+		if (spawnedCount == 1)
 			return;
 		
-		if (!Properties.Wither.General.sumSpawnedWither && spawnedCount > 0)
+		if (!Properties.Wither.General.sumSpawnedWither)
 			spawnedCount /= players.size();
 		
 		SetHealth(wither, spawnedCount);
@@ -74,9 +78,8 @@ public class Wither {
 	
 	public static void SetExperience(EntityWither wither, float difficulty) {
 		try {
-			Field experienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
 			int xp = 50 + (int) (50 * (Properties.Wither.Rewards.bonusExperience * difficulty / 100f));
-			experienceValue.set(wither, xp);
+			Reflection.livingExperienceValue.set(wither, xp);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -104,10 +107,11 @@ public class Wither {
 		if (spawnedCount < 0) {
 			health.setBaseValue(health.getBaseValue() / -(spawnedCount - 1));
 		}
-		else {
+		/*else {
 			health.setBaseValue(health.getBaseValue() + (spawnedCount * Properties.Wither.Health.bonusPerSpawned));
-		}
-		wither.setHealth((float) health.getBaseValue());
+		}*/
+		health.setBaseValue(10000d);
+		wither.setHealth(Math.max(1, (float) health.getBaseValue() - 200));
 	}
 	
 	public static void SetArmor(EntityWither wither, float killedCount) {
@@ -122,29 +126,36 @@ public class Wither {
 		if (Properties.Wither.Health.maximumRegeneration == 0.0f)
 			return;
 		
-		float maxHeal = Properties.Wither.Health.maximumRegeneration;
-		
 		if (wither.ticksExisted % 20 != 0)
 			return;
 		
+		float maxHeal = Properties.Wither.Health.maximumRegeneration;
+		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		
-		if (difficulty == 0)
+		if (difficulty <= 0)
 			return;
 		
 		float health = wither.getHealth();
-		float heal = difficulty / 10f * Properties.Wither.Health.regenerationRate;
+		float heal = difficulty * Properties.Wither.Health.regenPerSpawned;
 		
 		if (heal > maxHeal)
 			heal = maxHeal;
 
 		if (wither.getHealth() < wither.getMaxHealth() && wither.getHealth() > 0.0f)
 			wither.setHealth(health + heal);
-		
-		//System.out.println(dragon.getHealth());
 	}
 	
 	private static void SpawnSkeletons(EntityWither wither, World world) {
+		int radius = 24;
+		BlockPos pos1 = wither.getPosition().add(-radius, -radius, -radius);
+		BlockPos pos2 = wither.getPosition().add(radius, radius, radius);
+		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+		List<EntityPlayer> players = world.getEntitiesWithinAABB(EntityPlayer.class, bb);
+		
+		if (players.isEmpty())
+			return;
+		
 		NBTTagCompound tags = wither.getEntityData();
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < Properties.Wither.Skeletons.spawnAt)
@@ -158,41 +169,42 @@ public class Wither {
 			cooldown = MathHelper.getInt(world.rand, Properties.Wither.Skeletons.spawnMinCooldown, Properties.Wither.Skeletons.spawnMaxCooldown);
 			tags.setInteger("progressivebosses:skeletons_cooldown", cooldown);
 			for (int i = 1; i <= difficulty; i++) {
+				if (i / Properties.Wither.Skeletons.spawnAt > Properties.Wither.Skeletons.spawnMaxCount)
+					break;
+				
 				if (i % Properties.Wither.Skeletons.spawnAt == 0) {
 					EntityWitherSkeleton witherSkeleton = new EntityWitherSkeleton(world);
 					float x = (float) (wither.posX + (world.rand.nextFloat() * 3f - 1.5f));
-					float y = (float) (wither.posY + (world.rand.nextFloat()));
+					float y = (float) (wither.posY - 1);
 					float z = (float) (wither.posZ + (world.rand.nextFloat() * 3f - 1.5f));
 					while (world.getBlockState(new BlockPos(x, y, z)).causesSuffocation()) {
 						y++;
-						if (y + 4 > wither.posY)
+						if (y > wither.posY + 4)
 							break;
 					}
 					if (world.rand.nextFloat() < (Properties.Wither.Skeletons.spawnWithSword + difficulty) / 100f)
 						witherSkeleton.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
-					
+					witherSkeleton.setDropChance(EntityEquipmentSlot.MAINHAND, Float.MIN_VALUE);
 					IAttributeInstance armor = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-					int minArmor = Properties.Wither.Skeletons.minArmor;
-					int maxArmor = Math.round(difficulty);
+					float minArmor = Properties.Wither.Skeletons.minArmor;
+					float maxArmor = difficulty;
 					if (maxArmor > Properties.Wither.Skeletons.maxArmor)
 						maxArmor = Properties.Wither.Skeletons.maxArmor;
-					armor.setBaseValue(MathHelper.getInt(world.rand, minArmor, maxArmor));
+					armor.setBaseValue(Utils.Math.getFloat(world.rand, minArmor, maxArmor));
 					
 					IAttributeInstance speed = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-					float minSpeedMultiplier = 1.0f;
 					float maxSpeedMultiplier = 1.25f;
-					speed.setBaseValue(speed.getBaseValue() * (Utils.Math.getFloat(world.rand, minSpeedMultiplier, maxSpeedMultiplier)));
+					float speedMultiplier = difficulty / 100f + 1f;
+					if (speedMultiplier > maxSpeedMultiplier)
+						speedMultiplier = maxSpeedMultiplier;
+					speed.setBaseValue(speed.getBaseValue() * speedMultiplier);
 					
 					witherSkeleton.setPosition(x, y, z);
 					witherSkeleton.setCustomNameTag("Wither's Minion");
-					
 					try {
-						Field deathLootTable = ReflectionHelper.findField(EntityLiving.class, "deathLootTable", "field_184659_bA", "bC");
-						deathLootTable.set(witherSkeleton, new ResourceLocation("minecraft:empty"));
+						Reflection.livingDeathLootTable.set(witherSkeleton, new ResourceLocation("minecraft:empty"));
 						
-						Field experienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
-						int xp = 1;
-						experienceValue.set(witherSkeleton, xp);
+						Reflection.livingExperienceValue.set(witherSkeleton, 1);
 					}
 					catch (Exception e) {
 						e.printStackTrace();
@@ -202,5 +214,27 @@ public class Wither {
 				}
 			}
 		}
+	}
+
+	public static void SetDrops(LivingDropsEvent event) {
+		if (!(event.getEntityLiving() instanceof EntityWither))
+			return;
+		
+		EntityWither wither = (EntityWither)event.getEntityLiving();
+		
+		NBTTagCompound tags = wither.getEntityData();
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		
+		float chance = Properties.Wither.Rewards.skullPerSpawned * difficulty;
+		if (chance > Properties.Wither.Rewards.skullMaxChance)
+			chance = Properties.Wither.Rewards.skullMaxChance;
+		if (wither.world.rand.nextFloat() >= chance / 100f)
+			return;
+		
+		EntityItem skull = new EntityItem(wither.world, wither.posX, wither.posY, wither.posZ, new ItemStack(Items.SKULL, 1, 1));
+		
+		System.out.println(skull);
+		
+		event.getDrops().add(skull);
 	}
 }

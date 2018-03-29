@@ -3,7 +3,9 @@ package net.insane96mcp.progressivebosses.events.entities;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import net.insane96mcp.progressivebosses.lib.LootTables;
 import net.insane96mcp.progressivebosses.lib.Properties;
+import net.insane96mcp.progressivebosses.lib.Reflection;
 import net.insane96mcp.progressivebosses.lib.Utils;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -16,7 +18,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -73,13 +74,13 @@ public class Dragon {
 		tags.setFloat("progressivebosses:difficulty", killedCount);
 	}
 	
-	public static void SetHealth(EntityDragon dragon, float killedCount) {
+	private static void SetHealth(EntityDragon dragon, float killedCount) {
 		IAttributeInstance attribute = dragon.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
 		attribute.setBaseValue(attribute.getBaseValue() + (killedCount * Properties.Dragon.Health.bonusPerKilled));
 		dragon.setHealth((float) attribute.getBaseValue());
 	}
 	
-	public static void SetArmor(EntityDragon dragon, float killedCount) {
+	private static void SetArmor(EntityDragon dragon, float killedCount) {
 		IAttributeInstance attribute = dragon.getEntityAttribute(SharedMonsterAttributes.ARMOR);
 		float armor = killedCount * Properties.Dragon.Armor.bonusPerKilled;
 		if (armor > Properties.Dragon.Armor.maximum)
@@ -87,7 +88,7 @@ public class Dragon {
 		attribute.setBaseValue(armor);
 	}
 	
-	public static void SetExperience(LivingExperienceDropEvent event) {
+	private static void SetExperience(LivingExperienceDropEvent event) {
 		if (!(event.getEntityLiving() instanceof EntityDragon))
 			return;
 		
@@ -99,6 +100,7 @@ public class Dragon {
 		int baseXp = event.getOriginalExperience();
 		float increase = (baseXp * (Properties.Dragon.Rewards.bonusExperience * difficulty / 100f));
 		event.setDroppedExperience((int) (baseXp + increase));
+		System.out.println(event.getOriginalExperience() + " " + event.getDroppedExperience());
 	}
 	
 	public static void OnDeath(LivingDeathEvent event) {
@@ -106,6 +108,10 @@ public class Dragon {
 			return;
 		
 		EntityDragon dragon = (EntityDragon)event.getEntity();
+		NBTTagCompound tags = dragon.getEntityData();
+		if (tags.getBoolean("progressivebosses:hasbeenkilled"))
+			return;
+		tags.setBoolean("progressivebosses:hasbeenkilled", true);
 
 		int radius = 160;
 		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
@@ -123,6 +129,23 @@ public class Dragon {
 			playerTags.setInteger("progressivebosses:killeddragons", c + 1);
 		}
 	}
+	
+	private static void DropEgg(EntityDragon dragon, World world) {
+		if(dragon.getFightManager() == null || !dragon.getFightManager().hasPreviouslyKilledDragon() || dragon.deathTicks != 100)
+			return;
+			
+		NBTTagCompound tags = dragon.getEntityData();
+		
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		
+		float chance = Properties.Dragon.Rewards.eggDropPerKilled * difficulty;
+		if (chance > Properties.Dragon.Rewards.eggDropMaximum)
+			chance = Properties.Dragon.Rewards.eggDropMaximum;
+		
+		if (dragon.world.rand.nextFloat() < chance / 100f) {
+			world.setBlockState(new BlockPos(0, 255, 0), Blocks.DRAGON_EGG.getDefaultState());
+		}
+	}
 
 	public static void Update(LivingUpdateEvent event) {
 		if (!(event.getEntity() instanceof EntityDragon))
@@ -136,6 +159,7 @@ public class Dragon {
 		SpawnEndermites(dragon, world);
 		SpawnShulkers(dragon, world);
 		Heal(dragon, tags);
+		DropEgg(dragon, world);
 	}
 	
 	private static void Heal(EntityDragon dragon, NBTTagCompound tags) {
@@ -160,8 +184,6 @@ public class Dragon {
 
 		if (dragon.getHealth() < dragon.getMaxHealth() && dragon.getHealth() > 0.0f)
             dragon.setHealth(health + heal);
-		
-		//System.out.println(dragon.getHealth());
 	}
 	
 	private static void SpawnEndermites(EntityDragon dragon, World world) {
@@ -179,6 +201,9 @@ public class Dragon {
 			cooldown = MathHelper.getInt(world.rand, Properties.Dragon.Endermites.spawnMinCooldown - cooldownReduction, Properties.Dragon.Endermites.spawnMaxCooldown - cooldownReduction);
 			tags.setInteger("progressivebosses:endermites_cooldown", cooldown);
 			for (int i = 1; i <= difficulty; i++) {
+				if (i / Properties.Dragon.Endermites.spawnAt > Properties.Dragon.Endermites.spawnMaxCount)
+					break;
+				
 				if (i % Properties.Dragon.Endermites.spawnAt == 0) {
 					EntityEndermite endermite = new EntityEndermite(world);
 					float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
@@ -200,9 +225,17 @@ public class Dragon {
 					instance.setBaseValue(instance.getBaseValue() * 1.55f);
 					instance = endermite.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
 					instance.setBaseValue(64f);
-					endermite.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("resistance"), 100, 4, true, true));
+					endermite.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("resistance"), 80, 4, true, true));
 					endermite.setPosition(x, y, z);
 					endermite.setCustomNameTag("Dragon's Larvae");
+					
+					try {
+						Reflection.livingExperienceValue.set(endermite, 1);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+					
 					world.spawnEntity(endermite);
 				}
 			}
@@ -235,16 +268,13 @@ public class Dragon {
 			shulker.setCustomNameTag("Dragon's Minion");
 			
 			try {
-				Field deathLootTable = ReflectionHelper.findField(EntityLiving.class, "deathLootTable", "field_184659_bA", "bC");
-				deathLootTable.set(shulker, new ResourceLocation("progressivebosses:entities/dragon_minion"));
-				
-				Field experienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
-				int xp = 1;
-				experienceValue.set(shulker, xp);
+				Reflection.livingDeathLootTable.set(shulker, LootTables.dragonMinion);
+				Reflection.livingExperienceValue.set(shulker, 2);
 			}
 			catch (Exception e) {
 				e.printStackTrace();
 			}
+			
 			world.spawnEntity(shulker);
 		}
 	}
