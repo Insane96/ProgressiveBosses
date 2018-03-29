@@ -1,0 +1,2 @@
+commands.counter.usage=§4Imposta o ottieni il contatore per il wither o il drago del giocatore specificato.\nUso:\n/counter <giocatore> get\n/counter <giocatore> set <wither|dragon> <quantità>
+commands.counter.usage.set=§4Uso:\n/counter <giocatore> set <wither|dragon> <quantità>

@@ -93,7 +93,7 @@ public class Properties {
 				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
 				bonusPerSpawned = Config.LoadFloatProperty(SUBCATEGORY, "bonus_per_spawned", "How much health the withers will have more for each wither that has been already spawned", 10f);
 				maximumRegeneration = Config.LoadFloatProperty(SUBCATEGORY, "max_regeneration", "Maximum regeneration for regen_per_spawned. Set to 0 to disable health regeneration. It's not recommended to go over 1.0f without mods that adds stronger items, potions, etc.", 1.0f);
-				regenPerSpawned = Config.LoadFloatProperty(SUBCATEGORY, "regen_per_spawned", "How many half hearts will regen the wither per wither spawned, this doesn't alter the normal health regeneration of the wither (1 hp per second) (E.g. With 6 withers spawned, the wither will heal 0.6 half-hearts more).", 0.05f);
+				regenPerSpawned = Config.LoadFloatProperty(SUBCATEGORY, "regen_per_spawned", "How many half hearts will regen the wither per wither spawned, this doesn't alter the normal health regeneration of the wither (1 hp per second) (E.g. With 6 withers spawned, the wither will heal 0.6 half-hearts more per second).", 0.05f);
 			}
 		}
 		
@@ -181,13 +181,13 @@ public class Properties {
 
 			public static float bonusPerKilled;
 			public static float maximumRegeneration;
-			public static float regenerationRate;
+			public static float regenPerKilled;
 			
 			public static void Init() {
 				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
 				bonusPerKilled = Config.LoadFloatProperty(SUBCATEGORY, "bonus_health_per_killed", "How much health will have the ender dragon for each ender dragon that has been killed", 10f);
-				maximumRegeneration = Config.LoadFloatProperty(SUBCATEGORY, "max_health_regeneration", "For every dragon killed, the dragon will regenerate health (without crystals). He regenerates (killed_dragons / 10) per second. Up to a maximum of this value. Set to 0 to disable health regeneration. It's not recommended to go over 1.0f without mods that adds stronger items, potions, etc.", 1.0f);
-				regenerationRate = Config.LoadFloatProperty(SUBCATEGORY, "health_regeneration_rate", "Increases (or decreases) the amount of health that the dragon heals for each dragon killed. Setting this to 1.0 will make dragon heal at normal regeneration rate (killed_dragons / 10)", 0.5f);
+				maximumRegeneration = Config.LoadFloatProperty(SUBCATEGORY, "max_regeneration", "Maximum regeneration for regen_per_spawned. Set to 0 to disable health regeneration. It's not recommended to go over 1.0f without mods that adds stronger items, potions, etc.", 1.0f);
+				regenPerKilled = Config.LoadFloatProperty(SUBCATEGORY, "regen_per_killed", "How many half hearts will regen the dragon per dragons killed per second (E.g. With 6 dragons killed, the dragon will heal 0.6 half-hearts per second).", 0.05f);
 			}
 		}
 		

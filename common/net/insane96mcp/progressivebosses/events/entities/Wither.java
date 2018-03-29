@@ -1,12 +1,10 @@
 package net.insane96mcp.progressivebosses.events.entities;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import net.insane96mcp.progressivebosses.lib.Properties;
 import net.insane96mcp.progressivebosses.lib.Reflection;
 import net.insane96mcp.progressivebosses.lib.Utils;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityWither;
@@ -26,7 +24,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class Wither {
 	public static void SetStats(EntityJoinWorldEvent event) {
@@ -107,10 +104,9 @@ public class Wither {
 		if (spawnedCount < 0) {
 			health.setBaseValue(health.getBaseValue() / -(spawnedCount - 1));
 		}
-		/*else {
+		else {
 			health.setBaseValue(health.getBaseValue() + (spawnedCount * Properties.Wither.Health.bonusPerSpawned));
-		}*/
-		health.setBaseValue(10000d);
+		}
 		wither.setHealth(Math.max(1, (float) health.getBaseValue() - 200));
 	}
 	
@@ -129,18 +125,18 @@ public class Wither {
 		if (wither.ticksExisted % 20 != 0)
 			return;
 		
-		float maxHeal = Properties.Wither.Health.maximumRegeneration;
-		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		
 		if (difficulty <= 0)
 			return;
 		
-		float health = wither.getHealth();
+		float maxHeal = Properties.Wither.Health.maximumRegeneration;
 		float heal = difficulty * Properties.Wither.Health.regenPerSpawned;
 		
 		if (heal > maxHeal)
 			heal = maxHeal;
+		
+		float health = wither.getHealth();
 
 		if (wither.getHealth() < wither.getMaxHealth() && wither.getHealth() > 0.0f)
 			wither.setHealth(health + heal);
@@ -232,8 +228,6 @@ public class Wither {
 			return;
 		
 		EntityItem skull = new EntityItem(wither.world, wither.posX, wither.posY, wither.posZ, new ItemStack(Items.SKULL, 1, 1));
-		
-		System.out.println(skull);
 		
 		event.getDrops().add(skull);
 	}

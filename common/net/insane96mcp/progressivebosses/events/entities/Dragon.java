@@ -1,13 +1,11 @@
 package net.insane96mcp.progressivebosses.events.entities;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 import net.insane96mcp.progressivebosses.lib.LootTables;
 import net.insane96mcp.progressivebosses.lib.Properties;
 import net.insane96mcp.progressivebosses.lib.Reflection;
 import net.insane96mcp.progressivebosses.lib.Utils;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityDragon;
@@ -26,7 +24,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class Dragon {
 	public static void SetStats(EntityJoinWorldEvent event) {
@@ -100,7 +97,6 @@ public class Dragon {
 		int baseXp = event.getOriginalExperience();
 		float increase = (baseXp * (Properties.Dragon.Rewards.bonusExperience * difficulty / 100f));
 		event.setDroppedExperience((int) (baseXp + increase));
-		System.out.println(event.getOriginalExperience() + " " + event.getDroppedExperience());
 	}
 	
 	public static void OnDeath(LivingDeathEvent event) {
@@ -166,8 +162,6 @@ public class Dragon {
 		if (Properties.Dragon.Health.maximumRegeneration == 0.0f)
 			return;
 		
-		float maxHeal = Properties.Dragon.Health.maximumRegeneration;
-		
 		if (dragon.ticksExisted % 20 != 0)
 			return;
 		
@@ -175,12 +169,14 @@ public class Dragon {
 		
 		if (difficulty == 0)
 			return;
-		
-		float health = dragon.getHealth();
-		float heal = difficulty / 10f * Properties.Dragon.Health.regenerationRate;
+
+		float maxHeal = Properties.Dragon.Health.maximumRegeneration;
+		float heal = difficulty * Properties.Dragon.Health.regenPerKilled;
 		
 		if (heal > maxHeal)
 			heal = maxHeal;
+		
+		float health = dragon.getHealth();
 
 		if (dragon.getHealth() < dragon.getMaxHealth() && dragon.getHealth() > 0.0f)
             dragon.setHealth(health + heal);

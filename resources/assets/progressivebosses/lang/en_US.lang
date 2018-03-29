@@ -1,0 +1,2 @@
+commands.counter.usage=§4Sets or gets wither and dragon counter for player.\nUsages:\n/counter <player> get\n/counter <player> set <wither|dragon> <set_count>
+commands.counter.usage.set=§4Usage:\n/counter <player> set <wither|dragon> <set_count>
