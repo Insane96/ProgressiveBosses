@@ -73,7 +73,7 @@ public class Wither {
 		tags.setInteger("progressivebosses:skeletons_cooldown", Properties.Wither.Skeletons.spawnMinCooldown);
 	}
 	
-	public static void SetExperience(EntityWither wither, float difficulty) {
+	private static void SetExperience(EntityWither wither, float difficulty) {
 		try {
 			int xp = 50 + (int) (50 * (Properties.Wither.Rewards.bonusExperience * difficulty / 100f));
 			Reflection.livingExperienceValue.set(wither, xp);
@@ -82,6 +82,26 @@ public class Wither {
 			e.printStackTrace();
 		}
 	}
+	
+	private static void SetHealth(EntityWither wither, float spawnedCount) {
+		IAttributeInstance health = wither.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
+		if (spawnedCount < 0) {
+			health.setBaseValue(health.getBaseValue() / -(spawnedCount - 1));
+		}
+		else {
+			health.setBaseValue(health.getBaseValue() + (spawnedCount * Properties.Wither.Health.bonusPerSpawned));
+		}
+		wither.setHealth(Math.max(1, (float) health.getBaseValue() - 200));
+	}
+	
+	private static void SetArmor(EntityWither wither, float killedCount) {
+		IAttributeInstance attribute = wither.getEntityAttribute(SharedMonsterAttributes.ARMOR);
+		float armor = killedCount * Properties.Wither.Armor.bonusPerSpawned;
+		if (armor > Properties.Wither.Armor.maximum)
+			armor = Properties.Wither.Armor.maximum;
+		attribute.setBaseValue(armor);
+	}
+	
 	
 	public static void Update(LivingUpdateEvent event) {
 		if (!(event.getEntity() instanceof EntityWither))
@@ -99,26 +119,7 @@ public class Wither {
 		Heal(wither, tags);
 	}
 	
-	private static void SetHealth(EntityWither wither, float spawnedCount) {
-		IAttributeInstance health = wither.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-		if (spawnedCount < 0) {
-			health.setBaseValue(health.getBaseValue() / -(spawnedCount - 1));
-		}
-		else {
-			health.setBaseValue(health.getBaseValue() + (spawnedCount * Properties.Wither.Health.bonusPerSpawned));
-		}
-		wither.setHealth(Math.max(1, (float) health.getBaseValue() - 200));
-	}
-	
-	public static void SetArmor(EntityWither wither, float killedCount) {
-		IAttributeInstance attribute = wither.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-		float armor = killedCount * Properties.Wither.Armor.bonusPerSpawned;
-		if (armor > Properties.Wither.Armor.maximum)
-			armor = Properties.Wither.Armor.maximum;
-		attribute.setBaseValue(armor);
-	}
-	
-	public static void Heal(EntityWither wither, NBTTagCompound tags) {
+	private static void Heal(EntityWither wither, NBTTagCompound tags) {
 		if (Properties.Wither.Health.maximumRegeneration == 0.0f)
 			return;
 		
@@ -219,6 +220,7 @@ public class Wither {
 		}
 	}
 
+	
 	public static void SetDrops(LivingDropsEvent event) {
 		if (!(event.getEntityLiving() instanceof EntityWither))
 			return;

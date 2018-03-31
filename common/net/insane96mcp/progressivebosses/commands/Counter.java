@@ -21,7 +21,7 @@ public class Counter extends CommandBase {
 
 	@Override
 	public String getName() {
-		return "pb:counter";
+		return "progressivebosses";
 	}
 
 	@Override

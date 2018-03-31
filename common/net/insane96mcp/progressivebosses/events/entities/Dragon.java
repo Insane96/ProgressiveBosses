@@ -99,6 +99,7 @@ public class Dragon {
 		event.setDroppedExperience((int) (baseXp + increase));
 	}
 	
+	
 	public static void OnDeath(LivingDeathEvent event) {
 		if (!(event.getEntity() instanceof EntityDragon))
 			return;
@@ -143,6 +144,7 @@ public class Dragon {
 		}
 	}
 
+	
 	public static void Update(LivingUpdateEvent event) {
 		if (!(event.getEntity() instanceof EntityDragon))
 			return;
