@@ -170,14 +170,21 @@ public class Wither {
 				
 				if (i % Properties.Wither.Skeletons.spawnAt == 0) {
 					EntityWitherSkeleton witherSkeleton = new EntityWitherSkeleton(world);
-					float x = (float) (wither.posX + (world.rand.nextFloat() * 3f - 1.5f));
-					float y = (float) (wither.posY - 1);
-					float z = (float) (wither.posZ + (world.rand.nextFloat() * 3f - 1.5f));
-					while (world.getBlockState(new BlockPos(x, y, z)).causesSuffocation()) {
+					int x = (int) (wither.posX + (MathHelper.getInt(world.rand, -2, 2)));
+					int y = (int) (wither.posY - 2);
+					int z = (int) (wither.posZ + (MathHelper.getInt(world.rand, -2, 2)));
+					
+					boolean shouldSpawn = true;
+					while (world.getBlockState(new BlockPos(x, y, z)).getMaterial().blocksMovement()) {
 						y++;
-						if (y > wither.posY + 4)
+						if (y > wither.posY + 4) {
+							shouldSpawn = false;
 							break;
+						}
 					}
+					if (!shouldSpawn)
+						continue;
+					
 					if (world.rand.nextFloat() < (Properties.Wither.Skeletons.spawnWithSword + difficulty) / 100f)
 						witherSkeleton.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
 					witherSkeleton.setDropChance(EntityEquipmentSlot.MAINHAND, Float.MIN_VALUE);
@@ -195,7 +202,7 @@ public class Wither {
 						speedMultiplier = maxSpeedMultiplier;
 					speed.setBaseValue(speed.getBaseValue() * speedMultiplier);
 					
-					witherSkeleton.setPosition(x, y, z);
+					witherSkeleton.setPosition(x + 0.5f, y + 0.5f, z + 0.5f);
 					witherSkeleton.setCustomNameTag("Wither's Minion");
 					try {
 						Reflection.livingDeathLootTable.set(witherSkeleton, new ResourceLocation("minecraft:empty"));
