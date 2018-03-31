@@ -223,7 +223,7 @@ public class Dragon {
 					instance.setBaseValue(64f);
 					endermite.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("resistance"), 80, 4, true, true));
 					endermite.setPosition(x, y, z);
-					endermite.setCustomNameTag("Dragon's Larvae");
+					endermite.setCustomNameTag("Dragon's Larva");
 					
 					try {
 						Reflection.livingExperienceValue.set(endermite, 1);
