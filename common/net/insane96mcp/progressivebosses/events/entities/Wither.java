@@ -154,6 +154,10 @@ public class Wither {
 			return;
 		
 		NBTTagCompound tags = wither.getEntityData();
+		
+		//Mobs Properties Randomness
+		tags.setBoolean("mobsrandomizzation:preventProcessing", true);
+		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < Properties.Wither.Skeletons.spawnAt)
 			return;

@@ -186,6 +186,10 @@ public class Dragon {
 	
 	private static void SpawnEndermites(EntityDragon dragon, World world) {
 		NBTTagCompound tags = dragon.getEntityData();
+		
+		//Mobs Properties Randomness
+		tags.setBoolean("mobsrandomizzation:preventProcessing", true);
+		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < Properties.Dragon.Endermites.spawnAt)
 			return;
@@ -242,6 +246,10 @@ public class Dragon {
 
 	private static void SpawnShulkers(EntityDragon dragon, World world) {
 		NBTTagCompound tags = dragon.getEntityData();
+		
+		//Mobs Properties Randomness
+		tags.setBoolean("mobsrandomizzation:preventProcessing", true);
+		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < Properties.Dragon.Shulkers.spawnAt)
 			return;
