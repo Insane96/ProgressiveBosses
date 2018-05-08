@@ -45,15 +45,19 @@ public class Properties {
 			public static String SUBDESCRIPTION = "Set here every parameter for wither's rewards";
 			
 			public static float bonusExperience;
-			public static float skullPerSpawned;
-			public static float skullMaxChance;
+			public static float shardPerSpawned;
+			public static float shardMaxChance;
+			public static int shardDivider;
+			public static int shardMaxCount;
 			
 			public static void Init() {
 				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
 				bonusExperience = Config.LoadFloatProperty(SUBCATEGORY, "bonus_experience", "How much more percentage experience will wither drop per wither spawned. The percentage is additive (e.g. 10% experience boost, 7 withers spawned = 70% more experience)", 10.0f);
 			
-				skullPerSpawned = Config.LoadFloatProperty(SUBCATEGORY, "skull_per_spawned", "How much chance per wither spawned to get a Wither Skull from killing the wither", 0.5f);
-				skullMaxChance = Config.LoadFloatProperty(SUBCATEGORY, "skull_max_chance", "Maximum chance to get a Wither Skull", 40.0f);
+				shardPerSpawned = Config.LoadFloatProperty(SUBCATEGORY, "shard_per_spawned", "How much chance per wither spawned to get a Nether Star Shard from killing the wither", 2f);
+				shardMaxChance = Config.LoadFloatProperty(SUBCATEGORY, "shard_max_chance", "Maximum chance to get a Wither Skull", 50.0f);
+				shardDivider = Config.LoadIntProperty(SUBCATEGORY, "shard_ratio", "Divider of killed withers for how many times the game tries to drop one more shard. Given this value x you get ((killed_wither / x) + 1) times to get one more shard.\nE.g. By default, at 10 withers killed you have 20% chance to drop a shard, another 20% chance to get another one, etc. up to 6 times.", 2);
+				shardMaxCount = Config.LoadIntProperty(SUBCATEGORY, "shard_max_count", "Maximum amount of shard that you can get from wither", 8);
 			}
 		}
 		

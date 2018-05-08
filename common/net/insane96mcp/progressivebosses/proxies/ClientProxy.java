@@ -1,5 +1,6 @@
 package net.insane96mcp.progressivebosses.proxies;
 
+import net.insane96mcp.progressivebosses.item.ModItems;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;

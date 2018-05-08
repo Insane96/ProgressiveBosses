@@ -8,7 +8,6 @@ public class LootTables {
 	public static ResourceLocation dragonMinion;
 	
 	public static void Init() {
-		dragonMinion = 
-				LootTableList.register(new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_minion"));
+		dragonMinion = LootTableList.register(new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_minion"));
 	}
 }

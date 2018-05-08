@@ -19,4 +19,14 @@ public class Reflection {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void Set(Field field, Object object, Object value) {
+		try {
+			field.set(object, value);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
 }

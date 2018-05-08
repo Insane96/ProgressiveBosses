@@ -2,6 +2,7 @@ package net.insane96mcp.progressivebosses.events.entities;
 
 import java.util.List;
 
+import net.insane96mcp.progressivebosses.item.ModItems;
 import net.insane96mcp.progressivebosses.lib.Properties;
 import net.insane96mcp.progressivebosses.lib.Reflection;
 import net.insane96mcp.progressivebosses.lib.Utils;
@@ -74,13 +75,8 @@ public class Wither {
 	}
 	
 	private static void SetExperience(EntityWither wither, float difficulty) {
-		try {
-			int xp = 50 + (int) (50 * (Properties.Wither.Rewards.bonusExperience * difficulty / 100f));
-			Reflection.livingExperienceValue.set(wither, xp);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		int xp = 50 + (int) (50 * (Properties.Wither.Rewards.bonusExperience * difficulty / 100f));
+		Reflection.Set(Reflection.livingExperienceValue, wither, xp);
 	}
 	
 	private static void SetHealth(EntityWither wither, float spawnedCount) {
@@ -209,14 +205,8 @@ public class Wither {
 					
 					witherSkeleton.setPosition(x + 0.5f, y + 0.5f, z + 0.5f);
 					witherSkeleton.setCustomNameTag("Wither's Minion");
-					try {
-						Reflection.livingDeathLootTable.set(witherSkeleton, new ResourceLocation("minecraft:empty"));
-						
-						Reflection.livingExperienceValue.set(witherSkeleton, 1);
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
+					Reflection.Set(Reflection.livingDeathLootTable, witherSkeleton, new ResourceLocation("minecraft:empty"));
+					Reflection.Set(Reflection.livingExperienceValue, witherSkeleton, 1);
 					
 					world.spawnEntity(witherSkeleton);
 				}
@@ -233,15 +223,25 @@ public class Wither {
 		
 		NBTTagCompound tags = wither.getEntityData();
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
-		
-		float chance = Properties.Wither.Rewards.skullPerSpawned * difficulty;
-		if (chance > Properties.Wither.Rewards.skullMaxChance)
-			chance = Properties.Wither.Rewards.skullMaxChance;
-		if (wither.world.rand.nextFloat() >= chance / 100f)
+
+		float chance = Properties.Wither.Rewards.shardPerSpawned * difficulty;
+		if (chance > Properties.Wither.Rewards.shardMaxChance)
+			chance = Properties.Wither.Rewards.shardMaxChance;
+
+		int tries = (int) (difficulty / Properties.Wither.Rewards.shardDivider) + 1;
+		if (tries > Properties.Wither.Rewards.shardMaxCount)
+			tries = Properties.Wither.Rewards.shardMaxCount;
+		int count = 0;
+		for (int i = 0; i < tries; i++) {
+			if (wither.world.rand.nextFloat() >= chance / 100f)
+				continue;
+			count++;
+		}
+		if (count == 0)
 			return;
 		
-		EntityItem skull = new EntityItem(wither.world, wither.posX, wither.posY, wither.posZ, new ItemStack(Items.SKULL, 1, 1));
+		EntityItem shard = new EntityItem(wither.world, wither.posX, wither.posY, wither.posZ, new ItemStack(ModItems.starShard, count));
 		
-		event.getDrops().add(skull);
+		event.getDrops().add(shard);
 	}
 }
