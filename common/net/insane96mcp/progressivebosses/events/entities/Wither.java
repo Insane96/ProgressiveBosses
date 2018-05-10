@@ -162,7 +162,7 @@ public class Wither {
 		if (cooldown > 0) {
 			tags.setInteger("progressivebosses:skeletons_cooldown", cooldown - 1);
 		}
-		else {
+		else { 
 			cooldown = MathHelper.getInt(world.rand, Properties.Wither.Skeletons.spawnMinCooldown, Properties.Wither.Skeletons.spawnMaxCooldown);
 			tags.setInteger("progressivebosses:skeletons_cooldown", cooldown);
 			for (int i = Properties.Wither.Skeletons.spawnAt; i <= difficulty; i++) {
