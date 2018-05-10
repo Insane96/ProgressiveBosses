@@ -66,6 +66,7 @@ public class Properties {
 			public static String SUBDESCRIPTION = "Set here every parameter for wither skeletons spawned by the Wither";
 			
 			public static int spawnAt;
+			public static int spawnEvery;
 			public static int spawnMaxCount;
 			public static int spawnMinCooldown;
 			public static int spawnMaxCooldown;
@@ -75,7 +76,8 @@ public class Properties {
 			
 			public static void Init() {
 				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
-				spawnAt = Config.LoadIntProperty(SUBCATEGORY, "spawn_at", "After how many withers spawned by players, the wither will start spawning wither skeletons during the fight. The wither will spawn x wither skeletons based on this value (by default 1 wither skeleton at 4 spawned withers, 2 wither skeletons at 8 spawned withers, etc.)", 4);
+				spawnAt = Config.LoadIntProperty(SUBCATEGORY, "spawn_at", "After how many withers spawned by players, the wither will start spawning wither skeletons during the fight. Can be 0", 2);
+				spawnEvery = Config.LoadIntProperty(SUBCATEGORY, "spawn_every", "As the wither starts spawning wither skeletons, every how much withers spawned the wither will spawn one more wither. Cannot be lower than 1", 4);
 				spawnMaxCount = Config.LoadIntProperty(SUBCATEGORY, "spawn_max_count", "Maximum number of wither skeletons that a Wither can spawn", 8);
 				spawnMinCooldown = Config.LoadIntProperty(SUBCATEGORY, "spawn_min_cooldown", "After how many minimum ticks (20 ticks = 1 second) the wither will try to spawn wither skeletons", 150);
 				spawnMaxCooldown = Config.LoadIntProperty(SUBCATEGORY, "spawn_max_cooldown", "After how many maximum ticks (20 ticks = 1 second) the wither will try to spawn wither skeletons", 300);
@@ -151,9 +153,9 @@ public class Properties {
 			
 			public static void Init() {
 				Config.SetCategoryComment(SUBCATEGORY, SUBDESCRIPTION);
-				bonusExperience = Config.LoadFloatProperty(SUBCATEGORY, "bonus_experience", "How much more percentage experience will ender dragon drop per dragon killed. The percentage is additive (e.g. 5% experience boost, 7 dragons killed = 35% more experience)", 35.0f);
-				eggDropPerKilled = Config.LoadFloatProperty(SUBCATEGORY, "egg_drop_per_killed", "Chance increase for each dragon killed for dragon to drop a Dragon Egg", 0.5f);
-				eggDropMaximum = Config.LoadFloatProperty(SUBCATEGORY, "egg_drop_max", "Max chance for ender dragon to drop a dragon egg", 15.0f);
+				bonusExperience = Config.LoadFloatProperty(SUBCATEGORY, "bonus_experience", "How much more percentage experience will ender dragon drop per dragon killed. The percentage is additive (e.g. 5% experience boost, 7 dragons killed = 35% more experience) (Not working as now, this config will do nothing)", 35.0f);
+				eggDropPerKilled = Config.LoadFloatProperty(SUBCATEGORY, "egg_drop_per_killed", "Chance increase for each dragon killed for dragon to drop a Dragon Egg", 2.5f);
+				eggDropMaximum = Config.LoadFloatProperty(SUBCATEGORY, "egg_drop_max", "Max chance for ender dragon to drop a dragon egg", 50.0f);
 				
 			}
 		}

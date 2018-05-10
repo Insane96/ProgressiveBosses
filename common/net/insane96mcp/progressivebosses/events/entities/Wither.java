@@ -165,11 +165,9 @@ public class Wither {
 		else {
 			cooldown = MathHelper.getInt(world.rand, Properties.Wither.Skeletons.spawnMinCooldown, Properties.Wither.Skeletons.spawnMaxCooldown);
 			tags.setInteger("progressivebosses:skeletons_cooldown", cooldown);
-			for (int i = 1; i <= difficulty; i++) {
-				if (i / Properties.Wither.Skeletons.spawnAt > Properties.Wither.Skeletons.spawnMaxCount)
-					break;
-				
-				if (i % Properties.Wither.Skeletons.spawnAt == 0) {
+			for (int i = Properties.Wither.Skeletons.spawnAt; i <= difficulty; i++) {
+				int spawn = i - Properties.Wither.Skeletons.spawnAt;
+				if (spawn % Properties.Wither.Skeletons.spawnEvery == 0) {
 					EntityWitherSkeleton witherSkeleton = new EntityWitherSkeleton(world);
 					int x = (int) (wither.posX + (MathHelper.getInt(world.rand, -2, 2)));
 					int y = (int) (wither.posY - 2);
