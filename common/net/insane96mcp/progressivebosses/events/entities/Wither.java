@@ -107,12 +107,14 @@ public class Wither {
 		
 		EntityWither wither = (EntityWither)event.getEntity();
 		NBTTagCompound tags = wither.getEntityData();
-		
-		if (wither.getInvulTime() > 0)
-			return;
-		
-		SpawnSkeletons(wither, world);
-		Heal(wither, tags);
+
+		if (wither.getInvulTime() > 0) {
+			Reflection.Invoke(Reflection.bossInfoServerSetPercent, Reflection.Get(Reflection.witherBossInfo, wither), wither.getHealth() / wither.getMaxHealth());
+		}
+		else {
+			SpawnSkeletons(wither, world);
+			Heal(wither, tags);
+		}
 	}
 	
 	private static void Heal(EntityWither wither, NBTTagCompound tags) {
@@ -167,6 +169,11 @@ public class Wither {
 			tags.setInteger("progressivebosses:skeletons_cooldown", cooldown);
 			for (int i = Properties.Wither.Skeletons.spawnAt; i <= difficulty; i++) {
 				int spawn = i - Properties.Wither.Skeletons.spawnAt;
+				
+				//Stops spawning if max count has reached
+				if (spawn / Properties.Wither.Skeletons.spawnEvery >= Properties.Wither.Skeletons.spawnMaxCount)
+					break;
+				
 				if (spawn % Properties.Wither.Skeletons.spawnEvery == 0) {
 					EntityWitherSkeleton witherSkeleton = new EntityWitherSkeleton(world);
 					int x = (int) (wither.posX + (MathHelper.getInt(world.rand, -2, 2)));
@@ -189,7 +196,7 @@ public class Wither {
 					witherSkeleton.setDropChance(EntityEquipmentSlot.MAINHAND, Float.MIN_VALUE);
 					IAttributeInstance armor = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.ARMOR);
 					float minArmor = Properties.Wither.Skeletons.minArmor;
-					float maxArmor = difficulty;
+					float maxArmor = difficulty / 2f;
 					if (maxArmor > Properties.Wither.Skeletons.maxArmor)
 						maxArmor = Properties.Wither.Skeletons.maxArmor;
 					armor.setBaseValue(Utils.Math.getFloat(world.rand, minArmor, maxArmor));

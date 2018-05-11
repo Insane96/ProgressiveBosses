@@ -1,4 +1,6 @@
-commands.counter.usage=§4Imposta o ottieni il contatore per il wither o il drago del giocatore specificato.\nUso:\n/progressivebosses <giocatore> get\n/progressivebosses <giocatore> set <wither|dragon> <quantità>
-commands.counter.usage.set=§4Uso:\n/progressivebosses <giocatore> set <wither|dragon> <quantità>
+commands.counter.usage.help=Imposta o ottieni il contatore per il wither o il drago del giocatore specificato
+commands.counter.usage.wrong=/progressivebosses <giocatore> <get|set>
+commands.counter.usage.set=/progressivebosses <giocatore> set <wither|dragon> <quantità>
+commands.counter.usage.number=<quantità> accetta solo numeri
 
 item.progressivebosses:nether_star_shard.name=Frammento di Stella degli Inferi
