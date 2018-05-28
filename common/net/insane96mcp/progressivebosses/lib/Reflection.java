@@ -52,7 +52,6 @@ public class Reflection {
 		try {
 			return method.invoke(object, params);
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

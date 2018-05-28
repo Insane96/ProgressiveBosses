@@ -1,14 +1,14 @@
 [
 {
-  "modid": "naturalbabyanimals",
-  "name": "Natural Baby Animals",
-  "description": "Animals in the world have a chance to be baby. Like Minecraft:Pocket Edition does!",
+  "modid": "progressivebosses",
+  "name": "Progressive Bosses",
+  "description": "Wither and Ender Dragon will be more powerful the more are respawned",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "https://minecraft.curseforge.com/projects/natural-baby-animals",
+  "url": "https://minecraft.curseforge.com/projects/progressive-bosses",
   "updateUrl": "",
   "authorList": ["Insane96MCP"],
-  "credits": "The Forge and Minecraft forum for help :P",
+  "credits": "The Forge forum for help :P",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []
