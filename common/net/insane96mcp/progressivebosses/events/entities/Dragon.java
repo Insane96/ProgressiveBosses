@@ -123,12 +123,14 @@ public class Dragon {
 		for (EntityPlayerMP player : players) {
 			NBTTagCompound playerTags = player.getEntityData();
 			c = playerTags.getInteger("progressivebosses:killeddragons");
+			if (c >= Properties.config.wither.general.maxDifficulty)
+				continue;
 			playerTags.setInteger("progressivebosses:killeddragons", c + 1);
 		}
 	}
 	
 	private static void DropEgg(EntityDragon dragon, World world) {
-		if(dragon.getFightManager() == null || !dragon.getFightManager().hasPreviouslyKilledDragon() || dragon.deathTicks != 100)
+		if(dragon.getFightManager() == null || dragon.deathTicks != 100)
 			return;
 			
 		NBTTagCompound tags = dragon.getEntityData();

@@ -53,6 +53,8 @@ public class Wither {
 			NBTTagCompound playerTags = player.getEntityData();
 			int c = playerTags.getInteger("progressivebosses:spawnedwithers");
 			spawnedCount += c;
+			if (c >= Properties.config.wither.general.maxDifficulty)
+				continue;
 			playerTags.setInteger("progressivebosses:spawnedwithers", c + 1);
 		}
 		

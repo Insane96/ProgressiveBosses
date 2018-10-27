@@ -26,6 +26,9 @@ public class Properties {
 				@Name("Sum Spawned Wither")
 				@Comment("If true and there are more players around the wither, the wither will have his stats based on the sum of both players spawned withers. If false, the wither stats will be based on the average of the spawned wither count of the players around")
 				public boolean sumSpawnedWither = false;
+				@Name("Max Difficulty")
+				@Comment("The Maximum difficulty (times spawned) reachable by Wither. By default is set to 72 because the wither reaches the maximum amount of health (handled by minecraft) after 72 withers spawned")
+				public int maxDifficulty = 72;
 			}
 
 			
@@ -136,6 +139,9 @@ public class Properties {
 				@Name("Sum Killed Dragons")
 				@Comment("If true and there are more players around the dragon that has spawned, the dragon will have his stats based on the sum of both players killed dragons. If false, the dragon stats will be based on the average of the killed dragons count of the players in End's main island")
 				public boolean sumKilledDragons = false;
+				@Name("Max Difficulty")
+				@Comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 82 because the Ender Dragon reaches the maximum amount of health (handled by minecraft) after 82 Ender dragons killed")
+				public int maxDifficulty = 82;
 			}
 			
 			
