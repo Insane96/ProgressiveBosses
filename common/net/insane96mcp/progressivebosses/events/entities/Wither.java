@@ -13,8 +13,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
@@ -41,7 +39,7 @@ public class Wither {
 		
 		tags.setBoolean("progressivebosses:spawned", true);
 
-		int radius = Properties.Wither.General.spawnRadiusPlayerCheck;
+		int radius = Properties.config.wither.general.spawnRadiusPlayerCheck;
 		BlockPos pos1 = wither.getPosition().add(-radius, -radius, -radius);
 		BlockPos pos2 = wither.getPosition().add(radius, radius, radius);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
@@ -61,7 +59,7 @@ public class Wither {
 		if (spawnedCount == 1)
 			return;
 		
-		if (!Properties.Wither.General.sumSpawnedWither)
+		if (!Properties.config.wither.general.sumSpawnedWither)
 			spawnedCount /= players.size();
 		
 		SetHealth(wither, spawnedCount);
@@ -70,12 +68,12 @@ public class Wither {
 		
 		tags.setFloat("progressivebosses:difficulty", spawnedCount);
 		
-		int cooldown = MathHelper.getInt(wither.getRNG(), Properties.Wither.Skeletons.spawnMinCooldown, Properties.Wither.Skeletons.spawnMaxCooldown);
-		tags.setInteger("progressivebosses:skeletons_cooldown", Properties.Wither.Skeletons.spawnMinCooldown);
+		int cooldown = MathHelper.getInt(wither.getRNG(), Properties.config.wither.minions.spawnMinCooldown, Properties.config.wither.minions.spawnMaxCooldown);
+		tags.setInteger("progressivebosses:skeletons_cooldown", Properties.config.wither.minions.spawnMinCooldown);
 	}
 	
 	private static void SetExperience(EntityWither wither, float difficulty) {
-		int xp = 50 + (int) (50 * (Properties.Wither.Rewards.bonusExperience * difficulty / 100f));
+		int xp = 50 + (int) (50 * (Properties.config.wither.rewards.bonusExperience * difficulty / 100f));
 		Reflection.Set(Reflection.livingExperienceValue, wither, xp);
 	}
 	
@@ -85,16 +83,16 @@ public class Wither {
 			health.setBaseValue(health.getBaseValue() / -(spawnedCount - 1));
 		}
 		else {
-			health.setBaseValue(health.getBaseValue() + (spawnedCount * Properties.Wither.Health.bonusPerSpawned));
+			health.setBaseValue(health.getBaseValue() + (spawnedCount * Properties.config.wither.health.bonusPerSpawned));
 		}
 		wither.setHealth(Math.max(1, (float) health.getBaseValue() - 200));
 	}
 	
 	private static void SetArmor(EntityWither wither, float killedCount) {
 		IAttributeInstance attribute = wither.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-		float armor = killedCount * Properties.Wither.Armor.bonusPerSpawned;
-		if (armor > Properties.Wither.Armor.maximum)
-			armor = Properties.Wither.Armor.maximum;
+		float armor = killedCount * Properties.config.wither.armor.bonusPerSpawned;
+		if (armor > Properties.config.wither.armor.maximum)
+			armor = Properties.config.wither.armor.maximum;
 		attribute.setBaseValue(armor);
 	}
 	
@@ -118,7 +116,7 @@ public class Wither {
 	}
 	
 	private static void Heal(EntityWither wither, NBTTagCompound tags) {
-		if (Properties.Wither.Health.maximumRegeneration == 0.0f)
+		if (Properties.config.wither.health.maximumRegeneration == 0.0f)
 			return;
 		
 		if (wither.ticksExisted % 20 != 0)
@@ -129,8 +127,8 @@ public class Wither {
 		if (difficulty <= 0)
 			return;
 		
-		float maxHeal = Properties.Wither.Health.maximumRegeneration;
-		float heal = difficulty * Properties.Wither.Health.regenPerSpawned;
+		float maxHeal = Properties.config.wither.health.maximumRegeneration;
+		float heal = difficulty * Properties.config.wither.health.regenPerSpawned;
 		
 		if (heal > maxHeal)
 			heal = maxHeal;
@@ -142,6 +140,9 @@ public class Wither {
 	}
 	
 	private static void SpawnSkeletons(EntityWither wither, World world) {
+		if (Properties.config.wither.minions.spawnAfter < 0)
+			return;
+		
 		int radius = 24;
 		BlockPos pos1 = wither.getPosition().add(-radius, -radius, -radius);
 		BlockPos pos2 = wither.getPosition().add(radius, radius, radius);
@@ -151,13 +152,19 @@ public class Wither {
 		if (players.isEmpty())
 			return;
 		
+		List<EntityWitherSkeleton> minions = world.getEntitiesWithinAABB(EntityWitherSkeleton.class, bb);
+		int minionsCount = minions.size();
+		
+		if (minionsCount >= Properties.config.wither.minions.maxMinions && Properties.config.wither.minions.maxMinions > 0)
+			return;
+		
 		NBTTagCompound tags = wither.getEntityData();
 		
 		//Mobs Properties Randomness
 		tags.setBoolean("mobsrandomizzation:preventProcessing", true);
 		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
-		if (difficulty < Properties.Wither.Skeletons.spawnAt)
+		if (difficulty < Properties.config.wither.minions.spawnAfter)
 			return;
 		
 		int cooldown = tags.getInteger("progressivebosses:skeletons_cooldown");
@@ -165,16 +172,19 @@ public class Wither {
 			tags.setInteger("progressivebosses:skeletons_cooldown", cooldown - 1);
 		}
 		else { 
-			cooldown = MathHelper.getInt(world.rand, Properties.Wither.Skeletons.spawnMinCooldown, Properties.Wither.Skeletons.spawnMaxCooldown);
+			cooldown = MathHelper.getInt(world.rand, Properties.config.wither.minions.spawnMinCooldown, Properties.config.wither.minions.spawnMaxCooldown);
 			tags.setInteger("progressivebosses:skeletons_cooldown", cooldown);
-			for (int i = Properties.Wither.Skeletons.spawnAt; i <= difficulty; i++) {
-				int spawn = i - Properties.Wither.Skeletons.spawnAt;
+			for (int i = Properties.config.wither.minions.spawnAfter; i <= difficulty; i++) {
+				if (minionsCount >= Properties.config.wither.minions.maxMinions && Properties.config.wither.minions.maxMinions > 0)
+					return;
+				
+				int spawn = i - Properties.config.wither.minions.spawnAfter;
 				
 				//Stops spawning if max count has reached
-				if (spawn / Properties.Wither.Skeletons.spawnEvery >= Properties.Wither.Skeletons.spawnMaxCount)
+				if (spawn / Properties.config.wither.minions.spawnEvery >= Properties.config.wither.minions.spawnMaxCount)
 					break;
 				
-				if (spawn % Properties.Wither.Skeletons.spawnEvery == 0) {
+				if (spawn % Properties.config.wither.minions.spawnEvery == 0) {
 					EntityWitherSkeleton witherSkeleton = new EntityWitherSkeleton(world);
 					int x = (int) (wither.posX + (MathHelper.getInt(world.rand, -2, 2)));
 					int y = (int) (wither.posY - 2);
@@ -191,14 +201,9 @@ public class Wither {
 					if (!shouldSpawn)
 						continue;
 					
-					if (world.rand.nextFloat() < (Properties.Wither.Skeletons.spawnWithSword + difficulty) / 100f)
-						witherSkeleton.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
-					witherSkeleton.setDropChance(EntityEquipmentSlot.MAINHAND, Float.MIN_VALUE);
 					IAttributeInstance armor = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-					float minArmor = Properties.Wither.Skeletons.minArmor;
-					float maxArmor = difficulty / 2f;
-					if (maxArmor > Properties.Wither.Skeletons.maxArmor)
-						maxArmor = Properties.Wither.Skeletons.maxArmor;
+					float minArmor = Properties.config.wither.minions.minArmor;
+					float maxArmor = Properties.config.wither.minions.maxArmor;
 					armor.setBaseValue(Utils.Math.getFloat(world.rand, minArmor, maxArmor));
 					
 					IAttributeInstance speed = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
@@ -214,6 +219,8 @@ public class Wither {
 					Reflection.Set(Reflection.livingExperienceValue, witherSkeleton, 1);
 					
 					world.spawnEntity(witherSkeleton);
+					
+					minionsCount++;
 				}
 			}
 		}
@@ -229,13 +236,13 @@ public class Wither {
 		NBTTagCompound tags = wither.getEntityData();
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 
-		float chance = Properties.Wither.Rewards.shardPerSpawned * difficulty;
-		if (chance > Properties.Wither.Rewards.shardMaxChance)
-			chance = Properties.Wither.Rewards.shardMaxChance;
+		float chance = Properties.config.wither.rewards.shardPerSpawned * difficulty;
+		if (chance > Properties.config.wither.rewards.shardMaxChance)
+			chance = Properties.config.wither.rewards.shardMaxChance;
 
-		int tries = (int) (difficulty / Properties.Wither.Rewards.shardDivider) + 1;
-		if (tries > Properties.Wither.Rewards.shardMaxCount)
-			tries = Properties.Wither.Rewards.shardMaxCount;
+		int tries = (int) (difficulty / Properties.config.wither.rewards.shardDivider) + 1;
+		if (tries > Properties.config.wither.rewards.shardMaxCount)
+			tries = Properties.config.wither.rewards.shardMaxCount;
 		int count = 0;
 		for (int i = 0; i < tries; i++) {
 			if (wither.world.rand.nextFloat() >= chance / 100f)

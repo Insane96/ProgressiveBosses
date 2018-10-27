@@ -1,10 +1,9 @@
 package net.insane96mcp.progressivebosses;
 
-import java.util.Random;
+import org.apache.logging.log4j.Logger;
 
 import net.insane96mcp.progressivebosses.commands.Counter;
 import net.insane96mcp.progressivebosses.proxies.CommonProxy;
-import net.minecraft.world.gen.structure.MapGenEndCity.Start;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
@@ -12,15 +11,14 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
-@Mod(modid = ProgressiveBosses.MOD_ID, name = ProgressiveBosses.MOD_NAME, version = ProgressiveBosses.VERSION, acceptableRemoteVersions = "*", acceptedMinecraftVersions = ProgressiveBosses.MINECRAFT_VERSIONS)
+@Mod(modid = ProgressiveBosses.MOD_ID, name = ProgressiveBosses.MOD_NAME, version = ProgressiveBosses.VERSION, acceptedMinecraftVersions = ProgressiveBosses.MINECRAFT_VERSIONS)
 public class ProgressiveBosses {
 	
 	public static final String MOD_ID = "progressivebosses";
 	public static final String MOD_NAME = "Progressive Bosses";
-	public static final String VERSION = "1.3.2";
+	public static final String VERSION = "1.4.0";
 	public static final String RESOURCE_PREFIX = MOD_ID.toLowerCase() + ":";
 	public static final String MINECRAFT_VERSIONS = "[1.12,1.12.2]";
 	
@@ -30,8 +28,12 @@ public class ProgressiveBosses {
 	@SidedProxy(clientSide = "net.insane96mcp.progressivebosses.proxies.ClientProxy", serverSide = "net.insane96mcp.progressivebosses.proxies.ServerProxy")
 	public static CommonProxy proxy;
 	
+	public Logger logger;
+	
 	@EventHandler
 	public void PreInit(FMLPreInitializationEvent event) {
+		logger = event.getModLog();
+		
 		proxy.PreInit(event);
 	}
 	

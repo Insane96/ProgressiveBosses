@@ -62,7 +62,7 @@ public class Dragon {
 		if (killedCount == 0)
 			return;
 		
-		if (!Properties.Dragon.General.sumKilledDragons && killedCount > 0)
+		if (!Properties.config.dragon.general.sumKilledDragons && killedCount > 0)
 			killedCount /= players.size();
 		
 		SetHealth(dragon, killedCount);
@@ -73,15 +73,15 @@ public class Dragon {
 	
 	private static void SetHealth(EntityDragon dragon, float killedCount) {
 		IAttributeInstance attribute = dragon.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
-		attribute.setBaseValue(attribute.getBaseValue() + (killedCount * Properties.Dragon.Health.bonusPerKilled));
+		attribute.setBaseValue(attribute.getBaseValue() + (killedCount * Properties.config.dragon.health.bonusPerKilled));
 		dragon.setHealth((float) attribute.getBaseValue());
 	}
 	
 	private static void SetArmor(EntityDragon dragon, float killedCount) {
 		IAttributeInstance attribute = dragon.getEntityAttribute(SharedMonsterAttributes.ARMOR);
-		float armor = killedCount * Properties.Dragon.Armor.bonusPerKilled;
-		if (armor > Properties.Dragon.Armor.maximum)
-			armor = Properties.Dragon.Armor.maximum;
+		float armor = killedCount * Properties.config.dragon.armor.bonusPerKilled;
+		if (armor > Properties.config.dragon.armor.maximum)
+			armor = Properties.config.dragon.armor.maximum;
 		attribute.setBaseValue(armor);
 	}
 	
@@ -95,7 +95,7 @@ public class Dragon {
 		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		int baseXp = event.getOriginalExperience();
-		float increase = (baseXp * (Properties.Dragon.Rewards.bonusExperience * difficulty / 100f));
+		float increase = (baseXp * (Properties.config.dragon.rewards.bonusExperience * difficulty / 100f));
 		event.setDroppedExperience((int) (baseXp + increase));
 	}
 	
@@ -135,11 +135,7 @@ public class Dragon {
 		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		
-		float chance = Properties.Dragon.Rewards.eggDropPerKilled * difficulty;
-		if (chance > Properties.Dragon.Rewards.eggDropMaximum)
-			chance = Properties.Dragon.Rewards.eggDropMaximum;
-		
-		if (dragon.world.rand.nextFloat() < chance / 100f) {
+		if (difficulty < 1.0f) {
 			world.setBlockState(new BlockPos(0, 255, 0), Blocks.DRAGON_EGG.getDefaultState());
 		}
 	}
@@ -161,7 +157,7 @@ public class Dragon {
 	}
 	
 	private static void Heal(EntityDragon dragon, NBTTagCompound tags) {
-		if (Properties.Dragon.Health.maximumRegeneration == 0.0f)
+		if (Properties.config.dragon.health.maximumRegeneration == 0.0f)
 			return;
 		
 		if (dragon.ticksExisted % 20 != 0)
@@ -172,8 +168,8 @@ public class Dragon {
 		if (difficulty == 0)
 			return;
 
-		float maxHeal = Properties.Dragon.Health.maximumRegeneration;
-		float heal = difficulty * Properties.Dragon.Health.regenPerKilled;
+		float maxHeal = Properties.config.dragon.health.maximumRegeneration;
+		float heal = difficulty * Properties.config.dragon.health.regenPerKilled;
 		
 		if (heal > maxHeal)
 			heal = maxHeal;
@@ -185,13 +181,16 @@ public class Dragon {
 	}
 	
 	private static void SpawnEndermites(EntityDragon dragon, World world) {
+		if (Properties.config.dragon.endermites.spawnEvery <= 0)
+			return;
+		
 		NBTTagCompound tags = dragon.getEntityData();
 		
 		//Mobs Properties Randomness
 		tags.setBoolean("mobsrandomizzation:preventProcessing", true);
 		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
-		if (difficulty < Properties.Dragon.Endermites.spawnAt)
+		if (difficulty < Properties.config.dragon.endermites.spawnEvery)
 			return;
 		
 		int cooldown = tags.getInteger("progressivebosses:endermites_cooldown");
@@ -199,14 +198,14 @@ public class Dragon {
 			tags.setInteger("progressivebosses:endermites_cooldown", cooldown - 1);
 		}
 		else {
-			int cooldownReduction = (int) (difficulty * Properties.Dragon.Endermites.spawnCooldownReduction);
-			cooldown = MathHelper.getInt(world.rand, Properties.Dragon.Endermites.spawnMinCooldown - cooldownReduction, Properties.Dragon.Endermites.spawnMaxCooldown - cooldownReduction);
+			int cooldownReduction = (int) (difficulty * Properties.config.dragon.endermites.spawnCooldownReduction);
+			cooldown = MathHelper.getInt(world.rand, Properties.config.dragon.endermites.spawnMinCooldown - cooldownReduction, Properties.config.dragon.endermites.spawnMaxCooldown - cooldownReduction);
 			tags.setInteger("progressivebosses:endermites_cooldown", cooldown);
 			for (int i = 1; i <= difficulty; i++) {
-				if (i / Properties.Dragon.Endermites.spawnAt > Properties.Dragon.Endermites.spawnMaxCount)
+				if (i / Properties.config.dragon.endermites.spawnEvery > Properties.config.dragon.endermites.spawnEvery)
 					break;
 				
-				if (i % Properties.Dragon.Endermites.spawnAt == 0) {
+				if (i % Properties.config.dragon.endermites.spawnEvery == 0) {
 					EntityEndermite endermite = new EntityEndermite(world);
 					float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
 					float x = (float) (Math.cos(angle) * 3.15f);
@@ -231,12 +230,7 @@ public class Dragon {
 					endermite.setPosition(x, y, z);
 					endermite.setCustomNameTag("Dragon's Larva");
 					
-					try {
-						Reflection.livingExperienceValue.set(endermite, 1);
-					}
-					catch (Exception e) {
-						e.printStackTrace();
-					}
+					Reflection.Set(Reflection.livingExperienceValue, endermite, 1);
 					
 					world.spawnEntity(endermite);
 				}
@@ -245,13 +239,16 @@ public class Dragon {
 	}
 
 	private static void SpawnShulkers(EntityDragon dragon, World world) {
+		if (Properties.config.dragon.shulkers.spawnAfter <= 0)
+			return;
+		
 		NBTTagCompound tags = dragon.getEntityData();
 		
 		//Mobs Properties Randomness
 		tags.setBoolean("mobsrandomizzation:preventProcessing", true);
 		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
-		if (difficulty < Properties.Dragon.Shulkers.spawnAt)
+		if (difficulty < Properties.config.dragon.shulkers.spawnAfter)
 			return;
 		
 		int cooldown = tags.getInteger("progressivebosses:shulkers_cooldown");
@@ -259,8 +256,8 @@ public class Dragon {
 			tags.setInteger("progressivebosses:shulkers_cooldown", cooldown - 1);
 		}
 		else {
-			int cooldownReduction = (int) (difficulty * Properties.Dragon.Shulkers.spawnCooldownReduction);
-			cooldown = MathHelper.getInt(world.rand, Properties.Dragon.Shulkers.spawnMinCooldown - cooldownReduction, Properties.Dragon.Shulkers.spawnMaxCooldown - cooldownReduction);
+			int cooldownReduction = (int) (difficulty * Properties.config.dragon.shulkers.spawnCooldownReduction);
+			cooldown = MathHelper.getInt(world.rand, Properties.config.dragon.shulkers.spawnMinCooldown - cooldownReduction, Properties.config.dragon.shulkers.spawnMaxCooldown - cooldownReduction);
 			tags.setInteger("progressivebosses:shulkers_cooldown", cooldown);
 			
 			EntityShulker shulker = new EntityShulker(world);
@@ -273,13 +270,8 @@ public class Dragon {
 			shulker.setPosition(x, y, z);
 			shulker.setCustomNameTag("Dragon's Minion");
 			
-			try {
-				Reflection.livingDeathLootTable.set(shulker, LootTables.dragonMinion);
-				Reflection.livingExperienceValue.set(shulker, 2);
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			Reflection.Set(Reflection.livingDeathLootTable, shulker, LootTables.dragonMinion);
+			Reflection.Set(Reflection.livingExperienceValue, shulker, 2);
 			
 			world.spawnEntity(shulker);
 		}
