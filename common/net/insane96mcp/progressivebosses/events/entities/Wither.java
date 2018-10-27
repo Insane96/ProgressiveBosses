@@ -1,12 +1,25 @@
 package net.insane96mcp.progressivebosses.events.entities;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import javax.annotation.Nullable;
+
+import com.google.common.base.Predicate;
 
 import net.insane96mcp.progressivebosses.item.ModItems;
 import net.insane96mcp.progressivebosses.lib.Properties;
 import net.insane96mcp.progressivebosses.lib.Reflection;
 import net.insane96mcp.progressivebosses.lib.Utils;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.item.EntityItem;
@@ -15,12 +28,17 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 
@@ -156,9 +174,10 @@ public class Wither {
 		
 		List<EntityWitherSkeleton> minions = world.getEntitiesWithinAABB(EntityWitherSkeleton.class, bb);
 		int minionsCount = minions.size();
-		
+
 		if (minionsCount >= Properties.config.wither.minions.maxMinions && Properties.config.wither.minions.maxMinions > 0)
 			return;
+		
 		
 		NBTTagCompound tags = wither.getEntityData();
 		
@@ -220,6 +239,28 @@ public class Wither {
 					Reflection.Set(Reflection.livingDeathLootTable, witherSkeleton, new ResourceLocation("minecraft:empty"));
 					Reflection.Set(Reflection.livingExperienceValue, witherSkeleton, 1);
 					
+					NBTTagList minionsList = tags.getTagList("minions", Constants.NBT.TAG_COMPOUND);
+					NBTTagCompound uuid = new NBTTagCompound();
+					uuid.setUniqueId("uuid", witherSkeleton.getUniqueID());
+					tags.setTag("minions", minionsList);
+					minionsList.appendTag(uuid);
+					
+					Set<EntityAITaskEntry> tasks = wither.targetTasks.taskEntries;
+					EntityAITaskEntry toRemove = null;
+					for (EntityAITaskEntry entityAITaskEntry : tasks) {
+						if (entityAITaskEntry.action instanceof EntityAIHurtByTarget)
+						{
+							toRemove = entityAITaskEntry;
+							break;
+						}
+					}
+					
+					if (toRemove != null)
+						wither.targetTasks.removeTask(toRemove.action);
+					
+
+			        witherSkeleton.targetTasks.addTask(2, new EntityAINearestAttackableTarget(witherSkeleton, EntityLiving.class, 0, true, false, NOT_UNDEAD));
+					
 					world.spawnEntity(witherSkeleton);
 					
 					minionsCount++;
@@ -228,6 +269,27 @@ public class Wither {
 		}
 	}
 
+	public static void OnDeath(LivingDeathEvent event) {
+		if (!(event.getEntity() instanceof EntityWither))
+			return;
+		
+		EntityWither wither = (EntityWither)event.getEntity();
+		World world = wither.world;
+		
+		NBTTagCompound tags = wither.getEntityData();
+		NBTTagList minionsList = tags.getTagList("minions", Constants.NBT.TAG_COMPOUND);
+		for (int i = 0; i < minionsList.tagCount(); i++) {
+			UUID uuid = minionsList.getCompoundTagAt(i).getUniqueId("uuid");
+			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(new BlockPos(wither.getPosition().add(-128, -128, -128)), wither.getPosition().add(128, 128, 128));
+			List<EntityWitherSkeleton> witherSkeletons = world.getEntitiesWithinAABB(EntityWitherSkeleton.class, axisAlignedBB);
+			for (EntityWitherSkeleton skeleton : witherSkeletons) {
+				if (skeleton.getUniqueID().equals(uuid)) {
+					skeleton.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:wither"), 10000, 10));
+					break;
+				}
+			}
+		}
+	}
 	
 	public static void SetDrops(LivingDropsEvent event) {
 		if (!(event.getEntityLiving() instanceof EntityWither))
@@ -258,4 +320,12 @@ public class Wither {
 		
 		event.getDrops().add(shard);
 	}
+
+	private static final Predicate<Entity> NOT_UNDEAD = new Predicate<Entity>()
+    {
+        public boolean apply(@Nullable Entity p_apply_1_)
+        {
+            return p_apply_1_ instanceof EntityLivingBase && ((EntityLivingBase)p_apply_1_).getCreatureAttribute() != EnumCreatureAttribute.UNDEAD && ((EntityLivingBase)p_apply_1_).attackable();
+        }
+    };
 }
