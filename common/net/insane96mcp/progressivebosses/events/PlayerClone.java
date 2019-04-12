@@ -15,10 +15,7 @@ public class PlayerClone {
 		EntityPlayer newPlayer = event.getEntityPlayer();
 		
 		NBTTagCompound oldPlayerData = oldPlayer.getEntityData();
-
-		//Fix Potion Core Death Loop
-		oldPlayerData.removeTag("Potion Core - Health Fix");
-		
-		newPlayer.getEntityData().merge(oldPlayerData);
+		newPlayer.getEntityData().setInteger("progressivebosses:spawnedwithers", oldPlayerData.getInteger("progressivebosses:spawnedwithers"));
+		newPlayer.getEntityData().setInteger("progressivebosses:killeddragons", oldPlayerData.getInteger("progressivebosses:killeddragons"));
 	}
 }
