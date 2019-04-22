@@ -7,12 +7,14 @@ import java.lang.reflect.Method;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.world.BossInfoServer;
+import net.minecraft.world.end.DragonFightManager;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class Reflection {
 	public static Field livingDeathLootTable;
 	public static Field livingExperienceValue;
 	public static Field witherBossInfo;
+	public static Field dragonFightManager_previouslyKilled;
 	public static Method bossInfoServerSetPercent;
 		
 	public static void Init() {
@@ -21,6 +23,8 @@ public class Reflection {
 			livingExperienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
 			witherBossInfo = ReflectionHelper.findField(EntityWither.class, "bossInfo", "field_184744_bE");
 			bossInfoServerSetPercent = ReflectionHelper.findMethod(BossInfoServer.class, "setPercent", "func_186735_a", float.class);
+			
+			dragonFightManager_previouslyKilled = ReflectionHelper.findField(DragonFightManager.class, "previouslyKilled", "field_186118_l");
 		}
 		catch (Exception e) {
 			e.printStackTrace();

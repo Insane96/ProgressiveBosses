@@ -3,7 +3,6 @@ package net.insane96mcp.progressivebosses.lib;
 import net.insane96mcp.progressivebosses.ProgressiveBosses;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.Config.Comment;
-import net.minecraftforge.common.config.Config.Ignore;
 import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.common.config.Config.RangeDouble;
 import net.minecraftforge.common.config.Config.RangeInt;
@@ -228,12 +227,8 @@ public class Properties {
 			public Rewards rewards = new Rewards();
 			
 			public static class Rewards {
-				@Name("Bonus Experience")
-				@Comment("How much more percentage experience will ender dragon drop per dragon killed. The percentage is additive (e.g. 5% experience boost, 7 dragons killed = 35% more experience)")
-				@Ignore
-				public float bonusExperience = 35.0f;
 				@Name("First Dragon per Player")
-				@Comment("Should the first Dragon killed per Player always drop the egg? If true means that every player will get the ender dragon egg as reward.")
+				@Comment("Should the first Dragon killed per Player always drop the egg and the first dragon experience (12k instead of 500)? If true means that every player will get the ender dragon egg as reward.")
 				public boolean firstDragonPerPlayer = true;
 				
 			}

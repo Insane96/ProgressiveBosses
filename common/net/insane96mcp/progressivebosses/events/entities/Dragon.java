@@ -23,7 +23,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 
 public class Dragon {
 	public static void SetStats(EntityJoinWorldEvent event) {
@@ -56,11 +55,16 @@ public class Dragon {
 		for (EntityPlayerMP player : players) {
 			NBTTagCompound playerTags = player.getEntityData();
 			int c = playerTags.getInteger("progressivebosses:killeddragons");
+			if (c == 0) {
+				Reflection.Set(Reflection.dragonFightManager_previouslyKilled, dragon.getFightManager(), false);
+			}
 			killedCount += c;
 		}
 		
-		if (killedCount == 0)
+		if (killedCount == 0) {
+			
 			return;
+		}
 		
 		if (!Properties.config.dragon.general.sumKilledDragons && killedCount > 0)
 			killedCount /= players.size();
@@ -85,7 +89,7 @@ public class Dragon {
 		attribute.setBaseValue(armor);
 	}
 	
-	private static void SetExperience(LivingExperienceDropEvent event) {
+	/*private static void SetExperience(LivingExperienceDropEvent event) {
 		if (!(event.getEntityLiving() instanceof EntityDragon))
 			return;
 		
@@ -97,7 +101,7 @@ public class Dragon {
 		int baseXp = event.getOriginalExperience();
 		float increase = (baseXp * (Properties.config.dragon.rewards.bonusExperience * difficulty / 100f));
 		event.setDroppedExperience((int) (baseXp + increase));
-	}
+	}*/
 	
 	
 	public static void OnDeath(LivingDeathEvent event) {
@@ -120,25 +124,35 @@ public class Dragon {
 			return;
 		
 		int c = 0;
+		int eggsToDrop = 0;
 		for (EntityPlayerMP player : players) {
 			NBTTagCompound playerTags = player.getEntityData();
 			c = playerTags.getInteger("progressivebosses:killeddragons");
+			if (c == 0) {
+				eggsToDrop++;
+			}
 			if (c >= Properties.config.wither.general.maxDifficulty)
 				continue;
 			playerTags.setInteger("progressivebosses:killeddragons", c + 1);
 		}
+
+		tags.setInteger("progressivebosses:eggstodrop", eggsToDrop);
 	}
 	
 	private static void DropEgg(EntityDragon dragon, World world) {
-		if(dragon.getFightManager() == null || dragon.deathTicks != 100)
+		if(dragon.deathTicks != 100)
 			return;
 			
 		NBTTagCompound tags = dragon.getEntityData();
 		
-		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		int eggsToDrop = tags.getInteger("progressivebosses:eggstodrop");
+
+		if (dragon.getFightManager() != null && !dragon.getFightManager().hasPreviouslyKilledDragon()) {
+			eggsToDrop--;
+		}
 		
-		if (difficulty < 1.0f) {
-			world.setBlockState(new BlockPos(0, 255, 0), Blocks.DRAGON_EGG.getDefaultState());
+		for (int i = 0; i < eggsToDrop; i++) {
+			world.setBlockState(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.getDefaultState());
 		}
 	}
 
