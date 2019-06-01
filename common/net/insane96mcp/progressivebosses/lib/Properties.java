@@ -6,6 +6,11 @@ import net.minecraftforge.common.config.Config.Comment;
 import net.minecraftforge.common.config.Config.Name;
 import net.minecraftforge.common.config.Config.RangeDouble;
 import net.minecraftforge.common.config.Config.RangeInt;
+import net.minecraftforge.common.config.Config.Type;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 @Config(modid = ProgressiveBosses.MOD_ID, category = "", name = "ProgressiveBosses")
 public class Properties {
@@ -233,5 +238,17 @@ public class Properties {
 				
 			}
 		}
+	}
+
+	@Mod.EventBusSubscriber(modid = ProgressiveBosses.MOD_ID)
+	private static class EventHandler{
+		@SubscribeEvent
+	    public static void onConfigChangedEvent(OnConfigChangedEvent event)
+	    {
+	        if (event.getModID().equals(ProgressiveBosses.MOD_ID))
+	        {
+	            ConfigManager.sync(ProgressiveBosses.MOD_ID, Type.INSTANCE);
+	        }
+	    }
 	}
 }
