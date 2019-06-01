@@ -237,7 +237,7 @@ public class Properties {
 			
 			public static class Rewards {
 				@Name("First Dragon per Player")
-				@Comment("Should the first Dragon killed per Player always drop the egg and the first dragon experience (12k instead of 500)? If true means that every player will get the ender dragon egg as reward.")
+				@Comment("Should the first Dragon killed per Player always drop the egg and the first Gragon experience (12k instead of 500)? If true means that every player will get the Dragon Egg as they kill their first Dragon.")
 				public boolean firstDragonPerPlayer = true;
 				
 			}
