@@ -18,6 +18,8 @@ public class Properties {
 	public static final ConfigOptions config = new ConfigOptions();
 	
 	public static class ConfigOptions {
+		@Name("Wither")
+		@Comment("Difficulty is the amount of Withers Spawned")
 		public Wither wither = new Wither();
 		
 		public static class Wither {
@@ -25,13 +27,13 @@ public class Properties {
 			
 			public static class General {
 				@Name("Spawn Radius Players Check")
-				@Comment("How much blocks from wither will be scanned for players to check")
+				@Comment("How much blocks from wither will be scanned for players to check for difficulty.")
 				public int spawnRadiusPlayerCheck = 96;
-				@Name("Sum Spawned Wither")
-				@Comment("If true and there are more players around the wither, the wither will have his stats based on the sum of both players spawned withers. If false, the wither stats will be based on the average of the spawned wither count of the players around")
-				public boolean sumSpawnedWither = false;
+				@Name("Sum Spawned Wither Difficulty")
+				@Comment("If true and there are more players around the Wither, the Wither will have his stats based on the sum of both players difficulty. If false, the Wither stats will be based on the average of the difficulty of the players around.")
+				public boolean sumSpawnedWitherDifficulty = false;
 				@Name("Max Difficulty")
-				@Comment("The Maximum difficulty (times spawned) reachable by Wither. By default is set to 72 because the wither reaches the maximum amount of health (handled by minecraft) after 72 withers spawned")
+				@Comment("The Maximum difficulty (times spawned) reachable by Wither. By default is set to 72 because the Wither reaches the maximum amount of health (1024, handled by Minecraft. Some mods can increase this) after 72 withers spawned.")
 				public int maxDifficulty = 72;
 			}
 
@@ -39,36 +41,36 @@ public class Properties {
 			public Minions minions = new Minions();
 			
 			public static class Minions {
-				@Name("Spawn After")
-				@Comment("After how many withers spawned by players, the wither will start spawning wither minions during the fight. Set to -1 to disable this")
+				@Name("Difficulty to Spawn Minions")
+				@Comment("Minimum Difficulty required for the Wither will start spawning Wither Minions during the fight. Set to -1 to disable Wither Minions spawning.")
 				@RangeInt(min = -1, max = Integer.MAX_VALUE)
-				public int spawnAfter = 2;
-				@Name("Spawn Every")
-				@Comment("As the wither starts spawning wither minions, every how much withers spawned the wither will spawn one more minion. Cannot be lower than 1")
+				public int difficultyToSpawn = 2;
+				@Name("Difficulty to Spawn One More Minion")
+				@Comment("As the Wither starts spawning Minions, every how much difficulty the Wither will spawn one more Minion.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnEvery = 4;
-				@Name("Spawn Max Count")
-				@Comment("Maximum number of wither minions that a Wither can spawn")
+				public int difficultyToSpawnOneMore = 4;
+				@Name("Max Minions Spawned")
+				@Comment("Maximum number of Wither Minions that a Wither can spawn")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnMaxCount = 8;
-				@Name("Max Minions")
-				@Comment("Maximum amount of Wither minions that can be around the Wither in a 24 block radius. After this number is reached the wither will stop spawning minions. Set to 0 to disable this check")
+				public int maxSpawned = 8;
+				@Name("Max Minions Around")
+				@Comment("Maximum amount of Wither Minions that can be around the Wither in a 24 block radius. After this number is reached the Wither will stop spawning minions. Set to 0 to disable this check.")
 				@RangeInt(min = 0, max = Integer.MAX_VALUE)
-				public int maxMinions = 16;
-				@Name("Spawn Min Cooldown")
-				@Comment("After how many minimum ticks (20 ticks = 1 second) the wither will try to spawn wither skeletons")
+				public int maxAround = 16;
+				@Name("Min Cooldown")
+				@Comment("After how many minimum ticks (20 ticks = 1 second) the Wither will try to spawn Minions")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnMinCooldown = 150;
-				@Name("Spawn Max Cooldown")
-				@Comment("After how many maximum ticks (20 ticks = 1 second) the wither will try to spawn wither skeletons")
+				public int minCooldown = 150;
+				@Name("Max Cooldown")
+				@Comment("After how many maximum ticks (20 ticks = 1 second) the wither will try to spawn Minions")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnMaxCooldown = 300;
+				public int maxCooldown = 300;
 				@Name("Min Armor")
-				@Comment("Minimum armor value that wither skeletons should spawn with")
+				@Comment("Minimum armor value that Wither Minions should spawn with")
 				@RangeInt(min = 0, max = 24)
 				public int minArmor = 0;
 				@Name("Max Armor")
-				@Comment("Maximum armor value that wither skeletons should spawn with")
+				@Comment("Maximum armor value that Wither Minions should spawn with")
 				@RangeInt(min = 0, max = 20)
 				public int maxArmor = 10;
 			}
@@ -77,31 +79,31 @@ public class Properties {
 			public Health health = new Health();
 			
 			public static class Health {
-				@Name("Bonus per Spawned")
-				@Comment("How much more health the withers will have more for each wither that has been already spawned")
+				@Name("Health Bonus per Difficulty")
+				@Comment("Increase Wither's Health by this value per difficulty.")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
-				public float bonusPerSpawned = 10f;
-				@Name("Maximum Regeneration")
-				@Comment("Maximum regeneration for regen_per_spawned. Set to 0 to disable health regeneration. It's not recommended to go over 1.0f without mods that adds stronger items, potions, etc.")
+				public float bonusPerDifficulty = 10f;
+				@Name("Maximum Bonus Regeneration")
+				@Comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the natural regeneration of the Wither (1 Health per Second). It's not recommended to go over 1.0f without mods that adds stronger things to kill the Wither.")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
-				public float maximumRegeneration = 1.0f;
-				@Name("Regeneration per Spawned")
-				@Comment("How many half hearts will regen the wither per wither spawned, this doesn't alter the normal health regeneration of the wither (1 hp per second) (E.g. With 6 withers spawned, the wither will heal 0.6 half-hearts more per second).")
+				public float maximumBonusRegen = 1.0f;
+				@Name("Bonus Regeneration per Difficulty")
+				@Comment("How many half hearts will the Wither regen per difficulty. This doesn't affect the natural regeneration of the Wither (1 Health per Second). (E.g. With 6 Withers spawned, the Wither will heal 1.6 health per second).")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
-				public float regenPerSpawned = 0.05f;
+				public float bonusRegenPerSpawned = 0.05f;
 			}
 		
 		
 			public Armor armor = new Armor();
 			
 			public static class Armor {
-				@Name("Bonus per Spawned")
-				@Comment("How much armor points will have withers for each time a wither is spawned")
+				@Name("Bonus Armor per Difficulty")
+				@Comment("How much armor points will have Withers per Difficulty.")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
-				public float bonusPerSpawned = 0.25f;
-				@Name("Maximum")
-				@Comment("Maximum armor points that withers can spawn with. It's not recommended to go over 20")
-				@RangeDouble(min = 0, max = 24)
+				public float bonusPerDifficulty = 0.25f;
+				@Name("Maximum Armor")
+				@Comment("Maximum armor that Withers can spawn with. It's not recommended to go over 20.")
+				@RangeDouble(min = 0, max = 30)
 				public float maximum = 10f;
 			}
 			
@@ -109,30 +111,32 @@ public class Properties {
 			public Rewards rewards = new Rewards();
 			
 			public static class Rewards {
-				@Name("Bonus % Experience")
-				@Comment("How much more percentage experience will wither drop per wither spawned. The percentage is additive (e.g. 10% experience boost, 7 withers spawned = 70% more experience)")
+				@Name("Bonus Experience per Difficulty")
+				@Comment("How much more experience (percentage) will Wither drop per Difficulty. The percentage is additive (e.g. with this set to 10%, 7 withers spawned = 70% more experience)")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
 				public float bonusExperience = 10.0f;
-				@Name("Shards per Spawned")
-				@Comment("How much chance per wither spawned to get a Nether Star Shard from killing the wither")
+				@Name("Shards per Difficulty")
+				@Comment("How much chance per Difficulty to get a Nether Star Shard from killing the wither")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
-				public float shardPerSpawned = 2f;
+				public float shardPerDifficulty = 2f;
 				@Name("Shards Max Chance")
-				@Comment("Maximum chance to get a Nether Star shard")
+				@Comment("Maximum chance to get a Nether Star shard.")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
 				public float shardMaxChance = 50.0f;
 				@Name("Shards Divider")
-				@Comment("Divider of killed withers for how many times the game tries to drop one more shard. Given this value x you get ((killed_wither / x) + 1) times to get one or more shard.\nE.g. By default, at 10 withers killed you have 20% chance to drop a shard, another 20% chance to get another one, etc. up to 6 times.")
+				@Comment("Difficulty Divider for how many times the game tries to drop one more shard. Given this value x you get ((difficulty / x) + 1) times to get one or more shard.\nE.g. By default, at 10 withers killed you have 6 times 20% chance to drop a shard.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
 				public int shardDivider = 2;
 				@Name("Shards Max Count")
-				@Comment("Maximum amount of shard that you can get from wither")
+				@Comment("Maximum amount of shards that you can get from a Wither")
 				@RangeInt(min = 0, max = Integer.MAX_VALUE)
 				public int shardMaxCount = 8;
 			}
 		}
 		
-		
+
+		@Name("Ender Dragon")
+		@Comment("Difficulty is the amount of Ender Dragons Killed")
 		public Dragon dragon = new Dragon();
 		
 		public static class Dragon {
@@ -140,11 +144,11 @@ public class Properties {
 			public General general = new General();
 			
 			public static class General {
-				@Name("Sum Killed Dragons")
-				@Comment("If true and there are more players around the dragon that has spawned, the dragon will have his stats based on the sum of both players killed dragons. If false, the dragon stats will be based on the average of the killed dragons count of the players in End's main island")
-				public boolean sumKilledDragons = false;
+				@Name("Sum Killed Dragons Difficulty")
+				@Comment("If true and there are more players around the Dragon, she will have his stats based on the sum of both players' difficulty. If false, the Dragon stats will be based on the average of the difficulty of the players around.")
+				public boolean sumKilledDragonsDifficulty = false;
 				@Name("Max Difficulty")
-				@Comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 82 because the Ender Dragon reaches the maximum amount of health (handled by minecraft) after 82 Ender dragons killed")
+				@Comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 82 because the Ender Dragon reaches the maximum amount of health (1024, handled by Minecraft. Some mods can increase this) after 82 Dragons killed.")
 				public int maxDifficulty = 82;
 			}
 			
@@ -152,82 +156,82 @@ public class Properties {
 			public Health health = new Health();
 			
 			public static class Health {
-				@Name("Bonus per Killed")
-				@Comment("How much more health will have the ender dragon for each ender dragon that has been killed")
+				@Name("Health Bonus per Difficulty")
+				@Comment("Increase Ender Dragon's Health by this value per difficulty.")
 				@RangeDouble(min = 0, max = 1024)
-				public float bonusPerKilled = 10f;
-				@Name("Maximum Regeneration")
-				@Comment("Maximum bonus regeneration for 'Regen per Killed'. Set to 0 to disable bonus health regeneration. It's not recommended to go over 1.0f without mods that adds stronger things to kill the dragon faster")
+				public float bonusPerDifficulty = 10f;
+				@Name("Maximum Bonus Regeneration")
+				@Comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the regeneration of the Ender Dragon from Crystals. It's not recommended to go over 1.0f without mods that adds stronger things to kill the Ender Dragon.")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
-				public float maximumRegeneration = 1.0f;
-				@Name("Regen per Killed")
-				@Comment("How many half hearts will regen the dragon per dragons killed per second (even without crystals) (E.g. By default and with 6 dragons killed, the dragon will heal 0.3 half-hearts per second without crystals).")
+				public float maximumBonusRegen = 1.0f;
+				@Name("Bonus Regeneration per Difficulty")
+				@Comment("How many half hearts will the Ender Dragon regen per difficulty. This doesn't affect the regeneration of the Ender Dragon from Crystals. (E.g. With 6 Dragons killed, the Dragon will heal 0.6 health per second without Crystals).")
 				@RangeDouble(min = 0, max = 1024)
-				public float regenPerKilled = 0.05f;
+				public float bonusRegenPerSpawned = 0.05f;
 			}
 			
 			
 			public Armor armor = new Armor();
 			
 			public static class Armor {
-				@Name("Bonus per Killed")
-				@Comment("How much armor points will have ender dragons for each time a dragon is killed")
+				@Name("Bonus Armor per Difficulty")
+				@Comment("How much armor points will have Ender Dragons per Difficulty.")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
-				public float bonusPerKilled = 0.2f;
-				@Name("Maximum")
-				@Comment("Maximum armor points that enderdragons can spawn with. It's not recommended to go over 10 as the Ender Dragon already has some damage reduction")
-				@RangeDouble(min = 0, max = Float.MAX_VALUE)
+				public float bonusPerDifficulty = 0.2f;
+				@Name("Maximum Armor")
+				@Comment("Maximum armor points that Ender Dragons can spawn with. It's not recommended to go over 10 as the Ender Dragon already has some damage reduction")
+				@RangeDouble(min = 0, max = 30)
 				public float maximum = 5f;
 			}
-			
+
 			
 			public Endermites endermites = new Endermites();
 			
 			public static class Endermites {
-				@Name("Spawn Every")
-				@Comment("Every this number of dragons killed, the dragon will spawn one more ultrafast endermites (Dragon's Larvae) at the center island. (by default 1 endermite at 4 killed dragons, 2 endermite at 8 killed dragons, etc.). Setting this to 0 will disable larvae spawn")
+				@Name("Difficulty to Spawn One More Larva")
+				@Comment("As the Ender Dragon Difficulty reaches this value she will be spawning a Larva during the fight. Plus every time Difficulty is a multiplier of this value the Ender Dragon will spawn one more Larva.")
 				@RangeInt(min = 0, max = Integer.MAX_VALUE)
-				public int spawnEvery = 4;
-				@Name("Spawn Max Amount")
-				@Comment("Maximum number of Endermites that the dragon can spawn (e.g. by default values, after the 24th dragon, he will always spawn 6 endermites")
+				public int difficultyToSpawnOneMore = 4;
+				@Name("Max Larvae Spawned")
+				@Comment("Maximum number of Larvae that an Ender Dragon can spawn.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnMaxCount = 6;
-				@Name("Spawn Min Cooldown")
-				@Comment("After how many minimum ticks (20 ticks = 1 second) the ender dragon will spawn endermites")
+				public int maxSpawned = 6;
+				@Name("Min Cooldown")
+				@Comment("After how many minimum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn Larvae.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnMinCooldown = 600;
-				@Name("Spawn Max Cooldown")
-				@Comment("After how many maximum ticks (20 ticks = 1 second) the ender dragon will spawn endermites")
+				public int minCooldown = 600;
+				@Name("Max Cooldown")
+				@Comment("After how many minimum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn Larvae.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnMaxCooldown = 1200;
-				@Name("Spawn Cooldown Reduction")
-				@Comment("For each killed dragon the spawn endermites cooldown min and max will be reduced by this value (E.g. with 10 killed dragons and this set to 5, the spawn endermites cooldown min will be 550 and max 1150)")
+				public int maxCooldown = 1200;
+				@Name("Cooldown Reduction per Difficulty")
+				@Comment("For each difficulty the Larvae spawn cooldown min and max values will be reduced by this value (E.g. with 10 difficulty and this set to 5, the Larvae cooldown min will be 550 and max 1150)")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnCooldownReduction = 5;
+				public int cooldownReduction = 5;
 			}
-		
+			
 		
 			public Shulkers shulkers = new Shulkers();
 			
 			public static class Shulkers {
-				@Name("Spawn After")
-				@Comment("After how many dragons killed, the dragon will start spawning shulker (Dragon's Minion). Setting this to 0 will disable shulkers spawn")
+				@Name("Difficulty to Spawn Minions")
+				@Comment("Minimum Difficulty required for the Ender Dragon to start spawning Dragon's Minions during the fight. Set to -1 to disable Dragon Minions spawning.")
 				@RangeInt(min = 0, max = Integer.MAX_VALUE)
-				public int spawnAfter = 5;
-				@Name("Spawn Min Cooldown")
-				@Comment("After how many minimum ticks (20 ticks = 1 second) the enderdragon will spawn shulkers")
+				public int difficultyToSpawn = 5;
+				@Name("Min Cooldown")
+				@Comment("After how many minimum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn a Minion.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnMinCooldown = 900;
-				@Name("Spawn Max Cooldown")
-				@Comment("After how many maximum ticks (20 ticks = 1 second) the enderdragon will spawn shulkers")
+				public int minCooldown = 900;
+				@Name("Max Cooldown")
+				@Comment("After how many maximum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn a Minion.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int spawnMaxCooldown = 1200;
-				@Name("Spawn Cooldown Reduction")
-				@Comment("For each killed dragon the spawn shulkers cooldown min and max will be reduced by this value (E.g. with 10 killed dragons and this set to 10, the spawn shulkers cooldown min will be 800 and max 1100)")
+				public int maxCooldown = 1200;
+				@Name("Cooldown Reduction per Difficulty")
+				@Comment("For each difficulty the Minion spawn cooldown min and max values will be reduced by this value (E.g. with 10 difficulty and this set to 10, the Minion cooldown min will be 500 and max 1100)")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
 				public int spawnCooldownReduction = 10;
 			}
-		
+			
 		
 			public Rewards rewards = new Rewards();
 			
