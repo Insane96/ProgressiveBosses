@@ -38,20 +38,20 @@ public class Properties {
 			}
 
 			
-			public Minions minions = new Minions();
+			public WitherMinions minions = new WitherMinions();
 			
-			public static class Minions {
+			public static class WitherMinions {
 				@Name("Difficulty to Spawn Minions")
-				@Comment("Minimum Difficulty required for the Wither will start spawning Wither Minions during the fight. Set to -1 to disable Wither Minions spawning.")
-				@RangeInt(min = -1, max = Integer.MAX_VALUE)
+				@Comment("Minimum Difficulty required for the Wither will start spawning Wither Minions during the fight.")
+				@RangeInt(min = 0, max = Integer.MAX_VALUE)
 				public int difficultyToSpawn = 2;
 				@Name("Difficulty to Spawn One More Minion")
 				@Comment("As the Wither starts spawning Minions, every how much difficulty the Wither will spawn one more Minion.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
 				public int difficultyToSpawnOneMore = 4;
 				@Name("Max Minions Spawned")
-				@Comment("Maximum number of Wither Minions that a Wither can spawn")
-				@RangeInt(min = 1, max = Integer.MAX_VALUE)
+				@Comment("Maximum number of Wither Minions that a Wither can spawn. Set to 0 to disable Wither Minions.")
+				@RangeInt(min = 0, max = Integer.MAX_VALUE)
 				public int maxSpawned = 8;
 				@Name("Max Minions Around")
 				@Comment("Maximum amount of Wither Minions that can be around the Wither in a 24 block radius. After this number is reached the Wither will stop spawning minions. Set to 0 to disable this check.")
@@ -185,16 +185,16 @@ public class Properties {
 			}
 
 			
-			public Endermites endermites = new Endermites();
+			public Larvae larvae = new Larvae();
 			
-			public static class Endermites {
+			public static class Larvae {
 				@Name("Difficulty to Spawn One More Larva")
 				@Comment("As the Ender Dragon Difficulty reaches this value she will be spawning a Larva during the fight. Plus every time Difficulty is a multiplier of this value the Ender Dragon will spawn one more Larva.")
-				@RangeInt(min = 0, max = Integer.MAX_VALUE)
+				@RangeInt(min = 1, max = Integer.MAX_VALUE)
 				public int difficultyToSpawnOneMore = 4;
 				@Name("Max Larvae Spawned")
-				@Comment("Maximum number of Larvae that an Ender Dragon can spawn.")
-				@RangeInt(min = 1, max = Integer.MAX_VALUE)
+				@Comment("Maximum number of Larvae that an Ender Dragon can spawn. Set to 0 to disable Dragon's Larvae.")
+				@RangeInt(min = 0, max = Integer.MAX_VALUE)
 				public int maxSpawned = 6;
 				@Name("Min Cooldown")
 				@Comment("After how many minimum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn Larvae.")
@@ -211,11 +211,11 @@ public class Properties {
 			}
 			
 		
-			public Shulkers shulkers = new Shulkers();
+			public DragonMinions minions = new DragonMinions();
 			
-			public static class Shulkers {
+			public static class DragonMinions {
 				@Name("Difficulty to Spawn Minions")
-				@Comment("Minimum Difficulty required for the Ender Dragon to start spawning Dragon's Minions during the fight. Set to -1 to disable Dragon Minions spawning.")
+				@Comment("Minimum Difficulty required for the Ender Dragon to start spawning Dragon's Minions during the fight. Set to -1 to disable Dragon's Minions spawning.")
 				@RangeInt(min = 0, max = Integer.MAX_VALUE)
 				public int difficultyToSpawn = 5;
 				@Name("Min Cooldown")

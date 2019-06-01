@@ -177,7 +177,9 @@ public class Wither {
 
 		if (minionsCount >= Properties.config.wither.minions.maxAround && Properties.config.wither.minions.maxAround > 0)
 			return;
-		
+
+		if (Properties.config.wither.minions.maxSpawned == 0)
+			return;
 		
 		NBTTagCompound tags = wither.getEntityData();
 		
@@ -185,8 +187,6 @@ public class Wither {
 		tags.setBoolean("mobsrandomizzation:preventProcessing", true);
 		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
-		if (difficulty < Properties.config.wither.minions.difficultyToSpawn)
-			return;
 		
 		int cooldown = tags.getInteger("progressivebosses:skeletons_cooldown");
 		if (cooldown > 0) {
