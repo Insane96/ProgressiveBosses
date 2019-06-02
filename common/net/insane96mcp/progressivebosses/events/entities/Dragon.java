@@ -293,11 +293,15 @@ public class Dragon {
 			EntityShulker shulker = new EntityShulker(world);
 			float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
 			float x = (float) (Math.cos(angle) * (Utils.Math.getFloat(world.rand, 15f, 25f)));
-			float y = 68;
 			float z = (float) (Math.sin(angle) * (Utils.Math.getFloat(world.rand, 15f, 25f)));
+			float y = world.getTopSolidOrLiquidBlock(new BlockPos(x, 255, z)).getY();
 			IAttributeInstance followRange = shulker.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
 			followRange.setBaseValue(64f);
 			shulker.setPosition(x, y, z);
+			NBTTagCompound compound = new NBTTagCompound();
+			shulker.writeEntityToNBT(compound);
+			compound.setByte("Color", (byte) 15);
+			shulker.readEntityFromNBT(compound);
 			shulker.setCustomNameTag("Dragon's Minion");
 			
 			ArrayList<EntityAITaskEntry> toRemove = new ArrayList<EntityAITaskEntry>();
@@ -328,6 +332,7 @@ public class Dragon {
 			Reflection.Set(Reflection.EntityLiving_deathLootTable, shulker, LootTables.dragonMinion);
 			Reflection.Set(Reflection.EntityLiving_experienceValue, shulker, 2);
 			
+			System.out.println(shulker.getPosition());
 			world.spawnEntity(shulker);
 		}
 	}
