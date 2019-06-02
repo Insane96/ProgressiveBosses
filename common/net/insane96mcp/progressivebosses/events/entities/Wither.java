@@ -240,12 +240,12 @@ public class Wither {
 					float maxArmor = Properties.config.wither.minions.maxArmor;
 					armor.setBaseValue(Utils.Math.getFloat(world.rand, minArmor, maxArmor));
 					
-					IAttributeInstance speed = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+					IAttributeInstance speedAttibute = witherSkeleton.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
 					float maxSpeedMultiplier = 1.25f;
 					float speedMultiplier = difficulty / 100f + 1f;
 					if (speedMultiplier > maxSpeedMultiplier)
 						speedMultiplier = maxSpeedMultiplier;
-					speed.setBaseValue(speed.getBaseValue() * speedMultiplier);
+					speedAttibute.setBaseValue(speedAttibute.getBaseValue() * speedMultiplier);
 					
 					witherSkeleton.setPosition(x + 0.5f, y + 0.5f, z + 0.5f);
 					witherSkeleton.setCustomNameTag("Wither's Minion");
