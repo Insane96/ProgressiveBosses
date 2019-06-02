@@ -207,17 +207,26 @@ public class Wither {
 				
 				if (spawn % Properties.config.wither.minions.difficultyToSpawnOneMore == 0) {
 					EntityWitherSkeleton witherSkeleton = new EntityWitherSkeleton(world);
-					int x = (int) (wither.posX + (MathHelper.getInt(world.rand, -2, 2)));
-					int y = (int) (wither.posY - 2);
-					int z = (int) (wither.posZ + (MathHelper.getInt(world.rand, -2, 2)));
 					
-					boolean shouldSpawn = true;
-					while (world.getBlockState(new BlockPos(x, y, z)).getMaterial().blocksMovement()) {
-						y++;
-						if (y > wither.posY + 4) {
-							shouldSpawn = false;
-							break;
+					int x = 0;
+					int y = 0;
+					int z = 0;
+					
+					boolean shouldSpawn = false;
+					//Try to spawn the wither skeleton up to 10 times
+					for (int t = 0; t < 10; t++) {
+						x = (int) (wither.posX + (MathHelper.getInt(world.rand, -3, 3)));
+						y = (int) (wither.posY - 3);
+						z = (int) (wither.posZ + (MathHelper.getInt(world.rand, -3, 3)));
+						
+						for (; y < wither.posY + 4; y++) {
+							if (canSpawn(witherSkeleton, new BlockPos(x, y, z), world)) {
+								shouldSpawn = true;
+								break;
+							}
 						}
+						if (shouldSpawn)
+							break;
 					}
 					if (!shouldSpawn)
 						continue;
@@ -267,6 +276,25 @@ public class Wither {
 				}
 			}
 		}
+	}
+	
+	/*
+	 * Check if the mob has space to spawn and if sits on solid ground
+	 */
+	private static boolean canSpawn(Entity mob, BlockPos pos, World world) {
+		int height = (int) Math.ceil(mob.height);
+		boolean canSpawn = true;
+		for (int i = 0; i < height; i++) {
+			if (world.getBlockState(pos.up(i)).getMaterial().blocksMovement()) {
+				canSpawn = false;
+				break;
+			}
+		}
+		if (!world.getBlockState(pos.down()).getMaterial().blocksMovement()) {
+			canSpawn = false;
+		}
+		
+		return canSpawn;
 	}
 
 	public static void OnDeath(LivingDeathEvent event) {
