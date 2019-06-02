@@ -249,7 +249,7 @@ public class Dragon {
 					endermite.tasks.addTask(7,  new EntityAIWatchClosest(endermite, EntityPlayer.class, 64f));
 					
 					for (EntityAITaskEntry targetTask : endermite.targetTasks.taskEntries) {
-						if (targetTask.action instanceof EntityAIWatchClosest)
+						if (targetTask.action instanceof EntityAINearestAttackableTarget)
 							toRemove = targetTask;
 					}
 					
