@@ -11,20 +11,20 @@ import net.minecraft.world.end.DragonFightManager;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 
 public class Reflection {
-	public static Field livingDeathLootTable;
-	public static Field livingExperienceValue;
-	public static Field witherBossInfo;
-	public static Field dragonFightManager_previouslyKilled;
-	public static Method bossInfoServerSetPercent;
+	public static Field EntityLiving_deathLootTable;
+	public static Field EntityLiving_experienceValue;
+	public static Field EntityWither_bossInfo;
+	public static Field DragonFightManager_previouslyKilled;
+	public static Method BossInfoServer_setPercent;
 		
 	public static void Init() {
 		try {
-			livingDeathLootTable = ReflectionHelper.findField(EntityLiving.class, "deathLootTable", "field_184659_bA", "bC");
-			livingExperienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
-			witherBossInfo = ReflectionHelper.findField(EntityWither.class, "bossInfo", "field_184744_bE");
-			bossInfoServerSetPercent = ReflectionHelper.findMethod(BossInfoServer.class, "setPercent", "func_186735_a", float.class);
+			EntityLiving_deathLootTable = ReflectionHelper.findField(EntityLiving.class, "deathLootTable", "field_184659_bA", "bC");
+			EntityLiving_experienceValue = ReflectionHelper.findField(EntityLiving.class, "experienceValue", "field_70728_aV", "b_");
+			EntityWither_bossInfo = ReflectionHelper.findField(EntityWither.class, "bossInfo", "field_184744_bE");
+			BossInfoServer_setPercent = ReflectionHelper.findMethod(BossInfoServer.class, "setPercent", "func_186735_a", float.class);
 			
-			dragonFightManager_previouslyKilled = ReflectionHelper.findField(DragonFightManager.class, "previouslyKilled", "field_186118_l");
+			DragonFightManager_previouslyKilled = ReflectionHelper.findField(DragonFightManager.class, "previouslyKilled", "field_186118_l");
 		}
 		catch (Exception e) {
 			e.printStackTrace();

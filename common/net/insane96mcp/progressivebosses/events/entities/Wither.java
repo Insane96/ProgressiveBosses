@@ -94,7 +94,7 @@ public class Wither {
 	
 	private static void SetExperience(EntityWither wither, float difficulty) {
 		int xp = 50 + (int) (50 * (Properties.config.wither.rewards.bonusExperience * difficulty / 100f));
-		Reflection.Set(Reflection.livingExperienceValue, wither, xp);
+		Reflection.Set(Reflection.EntityLiving_experienceValue, wither, xp);
 	}
 	
 	private static void SetHealth(EntityWither wither, float spawnedCount) {
@@ -127,7 +127,7 @@ public class Wither {
 		NBTTagCompound tags = wither.getEntityData();
 
 		if (wither.getInvulTime() > 0) {
-			Reflection.Invoke(Reflection.bossInfoServerSetPercent, Reflection.Get(Reflection.witherBossInfo, wither), wither.getHealth() / wither.getMaxHealth());
+			Reflection.Invoke(Reflection.BossInfoServer_setPercent, Reflection.Get(Reflection.EntityWither_bossInfo, wither), wither.getHealth() / wither.getMaxHealth());
 		}
 		else {
 			SpawnSkeletons(wither, world);
@@ -245,8 +245,8 @@ public class Wither {
 					
 					witherSkeleton.setPosition(x + 0.5f, y + 0.5f, z + 0.5f);
 					witherSkeleton.setCustomNameTag("Wither's Minion");
-					Reflection.Set(Reflection.livingDeathLootTable, witherSkeleton, new ResourceLocation("minecraft:empty"));
-					Reflection.Set(Reflection.livingExperienceValue, witherSkeleton, 1);
+					Reflection.Set(Reflection.EntityLiving_deathLootTable, witherSkeleton, new ResourceLocation("minecraft:empty"));
+					Reflection.Set(Reflection.EntityLiving_experienceValue, witherSkeleton, 1);
 					
 					NBTTagList minionsList = tags.getTagList("minions", Constants.NBT.TAG_COMPOUND);
 					NBTTagCompound uuid = new NBTTagCompound();

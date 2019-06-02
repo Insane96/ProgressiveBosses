@@ -7,15 +7,17 @@ import net.insane96mcp.progressivebosses.lib.Properties;
 import net.insane96mcp.progressivebosses.lib.Reflection;
 import net.insane96mcp.progressivebosses.lib.Utils;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
+import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.monster.EntityShulker;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -56,7 +58,7 @@ public class Dragon {
 			NBTTagCompound playerTags = player.getEntityData();
 			int c = playerTags.getInteger("progressivebosses:killeddragons");
 			if (c == 0) {
-				Reflection.Set(Reflection.dragonFightManager_previouslyKilled, dragon.getFightManager(), false);
+				Reflection.Set(Reflection.DragonFightManager_previouslyKilled, dragon.getFightManager(), false);
 			}
 			killedCount += c;
 		}
@@ -226,27 +228,36 @@ public class Dragon {
 					float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
 					float x = (float) (Math.cos(angle) * 3.15f);
 					float z = (float) (Math.sin(angle) * 3.15f);
-					BlockPos getY = world.getTopSolidOrLiquidBlock(new BlockPos(0, 255, 0));
-					int bedrockCounter = 0;
-					float y = 64;
-					for (int yLevel = getY.getY(); yLevel > 0; yLevel--) {
-						if (world.getBlockState(new BlockPos(0, yLevel, 0)).getBlock().equals(Blocks.BEDROCK))
-							bedrockCounter++;
-						
-						if (bedrockCounter == 3) {
-							y = yLevel;
-							break;
-						}
-					}
-					IAttributeInstance instance = endermite.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-					instance.setBaseValue(instance.getBaseValue() * 1.55f);
-					instance = endermite.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
-					instance.setBaseValue(64f);
-					endermite.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("resistance"), 80, 4, true, true));
+					int y = world.getTopSolidOrLiquidBlock(new BlockPos(x, 255, z)).getY();
+					IAttributeInstance attribute = endermite.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+					attribute.setBaseValue(attribute.getBaseValue() * 1.5f);
+					attribute = endermite.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+					attribute.setBaseValue(64f);
+					attribute = endermite.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
+					attribute.setBaseValue(4);
 					endermite.setPosition(x, y, z);
 					endermite.setCustomNameTag("Dragon's Larva");
 					
-					Reflection.Set(Reflection.livingExperienceValue, endermite, 1);
+					EntityAITaskEntry toRemove = null;
+					for (EntityAITaskEntry task : endermite.tasks.taskEntries) {
+						if (task.action instanceof EntityAIWatchClosest)
+							toRemove = task;
+					}
+					
+					if (toRemove != null)
+						endermite.tasks.taskEntries.remove(toRemove);
+					endermite.tasks.addTask(7,  new EntityAIWatchClosest(endermite, EntityPlayer.class, 64f));
+					
+					for (EntityAITaskEntry targetTask : endermite.targetTasks.taskEntries) {
+						if (targetTask.action instanceof EntityAIWatchClosest)
+							toRemove = targetTask;
+					}
+					
+					if (toRemove != null)
+						endermite.targetTasks.taskEntries.remove(toRemove);
+					endermite.targetTasks.addTask(2, new EntityAINearestAttackableTarget(endermite, EntityPlayer.class, false));
+					
+					Reflection.Set(Reflection.EntityLiving_experienceValue, endermite, 1);
 					
 					world.spawnEntity(endermite);
 				}
@@ -286,8 +297,8 @@ public class Dragon {
 			shulker.setPosition(x, y, z);
 			shulker.setCustomNameTag("Dragon's Minion");
 			
-			Reflection.Set(Reflection.livingDeathLootTable, shulker, LootTables.dragonMinion);
-			Reflection.Set(Reflection.livingExperienceValue, shulker, 2);
+			Reflection.Set(Reflection.EntityLiving_deathLootTable, shulker, LootTables.dragonMinion);
+			Reflection.Set(Reflection.EntityLiving_experienceValue, shulker, 2);
 			
 			world.spawnEntity(shulker);
 		}
