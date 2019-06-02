@@ -15,6 +15,7 @@ import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.entity.player.EntityPlayer;
@@ -94,19 +95,22 @@ public class Dragon {
 		attribute.setBaseValue(armor);
 	}
 	
-	/*private static void SetExperience(LivingExperienceDropEvent event) {
-		if (!(event.getEntityLiving() instanceof EntityDragon))
+	private static void DropMoreExperience(EntityDragon dragon, World world) {
+		if (dragon.deathTicks != 150)
 			return;
-		
-		EntityDragon dragon = (EntityDragon)event.getEntityLiving();
 		
 		NBTTagCompound tags = dragon.getEntityData();
 		
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
-		int baseXp = event.getOriginalExperience();
-		float increase = (baseXp * (Properties.config.dragon.rewards.bonusExperience * difficulty / 100f));
-		event.setDroppedExperience((int) (baseXp + increase));
-	}*/
+		int xp = (int) (500 * (Properties.config.dragon.rewards.bonusExperience * difficulty / 100f));
+
+        while (xp > 0)
+        {
+            int i = EntityXPOrb.getXPSplit(xp);
+            xp -= i;
+            dragon.world.spawnEntity(new EntityXPOrb(dragon.world, dragon.posX, dragon.posY, dragon.posZ, i));
+        }
+	}
 	
 	
 	public static void OnDeath(LivingDeathEvent event) {
@@ -175,6 +179,7 @@ public class Dragon {
 		SpawnShulkers(dragon, world);
 		Heal(dragon, tags);
 		DropEgg(dragon, world);
+		DropMoreExperience(dragon, world);
 	}
 	
 	private static void Heal(EntityDragon dragon, NBTTagCompound tags) {
@@ -238,6 +243,7 @@ public class Dragon {
 					attribute.setBaseValue(64f);
 					attribute = endermite.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
 					attribute.setBaseValue(4);
+					endermite.setHealth((float) attribute.getBaseValue());
 					endermite.setPosition(x, y, z);
 					endermite.setCustomNameTag("Dragon's Larva");
 					
@@ -283,6 +289,7 @@ public class Dragon {
 		
 		int cooldown = tags.getInteger("progressivebosses:shulkers_cooldown");
 		if (cooldown > 0) {
+			System.out.println(cooldown);
 			tags.setInteger("progressivebosses:shulkers_cooldown", cooldown - 1);
 		}
 		else {
@@ -292,8 +299,8 @@ public class Dragon {
 			
 			EntityShulker shulker = new EntityShulker(world);
 			float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
-			float x = (float) (Math.cos(angle) * (Utils.Math.getFloat(world.rand, 15f, 25f)));
-			float z = (float) (Math.sin(angle) * (Utils.Math.getFloat(world.rand, 15f, 25f)));
+			float x = (float) (Math.cos(angle) * (Utils.Math.getFloat(world.rand, 15f, 40f)));
+			float z = (float) (Math.sin(angle) * (Utils.Math.getFloat(world.rand, 15f, 40f)));
 			float y = world.getTopSolidOrLiquidBlock(new BlockPos(x, 255, z)).getY();
 			IAttributeInstance followRange = shulker.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
 			followRange.setBaseValue(64f);

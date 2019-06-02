@@ -163,11 +163,11 @@ public class Properties {
 				@Name("Maximum Bonus Regeneration")
 				@Comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the regeneration of the Ender Dragon from Crystals. It's not recommended to go over 1.0f without mods that adds stronger things to kill the Ender Dragon.")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
-				public float maximumBonusRegen = 1.0f;
+				public float maximumBonusRegen = 0.5f;
 				@Name("Bonus Regeneration per Difficulty")
 				@Comment("How many half hearts will the Ender Dragon regen per difficulty. This doesn't affect the regeneration of the Ender Dragon from Crystals. (E.g. With 6 Dragons killed, the Dragon will heal 0.6 health per second without Crystals).")
 				@RangeDouble(min = 0, max = 1024)
-				public float bonusRegenPerSpawned = 0.05f;
+				public float bonusRegenPerSpawned = 0.025f;
 			}
 			
 			
@@ -177,11 +177,11 @@ public class Properties {
 				@Name("Bonus Armor per Difficulty")
 				@Comment("How much armor points will have Ender Dragons per Difficulty.")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
-				public float bonusPerDifficulty = 0.2f;
+				public float bonusPerDifficulty = 0.25f;
 				@Name("Maximum Armor")
 				@Comment("Maximum armor points that Ender Dragons can spawn with. It's not recommended to go over 10 as the Ender Dragon already has some damage reduction")
 				@RangeDouble(min = 0, max = 30)
-				public float maximum = 5f;
+				public float maximum = 2.5f;
 			}
 
 			
@@ -191,7 +191,7 @@ public class Properties {
 				@Name("Difficulty to Spawn One More Larva")
 				@Comment("As the Ender Dragon Difficulty reaches this value she will be spawning a Larva during the fight. Plus every time Difficulty is a multiplier of this value the Ender Dragon will spawn one more Larva.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int difficultyToSpawnOneMore = 4;
+				public int difficultyToSpawnOneMore = 1;
 				@Name("Max Larvae Spawned")
 				@Comment("Maximum number of Larvae that an Ender Dragon can spawn. Set to 0 to disable Dragon's Larvae.")
 				@RangeInt(min = 0, max = Integer.MAX_VALUE)
@@ -199,7 +199,7 @@ public class Properties {
 				@Name("Min Cooldown")
 				@Comment("After how many minimum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn Larvae.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int minCooldown = 600;
+				public int minCooldown = 1050;
 				@Name("Max Cooldown")
 				@Comment("After how many minimum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn Larvae.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
@@ -207,7 +207,7 @@ public class Properties {
 				@Name("Cooldown Reduction per Difficulty")
 				@Comment("For each difficulty the Larvae spawn cooldown min and max values will be reduced by this value (E.g. with 10 difficulty and this set to 5, the Larvae cooldown min will be 550 and max 1150)")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int cooldownReduction = 5;
+				public int cooldownReduction = 10;
 			}
 			
 		
@@ -217,15 +217,15 @@ public class Properties {
 				@Name("Difficulty to Spawn Minions")
 				@Comment("Minimum Difficulty required for the Ender Dragon to start spawning Dragon's Minions during the fight. Set to -1 to disable Dragon's Minions spawning.")
 				@RangeInt(min = 0, max = Integer.MAX_VALUE)
-				public int difficultyToSpawn = 5;
+				public int difficultyToSpawn = 2;
 				@Name("Min Cooldown")
 				@Comment("After how many minimum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn a Minion.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int minCooldown = 900;
+				public int minCooldown = 1200;
 				@Name("Max Cooldown")
 				@Comment("After how many maximum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn a Minion.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int maxCooldown = 1200;
+				public int maxCooldown = 1800;
 				@Name("Cooldown Reduction per Difficulty")
 				@Comment("For each difficulty the Minion spawn cooldown min and max values will be reduced by this value (E.g. with 10 difficulty and this set to 10, the Minion cooldown min will be 500 and max 1100)")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
@@ -236,8 +236,11 @@ public class Properties {
 			public Rewards rewards = new Rewards();
 			
 			public static class Rewards {
+				@Name("Bonus Experience")
+				@Comment("How much more experience (percentage) will Ender Dragon drop per Difficulty. The percentage is additive (e.g. with this set to 10%, 7 Ender Dragons killed = 70% more experience).")
+				public float bonusExperience = 10;
 				@Name("First Dragon per Player")
-				@Comment("Should the first Dragon killed per Player always drop the egg and the first Gragon experience (12k instead of 500)? If true means that every player will get the Dragon Egg as they kill their first Dragon.")
+				@Comment("Should the first Dragon killed per Player always drop the egg and the first Dragon experience (12k instead of 500)? If true means that every player will get the Dragon Egg as they kill their first Dragon.")
 				public boolean firstDragonPerPlayer = true;
 				
 			}
