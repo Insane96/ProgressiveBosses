@@ -322,6 +322,9 @@ public class Dragon {
 				if (targetTask.action instanceof EntityAINearestAttackableTarget)
 					toRemove.add(targetTask);
 			}
+			for (EntityAITaskEntry entityAITaskEntry : toRemove) {
+				shulker.targetTasks.taskEntries.remove(entityAITaskEntry);
+			}
 			toRemove.clear();
 
 			shulker.tasks.addTask(1, new EntityAIWatchClosest(shulker, EntityPlayer.class, 64f));
@@ -332,7 +335,6 @@ public class Dragon {
 			Reflection.Set(Reflection.EntityLiving_deathLootTable, shulker, LootTables.dragonMinion);
 			Reflection.Set(Reflection.EntityLiving_experienceValue, shulker, 2);
 			
-			System.out.println(shulker.getPosition());
 			world.spawnEntity(shulker);
 		}
 	}

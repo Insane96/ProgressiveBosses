@@ -1,13 +1,14 @@
 package net.insane96mcp.progressivebosses.events.entities;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
 
 import com.google.common.base.Predicate;
 
+import net.insane96mcp.progressivebosses.events.entities.ai.WitherMinionAIHurtByTarget;
 import net.insane96mcp.progressivebosses.item.ModItems;
 import net.insane96mcp.progressivebosses.lib.Properties;
 import net.insane96mcp.progressivebosses.lib.Reflection;
@@ -17,8 +18,11 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIAvoidEntity;
+import net.minecraft.entity.ai.EntityAIFleeSun;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIRestrictSun;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityWither;
@@ -253,22 +257,38 @@ public class Wither {
 					uuid.setUniqueId("uuid", witherSkeleton.getUniqueID());
 					tags.setTag("minions", minionsList);
 					minionsList.appendTag(uuid);
-					
-					Set<EntityAITaskEntry> tasks = wither.targetTasks.taskEntries;
-					EntityAITaskEntry toRemove = null;
-					for (EntityAITaskEntry entityAITaskEntry : tasks) {
-						if (entityAITaskEntry.action instanceof EntityAIHurtByTarget)
-						{
-							toRemove = entityAITaskEntry;
-							break;
-						}
-					}
-					
-					if (toRemove != null)
-						wither.targetTasks.removeTask(toRemove.action);
-					
 
-			        witherSkeleton.targetTasks.addTask(2, new EntityAINearestAttackableTarget(witherSkeleton, EntityLiving.class, 0, true, false, NOT_UNDEAD));
+					ArrayList<EntityAITaskEntry> toRemove = new ArrayList<EntityAITaskEntry>();
+					for (EntityAITaskEntry task : witherSkeleton.tasks.taskEntries) {
+						if (task.action instanceof EntityAIFleeSun)
+							toRemove.add(task);
+						
+						if (task.action instanceof EntityAIRestrictSun)
+							toRemove.add(task);
+						
+						if (task.action instanceof EntityAIAvoidEntity)
+							toRemove.add(task);
+					}
+					for (EntityAITaskEntry entityAITaskEntry : toRemove) {
+						witherSkeleton.tasks.taskEntries.remove(entityAITaskEntry);
+					}
+					toRemove.clear();
+					
+					
+					for (EntityAITaskEntry targetTask : witherSkeleton.targetTasks.taskEntries) {
+						if (targetTask.action instanceof EntityAINearestAttackableTarget)
+							toRemove.add(targetTask);
+						if (targetTask.action instanceof EntityAIHurtByTarget)
+							toRemove.add(targetTask);
+					}
+					for (EntityAITaskEntry entityAITaskEntry : toRemove) {
+						witherSkeleton.targetTasks.taskEntries.remove(entityAITaskEntry);
+					}
+					toRemove.clear();
+
+			        witherSkeleton.targetTasks.addTask(1, new WitherMinionAIHurtByTarget(witherSkeleton, true));
+			        witherSkeleton.targetTasks.addTask(2, new EntityAINearestAttackableTarget(witherSkeleton, EntityPlayer.class, false));
+			        witherSkeleton.targetTasks.addTask(3, new EntityAINearestAttackableTarget(witherSkeleton, EntityLiving.class, 0, false, false, NOT_UNDEAD));
 					
 					world.spawnEntity(witherSkeleton);
 					
