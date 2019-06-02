@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.entity.monster.EntityShulker;
 import net.minecraft.world.BossInfoServer;
 import net.minecraft.world.end.DragonFightManager;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
@@ -16,6 +17,7 @@ public class Reflection {
 	public static Field EntityWither_bossInfo;
 	public static Field DragonFightManager_previouslyKilled;
 	public static Method BossInfoServer_setPercent;
+	public static Class<?> EntityShulker_AIAttack;
 		
 	public static void Init() {
 		try {
@@ -25,6 +27,8 @@ public class Reflection {
 			BossInfoServer_setPercent = ReflectionHelper.findMethod(BossInfoServer.class, "setPercent", "func_186735_a", float.class);
 			
 			DragonFightManager_previouslyKilled = ReflectionHelper.findField(DragonFightManager.class, "previouslyKilled", "field_186118_l");
+			
+			EntityShulker_AIAttack = ReflectionHelper.getClass(EntityShulker.class.getClassLoader(), "net.minecraft.entity.monster.EntityShulker$AIAttack");
 		}
 		catch (Exception e) {
 			e.printStackTrace();

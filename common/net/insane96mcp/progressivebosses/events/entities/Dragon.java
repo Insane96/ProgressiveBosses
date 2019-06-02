@@ -1,7 +1,10 @@
 package net.insane96mcp.progressivebosses.events.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import net.insane96mcp.progressivebosses.events.entities.ai.DragonMinionAIAttack;
+import net.insane96mcp.progressivebosses.events.entities.ai.DragonMinionAIAttackNearest;
 import net.insane96mcp.progressivebosses.lib.LootTables;
 import net.insane96mcp.progressivebosses.lib.Properties;
 import net.insane96mcp.progressivebosses.lib.Reflection;
@@ -296,6 +299,31 @@ public class Dragon {
 			followRange.setBaseValue(64f);
 			shulker.setPosition(x, y, z);
 			shulker.setCustomNameTag("Dragon's Minion");
+			
+			ArrayList<EntityAITaskEntry> toRemove = new ArrayList<EntityAITaskEntry>();
+			for (EntityAITaskEntry task : shulker.tasks.taskEntries) {
+				if (task.action instanceof EntityAIWatchClosest)
+					toRemove.add(task);
+				
+				if (Reflection.EntityShulker_AIAttack.isInstance(task.action))
+					toRemove.add(task);
+			}
+			for (EntityAITaskEntry entityAITaskEntry : toRemove) {
+				shulker.tasks.taskEntries.remove(entityAITaskEntry);
+			}
+			toRemove.clear();
+			
+			
+			for (EntityAITaskEntry targetTask : shulker.targetTasks.taskEntries) {
+				if (targetTask.action instanceof EntityAINearestAttackableTarget)
+					toRemove.add(targetTask);
+			}
+			toRemove.clear();
+
+			shulker.tasks.addTask(1, new EntityAIWatchClosest(shulker, EntityPlayer.class, 64f));
+			shulker.tasks.addTask(1, new DragonMinionAIAttack(shulker));
+			
+			shulker.targetTasks.addTask(2, new DragonMinionAIAttackNearest(shulker));
 			
 			Reflection.Set(Reflection.EntityLiving_deathLootTable, shulker, LootTables.dragonMinion);
 			Reflection.Set(Reflection.EntityLiving_experienceValue, shulker, 2);
