@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class Dragon {
 	public static void SetStats(EntityJoinWorldEvent event) {
@@ -146,6 +147,24 @@ public class Dragon {
 		}
 
 		tags.setInteger("progressivebosses:eggstodrop", eggsToDrop);
+	}
+
+
+	public static void OnPlayerDamage(LivingHurtEvent event) {
+		
+		if (!(event.getSource().getImmediateSource() instanceof EntityDragon))
+			return;
+		
+		EntityDragon dragon = (EntityDragon)event.getSource().getImmediateSource();
+		NBTTagCompound tags = dragon.getEntityData();
+		
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		
+		if (difficulty == 0)
+			return;
+
+		event.setAmount(event.getAmount() * (difficulty * 0.2f + 1));
+		
 	}
 	
 	private static void DropEgg(EntityDragon dragon, World world) {
@@ -289,7 +308,6 @@ public class Dragon {
 		
 		int cooldown = tags.getInteger("progressivebosses:shulkers_cooldown");
 		if (cooldown > 0) {
-			System.out.println(cooldown);
 			tags.setInteger("progressivebosses:shulkers_cooldown", cooldown - 1);
 		}
 		else {
