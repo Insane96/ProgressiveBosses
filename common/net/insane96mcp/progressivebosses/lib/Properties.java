@@ -44,11 +44,11 @@ public class Properties {
 				@Name("Difficulty to Spawn Minions")
 				@Comment("Minimum Difficulty required for the Wither will start spawning Wither Minions during the fight.")
 				@RangeInt(min = 0, max = Integer.MAX_VALUE)
-				public int difficultyToSpawn = 2;
+				public int difficultyToSpawn = 1;
 				@Name("Difficulty to Spawn One More Minion")
 				@Comment("As the Wither starts spawning Minions, every how much difficulty the Wither will spawn one more Minion.")
 				@RangeInt(min = 1, max = Integer.MAX_VALUE)
-				public int difficultyToSpawnOneMore = 4;
+				public int difficultyToSpawnOneMore = 3;
 				@Name("Max Minions Spawned")
 				@Comment("Maximum number of Wither Minions that a Wither can spawn. Set to 0 to disable Wither Minions.")
 				@RangeInt(min = 0, max = Integer.MAX_VALUE)
@@ -72,7 +72,7 @@ public class Properties {
 				@Name("Max Armor")
 				@Comment("Maximum armor value that Wither Minions should spawn with")
 				@RangeInt(min = 0, max = 20)
-				public int maxArmor = 10;
+				public int maxArmor = 8;
 			}
 		
 		
