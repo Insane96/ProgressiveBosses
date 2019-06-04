@@ -47,6 +47,7 @@ import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 
 public class Wither {
+
 	public static void SetStats(EntityJoinWorldEvent event) {
 		if (!(event.getEntity() instanceof EntityWither))
 			return;
@@ -211,6 +212,9 @@ public class Wither {
 				
 				if (spawn % Properties.config.wither.minions.difficultyToSpawnOneMore == 0) {
 					EntityWitherSkeleton witherSkeleton = new EntityWitherSkeleton(world);
+					NBTTagCompound skellyTags = witherSkeleton.getEntityData();
+					//Scaling Health
+					skellyTags.setShort("scalinghealth:difficulty", (short) -1);
 					
 					int x = 0;
 					int y = 0;

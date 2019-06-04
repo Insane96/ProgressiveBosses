@@ -252,6 +252,10 @@ public class Dragon {
 				
 				if (i % Properties.config.dragon.larvae.difficultyToSpawnOneMore == 0) {
 					EntityEndermite endermite = new EntityEndermite(world);
+					NBTTagCompound endermiteTags = endermite.getEntityData();
+					//Scaling Health
+					endermiteTags.setShort("scalinghealth:difficulty", (short) -1);
+					
 					float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
 					float x = (float) (Math.cos(angle) * 3.15f);
 					float z = (float) (Math.sin(angle) * 3.15f);
@@ -316,6 +320,10 @@ public class Dragon {
 			tags.setInteger("progressivebosses:shulkers_cooldown", cooldown);
 			
 			EntityShulker shulker = new EntityShulker(world);
+			NBTTagCompound shulkerTags = shulker.getEntityData();
+			//Scaling Health
+			shulkerTags.setShort("scalinghealth:difficulty", (short) -1);
+			
 			float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
 			float x = (float) (Math.cos(angle) * (Utils.Math.getFloat(world.rand, 15f, 40f)));
 			float z = (float) (Math.sin(angle) * (Utils.Math.getFloat(world.rand, 15f, 40f)));

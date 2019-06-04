@@ -88,7 +88,7 @@ public class Properties {
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
 				public float maximumBonusRegen = 1.0f;
 				@Name("Bonus Regeneration per Difficulty")
-				@Comment("How many half hearts will the Wither regen per difficulty. This doesn't affect the natural regeneration of the Wither (1 Health per Second). (E.g. With 6 Withers spawned, the Wither will heal 1.6 health per second).")
+				@Comment("How many half hearts will the Wither regen more per difficulty. This doesn't affect the natural regeneration of the Wither (1 Health per Second). (E.g. With 6 Withers spawned, the Wither will heal 1.6 health per second).")
 				@RangeDouble(min = 0, max = Float.MAX_VALUE)
 				public float bonusRegenPerSpawned = 0.05f;
 			}
