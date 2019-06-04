@@ -4,3 +4,7 @@ commands.counter.usage.set=/progressivebosses <player> set <wither|dragon> <set_
 commands.counter.usage.number=<set_count> accepts only numbers
 
 item.progressivebosses:nether_star_shard.name=Nether Star Shard
+
+dragon.minion=Dragon's Minion
+dragon.larva=Dragon's Larva
+wither.minion=Wither's Minion

@@ -15,6 +15,8 @@ import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.boss.dragon.phase.PhaseChargingPlayer;
+import net.minecraft.entity.boss.dragon.phase.PhaseList;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.monster.EntityEndermite;
 import net.minecraft.entity.monster.EntityShulker;
@@ -25,6 +27,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -163,7 +166,7 @@ public class Dragon {
 		if (difficulty == 0)
 			return;
 
-		event.setAmount(event.getAmount() * (difficulty * 0.2f + 1));
+		event.setAmount(event.getAmount() * (difficulty * 0.15f + 1));
 		
 	}
 	
@@ -194,6 +197,7 @@ public class Dragon {
 		EntityDragon dragon = (EntityDragon)event.getEntity();
 		NBTTagCompound tags = dragon.getEntityData();
 		
+		ChargePlayer(dragon);
 		SpawnEndermites(dragon, world);
 		SpawnShulkers(dragon, world);
 		Heal(dragon, tags);
@@ -201,6 +205,27 @@ public class Dragon {
 		DropMoreExperience(dragon, world);
 	}
 	
+	private static void ChargePlayer(EntityDragon dragon) {
+		NBTTagCompound tags = dragon.getEntityData();
+	
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		
+		float chance = 0.005f / 23;
+		chance *= difficulty;
+		int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
+		chance *= (1f / crystalsAlive);
+		
+		if (Math.random() < chance && dragon.getPhaseManager().getCurrentPhase().getType() == PhaseList.HOLDING_PATTERN) {
+			EntityPlayer player = dragon.world.getNearestAttackablePlayer(dragon, 100.0D, 150.0D);
+
+            if (player != null)
+            {
+                dragon.getPhaseManager().setPhase(PhaseList.CHARGING_PLAYER);
+                ((PhaseChargingPlayer)dragon.getPhaseManager().getPhase(PhaseList.CHARGING_PLAYER)).setTarget(new Vec3d(player.posX, player.posY, player.posZ));
+            }
+		}
+	}
+
 	private static void Heal(EntityDragon dragon, NBTTagCompound tags) {
 		if (Properties.config.dragon.health.maximumBonusRegen == 0.0f)
 			return;
@@ -335,6 +360,7 @@ public class Dragon {
 			shulker.writeEntityToNBT(compound);
 			compound.setByte("Color", (byte) 15);
 			shulker.readEntityFromNBT(compound);
+			//shulker.setCustomNameTag(I18n.format("dragon.minion"));
 			shulker.setCustomNameTag("Dragon's Minion");
 			
 			ArrayList<EntityAITaskEntry> toRemove = new ArrayList<EntityAITaskEntry>();

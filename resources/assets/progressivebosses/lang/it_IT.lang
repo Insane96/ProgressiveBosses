@@ -4,3 +4,7 @@ commands.counter.usage.set=/progressivebosses <giocatore> set <wither|dragon> <q
 commands.counter.usage.number=<quantità> accetta solo numeri
 
 item.progressivebosses:nether_star_shard.name=Frammento di Stella degli Inferi
+
+dragon.minion=Minion dell'Ender Drago
+dragon.larva=Larva dell'Ender Drago
+wither.minion=Minion del Wither
