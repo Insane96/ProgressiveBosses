@@ -1,7 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "progressivebosses:items/nether_star_shard"
-  }
-}
-

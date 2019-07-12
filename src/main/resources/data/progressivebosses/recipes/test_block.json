@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "xxx",
+    "xdx",
+    "xxx"
+  ],
+  "key": {
+    "x": {
+      "item": "minecraft:cobblestone"
+    },
+    "d": {
+      "tag": "forge:dyes/red"
+    }
+  },
+  "result": {
+    "item": "progressivebosses:test_block",
+    "count": 8
+  }
+}

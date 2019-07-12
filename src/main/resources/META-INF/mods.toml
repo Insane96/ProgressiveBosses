@@ -18,21 +18,21 @@ version="${file.jarVersion}" #mandatory
  # A display name for the mod
 displayName="Progressive Bosses" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
-updateJSONURL="" #optional
+updateJSONURL="https://noupdate.com" #optional
 # A URL for the "homepage" for this mod, displayed in the mod UI
-displayURL="https://www.curseforge.com/minecraft/mc-mods/progressive-bosses" #optional
+displayURL="https://minecraft.curseforge.com/projects/progressive-bosses" #optional
 # A file name (in the root of the mod JAR) containing a logo for display
-logoFile="" #optional
+logoFile="examplemod.png" #optional
 # A text field displayed in the mod UI
 credits="" #optional
 # A text field displayed in the mod UI
 authors="Insane96MCP" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-Makes Bosses (Ender Dragon and Wither) harder the more are respawned. more health, armor, and some simple abilities.
+Make Bosses harder the more you respawn them. Adding Health Armor and some Simple Abilities.
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
-[[dependencies.examplemod]] #optional
+[[dependencies.progressivebosses]] #optional
     # the modid of the dependency
     modId="forge" #mandatory
     # Does this dependency have to exist - if not, ordering below must be specified
@@ -44,7 +44,7 @@ Makes Bosses (Ender Dragon and Wither) harder the more are respawned. more healt
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
     side="BOTH"
 # Here's another dependency
-[[dependencies.examplemod]]
+[[dependencies.progressivebosses]]
     modId="minecraft"
     mandatory=true
     versionRange="[1.14.3]"

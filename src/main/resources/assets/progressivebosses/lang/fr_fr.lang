@@ -1,6 +1,0 @@
-commands.counter.usage.help=Déterminer ou modifier le compteur de Wither ou Dragon pour le joueur.
-commands.counter.usage.wrong=/progressivebosses <player> <get|set>
-commands.counter.usage.set=/progressivebosses <player> set <wither|dragon> <set_count>
-commands.counter.usage.number=<set_count> n'accepte que les nombres
-
-item.progressivebosses:nether_star_shard.name=Éclat d'étoile du Nether

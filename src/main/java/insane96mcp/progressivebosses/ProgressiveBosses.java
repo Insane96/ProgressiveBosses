@@ -1,54 +1,58 @@
-package net.insane96mcp.progressivebosses;
+package insane96mcp.progressivebosses;
 
+import insane96mcp.progressivebosses.blocks.ModBlocks;
+import insane96mcp.progressivebosses.blocks.TestBlock;
+import insane96mcp.progressivebosses.setup.ClientProxy;
+import insane96mcp.progressivebosses.setup.IProxy;
+import insane96mcp.progressivebosses.setup.ServerProxy;
+import net.minecraft.block.Block;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
+import net.minecraftforge.fml.event.lifecycle.InterModProcessEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.insane96mcp.progressivebosses.commands.Counter;
-import net.insane96mcp.progressivebosses.proxies.CommonProxy;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.Mod.Instance;
-import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
+import java.util.stream.Collectors;
 
-@Mod(modid = ProgressiveBosses.MOD_ID, name = ProgressiveBosses.MOD_NAME, version = ProgressiveBosses.VERSION, acceptedMinecraftVersions = ProgressiveBosses.MINECRAFT_VERSIONS)
+@Mod("progressivebosses")
 public class ProgressiveBosses {
-	
-	public static final String MOD_ID = "progressivebosses";
-	public static final String MOD_NAME = "Progressive Bosses";
-	public static final String VERSION = "1.5.0";
-	public static final String RESOURCE_PREFIX = MOD_ID.toLowerCase() + ":";
-	public static final String MINECRAFT_VERSIONS = "[1.12,1.12.2]";
-	
-	@Instance(MOD_ID)
-	public static ProgressiveBosses instance;
-	
-	@SidedProxy(clientSide = "net.insane96mcp.progressivebosses.proxies.ClientProxy", serverSide = "net.insane96mcp.progressivebosses.proxies.ServerProxy")
-	public static CommonProxy proxy;
-	
-	public Logger logger;
-	
-	@EventHandler
-	public void PreInit(FMLPreInitializationEvent event) {
-		logger = event.getModLog();
-		
-		proxy.PreInit(event);
-	}
-	
-	@EventHandler
-	public void Init(FMLInitializationEvent event) {
-		proxy.Init(event);
-	}
-	
-	@EventHandler
-	public void PostInit(FMLPostInitializationEvent event) {
-		proxy.PostInit(event);
-	}
-	
-	@EventHandler 
-	public void Start(FMLServerStartingEvent event){
-		event.registerServerCommand(new Counter());
-	}
+
+    public static IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
+
+    private static final Logger LOGGER = LogManager.getLogger();
+
+    public ProgressiveBosses() {
+        FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+    }
+
+    private void setup(final FMLCommonSetupEvent event) {
+
+    }
+
+    // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
+    // Event bus for receiving Registry Events)
+    @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
+    public static class RegistryEvents {
+        @SubscribeEvent
+        public static void onBlocksRegistry(final RegistryEvent.Register<Block> event) {
+            event.getRegistry().register(new TestBlock());
+        }
+
+        @SubscribeEvent
+        public static void onItemRegistry(final RegistryEvent.Register<Item> event) {
+            event.getRegistry().register(new BlockItem(ModBlocks.TEST_BLOCK, new Item.Properties()).setRegistryName("test_block"));
+        }
+    }
 }

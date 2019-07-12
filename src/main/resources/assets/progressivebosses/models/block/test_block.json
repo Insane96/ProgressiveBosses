@@ -1,0 +1,7 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+
+    "all": "progressivebosses:block/test_block"
+  }
+}
