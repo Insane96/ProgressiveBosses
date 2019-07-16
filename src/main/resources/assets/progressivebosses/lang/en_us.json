@@ -1,3 +1,8 @@
 {
-  "item.progressivebosses.nether_star_shard": "Nether Star Shard"
+  "item.progressivebosses.nether_star_shard": "Nether Star Shard",
+  "wither.minion": "Wither Minion",
+  "dragon.larva": "Dragon Larva",
+  "dragon.minion": "Dragon Minion",
+  "command.get_player_boss_data": "[%s]\nSummoned Withers: %d\nKilled Dragons: %d",
+  "command.set_player_boss_data": "[%s]\nSet %s difficulty to: %d"
 }

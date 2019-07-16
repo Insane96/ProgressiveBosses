@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.setup;
+package insane96mcp.progressivebosses.proxy;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;

@@ -1,9 +1,11 @@
 package insane96mcp.progressivebosses.items;
 
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import net.minecraftforge.registries.ObjectHolder;
 
 public class ModItems {
 
-    @ObjectHolder("progressivebosses:test_item")
+    @ObjectHolder(ProgressiveBosses.RESOURCE_PREFIX + "nether_star_shard")
     public static NetherStarShardItem NETHER_STAR_SHARD;
+
 }
