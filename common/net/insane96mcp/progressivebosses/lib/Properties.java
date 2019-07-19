@@ -244,6 +244,17 @@ public class Properties {
 				public boolean firstDragonPerPlayer = true;
 				
 			}
+			
+			public Attack attack = new Attack();
+			
+			public static class Attack {
+				@Name("Bonus Attack Damage")
+				@Comment("How much more percentage damage does the Ender Dragon deal per difficulty? Setting to 0 will disable this feature.")
+				public float bonusDamage = 15f;
+				@Name("Full Chance to Attack")
+				@Comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance each tick (1/20th of second) when roaming around to attack the player.\nThis defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 24 (last End Gate to appear). The actual formula is\n(this_value / 23) * difficulty * (1 / remaining_crystals).\nSetting to 0 will disable this feature.")
+				public float fullChanceToAttack = 0.5f;
+			}
 		}
 	}
 
