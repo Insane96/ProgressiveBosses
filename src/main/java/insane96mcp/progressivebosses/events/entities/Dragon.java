@@ -160,7 +160,7 @@ public class Dragon {
         if (difficulty == 0)
             return;
 
-        event.setAmount(event.getAmount() * (1 + difficulty * 0.15f));
+        event.setAmount((float) (event.getAmount() * (1 + difficulty * (ModConfig.Dragon.Attack.bonusAttackDamage.get() / 100.0))));
 
     }
 
@@ -204,7 +204,7 @@ public class Dragon {
 
         float difficulty = tags.getFloat("progressivebosses:difficulty");
 
-        float chance = 0.005f / 23;
+        double chance = (ModConfig.Dragon.Attack.chargePlayerBaseChance.get() / 100.0) / 23;
         chance *= difficulty;
         int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
         chance *= (1f / crystalsAlive);

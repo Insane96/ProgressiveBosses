@@ -289,6 +289,25 @@ public class ModConfig {
             }
         }
 
+        public static class Attack {
+            public static String name = "Attack";
+
+            public static ConfigValue<Double> bonusAttackDamage;
+            public static ConfigValue<Double> chargePlayerBaseChance;
+
+            public static void init() {
+                BUILDER.push(name);
+
+                bonusAttackDamage = BUILDER
+                        .comment("How much more percentage damage does the Ender Dragon deal per difficulty? Setting to 0 will disable this feature")
+                        .defineInRange("Bonus Attack Damage", 15.0, 0.0, Double.MAX_VALUE);
+                chargePlayerBaseChance = BUILDER
+                        .comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance each tick (1/20th of second) when roaming around to attack the player.\\nThis defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 24 (last End Gate to appear). The actual formula is\\n(this_value / 23) * difficulty * (1 / remaining_crystals).\\nSetting to 0 will disable this feature.")
+                        .defineInRange("Charge Player Base Chance", 0.5, 0.0, Double.MAX_VALUE);
+                BUILDER.pop();
+            }
+        }
+
         public static void init() {
             BUILDER.push(name);
             General.init();
@@ -296,6 +315,7 @@ public class ModConfig {
             Larvae.init();
             Minion.init();
             Rewards.init();
+            Attack.init();
             BUILDER.pop();
         }
     }
