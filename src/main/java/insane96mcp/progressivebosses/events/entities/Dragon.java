@@ -106,13 +106,49 @@ public class Dragon {
 
 		CompoundNBT tags = dragon.getEntityData();
 
+		int radius = 160;
+		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
+		BlockPos pos2 = new BlockPos(radius, radius, radius);
+		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+
+		List<ServerPlayerEntity> players = world.getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		int playersAround = players.size();
+
+		int playersFirstTime = tags.getInt("progressivebosses:eggs_to_drop");
+
+		boolean previouslyKilledDragon = false;
+		if (dragon.getFightManager() != null)
+			previouslyKilledDragon = dragon.getFightManager().hasPreviouslyKilledDragon();
+
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
-		int xp = (int) (500 * (ModConfig.Dragon.Rewards.bonusExperience.get() * difficulty / 100f));
+
+		int xp = 0;
+
+		if (!previouslyKilledDragon) {
+			playersFirstTime--;
+
+			//Add XP for players that killed the first time
+			if (playersAround > 1)
+				xp += 12000 * playersFirstTime;
+
+			//Add XP per more than 1 player around
+			if (playersAround > 1)
+				xp += (500 * ((ModConfig.Dragon.Rewards.bonusExperience.get() + 1) * difficulty / 100f) * (playersAround - playersFirstTime));
+
+		} else {
+
+			//Add bonus XP for the normal experience drop
+			xp += (int) (500 * (ModConfig.Dragon.Rewards.bonusExperience.get() * difficulty / 100f));
+
+			//Add XP per more than 1 player around
+			if (playersAround > 1)
+				xp += (500 * ((ModConfig.Dragon.Rewards.bonusExperience.get() + 1) * difficulty / 100f) * (playersAround - 1));
+		}
 
 		while (xp > 0) {
 			int i = ExperienceOrbEntity.getXPSplit(xp);
 			xp -= i;
-			dragon.world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.posX, dragon.posY, dragon.posZ, i));
+			world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.posX, dragon.posY, dragon.posZ, i));
 		}
 	}
 
