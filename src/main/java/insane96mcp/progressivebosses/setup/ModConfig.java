@@ -57,8 +57,8 @@ public class ModConfig {
             public static ConfigValue<Integer> maxAround;
             public static ConfigValue<Integer> minCooldown;
             public static ConfigValue<Integer> maxCooldown;
-            public static ConfigValue<Integer> baseHealth;
-            public static ConfigValue<Integer> healthPerDifficulty;
+            public static ConfigValue<Integer> minHealth;
+            public static ConfigValue<Integer> maxHealth;
 
             public static void init() {
                 BUILDER.push(name);
@@ -80,12 +80,12 @@ public class ModConfig {
                 maxCooldown = BUILDER
                         .comment("After how many maximum ticks (20 ticks = 1 second) the wither will try to spawn Minions")
                         .defineInRange("Max Cooldown", 400, 1, Integer.MAX_VALUE);
-                baseHealth = BUILDER
-                        .comment("Health with which Minions spawn at Difficulty = 0")
-                        .defineInRange("Base Health", 20, 0, 1024);
-                healthPerDifficulty = BUILDER
-                        .comment("Health Points Minions gain per difficulty")
-                        .defineInRange("Health Per Difficulty", 1, 0, 1024);
+                minHealth = BUILDER
+                        .comment("Minimum Health with which Wither Minions can spawn with")
+                        .defineInRange("Min Health", 10, 0, 1024);
+                maxHealth = BUILDER
+                        .comment("Minimum Health with which Wither Minions can spawn with")
+                        .defineInRange("Max Health", 20, 0, 1024);
                 BUILDER.pop();
             }
         }

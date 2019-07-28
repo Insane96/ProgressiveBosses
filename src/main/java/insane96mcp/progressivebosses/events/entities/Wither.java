@@ -230,12 +230,11 @@ public class Wither {
                         continue;
 
                     IAttributeInstance minionHealth = witherSkeleton.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
-                    float baseHealth = ModConfig.Wither.Minions.baseHealth.get();
-                    float bonusHealth = ModConfig.Wither.Minions.healthPerDifficulty.get() * difficulty;
-                    minionHealth.setBaseValue(baseHealth + bonusHealth);
+                    float health = MathRandom.getFloat(world.rand, ModConfig.Wither.Minions.minHealth.get(), ModConfig.Wither.Minions.maxHealth.get());
+                    minionHealth.setBaseValue(health);
 
                     IAttributeInstance speedAttibute = witherSkeleton.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-                    float maxSpeedMultiplier = 1.25f;
+                    float maxSpeedMultiplier = 1.2f;
                     float speedMultiplier = difficulty / 100f + 1f;
                     if (speedMultiplier > maxSpeedMultiplier)
                         speedMultiplier = maxSpeedMultiplier;
@@ -256,13 +255,13 @@ public class Wither {
                     ArrayList<Goal> toRemove = new ArrayList<>();
 
                     runningGoals.forEach(goal -> {
-                        if (goal.func_220772_j() instanceof FleeSunGoal)
+                        if (goal.getGoal() instanceof FleeSunGoal)
                             toRemove.add(goal);
 
-                        if (goal.func_220772_j() instanceof RestrictSunGoal)
+                        if (goal.getGoal() instanceof RestrictSunGoal)
                             toRemove.add(goal);
 
-                        if (goal.func_220772_j() instanceof AvoidEntityGoal)
+                        if (goal.getGoal() instanceof AvoidEntityGoal)
                             toRemove.add(goal);
                     });
 
@@ -275,9 +274,9 @@ public class Wither {
                     Stream<PrioritizedGoal> targetSelectors = witherSkeleton.targetSelector.getRunningGoals();
 
                     targetSelectors.forEach(goal -> {
-                        if (goal.func_220772_j() instanceof NearestAttackableTargetGoal)
+                        if (goal.getGoal() instanceof NearestAttackableTargetGoal)
                             toRemove.add(goal);
-                        if (goal.func_220772_j() instanceof HurtByTargetGoal)
+                        if (goal.getGoal() instanceof HurtByTargetGoal)
                             toRemove.add(goal);
                     });
                     for (Goal goal : toRemove) {
@@ -288,7 +287,7 @@ public class Wither {
                     witherSkeleton.targetSelector.addGoal(1, new WitherMinionHurtByTargetGoal(witherSkeleton, WitherEntity.class));
                     witherSkeleton.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witherSkeleton, PlayerEntity.class, true));
                     witherSkeleton.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witherSkeleton, IronGolemEntity.class, true));
-                    witherSkeleton.targetSelector.addGoal(3, new NearestAttackableTargetGoal<MobEntity>(witherSkeleton, MobEntity.class, 0, false, false, NOT_UNDEAD));
+                    witherSkeleton.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witherSkeleton, MobEntity.class, 0, false, false, NOT_UNDEAD));
 
                     world.addEntity(witherSkeleton);
 

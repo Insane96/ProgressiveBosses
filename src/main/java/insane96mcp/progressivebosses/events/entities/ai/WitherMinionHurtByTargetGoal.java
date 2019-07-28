@@ -17,7 +17,7 @@ public class WitherMinionHurtByTargetGoal extends HurtByTargetGoal {
     @Override
     public boolean shouldExecute() {
         LivingEntity livingEntity = this.goalOwner.getRevengeTarget();
-        return livingEntity != null && this.func_220777_a(livingEntity, new EntityPredicate().setLineOfSiteRequired().setUseInvisibilityCheck().setCustomPredicate(NON_WITHER)) && !(livingEntity instanceof WitherEntity);
+		return livingEntity != null && this.isSuitableTarget(livingEntity, new EntityPredicate().setLineOfSiteRequired().setUseInvisibilityCheck().setCustomPredicate(NON_WITHER)) && !(livingEntity instanceof WitherEntity);
     }
 
     private static final Predicate<LivingEntity> NON_WITHER = livingEntity -> !(livingEntity instanceof WitherEntity);

@@ -39,346 +39,346 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public class Dragon {
-    public static void setStats(EntityJoinWorldEvent event) {
-        if (event.getWorld().getDimension().getType() != DimensionType.THE_END)
-            return;
+	public static void setStats(EntityJoinWorldEvent event) {
+		if (event.getWorld().getDimension().getType() != DimensionType.THE_END)
+			return;
 
-        if (!(event.getEntity() instanceof EnderDragonEntity))
-            return;
+		if (!(event.getEntity() instanceof EnderDragonEntity))
+			return;
 
-        EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 
-        CompoundNBT tags = dragon.getEntityData();
-        boolean alreadyProcessed = tags.getBoolean("progressivebosses:processed");
+		CompoundNBT tags = dragon.getEntityData();
+		boolean alreadyProcessed = tags.getBoolean("progressivebosses:processed");
 
-        if (alreadyProcessed)
-            return;
+		if (alreadyProcessed)
+			return;
 
-        tags.putBoolean("progressivebosses:processed", true);
+		tags.putBoolean("progressivebosses:processed", true);
 
-        int radius = 160;
-        BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
-        BlockPos pos2 = new BlockPos(radius, radius, radius);
-        AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+		int radius = 160;
+		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
+		BlockPos pos2 = new BlockPos(radius, radius, radius);
+		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
-        List<ServerPlayerEntity> players = event.getWorld().getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
-        if (players.size() == 0)
-            return;
+		List<ServerPlayerEntity> players = event.getWorld().getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		if (players.size() == 0)
+			return;
 
-        int c;
-        int eggsToDrop = 0;
+		int c;
+		int eggsToDrop = 0;
 
-        float killedCount = 0;
-        for (ServerPlayerEntity player : players) {
-            CompoundNBT playerTags = player.getEntityData();
-            c = playerTags.getInt("progressivebosses:killed_dragons");
-            if (c == 0) {
-                Reflection.set(Reflection.DragonFightManager_previouslyKilled, dragon.getFightManager(), false);
+		float killedCount = 0;
+		for (ServerPlayerEntity player : players) {
+			CompoundNBT playerTags = player.getEntityData();
+			c = playerTags.getInt("progressivebosses:killed_dragons");
+			if (c == 0) {
+				Reflection.set(Reflection.DragonFightManager_previouslyKilled, dragon.getFightManager(), false);
 
-                eggsToDrop++;
-            }
-            killedCount += c;
-        }
+				eggsToDrop++;
+			}
+			killedCount += c;
+		}
 
-        tags.putInt("progressivebosses:eggs_to_drop", eggsToDrop);
+		tags.putInt("progressivebosses:eggs_to_drop", eggsToDrop);
 
 
-        if (killedCount == 0)
-            return;
+		if (killedCount == 0)
+			return;
 
-        if (!ModConfig.Dragon.General.sumKilledDragonsDifficulty.get() && killedCount > 0)
-            killedCount /= players.size();
+		if (!ModConfig.Dragon.General.sumKilledDragonsDifficulty.get() && killedCount > 0)
+			killedCount /= players.size();
 
-        setHealth(dragon, killedCount);
+		setHealth(dragon, killedCount);
 
-        tags.putFloat("progressivebosses:difficulty", killedCount);
-    }
+		tags.putFloat("progressivebosses:difficulty", killedCount);
+	}
 
-    private static void setHealth(EnderDragonEntity dragon, float killedCount) {
-        IAttributeInstance attribute = dragon.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
-        attribute.setBaseValue(attribute.getBaseValue() + (killedCount * ModConfig.Dragon.Health.bonusPerDifficulty.get()));
-        dragon.setHealth((float) attribute.getBaseValue());
-    }
+	private static void setHealth(EnderDragonEntity dragon, float killedCount) {
+		IAttributeInstance attribute = dragon.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
+		attribute.setBaseValue(attribute.getBaseValue() + (killedCount * ModConfig.Dragon.Health.bonusPerDifficulty.get()));
+		dragon.setHealth((float) attribute.getBaseValue());
+	}
 
-    private static void dropMoreExperience(EnderDragonEntity dragon, World world) {
-        if (dragon.deathTicks != 150)
-            return;
+	private static void dropMoreExperience(EnderDragonEntity dragon, World world) {
+		if (dragon.deathTicks != 150)
+			return;
 
-        CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getEntityData();
 
-        float difficulty = tags.getFloat("progressivebosses:difficulty");
-        int xp = (int) (500 * (ModConfig.Dragon.Rewards.bonusExperience.get() * difficulty / 100f));
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		int xp = (int) (500 * (ModConfig.Dragon.Rewards.bonusExperience.get() * difficulty / 100f));
 
-        while (xp > 0) {
-            int i = ExperienceOrbEntity.getXPSplit(xp);
-            xp -= i;
-            dragon.world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.posX, dragon.posY, dragon.posZ, i));
-        }
-    }
+		while (xp > 0) {
+			int i = ExperienceOrbEntity.getXPSplit(xp);
+			xp -= i;
+			dragon.world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.posX, dragon.posY, dragon.posZ, i));
+		}
+	}
 
 
-    public static void onDeath(LivingDeathEvent event) {
-        if (!(event.getEntity() instanceof EnderDragonEntity))
-            return;
+	public static void onDeath(LivingDeathEvent event) {
+		if (!(event.getEntity() instanceof EnderDragonEntity))
+			return;
 
-        EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-        CompoundNBT tags = dragon.getEntityData();
-        if (tags.getBoolean("progressivebosses:has_been_killed"))
-            return;
-        tags.putBoolean("progressivebosses:has_been_killed", true);
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		CompoundNBT tags = dragon.getEntityData();
+		if (tags.getBoolean("progressivebosses:has_been_killed"))
+			return;
+		tags.putBoolean("progressivebosses:has_been_killed", true);
 
-        int radius = 160;
-        BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
-        BlockPos pos2 = new BlockPos(radius, radius, radius);
-        AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+		int radius = 160;
+		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
+		BlockPos pos2 = new BlockPos(radius, radius, radius);
+		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
-        List<ServerPlayerEntity> players = dragon.world.getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
-        if (players.size() == 0)
-            return;
+		List<ServerPlayerEntity> players = dragon.world.getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		if (players.size() == 0)
+			return;
 
-        int c;
-        for (ServerPlayerEntity player : players) {
-            CompoundNBT playerTags = player.getEntityData();
-            c = playerTags.getInt("progressivebosses:killed_dragons");
-            if (c >= ModConfig.Dragon.General.maxDifficulty.get())
-                continue;
-            playerTags.putInt("progressivebosses:killed_dragons", c + 1);
-        }
-    }
+		int c;
+		for (ServerPlayerEntity player : players) {
+			CompoundNBT playerTags = player.getEntityData();
+			c = playerTags.getInt("progressivebosses:killed_dragons");
+			if (c >= ModConfig.Dragon.General.maxDifficulty.get())
+				continue;
+			playerTags.putInt("progressivebosses:killed_dragons", c + 1);
+		}
+	}
 
 
-    public static void onPlayerDamage(LivingHurtEvent event) {
+	public static void onPlayerDamage(LivingHurtEvent event) {
 
-        if (!(event.getSource().getImmediateSource() instanceof EnderDragonEntity))
-            return;
+		if (!(event.getSource().getImmediateSource() instanceof EnderDragonEntity))
+			return;
 
-        EnderDragonEntity dragon = (EnderDragonEntity) event.getSource().getImmediateSource();
-        CompoundNBT tags = dragon.getEntityData();
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getSource().getImmediateSource();
+		CompoundNBT tags = dragon.getEntityData();
 
-        float difficulty = tags.getFloat("progressivebosses:difficulty");
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
 
-        if (difficulty == 0)
-            return;
+		if (difficulty == 0)
+			return;
 
-        event.setAmount((float) (event.getAmount() * (1 + difficulty * (ModConfig.Dragon.Attack.bonusAttackDamage.get() / 100.0))));
+		event.setAmount((float) (event.getAmount() * (1 + difficulty * (ModConfig.Dragon.Attack.bonusAttackDamage.get() / 100.0))));
 
-    }
+	}
 
-    private static void dropEgg(EnderDragonEntity dragon, World world) {
-        if (dragon.deathTicks != 100)
-            return;
+	private static void dropEgg(EnderDragonEntity dragon, World world) {
+		if (dragon.deathTicks != 100)
+			return;
 
-        CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getEntityData();
 
-        int eggsToDrop = tags.getInt("progressivebosses:eggs_to_drop");
+		int eggsToDrop = tags.getInt("progressivebosses:eggs_to_drop");
 
-        if (dragon.getFightManager() != null && !dragon.getFightManager().hasPreviouslyKilledDragon()) {
-            eggsToDrop--;
-        }
+		if (dragon.getFightManager() != null && !dragon.getFightManager().hasPreviouslyKilledDragon()) {
+			eggsToDrop--;
+		}
 
-        for (int i = 0; i < eggsToDrop; i++) {
-            world.setBlockState(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.getDefaultState());
-        }
-    }
+		for (int i = 0; i < eggsToDrop; i++) {
+			world.setBlockState(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.getDefaultState());
+		}
+	}
 
 
-    public static void update(LivingUpdateEvent event) {
-        if (!(event.getEntity() instanceof EnderDragonEntity))
-            return;
+	public static void update(LivingUpdateEvent event) {
+		if (!(event.getEntity() instanceof EnderDragonEntity))
+			return;
 
-        World world = event.getEntity().world;
+		World world = event.getEntity().world;
 
-        EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-        CompoundNBT tags = dragon.getEntityData();
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		CompoundNBT tags = dragon.getEntityData();
 
-        chargePlayer(dragon);
-        spawnEndermites(dragon, world);
-        spawnShulkers(dragon, world);
-        heal(dragon, tags);
-        dropEgg(dragon, world);
-        dropMoreExperience(dragon, world);
-    }
+		chargePlayer(dragon);
+		spawnEndermites(dragon, world);
+		spawnShulkers(dragon, world);
+		heal(dragon, tags);
+		dropEgg(dragon, world);
+		dropMoreExperience(dragon, world);
+	}
 
-    private static void chargePlayer(EnderDragonEntity dragon) {
-        CompoundNBT tags = dragon.getEntityData();
+	private static void chargePlayer(EnderDragonEntity dragon) {
+		CompoundNBT tags = dragon.getEntityData();
 
-        float difficulty = tags.getFloat("progressivebosses:difficulty");
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
 
-        double chance = (ModConfig.Dragon.Attack.chargePlayerBaseChance.get() / 100.0) / 23;
-        chance *= difficulty;
-        int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
-        chance *= (1f / crystalsAlive);
+		double chance = (ModConfig.Dragon.Attack.chargePlayerBaseChance.get() / 100.0) / 23;
+		chance *= difficulty;
+		int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
+		chance *= (1f / crystalsAlive);
 
-        if (Math.random() < chance && dragon.getPhaseManager().getCurrentPhase().getType() == PhaseType.HOLDING_PATTERN) {
-            AxisAlignedBB axisAlignedBB = new AxisAlignedBB(-128, -128, -128, 128, 128, 128);
-            ServerPlayerEntity player = dragon.world.getClosestEntityWithinAABB(ServerPlayerEntity.class, new EntityPredicate().setDistance(128.0), dragon, dragon.posX, dragon.posY + (double) dragon.getEyeHeight(), dragon.posZ, axisAlignedBB);
+		if (Math.random() < chance && dragon.getPhaseManager().getCurrentPhase().getType() == PhaseType.HOLDING_PATTERN) {
+			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(-128, -128, -128, 128, 128, 128);
+			ServerPlayerEntity player = dragon.world.getClosestEntityWithinAABB(ServerPlayerEntity.class, new EntityPredicate().setDistance(128.0), dragon, dragon.posX, dragon.posY + (double) dragon.getEyeHeight(), dragon.posZ, axisAlignedBB);
 
-            if (player != null) {
-                dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-                (dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER)).setTarget(new Vec3d(player.posX, player.posY, player.posZ));
-            }
-        }
-    }
+			if (player != null) {
+				dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
+				(dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER)).setTarget(new Vec3d(player.posX, player.posY, player.posZ));
+			}
+		}
+	}
 
-    private static void heal(EnderDragonEntity dragon, CompoundNBT tags) {
-        if (ModConfig.Dragon.Health.maximumBonusRegen.get() == 0.0f)
-            return;
+	private static void heal(EnderDragonEntity dragon, CompoundNBT tags) {
+		if (ModConfig.Dragon.Health.maximumBonusRegen.get() == 0.0f)
+			return;
 
-        if (dragon.ticksExisted % 20 != 0)
-            return;
+		if (dragon.ticksExisted % 20 != 0)
+			return;
 
-        float difficulty = tags.getFloat("progressivebosses:difficulty");
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
 
-        if (difficulty == 0)
-            return;
+		if (difficulty == 0)
+			return;
 
-        double maxHeal = ModConfig.Dragon.Health.maximumBonusRegen.get();
-        double heal = difficulty * ModConfig.Dragon.Health.bonusRegenPerSpawned.get();
+		double maxHeal = ModConfig.Dragon.Health.maximumBonusRegen.get();
+		double heal = difficulty * ModConfig.Dragon.Health.bonusRegenPerSpawned.get();
 
-        if (heal > maxHeal)
-            heal = maxHeal;
+		if (heal > maxHeal)
+			heal = maxHeal;
 
-        float health = dragon.getHealth();
+		float health = dragon.getHealth();
 
-        if (dragon.getHealth() < dragon.getMaxHealth() && dragon.getHealth() > 0.0f)
-            dragon.setHealth((float) (health + heal));
-    }
+		if (dragon.getHealth() < dragon.getMaxHealth() && dragon.getHealth() > 0.0f)
+			dragon.setHealth((float) (health + heal));
+	}
 
-    private static void spawnEndermites(EnderDragonEntity dragon, World world) {
-        if (ModConfig.Dragon.Larvae.maxSpawned.get() == 0)
-            return;
-
-        CompoundNBT tags = dragon.getEntityData();
-
-        //Mobs Properties Randomness
-        tags.putBoolean("mpr:prevent_processing", true);
-
-        float difficulty = tags.getFloat("progressivebosses:difficulty");
-        if (difficulty < ModConfig.Dragon.Larvae.difficultyToSpawnOneMore.get())
-            return;
-
-        int cooldown = tags.getInt("progressivebosses:endermites_cooldown");
-        if (cooldown > 0) {
-            tags.putInt("progressivebosses:endermites_cooldown", cooldown - 1);
-        } else {
-            int cooldownReduction = (int) (difficulty * ModConfig.Dragon.Larvae.cooldownReduction.get());
-            cooldown = MathRandom.getInt(world.rand, ModConfig.Dragon.Larvae.minCooldown.get() - cooldownReduction, ModConfig.Dragon.Larvae.maxCooldown.get() - cooldownReduction);
-            tags.putInt("progressivebosses:endermites_cooldown", cooldown);
-            for (int i = 1; i <= difficulty; i++) {
-                if (i / ModConfig.Dragon.Larvae.difficultyToSpawnOneMore.get() > ModConfig.Dragon.Larvae.maxSpawned.get())
-                    break;
-
-                if (i % ModConfig.Dragon.Larvae.difficultyToSpawnOneMore.get() == 0) {
-                    EndermiteEntity endermite = new EndermiteEntity(EntityType.ENDERMITE, world);
-                    CompoundNBT endermiteTags = endermite.getEntityData();
-                    //Scaling Health
-                    endermiteTags.putShort("scalinghealth:difficulty", (short) -1);
-
-                    float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
-                    float x = (float) (Math.cos(angle) * 3.15f);
-                    float z = (float) (Math.sin(angle) * 3.15f);
-                    int y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
-                    IAttributeInstance attribute = endermite.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-                    attribute.setBaseValue(attribute.getBaseValue() * 1.5f);
-                    attribute = endermite.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
-                    attribute.setBaseValue(96f);
-                    attribute = endermite.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
-                    attribute.setBaseValue(4);
-                    endermite.setHealth((float) attribute.getBaseValue());
-                    endermite.setPosition(x, y, z);
-                    endermite.setCustomName(new TranslationTextComponent("dragon.larva"));
-
-                    //Stream<PrioritizedGoal> runningGoals = endermite.goalSelector.getRunningGoals();
-                    ArrayList<Goal> toRemove = new ArrayList<>();
-
-                    Stream<PrioritizedGoal> targetSelectors = endermite.targetSelector.getRunningGoals();
-                    targetSelectors.forEach(goal -> {
-                        if (goal.func_220772_j() instanceof NearestAttackableTargetGoal)
-                            toRemove.add(goal);
-                    });
-
-                    for (Goal goal : toRemove) {
-                        endermite.targetSelector.removeGoal(goal);
-                    }
-                    endermite.targetSelector.addGoal(2, new NearestAttackableTargetGoal(endermite, PlayerEntity.class, false));
-
-                    Reflection.set(Reflection.MobEntity_experienceValue, endermite, 1);
-
-                    world.addEntity(endermite);
-                }
-            }
-        }
-    }
-
-    private static void spawnShulkers(EnderDragonEntity dragon, World world) {
-        if (ModConfig.Dragon.Minion.difficultyToSpawn.get() <= 0)
-            return;
-
-        CompoundNBT tags = dragon.getEntityData();
-
-        //Mobs Properties Randomness
-        tags.putBoolean("mpr:prevent_processing", true);
-
-        float difficulty = tags.getFloat("progressivebosses:difficulty");
-        if (difficulty < ModConfig.Dragon.Minion.difficultyToSpawn.get())
-            return;
-
-        int cooldown = tags.getInt("progressivebosses:shulkers_cooldown");
-        if (cooldown > 0) {
-            tags.putInt("progressivebosses:shulkers_cooldown", cooldown - 1);
-        } else {
-            int cooldownReduction = (int) (difficulty * ModConfig.Dragon.Minion.cooldownReduction.get());
-            cooldown = MathRandom.getInt(world.rand, ModConfig.Dragon.Minion.minCooldown.get() - cooldownReduction, ModConfig.Dragon.Minion.maxCooldown.get() - cooldownReduction);
-            tags.putInt("progressivebosses:shulkers_cooldown", cooldown);
-
-            ShulkerEntity shulker = new ShulkerEntity(EntityType.SHULKER, world);
-            CompoundNBT shulkerTags = shulker.getEntityData();
-
-            //Scaling Health
-            shulkerTags.putShort("scalinghealth:difficulty", (short) -1);
-
-            float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
-            float x = (float) (Math.cos(angle) * (MathRandom.getFloat(world.rand, 15f, 40f)));
-            float z = (float) (Math.sin(angle) * (MathRandom.getFloat(world.rand, 15f, 40f)));
-            float y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
-            IAttributeInstance followRange = shulker.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
-            followRange.setBaseValue(64f);
-            shulker.setPosition(x, y, z);
-            CompoundNBT compound = shulker.serializeNBT();
-            compound.putByte("Color", (byte) 15);
-            shulker.deserializeNBT(compound);
-            shulker.setCustomName(new TranslationTextComponent("dragon.minion"));
-
-            ArrayList<Goal> toRemove = new ArrayList<>();
-
-            Stream<PrioritizedGoal> runningGoals = shulker.goalSelector.getRunningGoals();
-            runningGoals.forEach(goal -> {
-                if (Reflection.ShulkerEntity_AttackGoal.isInstance(goal.func_220772_j()))
-                    toRemove.add(goal);
-            });
-            for (Goal goal : toRemove) {
-                shulker.goalSelector.removeGoal(goal);
-            }
-            toRemove.clear();
-
-            Stream<PrioritizedGoal> targetSelectors = shulker.targetSelector.getRunningGoals();
-            targetSelectors.forEach(goal -> {
-                if (goal.func_220772_j() instanceof NearestAttackableTargetGoal)
-                    toRemove.add(goal);
-            });
-            for (Goal goal : toRemove) {
-                shulker.goalSelector.removeGoal(goal);
-            }
-            toRemove.clear();
-
-            shulker.goalSelector.addGoal(1, new DragonMinionAttackGoal(shulker));
-
-            shulker.targetSelector.addGoal(2, new DragonMinionAttackNearestGoal(shulker));
-
-            Reflection.set(Reflection.MobEntity_deathLootTable, shulker, LootTables.EMPTY);
-            Reflection.set(Reflection.MobEntity_experienceValue, shulker, 2);
-
-            world.addEntity(shulker);
-        }
-    }
+	private static void spawnEndermites(EnderDragonEntity dragon, World world) {
+		if (ModConfig.Dragon.Larvae.maxSpawned.get() == 0)
+			return;
+
+		CompoundNBT tags = dragon.getEntityData();
+
+		//Mobs Properties Randomness
+		tags.putBoolean("mpr:prevent_processing", true);
+
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		if (difficulty < ModConfig.Dragon.Larvae.difficultyToSpawnOneMore.get())
+			return;
+
+		int cooldown = tags.getInt("progressivebosses:endermites_cooldown");
+		if (cooldown > 0) {
+			tags.putInt("progressivebosses:endermites_cooldown", cooldown - 1);
+		} else {
+			int cooldownReduction = (int) (difficulty * ModConfig.Dragon.Larvae.cooldownReduction.get());
+			cooldown = MathRandom.getInt(world.rand, ModConfig.Dragon.Larvae.minCooldown.get() - cooldownReduction, ModConfig.Dragon.Larvae.maxCooldown.get() - cooldownReduction);
+			tags.putInt("progressivebosses:endermites_cooldown", cooldown);
+			for (int i = 1; i <= difficulty; i++) {
+				if (i / ModConfig.Dragon.Larvae.difficultyToSpawnOneMore.get() > ModConfig.Dragon.Larvae.maxSpawned.get())
+					break;
+
+				if (i % ModConfig.Dragon.Larvae.difficultyToSpawnOneMore.get() == 0) {
+					EndermiteEntity endermite = new EndermiteEntity(EntityType.ENDERMITE, world);
+					CompoundNBT endermiteTags = endermite.getEntityData();
+					//Scaling Health
+					endermiteTags.putShort("scalinghealth:difficulty", (short) -1);
+
+					float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
+					float x = (float) (Math.cos(angle) * 3.15f);
+					float z = (float) (Math.sin(angle) * 3.15f);
+					int y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
+					IAttributeInstance attribute = endermite.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+					attribute.setBaseValue(attribute.getBaseValue() * 1.5f);
+					attribute = endermite.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+					attribute.setBaseValue(96f);
+					attribute = endermite.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
+					attribute.setBaseValue(4);
+					endermite.setHealth((float) attribute.getBaseValue());
+					endermite.setPosition(x, y, z);
+					endermite.setCustomName(new TranslationTextComponent("dragon.larva"));
+
+					//Stream<PrioritizedGoal> runningGoals = endermite.goalSelector.getRunningGoals();
+					ArrayList<Goal> toRemove = new ArrayList<>();
+
+					Stream<PrioritizedGoal> targetSelectors = endermite.targetSelector.getRunningGoals();
+					targetSelectors.forEach(goal -> {
+						if (goal.getGoal() instanceof NearestAttackableTargetGoal)
+							toRemove.add(goal);
+					});
+
+					for (Goal goal : toRemove) {
+						endermite.targetSelector.removeGoal(goal);
+					}
+					endermite.targetSelector.addGoal(2, new NearestAttackableTargetGoal(endermite, PlayerEntity.class, false));
+
+					Reflection.set(Reflection.MobEntity_experienceValue, endermite, 1);
+
+					world.addEntity(endermite);
+				}
+			}
+		}
+	}
+
+	private static void spawnShulkers(EnderDragonEntity dragon, World world) {
+		if (ModConfig.Dragon.Minion.difficultyToSpawn.get() <= 0)
+			return;
+
+		CompoundNBT tags = dragon.getEntityData();
+
+		//Mobs Properties Randomness
+		tags.putBoolean("mpr:prevent_processing", true);
+
+		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		if (difficulty < ModConfig.Dragon.Minion.difficultyToSpawn.get())
+			return;
+
+		int cooldown = tags.getInt("progressivebosses:shulkers_cooldown");
+		if (cooldown > 0) {
+			tags.putInt("progressivebosses:shulkers_cooldown", cooldown - 1);
+		} else {
+			int cooldownReduction = (int) (difficulty * ModConfig.Dragon.Minion.cooldownReduction.get());
+			cooldown = MathRandom.getInt(world.rand, ModConfig.Dragon.Minion.minCooldown.get() - cooldownReduction, ModConfig.Dragon.Minion.maxCooldown.get() - cooldownReduction);
+			tags.putInt("progressivebosses:shulkers_cooldown", cooldown);
+
+			ShulkerEntity shulker = new ShulkerEntity(EntityType.SHULKER, world);
+			CompoundNBT shulkerTags = shulker.getEntityData();
+
+			//Scaling Health
+			shulkerTags.putShort("scalinghealth:difficulty", (short) -1);
+
+			float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
+			float x = (float) (Math.cos(angle) * (MathRandom.getFloat(world.rand, 15f, 40f)));
+			float z = (float) (Math.sin(angle) * (MathRandom.getFloat(world.rand, 15f, 40f)));
+			float y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
+			IAttributeInstance followRange = shulker.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+			followRange.setBaseValue(64f);
+			shulker.setPosition(x, y, z);
+			CompoundNBT compound = shulker.serializeNBT();
+			compound.putByte("Color", (byte) 15);
+			shulker.deserializeNBT(compound);
+			shulker.setCustomName(new TranslationTextComponent("dragon.minion"));
+
+			ArrayList<Goal> toRemove = new ArrayList<>();
+
+			Stream<PrioritizedGoal> runningGoals = shulker.goalSelector.getRunningGoals();
+			runningGoals.forEach(goal -> {
+				if (Reflection.ShulkerEntity_AttackGoal.isInstance(goal.getGoal()))
+					toRemove.add(goal);
+			});
+			for (Goal goal : toRemove) {
+				shulker.goalSelector.removeGoal(goal);
+			}
+			toRemove.clear();
+
+			Stream<PrioritizedGoal> targetSelectors = shulker.targetSelector.getRunningGoals();
+			targetSelectors.forEach(goal -> {
+				if (goal.getGoal() instanceof NearestAttackableTargetGoal)
+					toRemove.add(goal);
+			});
+			for (Goal goal : toRemove) {
+				shulker.goalSelector.removeGoal(goal);
+			}
+			toRemove.clear();
+
+			shulker.goalSelector.addGoal(1, new DragonMinionAttackGoal(shulker));
+
+			shulker.targetSelector.addGoal(2, new DragonMinionAttackNearestGoal(shulker));
+
+			Reflection.set(Reflection.MobEntity_deathLootTable, shulker, LootTables.EMPTY);
+			Reflection.set(Reflection.MobEntity_experienceValue, shulker, 2);
+
+			world.addEntity(shulker);
+		}
+	}
 }
