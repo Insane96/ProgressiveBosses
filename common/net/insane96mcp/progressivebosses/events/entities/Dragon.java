@@ -206,6 +206,9 @@ public class Dragon {
 	}
 	
 	private static void ChargePlayer(EntityDragon dragon) {
+		if (dragon.getFightManager() == null)
+			return;
+		
 		NBTTagCompound tags = dragon.getEntityData();
 	
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
