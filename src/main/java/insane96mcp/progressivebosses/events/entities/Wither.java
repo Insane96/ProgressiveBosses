@@ -44,7 +44,7 @@ public class Wither {
 
         WitherEntity wither = (WitherEntity) event.getEntity();
 
-        CompoundNBT tags = wither.getEntityData();
+        CompoundNBT tags = wither.getPersistentData();
         boolean alreadyProcessed = tags.getBoolean("progressivebosses:processed");
 
         if (alreadyProcessed)
@@ -63,7 +63,7 @@ public class Wither {
 
         float spawnedCount = 1;
         for (ServerPlayerEntity player : players) {
-            CompoundNBT playerTags = player.getEntityData();
+            CompoundNBT playerTags = player.getPersistentData();
             int c = playerTags.getInt("progressivebosses:spawned_withers");
             spawnedCount += c;
             if (c >= ModConfig.Wither.General.maxDifficulty.get())
@@ -114,7 +114,7 @@ public class Wither {
         World world = event.getEntity().world;
 
         WitherEntity wither = (WitherEntity) event.getEntity();
-        CompoundNBT tags = wither.getEntityData();
+        CompoundNBT tags = wither.getPersistentData();
 
         if (wither.getHealth() < 0)
             return;
@@ -173,7 +173,7 @@ public class Wither {
         if (minionsCount >= ModConfig.Wither.Minions.maxAround.get())
             return;
 
-        CompoundNBT witherTags = wither.getEntityData();
+        CompoundNBT witherTags = wither.getPersistentData();
 
         //Mobs Properties Randomness
         witherTags.putBoolean("mobsrandomizzation:preventProcessing", true);
@@ -202,7 +202,7 @@ public class Wither {
 
                 if (spawn % ModConfig.Wither.Minions.difficultyToSpawnOneMore.get() == 0) {
                     WitherSkeletonEntity witherSkeleton = new WitherSkeletonEntity(EntityType.WITHER_SKELETON, world);
-                    CompoundNBT skellyTags = witherSkeleton.getEntityData();
+                    CompoundNBT skellyTags = witherSkeleton.getPersistentData();
                     //Scaling Health
                     skellyTags.putShort("scalinghealth:difficulty", (short) -1);
 
@@ -325,7 +325,7 @@ public class Wither {
         WitherEntity wither = (WitherEntity) event.getEntity();
         World world = wither.world;
 
-        CompoundNBT tags = wither.getEntityData();
+        CompoundNBT tags = wither.getPersistentData();
         ListNBT minionsList = tags.getList("minions", Constants.NBT.TAG_COMPOUND);
 
         AxisAlignedBB axisAlignedBB = new AxisAlignedBB(new BlockPos(wither.getPosition().add(-128, -128, -128)), wither.getPosition().add(128, 128, 128));
@@ -348,7 +348,7 @@ public class Wither {
 
         WitherEntity wither = (WitherEntity) event.getEntityLiving();
 
-        CompoundNBT tags = wither.getEntityData();
+        CompoundNBT tags = wither.getPersistentData();
         float difficulty = tags.getFloat("progressivebosses:difficulty");
 
         double chance = ModConfig.Wither.Rewards.shardPerDifficulty.get() * difficulty;

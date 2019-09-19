@@ -1,5 +1,5 @@
 2.1.0
-Updated to 1.14.4 (should work in any 1.14.x version)
+Updated to 1.14.4 (should work in any 1.14.x version now)
 Wither
     Minions
         Can now spawn with 5 to 10 hearts of health instead of scaling with Wither's Difficulty

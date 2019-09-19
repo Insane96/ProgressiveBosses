@@ -48,7 +48,7 @@ public class Dragon {
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 
-		CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getPersistentData();
 		boolean alreadyProcessed = tags.getBoolean("progressivebosses:processed");
 
 		if (alreadyProcessed)
@@ -70,7 +70,7 @@ public class Dragon {
 
 		float killedCount = 0;
 		for (ServerPlayerEntity player : players) {
-			CompoundNBT playerTags = player.getEntityData();
+			CompoundNBT playerTags = player.getPersistentData();
 			c = playerTags.getInt("progressivebosses:killed_dragons");
 			if (c == 0) {
 				Reflection.set(Reflection.DragonFightManager_previouslyKilled, dragon.getFightManager(), false);
@@ -104,7 +104,7 @@ public class Dragon {
 		if (dragon.deathTicks != 150)
 			return;
 
-		CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getPersistentData();
 
 		int radius = 160;
 		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
@@ -158,7 +158,7 @@ public class Dragon {
 			return;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getPersistentData();
 		if (tags.getBoolean("progressivebosses:has_been_killed"))
 			return;
 		tags.putBoolean("progressivebosses:has_been_killed", true);
@@ -174,7 +174,7 @@ public class Dragon {
 
 		int c;
 		for (ServerPlayerEntity player : players) {
-			CompoundNBT playerTags = player.getEntityData();
+			CompoundNBT playerTags = player.getPersistentData();
 			c = playerTags.getInt("progressivebosses:killed_dragons");
 			if (c >= ModConfig.Dragon.General.maxDifficulty.get())
 				continue;
@@ -189,7 +189,7 @@ public class Dragon {
 			return;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getSource().getImmediateSource();
-		CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getPersistentData();
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 
@@ -204,7 +204,7 @@ public class Dragon {
 		if (dragon.deathTicks != 100)
 			return;
 
-		CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getPersistentData();
 
 		int eggsToDrop = tags.getInt("progressivebosses:eggs_to_drop");
 
@@ -225,7 +225,7 @@ public class Dragon {
 		World world = event.getEntity().world;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getPersistentData();
 
 		chargePlayer(dragon);
 		spawnEndermites(dragon, world);
@@ -236,7 +236,7 @@ public class Dragon {
 	}
 
 	private static void chargePlayer(EnderDragonEntity dragon) {
-		CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getPersistentData();
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 
@@ -284,7 +284,7 @@ public class Dragon {
 		if (ModConfig.Dragon.Larvae.maxSpawned.get() == 0)
 			return;
 
-		CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getPersistentData();
 
 		//Mobs Properties Randomness
 		tags.putBoolean("mpr:prevent_processing", true);
@@ -306,7 +306,7 @@ public class Dragon {
 
 				if (i % ModConfig.Dragon.Larvae.difficultyToSpawnOneMore.get() == 0) {
 					EndermiteEntity endermite = new EndermiteEntity(EntityType.ENDERMITE, world);
-					CompoundNBT endermiteTags = endermite.getEntityData();
+					CompoundNBT endermiteTags = endermite.getPersistentData();
 					//Scaling Health
 					endermiteTags.putShort("scalinghealth:difficulty", (short) -1);
 
@@ -350,7 +350,7 @@ public class Dragon {
 		if (ModConfig.Dragon.Minion.difficultyToSpawn.get() <= 0)
 			return;
 
-		CompoundNBT tags = dragon.getEntityData();
+		CompoundNBT tags = dragon.getPersistentData();
 
 		//Mobs Properties Randomness
 		tags.putBoolean("mpr:prevent_processing", true);
@@ -368,7 +368,7 @@ public class Dragon {
 			tags.putInt("progressivebosses:shulkers_cooldown", cooldown);
 
 			ShulkerEntity shulker = new ShulkerEntity(EntityType.SHULKER, world);
-			CompoundNBT shulkerTags = shulker.getEntityData();
+			CompoundNBT shulkerTags = shulker.getPersistentData();
 
 			//Scaling Health
 			shulkerTags.putShort("scalinghealth:difficulty", (short) -1);

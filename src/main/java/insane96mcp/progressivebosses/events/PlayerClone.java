@@ -12,10 +12,10 @@ public class PlayerClone {
     @SubscribeEvent
     public static void eventPlayerClone(PlayerEvent.Clone event) {
         PlayerEntity oldPlayer = event.getOriginal();
-        PlayerEntity newPlayer = event.getEntityPlayer();
+        PlayerEntity newPlayer = event.getPlayer();
 
-        CompoundNBT oldPlayerData = oldPlayer.getEntityData();
-        newPlayer.getEntityData().putInt("progressivebosses:spawnedwithers", oldPlayerData.getInt("progressivebosses:spawnedwithers"));
-        newPlayer.getEntityData().putInt("progressivebosses:killeddragons", oldPlayerData.getInt("progressivebosses:killeddragons"));
+        CompoundNBT oldPlayerData = oldPlayer.getPersistentData();
+        newPlayer.getPersistentData().putInt("progressivebosses:spawnedwithers", oldPlayerData.getInt("progressivebosses:spawnedwithers"));
+        newPlayer.getPersistentData().putInt("progressivebosses:killeddragons", oldPlayerData.getInt("progressivebosses:killeddragons"));
     }
 }

@@ -47,7 +47,7 @@ public class Command {
     }
 
     private static int setBossData(CommandSource source, ServerPlayerEntity targetPlayer, String boss, int amount) {
-        CompoundNBT targetNBT = targetPlayer.getEntityData();
+		CompoundNBT targetNBT = targetPlayer.getPersistentData();
         if (boss == "wither")
             targetNBT.putInt("progressivebosses:spawned_withers", amount);
         if (boss == "dragon")
@@ -57,7 +57,7 @@ public class Command {
     }
 
     private static int getBossData(CommandSource source, ServerPlayerEntity targetPlayer) {
-        CompoundNBT targetNBT = targetPlayer.getEntityData();
+		CompoundNBT targetNBT = targetPlayer.getPersistentData();
         source.sendFeedback(new TranslationTextComponent("command.get_player_boss_data", targetPlayer.getName(), targetNBT.getInt("progressivebosses:spawned_withers"), targetNBT.getInt("progressivebosses:killed_dragons")), true);
 
         return 1;
