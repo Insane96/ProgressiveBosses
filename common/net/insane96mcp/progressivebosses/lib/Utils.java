@@ -8,4 +8,24 @@ public class Utils {
 			return min >= max ? min : random.nextFloat() * (max - min + 1) + min;
 		}
 	}
+	
+	public static class CustomReward {
+		String id;
+		float difficulty;
+		float chance;
+		RewardMode mode;
+		
+		public CustomReward(String id, float difficulty, float chance, RewardMode mode) {
+			this.id = id;
+			this.difficulty = difficulty;
+			this.chance = chance;
+			this.mode = mode;
+		}
+		
+		enum RewardMode {
+			ONCE,
+			REPEAT,
+			EXPONENTIAL
+		}
+	}
 }
