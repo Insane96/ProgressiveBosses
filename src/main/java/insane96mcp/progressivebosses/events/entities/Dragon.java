@@ -11,7 +11,6 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.item.ExperienceOrbEntity;
@@ -35,7 +34,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class Dragon {
 	public static void setStats(EntityJoinWorldEvent event) {
@@ -286,7 +284,7 @@ public class Dragon {
 		CompoundNBT tags = dragon.getPersistentData();
 
 		//Mobs Properties Randomness
-		tags.putBoolean("mpr:prevent_processing", true);
+		tags.putBoolean("mobspropertiesrandomness:checked", true);
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < ModConfig.Dragon.Larvae.difficultyToSpawnOneMore.get())
@@ -326,10 +324,9 @@ public class Dragon {
 					//Stream<PrioritizedGoal> runningGoals = endermite.goalSelector.getRunningGoals();
 					ArrayList<Goal> toRemove = new ArrayList<>();
 
-					Stream<PrioritizedGoal> targetSelectors = endermite.targetSelector.getRunningGoals();
-					targetSelectors.forEach(goal -> {
+					endermite.targetSelector.goals.forEach(goal -> {
 						if (goal.getGoal() instanceof NearestAttackableTargetGoal)
-							toRemove.add(goal);
+							toRemove.add(goal.getGoal());
 					});
 
 					for (Goal goal : toRemove) {
@@ -386,20 +383,18 @@ public class Dragon {
 
 			ArrayList<Goal> toRemove = new ArrayList<>();
 
-			Stream<PrioritizedGoal> runningGoals = shulker.goalSelector.getRunningGoals();
-			runningGoals.forEach(goal -> {
+			shulker.goalSelector.goals.forEach(goal -> {
 				if (goal.getGoal() instanceof ShulkerEntity.AttackGoal)
-					toRemove.add(goal);
+					toRemove.add(goal.getGoal());
 			});
 			for (Goal goal : toRemove) {
 				shulker.goalSelector.removeGoal(goal);
 			}
 			toRemove.clear();
 
-			Stream<PrioritizedGoal> targetSelectors = shulker.targetSelector.getRunningGoals();
-			targetSelectors.forEach(goal -> {
+			shulker.targetSelector.goals.forEach(goal -> {
 				if (goal.getGoal() instanceof NearestAttackableTargetGoal)
-					toRemove.add(goal);
+					toRemove.add(goal.getGoal());
 			});
 			for (Goal goal : toRemove) {
 				shulker.goalSelector.removeGoal(goal);

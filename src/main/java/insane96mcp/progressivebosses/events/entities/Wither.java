@@ -1,6 +1,5 @@
 package insane96mcp.progressivebosses.events.entities;
 
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.events.entities.ai.WitherMinionHurtByTargetGoal;
 import insane96mcp.progressivebosses.items.ModItems;
 import insane96mcp.progressivebosses.setup.ModConfig;
@@ -34,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class Wither {
 	public static void setStats(EntityJoinWorldEvent event) {
@@ -130,9 +128,6 @@ public class Wither {
 		if (ModConfig.Wither.Health.maximumBonusRegen.get() == 0.0f)
 			return;
 
-        /*if (wither.ticksExisted % 2 != 0)
-            return;
-*/
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 
 		if (difficulty <= 0)
@@ -187,7 +182,7 @@ public class Wither {
 			if (minCooldown < ModConfig.Wither.Minions.minCooldown.get() * 0.25)
 				minCooldown = (int) (ModConfig.Wither.Minions.minCooldown.get() * 0.25);
 			cooldown = MathRandom.getInt(world.rand, minCooldown, ModConfig.Wither.Minions.maxCooldown.get());
-			ProgressiveBosses.LOGGER.info(cooldown);
+
 			witherTags.putInt("progressivebosses:skeletons_cooldown", cooldown);
 			for (int i = ModConfig.Wither.Minions.difficultyToSpawn.get(); i <= difficulty; i++) {
 				if (minionsCount >= ModConfig.Wither.Minions.maxAround.get() && ModConfig.Wither.Minions.maxAround.get() > 0)
@@ -250,18 +245,16 @@ public class Wither {
 					minionsList.add(uuid);
 					witherTags.put("minions", minionsList);
 
-					Stream<PrioritizedGoal> runningGoals = witherSkeleton.goalSelector.getRunningGoals();
 					ArrayList<Goal> toRemove = new ArrayList<>();
-
-					runningGoals.forEach(goal -> {
+					witherSkeleton.goalSelector.goals.forEach(goal -> {
 						if (goal.getGoal() instanceof FleeSunGoal)
-							toRemove.add(goal);
+							toRemove.add(goal.getGoal());
 
 						if (goal.getGoal() instanceof RestrictSunGoal)
-							toRemove.add(goal);
+							toRemove.add(goal.getGoal());
 
 						if (goal.getGoal() instanceof AvoidEntityGoal)
-							toRemove.add(goal);
+							toRemove.add(goal.getGoal());
 					});
 
 					for (Goal goal : toRemove) {
@@ -269,15 +262,13 @@ public class Wither {
 					}
 					toRemove.clear();
 
-
-					Stream<PrioritizedGoal> targetSelectors = witherSkeleton.targetSelector.getRunningGoals();
-
-					targetSelectors.forEach(goal -> {
+					witherSkeleton.targetSelector.goals.forEach(goal -> {
 						if (goal.getGoal() instanceof NearestAttackableTargetGoal)
-							toRemove.add(goal);
+							toRemove.add(goal.getGoal());
 						if (goal.getGoal() instanceof HurtByTargetGoal)
-							toRemove.add(goal);
+							toRemove.add(goal.getGoal());
 					});
+
 					for (Goal goal : toRemove) {
 						witherSkeleton.targetSelector.removeGoal(goal);
 					}
