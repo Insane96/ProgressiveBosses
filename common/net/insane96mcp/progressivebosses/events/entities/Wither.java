@@ -15,6 +15,7 @@ import net.insane96mcp.progressivebosses.lib.Reflection;
 import net.insane96mcp.progressivebosses.lib.Utils;
 import net.insane96mcp.progressivebosses.lib.Utils.CustomReward;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
@@ -56,6 +57,9 @@ public class Wither {
 			return;
 		
 		EntityWither wither = (EntityWither)event.getEntity();
+		
+		if (EntityList.getKey(wither).equals(new ResourceLocation("botania:pink_wither")))
+			return;
 		
 		NBTTagCompound tags = wither.getEntityData();
 		boolean alreadySpawned = tags.getBoolean("progressivebosses:spawned");
@@ -132,6 +136,10 @@ public class Wither {
 		World world = event.getEntity().world;
 		
 		EntityWither wither = (EntityWither)event.getEntity();
+		
+		if (EntityList.getKey(wither).equals(new ResourceLocation("botania:pink_wither")))
+			return;
+		
 		NBTTagCompound tags = wither.getEntityData();
 
 		if (wither.getInvulTime() > 0) {
@@ -329,6 +337,10 @@ public class Wither {
 			return;
 		
 		EntityWither wither = (EntityWither)event.getEntity();
+		
+		if (EntityList.getKey(wither).equals(new ResourceLocation("botania:pink_wither")))
+			return;
+		
 		World world = wither.world;
 		
 		NBTTagCompound tags = wither.getEntityData();
