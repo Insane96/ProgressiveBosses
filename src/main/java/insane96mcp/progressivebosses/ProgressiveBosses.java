@@ -5,7 +5,6 @@ import insane96mcp.progressivebosses.proxy.ClientProxy;
 import insane96mcp.progressivebosses.proxy.IProxy;
 import insane96mcp.progressivebosses.proxy.ServerProxy;
 import insane96mcp.progressivebosses.setup.ModConfig;
-import insane96mcp.progressivebosses.setup.Reflection;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -41,7 +40,6 @@ public class ProgressiveBosses {
 
         ModLoadingContext.get().registerConfig(Type.COMMON, ModConfig.SPEC);
         ModConfig.init(Paths.get("config", MOD_ID + ".toml"));
-        Reflection.init();
 
         proxy.init();
     }

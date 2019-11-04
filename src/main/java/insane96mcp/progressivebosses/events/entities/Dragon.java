@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.events.entities;
 import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackNearestGoal;
 import insane96mcp.progressivebosses.setup.ModConfig;
-import insane96mcp.progressivebosses.setup.Reflection;
 import insane96mcp.progressivebosses.utils.MathRandom;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityPredicate;
@@ -73,7 +72,7 @@ public class Dragon {
 			CompoundNBT playerTags = player.getPersistentData();
 			c = playerTags.getInt("progressivebosses:killed_dragons");
 			if (c == 0) {
-				Reflection.set(Reflection.DragonFightManager_previouslyKilled, dragon.getFightManager(), false);
+				dragon.getFightManager().previouslyKilled = false;
 
 				eggsToDrop++;
 			}
@@ -338,7 +337,7 @@ public class Dragon {
 					}
 					endermite.targetSelector.addGoal(2, new NearestAttackableTargetGoal(endermite, PlayerEntity.class, false));
 
-					Reflection.set(Reflection.MobEntity_experienceValue, endermite, 1);
+					endermite.experienceValue = 1;
 
 					world.addEntity(endermite);
 				}
@@ -389,7 +388,7 @@ public class Dragon {
 
 			Stream<PrioritizedGoal> runningGoals = shulker.goalSelector.getRunningGoals();
 			runningGoals.forEach(goal -> {
-				if (Reflection.ShulkerEntity_AttackGoal.isInstance(goal.getGoal()))
+				if (goal.getGoal() instanceof ShulkerEntity.AttackGoal)
 					toRemove.add(goal);
 			});
 			for (Goal goal : toRemove) {
@@ -411,8 +410,8 @@ public class Dragon {
 
 			shulker.targetSelector.addGoal(2, new DragonMinionAttackNearestGoal(shulker));
 
-			Reflection.set(Reflection.MobEntity_deathLootTable, shulker, LootTables.EMPTY);
-			Reflection.set(Reflection.MobEntity_experienceValue, shulker, 2);
+			shulker.deathLootTable = LootTables.EMPTY;
+			shulker.experienceValue = 2;
 
 			world.addEntity(shulker);
 		}
