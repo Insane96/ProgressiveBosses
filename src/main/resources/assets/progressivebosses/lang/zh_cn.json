@@ -1,0 +1,8 @@
+{
+  "item.progressivebosses.nether_star_shard": "下界之星碎片",
+  "wither.minion": "凋零仆从",
+  "dragon.larva": "龙幼体",
+  "dragon.minion": "龙仆从",
+  "command.get_player_boss_data": "[%s]\n召唤凋零: %d\n杀死龙: %d",
+  "command.set_player_boss_data": "[%s]\n设置 %s 难度为: %d"
+}
