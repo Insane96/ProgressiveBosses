@@ -45,6 +45,9 @@ public class Dragon {
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 
+		if (dragon.getFightManager() == null)
+			return;
+
 		CompoundNBT tags = dragon.getPersistentData();
 		boolean alreadyProcessed = tags.getBoolean("progressivebosses:processed");
 
@@ -145,7 +148,7 @@ public class Dragon {
 		while (xp > 0) {
 			int i = ExperienceOrbEntity.getXPSplit(xp);
 			xp -= i;
-			world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.posX, dragon.posY, dragon.posZ, i));
+			world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.getPositionVec().getX(), dragon.getPositionVec().getY(), dragon.getPositionVec().getZ(), i));
 		}
 	}
 
@@ -233,6 +236,9 @@ public class Dragon {
 	}
 
 	private static void chargePlayer(EnderDragonEntity dragon) {
+		if (dragon.getFightManager() == null)
+			return;
+
 		CompoundNBT tags = dragon.getPersistentData();
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
@@ -244,11 +250,11 @@ public class Dragon {
 
 		if (Math.random() < chance && dragon.getPhaseManager().getCurrentPhase().getType() == PhaseType.HOLDING_PATTERN) {
 			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(-128, -128, -128, 128, 128, 128);
-			ServerPlayerEntity player = dragon.world.getClosestEntityWithinAABB(ServerPlayerEntity.class, new EntityPredicate().setDistance(128.0), dragon, dragon.posX, dragon.posY + (double) dragon.getEyeHeight(), dragon.posZ, axisAlignedBB);
+			ServerPlayerEntity player = dragon.world.getClosestEntityWithinAABB(ServerPlayerEntity.class, new EntityPredicate().setDistance(128.0), dragon, dragon.getPositionVec().getX(), dragon.getPositionVec().getY() + (double) dragon.getEyeHeight(), dragon.getPositionVec().getZ(), axisAlignedBB);
 
 			if (player != null) {
 				dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-				(dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER)).setTarget(new Vec3d(player.posX, player.posY, player.posZ));
+				(dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER)).setTarget(new Vec3d(player.getPositionVec().getX(), player.getPositionVec().getY(), player.getPositionVec().getZ()));
 			}
 		}
 	}

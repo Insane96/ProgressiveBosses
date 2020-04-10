@@ -207,11 +207,11 @@ public class Wither {
 					boolean shouldSpawn = false;
 					//Try to spawn the wither skeleton up to 10 times
 					for (int t = 0; t < 10; t++) {
-						x = (int) (wither.posX + (MathRandom.getInt(world.rand, -3, 3)));
-						y = (int) (wither.posY - 3);
-						z = (int) (wither.posZ + (MathRandom.getInt(world.rand, -3, 3)));
+						x = (int) (wither.getPositionVec().getX() + (MathRandom.getInt(world.rand, -3, 3)));
+						y = (int) (wither.getPositionVec().getY() - 3);
+						z = (int) (wither.getPositionVec().getZ() + (MathRandom.getInt(world.rand, -3, 3)));
 
-						for (; y < wither.posY + 4; y++) {
+						for (; y < wither.getPositionVec().getY() + 4; y++) {
 							if (canSpawn(witherSkeleton, new BlockPos(x, y, z), world)) {
 								shouldSpawn = true;
 								break;
@@ -357,7 +357,7 @@ public class Wither {
 		if (count == 0)
 			return;
 
-		ItemEntity shard = new ItemEntity(wither.world, wither.posX, wither.posY, wither.posZ, new ItemStack(ModItems.NETHER_STAR_SHARD, count));
+		ItemEntity shard = new ItemEntity(wither.world, wither.getPositionVec().getX(), wither.getPositionVec().getY(), wither.getPositionVec().getZ(), new ItemStack(ModItems.NETHER_STAR_SHARD, count));
 
 		event.getDrops().add(shard);
 	}
