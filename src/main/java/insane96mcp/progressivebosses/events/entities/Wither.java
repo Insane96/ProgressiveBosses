@@ -49,7 +49,7 @@ public class Wither {
 
 		tags.putBoolean("progressivebosses:processed", true);
 
-		int radius = ModConfig.Wither.General.spawnRadiusPlayerCheck.get();
+		int radius = ModConfig.COMMON.wither.general.spawnRadiusPlayerCheck.get();
 		BlockPos pos1 = wither.getPosition().add(-radius, -radius, -radius);
 		BlockPos pos2 = wither.getPosition().add(radius, radius, radius);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
@@ -63,7 +63,7 @@ public class Wither {
 			CompoundNBT playerTags = player.getPersistentData();
 			int c = playerTags.getInt("progressivebosses:spawned_withers");
 			spawnedCount += c;
-			if (c >= ModConfig.Wither.General.maxDifficulty.get())
+			if (c >= ModConfig.COMMON.wither.general.maxDifficulty.get())
 				continue;
 			playerTags.putInt("progressivebosses:spawned_withers", c + 1);
 		}
@@ -71,7 +71,7 @@ public class Wither {
 		if (spawnedCount == 1)
 			return;
 
-		if (!ModConfig.Wither.General.sumSpawnedWitherDifficulty.get())
+		if (!ModConfig.COMMON.wither.general.sumSpawnedWitherDifficulty.get())
 			spawnedCount /= players.size();
 
 		setHealth(wither, spawnedCount);
@@ -80,26 +80,26 @@ public class Wither {
 
 		tags.putFloat("progressivebosses:difficulty", spawnedCount);
 
-		int cooldown = MathRandom.getInt(wither.world.rand, ModConfig.Wither.Minions.minCooldown.get(), ModConfig.Wither.Minions.maxCooldown.get());
+		int cooldown = MathRandom.getInt(wither.world.rand, ModConfig.COMMON.wither.minions.minCooldown.get(), ModConfig.COMMON.wither.minions.maxCooldown.get());
 		tags.putInt("progressivebosses:skeletons_cooldown", cooldown);
 	}
 
 	private static void setExperience(WitherEntity wither, float difficulty) {
-		int xp = 50 + (int) (50 * (ModConfig.Wither.Rewards.bonusExperience.get() * difficulty / 100f));
+		int xp = 50 + (int) (50 * (ModConfig.COMMON.wither.rewards.bonusExperience.get() * difficulty / 100f));
 		wither.experienceValue = xp;
 	}
 
 	private static void setHealth(WitherEntity wither, float spawnedCount) {
 		IAttributeInstance health = wither.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
-		health.setBaseValue(health.getBaseValue() + (spawnedCount * ModConfig.Wither.Health.bonusPerDifficulty.get()));
+		health.setBaseValue(health.getBaseValue() + (spawnedCount * ModConfig.COMMON.wither.health.bonusPerDifficulty.get()));
 		wither.setHealth(Math.max(1, (float) health.getBaseValue() - 200));
 	}
 
 	private static void setArmor(WitherEntity wither, float killedCount) {
 		IAttributeInstance attribute = wither.getAttribute(SharedMonsterAttributes.ARMOR);
-		double armor = killedCount * ModConfig.Wither.Armor.bonusPerDifficulty.get();
-		if (armor > ModConfig.Wither.Armor.maximum.get())
-			armor = ModConfig.Wither.Armor.maximum.get();
+		double armor = killedCount * ModConfig.COMMON.wither.armor.bonusPerDifficulty.get();
+		if (armor > ModConfig.COMMON.wither.armor.maximum.get())
+			armor = ModConfig.COMMON.wither.armor.maximum.get();
 		attribute.setBaseValue(armor);
 	}
 
@@ -125,7 +125,7 @@ public class Wither {
 	}
 
 	private static void heal(WitherEntity wither, CompoundNBT tags) {
-		if (ModConfig.Wither.Health.maximumBonusRegen.get() == 0.0f)
+		if (ModConfig.COMMON.wither.health.maximumBonusRegen.get() == 0.0f)
 			return;
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
@@ -133,8 +133,8 @@ public class Wither {
 		if (difficulty <= 0)
 			return;
 
-		double maxHeal = ModConfig.Wither.Health.maximumBonusRegen.get();
-		double heal = difficulty * ModConfig.Wither.Health.bonusRegenPerSpawned.get();
+		double maxHeal = ModConfig.COMMON.wither.health.maximumBonusRegen.get();
+		double heal = difficulty * ModConfig.COMMON.wither.health.bonusRegenPerSpawned.get();
 
 		if (heal > maxHeal)
 			heal = maxHeal;
@@ -149,7 +149,7 @@ public class Wither {
 
 	private static void spawnSkeletons(WitherEntity wither, World world) {
 
-		if (ModConfig.Wither.Minions.maxSpawned.get() == 0)
+		if (ModConfig.COMMON.wither.minions.maxSpawned.get() == 0)
 			return;
 
 		int radius = 32;
@@ -164,7 +164,7 @@ public class Wither {
 		List<WitherSkeletonEntity> minions = world.getEntitiesWithinAABB(WitherSkeletonEntity.class, bb);
 		int minionsCount = minions.size();
 
-		if (minionsCount >= ModConfig.Wither.Minions.maxAround.get())
+		if (minionsCount >= ModConfig.COMMON.wither.minions.maxAround.get())
 			return;
 
 		CompoundNBT witherTags = wither.getPersistentData();
@@ -178,23 +178,23 @@ public class Wither {
 		if (cooldown > 0) {
 			witherTags.putInt("progressivebosses:skeletons_cooldown", cooldown - 1);
 		} else {
-			int minCooldown = (int) (ModConfig.Wither.Minions.minCooldown.get() * (wither.getHealth() / wither.getMaxHealth()));
-			if (minCooldown < ModConfig.Wither.Minions.minCooldown.get() * 0.25)
-				minCooldown = (int) (ModConfig.Wither.Minions.minCooldown.get() * 0.25);
-			cooldown = MathRandom.getInt(world.rand, minCooldown, ModConfig.Wither.Minions.maxCooldown.get());
+			int minCooldown = (int) (ModConfig.COMMON.wither.minions.minCooldown.get() * (wither.getHealth() / wither.getMaxHealth()));
+			if (minCooldown < ModConfig.COMMON.wither.minions.minCooldown.get() * 0.25)
+				minCooldown = (int) (ModConfig.COMMON.wither.minions.minCooldown.get() * 0.25);
+			cooldown = MathRandom.getInt(world.rand, minCooldown, ModConfig.COMMON.wither.minions.maxCooldown.get());
 
 			witherTags.putInt("progressivebosses:skeletons_cooldown", cooldown);
-			for (int i = ModConfig.Wither.Minions.difficultyToSpawn.get(); i <= difficulty; i++) {
-				if (minionsCount >= ModConfig.Wither.Minions.maxAround.get() && ModConfig.Wither.Minions.maxAround.get() > 0)
+			for (int i = ModConfig.COMMON.wither.minions.difficultyToSpawn.get(); i <= difficulty; i++) {
+				if (minionsCount >= ModConfig.COMMON.wither.minions.maxAround.get() && ModConfig.COMMON.wither.minions.maxAround.get() > 0)
 					return;
 
-				int spawn = i - ModConfig.Wither.Minions.difficultyToSpawn.get();
+				int spawn = i - ModConfig.COMMON.wither.minions.difficultyToSpawn.get();
 
 				//Stops spawning if max count has reached
-				if (spawn / ModConfig.Wither.Minions.difficultyToSpawnOneMore.get() >= ModConfig.Wither.Minions.maxSpawned.get())
+				if (spawn / ModConfig.COMMON.wither.minions.difficultyToSpawnOneMore.get() >= ModConfig.COMMON.wither.minions.maxSpawned.get())
 					break;
 
-				if (spawn % ModConfig.Wither.Minions.difficultyToSpawnOneMore.get() == 0) {
+				if (spawn % ModConfig.COMMON.wither.minions.difficultyToSpawnOneMore.get() == 0) {
 					WitherSkeletonEntity witherSkeleton = new WitherSkeletonEntity(EntityType.WITHER_SKELETON, world);
 					CompoundNBT skellyTags = witherSkeleton.getPersistentData();
 					//Scaling Health
@@ -224,7 +224,7 @@ public class Wither {
 						continue;
 
 					IAttributeInstance minionHealth = witherSkeleton.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
-					float health = MathRandom.getFloat(world.rand, ModConfig.Wither.Minions.minHealth.get(), ModConfig.Wither.Minions.maxHealth.get());
+					float health = MathRandom.getFloat(world.rand, ModConfig.COMMON.wither.minions.minHealth.get(), ModConfig.COMMON.wither.minions.maxHealth.get());
 					minionHealth.setBaseValue(health);
 
 					IAttributeInstance speedAttibute = witherSkeleton.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
@@ -341,13 +341,13 @@ public class Wither {
 		CompoundNBT tags = wither.getPersistentData();
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 
-		double chance = ModConfig.Wither.Rewards.shardPerDifficulty.get() * difficulty;
-		if (chance > ModConfig.Wither.Rewards.shardMaxChance.get())
-			chance = ModConfig.Wither.Rewards.shardMaxChance.get();
+		double chance = ModConfig.COMMON.wither.rewards.shardPerDifficulty.get() * difficulty;
+		if (chance > ModConfig.COMMON.wither.rewards.shardMaxChance.get())
+			chance = ModConfig.COMMON.wither.rewards.shardMaxChance.get();
 
-		int tries = (int) (difficulty / ModConfig.Wither.Rewards.shardDivider.get()) + 1;
-		if (tries > ModConfig.Wither.Rewards.shardMaxCount.get())
-			tries = ModConfig.Wither.Rewards.shardMaxCount.get();
+		int tries = (int) (difficulty / ModConfig.COMMON.wither.rewards.shardDivider.get()) + 1;
+		if (tries > ModConfig.COMMON.wither.rewards.shardMaxCount.get())
+			tries = ModConfig.COMMON.wither.rewards.shardMaxCount.get();
 		int count = 0;
 		for (int i = 0; i < tries; i++) {
 			if (wither.world.rand.nextFloat() >= chance / 100f)

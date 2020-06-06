@@ -25,7 +25,7 @@ public class DifficultyCommand {
                                 .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"))))
                         .then(Commands.literal("set")
                                 .then(Commands.literal("wither")
-                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, ModConfig.Wither.General.maxDifficulty.get()))
+                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, ModConfig.COMMON.wither.general.maxDifficulty.get()))
                                                 .executes(context -> setBossDifficulty(
                                                         context.getSource(),
                                                         EntityArgument.getPlayer(context, "targetPlayer"),
@@ -35,7 +35,7 @@ public class DifficultyCommand {
                                         )
                                 )
                                 .then(Commands.literal("dragon")
-                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, ModConfig.Dragon.General.maxDifficulty.get()))
+                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, ModConfig.COMMON.dragon.general.maxDifficulty.get()))
                                                 .executes(context -> setBossDifficulty(
                                                         context.getSource(),
                                                         EntityArgument.getPlayer(context, "targetPlayer"),
@@ -47,7 +47,7 @@ public class DifficultyCommand {
                         )
                         .then(Commands.literal("add")
                                 .then(Commands.literal("wither")
-                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, ModConfig.Wither.General.maxDifficulty.get()))
+                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, ModConfig.COMMON.wither.general.maxDifficulty.get()))
                                                 .executes(context -> addBossDifficulty(
                                                         context.getSource(),
                                                         EntityArgument.getPlayer(context, "targetPlayer"),
@@ -57,7 +57,7 @@ public class DifficultyCommand {
                                         )
                                 )
                                 .then(Commands.literal("dragon")
-                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, ModConfig.Dragon.General.maxDifficulty.get()))
+                                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, ModConfig.COMMON.dragon.general.maxDifficulty.get()))
                                                 .executes(context -> addBossDifficulty(
                                                         context.getSource(),
                                                         EntityArgument.getPlayer(context, "targetPlayer"),
@@ -87,13 +87,13 @@ public class DifficultyCommand {
         if (boss.equals("wither")) {
             currDifficulty = targetNBT.getInt(Strings.NBTTags.SPAWNED_WITHERS);
             int difficulty = currDifficulty + amount;
-            difficulty = MathHelper.clamp(difficulty, 0, ModConfig.Wither.General.maxDifficulty.get());
+            difficulty = MathHelper.clamp(difficulty, 0, ModConfig.COMMON.wither.general.maxDifficulty.get());
             targetNBT.putInt(Strings.NBTTags.SPAWNED_WITHERS, difficulty);
         }
         if (boss.equals("dragon")) {
             currDifficulty = targetNBT.getInt(Strings.NBTTags.KILLED_DRAGONS);
             int difficulty = currDifficulty + amount;
-            difficulty = MathHelper.clamp(difficulty, 0, ModConfig.Dragon.General.maxDifficulty.get());
+            difficulty = MathHelper.clamp(difficulty, 0, ModConfig.COMMON.dragon.general.maxDifficulty.get());
             targetNBT.putInt(Strings.NBTTags.KILLED_DRAGONS, difficulty);
         }
         source.sendFeedback(new TranslationTextComponent(Strings.Translatable.ADD_PLAYER_BOSS_DIFFICULTY, targetPlayer.getName(), amount, boss), true);
