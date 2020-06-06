@@ -290,7 +290,7 @@ public class Dragon {
 		CompoundNBT tags = dragon.getPersistentData();
 
 		//Mobs Properties Randomness
-		tags.putBoolean("mobspropertiesrandomness:checked", true);
+		//tags.putBoolean("mobspropertiesrandomness:checked", true);
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < ModConfig.Dragon.Larvae.difficultyToSpawnOneMore.get())
@@ -355,7 +355,7 @@ public class Dragon {
 		CompoundNBT tags = dragon.getPersistentData();
 
 		//Mobs Properties Randomness
-		tags.putBoolean("mpr:prevent_processing", true);
+		//tags.putBoolean("mpr:prevent_processing", true);
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
 		if (difficulty < ModConfig.Dragon.Minion.difficultyToSpawn.get())

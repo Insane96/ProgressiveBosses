@@ -1,13 +1,9 @@
 package insane96mcp.progressivebosses;
 
-import insane96mcp.progressivebosses.commands.Command;
-import insane96mcp.progressivebosses.proxy.ClientProxy;
-import insane96mcp.progressivebosses.proxy.IProxy;
-import insane96mcp.progressivebosses.proxy.ServerProxy;
+import insane96mcp.progressivebosses.commands.DifficultyCommand;
 import insane96mcp.progressivebosses.setup.ModConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig.Type;
@@ -25,8 +21,6 @@ public class ProgressiveBosses {
     public static final String MOD_ID = "progressivebosses";
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
-    public static IProxy proxy = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
-
     public static final Logger LOGGER = LogManager.getLogger();
 
     public ProgressiveBosses() {
@@ -40,12 +34,10 @@ public class ProgressiveBosses {
 
         ModLoadingContext.get().registerConfig(Type.COMMON, ModConfig.SPEC);
         ModConfig.init(Paths.get("config", MOD_ID + ".toml"));
-
-        proxy.init();
     }
 
     @SubscribeEvent
     public void serverStarting(FMLServerStartingEvent event) {
-        Command.register(event.getCommandDispatcher());
+        DifficultyCommand.register(event.getCommandDispatcher());
     }
 }
