@@ -7,6 +7,9 @@
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
 loaderVersion="[31,)" #mandatory (26 is current forge version)
+# The license for you mod. This is mandatory metadata and allows for easier comprehension of your redistributive properties.
+# Review your options at https://choosealicense.com/. All rights reserved is the default copyright stance, and is thus the default here.
+license="MIT License"
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/Insane96/ProgressiveBosses/issues/" #optional
 # A list of mods - how many allowed here is determined by the individual mod loader
@@ -38,7 +41,7 @@ Make Bosses harder the more you respawn them. Adding Health, Armor and some Abil
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[31,)" #mandatory
+    versionRange="[35.0.7,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -47,6 +50,6 @@ Make Bosses harder the more you respawn them. Adding Health, Armor and some Abil
 [[dependencies.progressivebosses]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[1.16.4]"
     ordering="NONE"
     side="BOTH"

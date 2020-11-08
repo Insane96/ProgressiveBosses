@@ -3,11 +3,11 @@ package insane96mcp.progressivebosses;
 import insane96mcp.progressivebosses.commands.DifficultyCommand;
 import insane96mcp.progressivebosses.setup.ModConfig;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,8 +31,12 @@ public class ProgressiveBosses {
         ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, ModConfig.COMMON_SPEC);
     }
 
-    @SubscribeEvent
+    /*@SubscribeEvent
     public void serverStarting(FMLServerStartingEvent event) {
-        DifficultyCommand.register(event.getCommandDispatcher());
+    }*/
+
+    @SubscribeEvent
+    public void registerCommands(RegisterCommandsEvent event) {
+        DifficultyCommand.register(event.getDispatcher());
     }
 }

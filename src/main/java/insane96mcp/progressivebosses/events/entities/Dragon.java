@@ -7,8 +7,8 @@ import insane96mcp.progressivebosses.utils.MathRandom;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -18,15 +18,15 @@ import net.minecraft.entity.monster.EndermiteEntity;
 import net.minecraft.entity.monster.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
-import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.storage.loot.LootTables;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
@@ -37,7 +37,7 @@ import java.util.List;
 
 public class Dragon {
 	public static void setStats(EntityJoinWorldEvent event) {
-		if (event.getWorld().getDimension().getType() != DimensionType.THE_END)
+		if (!event.getWorld().getDimensionKey().getLocation().equals(DimensionType.THE_END.getLocation()))
 			return;
 
 		if (!(event.getEntity() instanceof EnderDragonEntity))
@@ -95,7 +95,7 @@ public class Dragon {
 	}
 
 	private static void setHealth(EnderDragonEntity dragon, float killedCount) {
-		IAttributeInstance attribute = dragon.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
+		ModifiableAttributeInstance attribute = dragon.getAttribute(Attributes.MAX_HEALTH);
 		attribute.setBaseValue(attribute.getBaseValue() + (killedCount * ModConfig.COMMON.dragon.health.bonusPerDifficulty.get()));
 		dragon.setHealth((float) attribute.getBaseValue());
 	}
@@ -254,7 +254,7 @@ public class Dragon {
 
 			if (player != null) {
 				dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-				(dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER)).setTarget(new Vec3d(player.getPositionVec().getX(), player.getPositionVec().getY(), player.getPositionVec().getZ()));
+				(dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER)).setTarget(new Vector3d(player.getPositionVec().getX(), player.getPositionVec().getY(), player.getPositionVec().getZ()));
 			}
 		}
 	}
@@ -317,11 +317,11 @@ public class Dragon {
 					float x = (float) (Math.cos(angle) * 3.15f);
 					float z = (float) (Math.sin(angle) * 3.15f);
 					int y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
-					IAttributeInstance attribute = endermite.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+					ModifiableAttributeInstance attribute = endermite.getAttribute(Attributes.MOVEMENT_SPEED);
 					attribute.setBaseValue(attribute.getBaseValue() * 1.5f);
-					attribute = endermite.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+					attribute = endermite.getAttribute(Attributes.FOLLOW_RANGE);
 					attribute.setBaseValue(96f);
-					attribute = endermite.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
+					attribute = endermite.getAttribute(Attributes.MAX_HEALTH);
 					attribute.setBaseValue(4);
 					endermite.setHealth((float) attribute.getBaseValue());
 					endermite.setPosition(x, y, z);
@@ -379,11 +379,11 @@ public class Dragon {
 			float x = (float) (Math.cos(angle) * (MathRandom.getFloat(world.rand, 15f, 40f)));
 			float z = (float) (Math.sin(angle) * (MathRandom.getFloat(world.rand, 15f, 40f)));
 			float y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
-			IAttributeInstance followRange = shulker.getAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
+			ModifiableAttributeInstance followRange = shulker.getAttribute(Attributes.FOLLOW_RANGE);
 			followRange.setBaseValue(64f);
 			shulker.setPosition(x, y, z);
 			CompoundNBT compound = shulker.serializeNBT();
-			compound.putByte("Color", (byte) 15);
+			compound.putByte("Color", (byte) 10);
 			shulker.deserializeNBT(compound);
 			shulker.setCustomName(new TranslationTextComponent("dragon.minion"));
 

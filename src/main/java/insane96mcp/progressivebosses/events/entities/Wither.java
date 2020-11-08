@@ -4,8 +4,12 @@ import insane96mcp.progressivebosses.events.entities.ai.WitherMinionHurtByTarget
 import insane96mcp.progressivebosses.items.ModItems;
 import insane96mcp.progressivebosses.setup.ModConfig;
 import insane96mcp.progressivebosses.utils.MathRandom;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.CreatureAttribute;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -14,6 +18,7 @@ import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.EffectInstance;
@@ -22,7 +27,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootTables;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -90,13 +94,13 @@ public class Wither {
 	}
 
 	private static void setHealth(WitherEntity wither, float spawnedCount) {
-		IAttributeInstance health = wither.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
+		ModifiableAttributeInstance health = wither.getAttribute(Attributes.MAX_HEALTH);
 		health.setBaseValue(health.getBaseValue() + (spawnedCount * ModConfig.COMMON.wither.health.bonusPerDifficulty.get()));
 		wither.setHealth(Math.max(1, (float) health.getBaseValue() - 200));
 	}
 
 	private static void setArmor(WitherEntity wither, float killedCount) {
-		IAttributeInstance attribute = wither.getAttribute(SharedMonsterAttributes.ARMOR);
+		ModifiableAttributeInstance attribute = wither.getAttribute(Attributes.ARMOR);
 		double armor = killedCount * ModConfig.COMMON.wither.armor.bonusPerDifficulty.get();
 		if (armor > ModConfig.COMMON.wither.armor.maximum.get())
 			armor = ModConfig.COMMON.wither.armor.maximum.get();
@@ -223,11 +227,11 @@ public class Wither {
 					if (!shouldSpawn)
 						continue;
 
-					IAttributeInstance minionHealth = witherSkeleton.getAttribute(SharedMonsterAttributes.MAX_HEALTH);
+					ModifiableAttributeInstance minionHealth = witherSkeleton.getAttribute(Attributes.MAX_HEALTH);
 					float health = MathRandom.getFloat(world.rand, ModConfig.COMMON.wither.minions.minHealth.get(), ModConfig.COMMON.wither.minions.maxHealth.get());
 					minionHealth.setBaseValue(health);
 
-					IAttributeInstance speedAttibute = witherSkeleton.getAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+					ModifiableAttributeInstance speedAttibute = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
 					float maxSpeedMultiplier = 1.2f;
 					float speedMultiplier = difficulty / 100f + 1f;
 					if (speedMultiplier > maxSpeedMultiplier)
