@@ -41,7 +41,7 @@ Make Bosses harder the more you respawn them. Adding Health, Armor and some Abil
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[35.0.7,)" #mandatory
+    versionRange="[32,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -50,6 +50,6 @@ Make Bosses harder the more you respawn them. Adding Health, Armor and some Abil
 [[dependencies.progressivebosses]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.4]"
+    versionRange="[1.16.1,)"
     ordering="NONE"
     side="BOTH"
