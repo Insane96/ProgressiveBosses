@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.events.entities;
 
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.events.entities.ai.WitherMinionHurtByTargetGoal;
 import insane96mcp.progressivebosses.items.ModItems;
 import insane96mcp.progressivebosses.setup.ModConfig;
@@ -8,6 +9,7 @@ import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.*;
@@ -89,14 +91,20 @@ public class Wither {
 	}
 
 	private static void setExperience(WitherEntity wither, float difficulty) {
-		int xp = 50 + (int) (50 * (ModConfig.COMMON.wither.rewards.bonusExperience.get() * difficulty / 100f));
-		wither.experienceValue = xp;
+		wither.experienceValue = 50 + (int) (50 * (ModConfig.COMMON.wither.rewards.bonusExperience.get() * difficulty / 100f));
 	}
 
 	private static void setHealth(WitherEntity wither, float spawnedCount) {
 		ModifiableAttributeInstance health = wither.getAttribute(Attributes.MAX_HEALTH);
-		health.setBaseValue(health.getBaseValue() + (spawnedCount * ModConfig.COMMON.wither.health.bonusPerDifficulty.get()));
-		wither.setHealth(Math.max(1, (float) health.getBaseValue() - 200));
+		AttributeModifier modifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "wither_bonus_health", spawnedCount * ModConfig.COMMON.wither.health.bonusPerDifficulty.get(), AttributeModifier.Operation.ADDITION);
+		health.applyPersistentModifier(modifier);
+
+		boolean hasInvulTicks = wither.getInvulTime() > 0;
+
+		if (hasInvulTicks)
+			wither.setHealth(Math.max(1, (float) health.getValue() - 200));
+		else
+			wither.setHealth((float) health.getValue());
 	}
 
 	private static void setArmor(WitherEntity wither, float killedCount) {
@@ -104,7 +112,10 @@ public class Wither {
 		double armor = killedCount * ModConfig.COMMON.wither.armor.bonusPerDifficulty.get();
 		if (armor > ModConfig.COMMON.wither.armor.maximum.get())
 			armor = ModConfig.COMMON.wither.armor.maximum.get();
-		attribute.setBaseValue(armor);
+
+		AttributeModifier modifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "wither_bonus_armor", armor, AttributeModifier.Operation.ADDITION);
+
+		attribute.applyPersistentModifier(modifier);
 	}
 
 

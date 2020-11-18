@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.events.entities;
 
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackNearestGoal;
 import insane96mcp.progressivebosses.setup.ModConfig;
@@ -7,6 +8,7 @@ import insane96mcp.progressivebosses.utils.MathRandom;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.Goal;
@@ -96,8 +98,10 @@ public class Dragon {
 
 	private static void setHealth(EnderDragonEntity dragon, float killedCount) {
 		ModifiableAttributeInstance attribute = dragon.getAttribute(Attributes.MAX_HEALTH);
-		attribute.setBaseValue(attribute.getBaseValue() + (killedCount * ModConfig.COMMON.dragon.health.bonusPerDifficulty.get()));
-		dragon.setHealth((float) attribute.getBaseValue());
+		AttributeModifier healthModifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "dragon_bonus_health", killedCount * ModConfig.COMMON.dragon.health.bonusPerDifficulty.get(), AttributeModifier.Operation.ADDITION);
+		attribute.applyPersistentModifier(healthModifier);
+		//attribute.setBaseValue(attribute.getBaseValue() + (killedCount * ModConfig.COMMON.dragon.health.bonusPerDifficulty.get()));
+		dragon.setHealth((float) attribute.getValue());
 	}
 
 	private static void dropMoreExperience(EnderDragonEntity dragon, World world) {
@@ -323,7 +327,7 @@ public class Dragon {
 					attribute.setBaseValue(96f);
 					attribute = endermite.getAttribute(Attributes.MAX_HEALTH);
 					attribute.setBaseValue(4);
-					endermite.setHealth((float) attribute.getBaseValue());
+					endermite.setHealth((float) attribute.getValue());
 					endermite.setPosition(x, y, z);
 					endermite.setCustomName(new TranslationTextComponent("dragon.larva"));
 
