@@ -28,6 +28,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -118,7 +119,6 @@ public class Wither {
 		attribute.applyPersistentModifier(modifier);
 	}
 
-
 	public static void update(LivingEvent.LivingUpdateEvent event) {
 		if (!(event.getEntity() instanceof WitherEntity))
 			return;
@@ -131,12 +131,41 @@ public class Wither {
 		if (wither.getHealth() < 0)
 			return;
 
+		if (wither.getInvulTime() == 1){
+			explode(wither);
+		}
+
 		if (wither.getInvulTime() > 0) {
 			wither.bossInfo.setPercent(wither.getHealth() / wither.getMaxHealth());
 		} else {
 			spawnSkeletons(wither, world);
 			heal(wither, tags);
 		}
+	}
+
+	private static void explode(WitherEntity wither) {
+
+		if (ModConfig.COMMON.wither.misc.explosionCausesFireAtDifficulty.get() == -1 &&
+				ModConfig.COMMON.wither.misc.explosionPowerBonus.get() == 0d)
+			return;
+
+		float difficulty = wither.getPersistentData().getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
+
+		if (difficulty <= 0)
+			return;
+
+		float explosionPower = (float) (7.0f + (ModConfig.COMMON.wither.misc.explosionPowerBonus.get() * difficulty));
+
+		if (explosionPower > 13f)
+			explosionPower = 13f;
+
+		boolean fireExplosion = difficulty >= ModConfig.COMMON.wither.misc.explosionCausesFireAtDifficulty.get();
+
+		if (ModConfig.COMMON.wither.misc.explosionCausesFireAtDifficulty.get() == -1)
+			fireExplosion = false;
+
+		Explosion.Mode explosion$mode = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither) ? Explosion.Mode.DESTROY : Explosion.Mode.NONE;
+		wither.world.createExplosion(wither, wither.getPosX(), wither.getPosYEye(), wither.getPosZ(), explosionPower, fireExplosion, explosion$mode);
 	}
 
 	private static void heal(WitherEntity wither, CompoundNBT tags) {

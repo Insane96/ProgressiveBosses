@@ -28,6 +28,7 @@ public class ModConfig {
         public static String name = "Wither";
 
         public final General general;
+        public final Misc misc;
         public final Minions minions;
         public final Health health;
         public final Armor armor;
@@ -36,6 +37,7 @@ public class ModConfig {
         public Wither(final ForgeConfigSpec.Builder builder) {
             builder.push(name);
             general = new General(builder);
+            misc = new Misc(builder);
             minions = new Minions(builder);
             health = new Health(builder);
             armor = new Armor(builder);
@@ -61,6 +63,24 @@ public class ModConfig {
                 maxDifficulty = builder
                         .comment("The Maximum difficulty (times spawned) reachable by Wither. By default is set to 72 because the Wither reaches the maximum amount of health (1024, handled by Minecraft. Some mods can increase this) after 72 withers spawned.")
                         .defineInRange("Max Difficulty", 72, 1, Integer.MAX_VALUE);
+                builder.pop();
+            }
+        }
+
+        public static class Misc {
+            public static String name = "Misc";
+
+            public ConfigValue<Double> explosionPowerBonus;
+            public ConfigValue<Integer> explosionCausesFireAtDifficulty;
+
+            public Misc(final ForgeConfigSpec.Builder builder) {
+                builder.push(name);
+                explosionPowerBonus = builder
+                        .comment("How much explosion power (after the invulnerability) will the Wither gain for each difficulty point. Explosion Radius is capped to 13. Base Wither Explosion Power is 7.0. Setting this to 0 will not increase the Wither Explosion Power.")
+                        .defineInRange("Explosion Power Bonus", 0.08d, 0d, 4d);
+                explosionCausesFireAtDifficulty = builder
+                        .comment("At this difficulty the Wither Explosion will cause fire. Set to -1 to disable.")
+                        .defineInRange("Explosion Causes Fire at Difficulty", 10, -1, Integer.MAX_VALUE);
                 builder.pop();
             }
         }
