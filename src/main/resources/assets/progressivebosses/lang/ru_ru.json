@@ -1,0 +1,9 @@
+{
+  "item.progressivebosses.nether_star_shard": "Осколок звезды Незера",
+  "wither.minion": "Миньон иссушителя",
+  "dragon.larva": "Личинка дракона",
+  "dragon.minion": "Миньон дракона",
+  "command.get_player_boss_difficulty": "[%s]\nПризванных иссушителей: %d\nУбито драконов Края: %d",
+  "command.set_player_boss_difficulty": "[%s] Для (%s) выставлена сложность %d",
+  "command.add_player_boss_difficulty": "[%s] Добалено %s уровней сложности (%s)"
+}
