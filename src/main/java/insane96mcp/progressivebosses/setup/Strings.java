@@ -9,8 +9,9 @@ public class Strings {
 	}
 
 	public static class Translatable {
-		public static final String SET_PLAYER_BOSS_DIFFICULTY = "command.set_player_boss_difficulty";
-		public static final String ADD_PLAYER_BOSS_DIFFICULTY = "command.add_player_boss_difficulty";
-		public static final String GET_PLAYER_BOSS_DIFFICULTY = "command.get_player_boss_difficulty";
+		public static final String PLAYER_SET_BOSS_DIFFICULTY = "command.player_set_boss_difficulty";
+		public static final String PLAYER_ADD_BOSS_DIFFICULTY = "command.player_add_boss_difficulty";
+		public static final String PLAYER_GET_WITHER_DIFFICULTY = "command.player_get_wither_difficulty";
+		public static final String PLAYER_GET_DRAGON_DIFFICULTY = "command.player_get_dragon_difficulty";
 	}
 }

@@ -1,0 +1,10 @@
+{
+  "item.progressivebosses.nether_star_shard": "Scheggia di Stella del Nether",
+  "wither.minion": "Minion del Wither",
+  "dragon.larva": "Larva del Drago",
+  "dragon.minion": "Minion del Drago",
+  "command.player_get_wither_difficulty": "%s ha evocato %d Wither",
+  "command.player_get_dragon_difficulty": "%s ha ucciso %d Draghi",
+  "command.player_set_boss_difficulty": "Impostata la difficolta di %s del %s a %d",
+  "command.player_add_boss_difficulty": "Aggiunta %d di difficoltà del %s a %s (ora %d)"
+}
