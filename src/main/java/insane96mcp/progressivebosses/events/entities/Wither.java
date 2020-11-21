@@ -177,6 +177,9 @@ public class Wither {
 		if (difficulty <= 0)
 			return;
 
+		if (wither.getHealth() <= 0f)
+			return;
+
 		double maxHeal = ModConfig.COMMON.wither.health.maximumBonusRegen.get();
 		double heal = difficulty * ModConfig.COMMON.wither.health.bonusRegenPerSpawned.get();
 
@@ -194,6 +197,9 @@ public class Wither {
 	private static void spawnSkeletons(WitherEntity wither, World world) {
 
 		if (ModConfig.COMMON.wither.minions.maxSpawned.get() == 0)
+			return;
+
+		if (wither.getHealth() <= 0f)
 			return;
 
 		int radius = 32;
@@ -214,7 +220,7 @@ public class Wither {
 		CompoundNBT witherTags = wither.getPersistentData();
 
 		//Mobs Properties Randomness
-		witherTags.putBoolean("mobsrandomizzation:preventProcessing", true);
+		//witherTags.putBoolean("mobsrandomizzation:preventProcessing", true);
 
 		float difficulty = witherTags.getFloat("progressivebosses:difficulty");
 
