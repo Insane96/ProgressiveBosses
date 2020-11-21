@@ -6,6 +6,7 @@ import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackNeares
 import insane96mcp.progressivebosses.setup.ModConfig;
 import insane96mcp.progressivebosses.utils.MathRandom;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -24,7 +25,6 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
@@ -188,20 +188,41 @@ public class Dragon {
 
 
 	public static void onPlayerDamage(LivingHurtEvent event) {
+		onDirectDamage(event);
+		onAcidDamage(event);
+	}
 
+	private static void onDirectDamage(LivingHurtEvent event) {
 		if (!(event.getSource().getImmediateSource() instanceof EnderDragonEntity))
 			return;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getSource().getImmediateSource();
 		CompoundNBT tags = dragon.getPersistentData();
 
-		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
 
 		if (difficulty == 0)
 			return;
 
 		event.setAmount((float) (event.getAmount() * (1 + difficulty * (ModConfig.COMMON.dragon.attack.bonusAttackDamage.get() / 100.0))));
+	}
 
+	private static void onAcidDamage(LivingHurtEvent event) {
+		if (!(event.getSource().getTrueSource() instanceof EnderDragonEntity))
+			return;
+
+		if (!(event.getSource().getImmediateSource() instanceof AreaEffectCloudEntity))
+			return;
+
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getSource().getTrueSource();
+		CompoundNBT tags = dragon.getPersistentData();
+
+		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
+
+		if (difficulty == 0)
+			return;
+
+		event.setAmount((float) (event.getAmount() * (1 + difficulty * (ModConfig.COMMON.dragon.attack.bonusAcidPoolDamage.get() / 100.0))));
 	}
 
 	private static void dropEgg(EnderDragonEntity dragon, World world) {
@@ -232,6 +253,7 @@ public class Dragon {
 		CompoundNBT tags = dragon.getPersistentData();
 
 		chargePlayer(dragon);
+		spitFireball(dragon);
 		spawnEndermites(dragon, world);
 		spawnShulkers(dragon, world);
 		heal(dragon, tags);
@@ -239,27 +261,57 @@ public class Dragon {
 		dropMoreExperience(dragon, world);
 	}
 
-	private static void chargePlayer(EnderDragonEntity dragon) {
+	private static void spitFireball(EnderDragonEntity dragon) {
 		if (dragon.getFightManager() == null)
+			return;
+
+		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
 			return;
 
 		CompoundNBT tags = dragon.getPersistentData();
 
-		float difficulty = tags.getFloat("progressivebosses:difficulty");
+		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
+
+		double chance = (ModConfig.COMMON.dragon.attack.fireballBaseChance.get() / 100.0) / 24;
+		chance *= difficulty;
+		int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
+		chance *= (1f / crystalsAlive);
+
+		if (Math.random() < chance) {
+			ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(128.0D), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
+
+			if (player == null)
+				return;
+
+			dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
+			dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
+		}
+	}
+
+	private static void chargePlayer(EnderDragonEntity dragon) {
+		if (dragon.getFightManager() == null)
+			return;
+
+		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
+			return;
+
+		CompoundNBT tags = dragon.getPersistentData();
+
+		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
 
 		double chance = (ModConfig.COMMON.dragon.attack.chargePlayerBaseChance.get() / 100.0) / 24;
 		chance *= difficulty;
 		int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
 		chance *= (1f / crystalsAlive);
 
-		if (Math.random() < chance && dragon.getPhaseManager().getCurrentPhase().getType() == PhaseType.HOLDING_PATTERN) {
-			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(-128, -128, -128, 128, 128, 128);
-			ServerPlayerEntity player = dragon.world.getClosestEntityWithinAABB(ServerPlayerEntity.class, new EntityPredicate().setDistance(128.0), dragon, dragon.getPositionVec().getX(), dragon.getPositionVec().getY() + (double) dragon.getEyeHeight(), dragon.getPositionVec().getZ(), axisAlignedBB);
+		if (Math.random() < chance) {
+			ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(128.0D), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
 
-			if (player != null) {
-				dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-				(dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER)).setTarget(new Vector3d(player.getPositionVec().getX(), player.getPositionVec().getY(), player.getPositionVec().getZ()));
-			}
+			if (player == null)
+				return;
+
+			dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
+			dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(player.getPositionVec());
 		}
 	}
 
