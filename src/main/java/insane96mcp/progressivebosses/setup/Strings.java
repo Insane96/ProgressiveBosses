@@ -14,4 +14,8 @@ public class Strings {
 		public static final String PLAYER_GET_WITHER_DIFFICULTY = "command.player_get_wither_difficulty";
 		public static final String PLAYER_GET_DRAGON_DIFFICULTY = "command.player_get_dragon_difficulty";
 	}
+
+	public static class Items {
+		public static final String NETHER_STAR_SHARD = "nether_star_shard";
+	}
 }

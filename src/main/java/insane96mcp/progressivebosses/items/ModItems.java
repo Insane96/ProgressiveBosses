@@ -1,11 +1,15 @@
 package insane96mcp.progressivebosses.items;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import net.minecraftforge.registries.ObjectHolder;
+import insane96mcp.progressivebosses.setup.Strings;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
+import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class ModItems {
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ProgressiveBosses.MOD_ID);
 
-    @ObjectHolder(ProgressiveBosses.RESOURCE_PREFIX + "nether_star_shard")
-    public static NetherStarShardItem NETHER_STAR_SHARD;
-
+    public static final RegistryObject<Item> NETHER_STAR_SHARD = ITEMS.register(Strings.Items.NETHER_STAR_SHARD, () -> new Item(new Item.Properties().group(ItemGroup.MATERIALS).maxStackSize(8)));
 }

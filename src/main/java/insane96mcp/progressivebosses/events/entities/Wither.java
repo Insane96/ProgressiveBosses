@@ -429,7 +429,7 @@ public class Wither {
 		if (count == 0)
 			return;
 
-		ItemEntity shard = new ItemEntity(wither.world, wither.getPositionVec().getX(), wither.getPositionVec().getY(), wither.getPositionVec().getZ(), new ItemStack(ModItems.NETHER_STAR_SHARD, count));
+		ItemEntity shard = new ItemEntity(wither.world, wither.getPositionVec().getX(), wither.getPositionVec().getY(), wither.getPositionVec().getZ(), new ItemStack(ModItems.NETHER_STAR_SHARD.get(), count));
 
 		event.getDrops().add(shard);
 	}
