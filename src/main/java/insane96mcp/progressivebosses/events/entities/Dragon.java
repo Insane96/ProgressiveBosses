@@ -5,8 +5,11 @@ import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackNearestGoal;
 import insane96mcp.progressivebosses.setup.ModConfig;
 import insane96mcp.progressivebosses.utils.MathRandom;
+import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.PaneBlock;
 import net.minecraft.entity.AreaEffectCloudEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -26,6 +29,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DimensionType;
@@ -39,6 +43,7 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -97,41 +102,106 @@ public class Dragon {
 			killedCount /= players.size();
 
 		setHealth(dragon, killedCount);
+		crystalCages(dragon, killedCount);
+		moreCrystals(dragon, killedCount);
 
-		bb = bb.shrink(64);
+		tags.putFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty", killedCount);
+	}
 
-		List<EnderCrystalEntity> crystals = dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, bb);
+	private static void crystalCages(EnderDragonEntity dragon, float killedCount) {
+		int moreCagesAtDifficulty = ModConfig.COMMON.dragon.crystal.moreCagesAtDifficulty.get();
+
+		if (moreCagesAtDifficulty == -1)
+			return;
+
+		if (killedCount < moreCagesAtDifficulty)
+			return;
+
 		Vector3d centerPodium = Vector3d.copyCenteredHorizontally(dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
+
+		AxisAlignedBB bbCrystals = new AxisAlignedBB(centerPodium.add(-64, -16, -64), centerPodium.add(64, 64, 64));
+
+		List<EnderCrystalEntity> crystals = dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, bbCrystals);
+		//Remove the 4 crystals at the center
+		crystals.removeIf(c -> Math.sqrt(c.getDistanceSq(centerPodium)) <= 10d);
+		//Remove all the crystals that aren't on bedrock (so any player placed crystal or leftovers from previous fight will not be counted)
+		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().down()).getBlock() != Blocks.BEDROCK);
+		//Remove all the crystals that already have cages around
+		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().up(2)).getBlock() == Blocks.IRON_BARS);
+		//Order by the lowest crystal
+		crystals.sort(Comparator.comparingDouble(Entity::getPosY));
+
+		int crystalsInvolved = Math.round(killedCount - moreCagesAtDifficulty + 1);
+		int cagesGenerated = 0;
+
 		for (EnderCrystalEntity crystal : crystals) {
-			//Ignore the 4 crystals at the center
-			if (Math.sqrt(crystal.getDistanceSq(centerPodium)) <= 10d)
-				continue;
 
-			//Ignore all the crystals that may still be at the height of other ones
-			if (Math.abs(crystal.getPosY() - centerPodium.getY()) <= 2d)
-				continue;
+			//Shamelessly copied from MC Code
+			BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+			for(int k = -2; k <= 2; ++k) {
+				for(int l = -2; l <= 2; ++l) {
+					for(int i1 = 0; i1 <= 3; ++i1) {
+						boolean flag = MathHelper.abs(k) == 2;
+						boolean flag1 = MathHelper.abs(l) == 2;
+						boolean flag2 = i1 == 3;
+						if (flag || flag1 || flag2) {
+							boolean flag3 = k == -2 || k == 2 || flag2;
+							boolean flag4 = l == -2 || l == 2 || flag2;
+							BlockState blockstate = Blocks.IRON_BARS.getDefaultState().with(PaneBlock.NORTH, flag3 && l != -2).with(PaneBlock.SOUTH, flag3 && l != 2).with(PaneBlock.WEST, flag4 && k != -2).with(PaneBlock.EAST, flag4 && k != 2);
+							crystal.world.setBlockState(blockpos$mutable.setPos(crystal.getPosX() + k, crystal.getPosY() - 1 + i1, crystal.getPosZ() + l), blockstate);
+						}
+					}
+				}
+			}
 
-			BlockPos crystalPos = new BlockPos(crystal.getPosX(), centerPodium.getY(), crystal.getPosZ());
+			cagesGenerated++;
+			if (cagesGenerated == crystalsInvolved)
+				break;
+		}
+	}
 
-			ProgressiveBosses.LOGGER.warn(crystalPos);
+	private static void moreCrystals(EnderDragonEntity dragon, float killedCount) {
+		int moreCrystalsAtDifficulty = ModConfig.COMMON.dragon.crystal.moreCrystalsAtDifficulty.get();
+
+		if (moreCrystalsAtDifficulty == -1)
+			return;
+
+		if (killedCount < moreCrystalsAtDifficulty)
+			return;
+
+		Vector3d centerPodium = Vector3d.copyCenteredHorizontally(dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
+
+		AxisAlignedBB bbCrystals = new AxisAlignedBB(centerPodium.add(-64, -16, -64), centerPodium.add(64, 64, 64));
+
+		List<EnderCrystalEntity> crystals = dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, bbCrystals);
+		//Remove the 4 crystals at the center
+		crystals.removeIf(c -> Math.sqrt(c.getDistanceSq(centerPodium)) <= 10d);
+		//Remove all the crystals that aren't on bedrock (so any player placed crystal or leftovers from previous fight will not be counted)
+		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().down()).getBlock() != Blocks.BEDROCK);
+		//Order by the lowest crystal
+		crystals.sort(Comparator.comparingDouble(Entity::getPosY));
+
+		int crystalsInvolved = Math.round(killedCount - moreCrystalsAtDifficulty + 1);
+		int crystalSpawned = 0;
+
+		for (EnderCrystalEntity crystal : crystals) {
+			BlockPos crystalPos = new BlockPos(crystal.getPosX(), crystal.getPosY() - 16, crystal.getPosZ());
 
 			Stream<BlockPos> blocks = BlockPos.getAllInBox(crystalPos.add(-1, -1, -1), crystalPos.add(1, 1, 1));
 
-			blocks.forEach(pos -> {
-				dragon.world.setBlockState(pos, Blocks.AIR.getDefaultState());
-			});
+			blocks.forEach(pos -> dragon.world.setBlockState(pos, Blocks.AIR.getDefaultState()));
 			dragon.world.setBlockState(crystalPos.add(0, -1, 0), Blocks.OBSIDIAN.getDefaultState());
 
-			dragon.world.createExplosion(dragon, crystalPos.getX(), crystalPos.getY() + .5f, crystalPos.getZ(), 5f, Explosion.Mode.DESTROY);
+			dragon.world.createExplosion(dragon, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.Mode.DESTROY);
 
-			//TODO Crystals are not centered
-			EnderCrystalEntity newCrystal = new EnderCrystalEntity(dragon.world, crystalPos.getX(), crystalPos.getY(), crystalPos.getZ());
+			EnderCrystalEntity newCrystal = new EnderCrystalEntity(dragon.world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
 			newCrystal.setShowBottom(false);
 			dragon.world.addEntity(newCrystal);
-			//crystal.getDistanceSq()
-		}
 
-		tags.putFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty", killedCount);
+			crystalSpawned++;
+			if (crystalSpawned == crystalsInvolved)
+				break;
+		}
 	}
 
 	private static void setHealth(EnderDragonEntity dragon, float killedCount) {
@@ -193,7 +263,6 @@ public class Dragon {
 			world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.getPositionVec().getX(), dragon.getPositionVec().getY(), dragon.getPositionVec().getZ(), i));
 		}
 	}
-
 
 	public static void onDeath(LivingDeathEvent event) {
 		if (!(event.getEntity() instanceof EnderDragonEntity))

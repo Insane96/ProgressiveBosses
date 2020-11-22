@@ -208,6 +208,7 @@ public class ModConfig {
         public final Minions minions;
         public final Rewards rewards;
         public final Attack attack;
+        public final Crystal crystal;
 
         public Dragon(final ForgeConfigSpec.Builder builder) {
             builder.push(name);
@@ -217,6 +218,7 @@ public class ModConfig {
             minions = new Minions(builder);
             rewards = new Rewards(builder);
             attack = new Attack(builder);
+            crystal = new Crystal(builder);
             builder.pop();
         }
 
@@ -357,6 +359,25 @@ public class ModConfig {
                 fireballBaseChance = builder
                         .comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has an higher chance each tick (1/20th of second) when roaming around to spit a fireball.\\nThis defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 24 (last End Gate to appear). The actual formula is\\n(this_value / 23) * difficulty * (1 / remaining_crystals).\\nSetting to 0 will disable this feature.")
                         .defineInRange("Fireball Base Chance", 0.75, 0.0, Double.MAX_VALUE);
+                builder.pop();
+            }
+        }
+
+        public static class Crystal {
+            public static String name = "Crystal";
+
+            public ConfigValue<Integer> moreCagesAtDifficulty;
+            public ConfigValue<Integer> moreCrystalsAtDifficulty;
+
+            public Crystal(final ForgeConfigSpec.Builder builder){
+                builder.push(name);
+
+                moreCagesAtDifficulty = builder
+                        .comment("At this difficulty cages will start to appear around other crystals too, starting from the lowest ones. -1 will disable this feature.")
+                        .defineInRange("More Cages at Difficulty", 1, -1, Integer.MAX_VALUE);
+                moreCrystalsAtDifficulty = builder
+                        .comment("At this difficulty more crystals will start to appear inside obsidian towers, starting from the lowest ones. -1 will disable this feature.")
+                        .defineInRange("More Crystals at Difficulty", 8, -1, Integer.MAX_VALUE);
                 builder.pop();
             }
         }
