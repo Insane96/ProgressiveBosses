@@ -359,8 +359,8 @@ public class Dragon {
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 		CompoundNBT tags = dragon.getPersistentData();
 
-		chargePlayer(dragon);
 		spitFireball(dragon);
+		chargePlayer(dragon);
 		spawnEndermites(dragon, world);
 		spawnShulkers(dragon, world);
 		heal(dragon, tags);
@@ -375,14 +375,23 @@ public class Dragon {
 		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
 			return;
 
+		double fireballMaxChance = ModConfig.COMMON.dragon.attack.fireballMaxChance.get();
+		double maxChanceAtDifficulty = ModConfig.COMMON.dragon.attack.maxChanceAtDifficulty.get();
+
+		if (fireballMaxChance == 0f)
+			return;
+
 		CompoundNBT tags = dragon.getPersistentData();
 
 		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
 
-		double chance = (ModConfig.COMMON.dragon.attack.fireballBaseChance.get() / 100.0) / 24;
+		double chance = (fireballMaxChance / 100d) / maxChanceAtDifficulty;
 		chance *= difficulty;
 		int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
 		chance *= (1f / crystalsAlive);
+
+		if (chance > fireballMaxChance)
+			chance = fireballMaxChance;
 
 		if (Math.random() < chance) {
 			ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(128.0D), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
@@ -402,14 +411,23 @@ public class Dragon {
 		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
 			return;
 
+		double chargePlayerMaxChance = ModConfig.COMMON.dragon.attack.chargePlayerMaxChance.get();
+		double maxChanceAtDifficulty = ModConfig.COMMON.dragon.attack.maxChanceAtDifficulty.get();
+
+		if (chargePlayerMaxChance == 0f)
+			return;
+
 		CompoundNBT tags = dragon.getPersistentData();
 
 		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
 
-		double chance = (ModConfig.COMMON.dragon.attack.chargePlayerBaseChance.get() / 100.0) / 24;
+		double chance = (chargePlayerMaxChance / 100d) / maxChanceAtDifficulty;
 		chance *= difficulty;
 		int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
 		chance *= (1f / crystalsAlive);
+
+		if (chance > chargePlayerMaxChance)
+			chance = chargePlayerMaxChance;
 
 		if (Math.random() < chance) {
 			ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(128.0D), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());

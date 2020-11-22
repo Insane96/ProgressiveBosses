@@ -341,8 +341,9 @@ public class ModConfig {
 
             public ConfigValue<Double> bonusAttackDamage;
             public ConfigValue<Double> bonusAcidPoolDamage;
-            public ConfigValue<Double> chargePlayerBaseChance;
-            public ConfigValue<Double> fireballBaseChance;
+            public ConfigValue<Double> chargePlayerMaxChance;
+            public ConfigValue<Double> fireballMaxChance;
+            public ConfigValue<Double> maxChanceAtDifficulty;
 
             public Attack(final ForgeConfigSpec.Builder builder){
                 builder.push(name);
@@ -353,12 +354,15 @@ public class ModConfig {
                 bonusAcidPoolDamage = builder
                         .comment("How much more percentage damage does the Ender Dragon's Acid Pool per difficulty? Setting to 0 will disable this feature.\nRemember that in vanilla the Acid Pool is magic damage and only Protection enchantment can reduce it.")
                         .defineInRange("Bonus Acid Pool Damage", 10.0, 0.0, Double.MAX_VALUE);
-                chargePlayerBaseChance = builder
-                        .comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance each tick (1/20th of second) when roaming around to attack the player.\\nThis defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 24 (last End Gate to appear). The actual formula is\\n(this_value / 23) * difficulty * (1 / remaining_crystals).\\nSetting to 0 will disable this feature.")
-                        .defineInRange("Charge Player Base Chance", 0.75, 0.0, Double.MAX_VALUE);
-                fireballBaseChance = builder
-                        .comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has an higher chance each tick (1/20th of second) when roaming around to spit a fireball.\\nThis defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 24 (last End Gate to appear). The actual formula is\\n(this_value / 23) * difficulty * (1 / remaining_crystals).\\nSetting to 0 will disable this feature.")
-                        .defineInRange("Fireball Base Chance", 0.75, 0.0, Double.MAX_VALUE);
+                chargePlayerMaxChance = builder
+                        .comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance each tick (1/20th of second) when roaming around to attack the player.\\nThis defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher. The actual formula is\\n(this_value% / 'Max Chance at Difficulty') * difficulty * (1 / remaining_crystals).\\nSetting to 0 will disable this feature.")
+                        .defineInRange("Charge Player Max Chance", 1, 0.0, Double.MAX_VALUE);
+                fireballMaxChance = builder
+                        .comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance each tick (1/20th of second) when roaming around to spit a fireball.\\nThis defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher. The actual formula is\\n(this_value% / 'Max Chance at Difficulty') * difficulty * (1 / remaining_crystals).\\nSetting to 0 will disable this feature.")
+                        .defineInRange("Fireball Max Chance", 1.5, 0.0, Double.MAX_VALUE);
+                maxChanceAtDifficulty = builder
+                        .comment("Defines at which difficulty the Dragon has max chance to attack or spit fireballs when all crystals are destroyed (see 'Fireball Max Chance' and 'Charge Player Max Chance')")
+                        .defineInRange("Max Chance at Difficulty", 16, 0.0, Double.MAX_VALUE);
                 builder.pop();
             }
         }
