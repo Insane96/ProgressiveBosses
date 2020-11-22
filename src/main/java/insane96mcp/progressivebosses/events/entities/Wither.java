@@ -5,6 +5,7 @@ import insane96mcp.progressivebosses.events.entities.ai.WitherMinionHurtByTarget
 import insane96mcp.progressivebosses.items.ModItems;
 import insane96mcp.progressivebosses.setup.ModConfig;
 import insane96mcp.progressivebosses.utils.MathRandom;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -39,7 +40,9 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class Wither {
 	public static void setStats(EntityJoinWorldEvent event) {
@@ -55,6 +58,8 @@ public class Wither {
 			return;
 
 		tags.putBoolean("progressivebosses:processed", true);
+
+		fixBedrockStuck(wither);
 
 		int radius = ModConfig.COMMON.wither.general.spawnRadiusPlayerCheck.get();
 		BlockPos pos1 = wither.getPosition().add(-radius, -radius, -radius);
@@ -89,6 +94,23 @@ public class Wither {
 
 		int cooldown = MathRandom.getInt(wither.world.rand, ModConfig.COMMON.wither.minions.minCooldown.get(), ModConfig.COMMON.wither.minions.maxCooldown.get());
 		tags.putInt("progressivebosses:skeletons_cooldown", cooldown);
+	}
+
+	private static void fixBedrockStuck(WitherEntity wither) {
+		if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither))
+			return;
+
+		Stream<BlockPos> blocks = BlockPos.getAllInBox(wither.getPosition().add(-1, -1, -1), wither.getPosition().add(1, 4, 1));
+		AtomicBoolean flag = new AtomicBoolean(false);
+		blocks.forEach(pos -> {
+			BlockState state = wither.world.getBlockState(pos);
+			if (state.canEntityDestroy(wither.world, pos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, pos, state)) {
+				flag.set(wither.world.destroyBlock(pos, true, wither) || flag.get());
+			}
+		});
+
+		if (flag.get())
+			wither.world.playEvent((PlayerEntity)null, 1022, wither.getPosition(), 0);
 	}
 
 	private static void setExperience(WitherEntity wither, float difficulty) {
