@@ -1,8 +1,8 @@
 package insane96mcp.progressivebosses;
 
 import insane96mcp.progressivebosses.commands.DifficultyCommand;
-import insane96mcp.progressivebosses.items.ModItems;
 import insane96mcp.progressivebosses.setup.ModConfig;
+import insane96mcp.progressivebosses.setup.ModItems;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;

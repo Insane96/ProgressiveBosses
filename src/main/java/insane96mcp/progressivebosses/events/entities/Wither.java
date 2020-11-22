@@ -2,8 +2,8 @@ package insane96mcp.progressivebosses.events.entities;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.events.entities.ai.WitherMinionHurtByTargetGoal;
-import insane96mcp.progressivebosses.items.ModItems;
 import insane96mcp.progressivebosses.setup.ModConfig;
+import insane96mcp.progressivebosses.setup.ModItems;
 import insane96mcp.progressivebosses.utils.MathRandom;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.CreatureAttribute;
