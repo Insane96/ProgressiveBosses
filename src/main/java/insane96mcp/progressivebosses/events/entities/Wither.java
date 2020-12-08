@@ -59,8 +59,6 @@ public class Wither {
 
 		tags.putBoolean("progressivebosses:processed", true);
 
-		fixBedrockStuck(wither);
-
 		int radius = ModConfig.COMMON.wither.general.spawnRadiusPlayerCheck.get();
 		BlockPos pos1 = wither.getPosition().add(-radius, -radius, -radius);
 		BlockPos pos2 = wither.getPosition().add(radius, radius, radius);
@@ -99,6 +97,9 @@ public class Wither {
 	private static void fixBedrockStuck(WitherEntity wither) {
 		if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither))
 			return;
+
+		//if (!wither.isEntityInsideOpaqueBlock())
+			//return;
 
 		Stream<BlockPos> blocks = BlockPos.getAllInBox(wither.getPosition().add(-1, -1, -1), wither.getPosition().add(1, 4, 1));
 		AtomicBoolean flag = new AtomicBoolean(false);
@@ -154,6 +155,7 @@ public class Wither {
 			return;
 
 		if (wither.getInvulTime() == 1){
+			fixBedrockStuck(wither);
 			explode(wither);
 		}
 
