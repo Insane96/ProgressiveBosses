@@ -186,16 +186,18 @@ public class Dragon {
 
 		for (EnderCrystalEntity crystal : crystals) {
 			BlockPos crystalPos = new BlockPos(crystal.getPosX(), crystal.getPosY() - 16, crystal.getPosZ());
+			if (crystalPos.getY() < centerPodium.getY())
+				crystalPos = new BlockPos(crystalPos.getX(), centerPodium.getY(), crystalPos.getZ());
 
 			Stream<BlockPos> blocks = BlockPos.getAllInBox(crystalPos.add(-1, -1, -1), crystalPos.add(1, 1, 1));
 
 			blocks.forEach(pos -> dragon.world.setBlockState(pos, Blocks.AIR.getDefaultState()));
-			dragon.world.setBlockState(crystalPos.add(0, -1, 0), Blocks.OBSIDIAN.getDefaultState());
+			dragon.world.setBlockState(crystalPos.add(0, -1, 0), Blocks.BEDROCK.getDefaultState());
 
 			dragon.world.createExplosion(dragon, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.Mode.DESTROY);
 
 			EnderCrystalEntity newCrystal = new EnderCrystalEntity(dragon.world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
-			newCrystal.setShowBottom(false);
+			//newCrystal.setShowBottom(false);
 			dragon.world.addEntity(newCrystal);
 
 			crystalSpawned++;
