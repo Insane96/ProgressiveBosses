@@ -361,7 +361,7 @@ public class Wither {
 		}
 	}
 
-	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity instanceof LivingEntity && livingEntity.getCreatureAttribute() != CreatureAttribute.UNDEAD && livingEntity.attackable();
+	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getCreatureAttribute() != CreatureAttribute.UNDEAD && livingEntity.attackable();
 
 	/*
 	 * Check if the mob has space to spawn and if sits on solid ground
