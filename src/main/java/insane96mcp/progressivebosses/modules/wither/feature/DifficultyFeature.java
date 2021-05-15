@@ -6,6 +6,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -64,8 +65,8 @@ public class DifficultyFeature extends Feature {
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
 
-		CompoundNBT tags = wither.getPersistentData();
-		if (tags.contains(Strings.Tags.DIFFICULTY))
+		CompoundNBT witherTags = wither.getPersistentData();
+		if (witherTags.contains(Strings.Tags.DIFFICULTY))
 			return;
 
 		BlockPos pos1 = wither.getPosition().add(-this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck);
@@ -76,38 +77,40 @@ public class DifficultyFeature extends Feature {
 		if (players.size() == 0)
 			return;
 
-		float spawnedCount = 0;
+		float spawnedTotal = 0;
 		for (ServerPlayerEntity player : players) {
 			CompoundNBT playerTags = player.getPersistentData();
 			int spawnedWithers = playerTags.getInt(Strings.Tags.SPAWNED_WITHERS);
-			spawnedCount += spawnedWithers;
+			spawnedTotal += spawnedWithers;
 			if (spawnedWithers >= this.maxDifficulty)
 				continue;
 			playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, spawnedWithers + 1);
 		}
 
-		//If no players are found in the "Spawn Radius Player Check", I try to get the nearest player
-		if (spawnedCount == 0) {
-			event.getWorld().getClosestPlayer(wither.getPosX(), wither.getPosY(), wither.getPosZ(), Double.MAX_VALUE, true);
+		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
+		if (spawnedTotal == 0) {
+			PlayerEntity nearestPlayer = event.getWorld().getClosestPlayer(wither.getPosX(), wither.getPosY(), wither.getPosZ(), Double.MAX_VALUE, true);
+			if (nearestPlayer instanceof ServerPlayerEntity) {
+				ServerPlayerEntity player = (ServerPlayerEntity) nearestPlayer;
+				CompoundNBT playerTags = player.getPersistentData();
+				int spawnedWithers = playerTags.getInt(Strings.Tags.SPAWNED_WITHERS);
+				spawnedTotal += spawnedWithers;
+				if (spawnedWithers < this.maxDifficulty)
+					playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, spawnedWithers + 1);
+			}
 		}
 
-		if (spawnedCount == 0)
+		//If still no players are found then surrender
+		if (spawnedTotal == 0)
 			return;
 
-		if (!Config.COMMON.wither.general.sumSpawnedWitherDifficulty.get())
-			spawnedCount /= players.size();
+		if (!this.sumSpawnedWitherDifficulty)
+			spawnedTotal /= players.size();
 
-		setHealth(wither, spawnedCount);
-		setArmor(wither, spawnedCount);
-		setExperience(wither, spawnedCount);
-
-		tags.putFloat("progressivebosses:difficulty", spawnedCount);
-
-		int cooldown = MathRandom.getInt(wither.world.rand, Config.COMMON.wither.minions.minCooldown.get(), Config.COMMON.wither.minions.maxCooldown.get());
-		tags.putInt("progressivebosses:skeletons_cooldown", cooldown);
+		witherTags.putFloat(Strings.Tags.DIFFICULTY, spawnedTotal);
 	}
 
-	@SubscribeEvent(priority = EventPriority.HIGH)
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void setPlayerData(EntityJoinWorldEvent event) {
 		if (!(event.getEntity() instanceof ServerPlayerEntity))
 			return;
@@ -116,8 +119,6 @@ public class DifficultyFeature extends Feature {
 
 		CompoundNBT playerTags = player.getPersistentData();
 		if (!playerTags.contains(Strings.Tags.SPAWNED_WITHERS))
-			return;
-
-		playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, this.startingDifficulty);
+			playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, this.startingDifficulty);
 	}
 }

@@ -1,55 +1,13 @@
 package insane96mcp.progressivebosses.events.entities;
 
-import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackGoal;
-import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackNearestGoal;
-import insane96mcp.progressivebosses.setup.Config;
-import insane96mcp.progressivebosses.utils.MathRandom;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.PaneBlock;
-import net.minecraft.entity.AreaEffectCloudEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPredicate;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.phase.PhaseType;
-import net.minecraft.entity.item.EnderCrystalEntity;
-import net.minecraft.entity.item.ExperienceOrbEntity;
-import net.minecraft.entity.monster.EndermiteEntity;
-import net.minecraft.entity.monster.ShulkerEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.feature.EndPodiumFeature;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Stream;
-
 public class Dragon {
 	public static void setStats(EntityJoinWorldEvent event) {
-		if (!event.getWorld().getDimensionKey().getLocation().equals(DimensionType.THE_END.getLocation()))
+		/*if (!event.getWorld().getDimensionKey().getLocation().equals(DimensionType.THE_END.getLocation()))
 			return;
 
 		if (!(event.getEntity() instanceof EnderDragonEntity))
@@ -105,10 +63,10 @@ public class Dragon {
 		crystalCages(dragon, killedCount);
 		moreCrystals(dragon, killedCount);
 
-		tags.putFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty", killedCount);
+		tags.putFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty", killedCount);*/
 	}
 
-	private static void crystalCages(EnderDragonEntity dragon, float killedCount) {
+	/*private static void crystalCages(EnderDragonEntity dragon, float killedCount) {
 		int moreCagesAtDifficulty = Config.COMMON.dragon.crystal.moreCagesAtDifficulty.get();
 
 		if (moreCagesAtDifficulty == -1)
@@ -265,9 +223,9 @@ public class Dragon {
 			world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.getPositionVec().getX(), dragon.getPositionVec().getY(), dragon.getPositionVec().getZ(), i));
 		}
 	}
-
+*/
 	public static void onDeath(LivingDeathEvent event) {
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		/*if (!(event.getEntity() instanceof EnderDragonEntity))
 			return;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
@@ -292,16 +250,16 @@ public class Dragon {
 			if (c >= Config.COMMON.dragon.general.maxDifficulty.get())
 				continue;
 			playerTags.putInt("progressivebosses:killed_dragons", c + 1);
-		}
+		}*/
 	}
 
 
 	public static void onPlayerDamage(LivingHurtEvent event) {
-		onDirectDamage(event);
-		onAcidDamage(event);
+		//onDirectDamage(event);
+		//onAcidDamage(event);
 	}
 
-	private static void onDirectDamage(LivingHurtEvent event) {
+	/*private static void onDirectDamage(LivingHurtEvent event) {
 		if (!(event.getSource().getImmediateSource() instanceof EnderDragonEntity))
 			return;
 
@@ -350,10 +308,10 @@ public class Dragon {
 			world.setBlockState(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.getDefaultState());
 		}
 	}
-
+*/
 
 	public static void update(LivingUpdateEvent event) {
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		/*if (!(event.getEntity() instanceof EnderDragonEntity))
 			return;
 
 		World world = event.getEntity().world;
@@ -367,10 +325,10 @@ public class Dragon {
 		spawnShulkers(dragon, world);
 		heal(dragon, tags);
 		dropEgg(dragon, world);
-		dropMoreExperience(dragon, world);
+		dropMoreExperience(dragon, world);*/
 	}
 
-	private static void spitFireball(EnderDragonEntity dragon) {
+	/*private static void spitFireball(EnderDragonEntity dragon) {
 		if (dragon.getFightManager() == null)
 			return;
 
@@ -599,5 +557,5 @@ public class Dragon {
 
 			world.addEntity(shulker);
 		}
-	}
+	}*/
 }

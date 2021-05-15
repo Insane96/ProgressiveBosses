@@ -1,52 +1,20 @@
 package insane96mcp.progressivebosses.events.entities;
 
-import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.events.entities.ai.WitherMinionHurtByTargetGoal;
-import insane96mcp.progressivebosses.setup.Config;
-import insane96mcp.progressivebosses.setup.ModItems;
-import insane96mcp.progressivebosses.utils.MathRandom;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.CreatureAttribute;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.monster.WitherSkeletonEntity;
-import net.minecraft.entity.passive.IronGolemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class Wither {
 	public static void setStats(EntityJoinWorldEvent event) {
-		if (!(event.getEntity() instanceof WitherEntity))
+		/*if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
@@ -91,11 +59,11 @@ public class Wither {
 		tags.putFloat("progressivebosses:difficulty", spawnedCount);
 
 		int cooldown = MathRandom.getInt(wither.world.rand, Config.COMMON.wither.minions.minCooldown.get(), Config.COMMON.wither.minions.maxCooldown.get());
-		tags.putInt("progressivebosses:skeletons_cooldown", cooldown);
+		tags.putInt("progressivebosses:skeletons_cooldown", cooldown);*/
 	}
 
 	private static void fixBedrockStuck(WitherEntity wither) {
-		if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither))
+		/*if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither))
 			return;
 
 		//if (!wither.isEntityInsideOpaqueBlock())
@@ -111,15 +79,15 @@ public class Wither {
 		});
 
 		if (flag.get())
-			wither.world.playEvent((PlayerEntity)null, 1022, wither.getPosition(), 0);
+			wither.world.playEvent((PlayerEntity)null, 1022, wither.getPosition(), 0);*/
 	}
 
 	private static void setExperience(WitherEntity wither, float difficulty) {
-		wither.experienceValue = 50 + (int) (50 * (Config.COMMON.wither.rewards.bonusExperience.get() * difficulty / 100f));
+		//wither.experienceValue = 50 + (int) (50 * (Config.COMMON.wither.rewards.bonusExperience.get() * difficulty / 100f));
 	}
 
 	private static void setHealth(WitherEntity wither, float spawnedCount) {
-		ModifiableAttributeInstance health = wither.getAttribute(Attributes.MAX_HEALTH);
+		/*ModifiableAttributeInstance health = wither.getAttribute(Attributes.MAX_HEALTH);
 		AttributeModifier modifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "wither_bonus_health", spawnedCount * Config.COMMON.wither.health.bonusPerDifficulty.get(), AttributeModifier.Operation.ADDITION);
 		health.applyPersistentModifier(modifier);
 
@@ -128,22 +96,22 @@ public class Wither {
 		if (hasInvulTicks)
 			wither.setHealth(Math.max(1, (float) health.getValue() - 200));
 		else
-			wither.setHealth((float) health.getValue());
+			wither.setHealth((float) health.getValue());*/
 	}
 
 	private static void setArmor(WitherEntity wither, float killedCount) {
-		ModifiableAttributeInstance attribute = wither.getAttribute(Attributes.ARMOR);
+		/*ModifiableAttributeInstance attribute = wither.getAttribute(Attributes.ARMOR);
 		double armor = killedCount * Config.COMMON.wither.armor.bonusPerDifficulty.get();
 		if (armor > Config.COMMON.wither.armor.maximum.get())
 			armor = Config.COMMON.wither.armor.maximum.get();
 
 		AttributeModifier modifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "wither_bonus_armor", armor, AttributeModifier.Operation.ADDITION);
 
-		attribute.applyPersistentModifier(modifier);
+		attribute.applyPersistentModifier(modifier);*/
 	}
 
 	public static void update(LivingEvent.LivingUpdateEvent event) {
-		if (!(event.getEntity() instanceof WitherEntity))
+		/*if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
 		World world = event.getEntity().world;
@@ -164,11 +132,12 @@ public class Wither {
 		} else {
 			spawnSkeletons(wither, world);
 			heal(wither, tags);
-		}
+		}*/
 	}
 
 	private static void explode(WitherEntity wither) {
-
+/*
+//TODO Cancel vanilla explosion
 		if (Config.COMMON.wither.misc.explosionCausesFireAtDifficulty.get() == -1 &&
 				Config.COMMON.wither.misc.explosionPowerBonus.get() == 0d)
 			return;
@@ -189,11 +158,11 @@ public class Wither {
 			fireExplosion = false;
 
 		Explosion.Mode explosion$mode = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither) ? Explosion.Mode.DESTROY : Explosion.Mode.NONE;
-		wither.world.createExplosion(wither, wither.getPosX(), wither.getPosYEye(), wither.getPosZ(), explosionPower, fireExplosion, explosion$mode);
+		wither.world.createExplosion(wither, wither.getPosX(), wither.getPosYEye(), wither.getPosZ(), explosionPower, fireExplosion, explosion$mode);*/
 	}
 
 	private static void heal(WitherEntity wither, CompoundNBT tags) {
-		if (Config.COMMON.wither.health.maximumBonusRegen.get() == 0.0f)
+		/*if (Config.COMMON.wither.health.maximumBonusRegen.get() == 0.0f)
 			return;
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
@@ -215,12 +184,12 @@ public class Wither {
 		double health = wither.getHealth();
 
 		if (wither.getHealth() < wither.getMaxHealth() && wither.getHealth() > 0.0f)
-			wither.setHealth((float) (health + heal));
+			wither.setHealth((float) (health + heal));*/
 	}
 
 	private static void spawnSkeletons(WitherEntity wither, World world) {
 
-		if (Config.COMMON.wither.minions.maxSpawned.get() == 0)
+		/*if (Config.COMMON.wither.minions.maxSpawned.get() == 0)
 			return;
 
 		if (wither.getHealth() <= 0f)
@@ -358,7 +327,7 @@ public class Wither {
 					minionsCount++;
 				}
 			}
-		}
+		}*/
 	}
 
 	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getCreatureAttribute() != CreatureAttribute.UNDEAD && livingEntity.attackable();
@@ -366,7 +335,7 @@ public class Wither {
 	/*
 	 * Check if the mob has space to spawn and if sits on solid ground
 	 */
-	private static boolean canSpawn(MobEntity mob, BlockPos pos, World world) {
+	/*private static boolean canSpawn(MobEntity mob, BlockPos pos, World world) {
 		int height = (int) Math.ceil(mob.getHeight());
 		boolean canSpawn = true;
 		for (int i = 0; i < height; i++) {
@@ -380,10 +349,10 @@ public class Wither {
 		}
 
 		return canSpawn;
-	}
+	}*/
 
 	public static void onDeath(LivingDeathEvent event) {
-		if (!(event.getEntity() instanceof WitherEntity))
+		/*if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
@@ -403,11 +372,11 @@ public class Wither {
 					break;
 				}
 			}
-		}
+		}*/
 	}
 
 	public static void setDrops(LivingDropsEvent event) {
-		if (!(event.getEntityLiving() instanceof WitherEntity))
+		/*if (!(event.getEntityLiving() instanceof WitherEntity))
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getEntityLiving();
@@ -433,6 +402,6 @@ public class Wither {
 
 		ItemEntity shard = new ItemEntity(wither.world, wither.getPositionVec().getX(), wither.getPositionVec().getY(), wither.getPositionVec().getZ(), new ItemStack(ModItems.NETHER_STAR_SHARD.get(), count));
 
-		event.getDrops().add(shard);
+		event.getDrops().add(shard);*/
 	}
 }

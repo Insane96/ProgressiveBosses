@@ -8,7 +8,7 @@ import insane96mcp.progressivebosses.setup.Config;
 @Label(name = "Wither")
 public class WitherModule extends Module {
 
-	DifficultyFeature difficultyFeature;
+	public DifficultyFeature difficultyFeature;
 
 	public WitherModule() {
 		super(Config.builder);
