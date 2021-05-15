@@ -18,7 +18,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
 
-@Label(name = "Difficulty Settings", description = "How difficulty is handled for the Wither")
+@Label(name = "Difficulty Settings", description = "How difficulty is handled for the Wither. Disabling this \"Feature\" will disable all the Dragon changes.")
 public class DifficultyFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Integer> spawnRadiusPlayerCheckConfig;
@@ -45,7 +45,7 @@ public class DifficultyFeature extends Feature {
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
 		startingDifficultyConfig = Config.builder
 				.comment("How much difficulty will players start with when joining a world?")
-				.defineInRange("Starting Difficulty", startingDifficulty, 1, Integer.MAX_VALUE);
+				.defineInRange("Starting Difficulty", startingDifficulty, 0, Integer.MAX_VALUE);
 		Config.builder.pop();
 	}
 
@@ -60,6 +60,9 @@ public class DifficultyFeature extends Feature {
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onSpawn(EntityJoinWorldEvent event) {
+		if (!this.isEnabled())
+			return;
+
 		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
@@ -111,6 +114,9 @@ public class DifficultyFeature extends Feature {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void setPlayerData(EntityJoinWorldEvent event) {
+		if (!this.isEnabled())
+			return;
+
 		if (!(event.getEntity() instanceof ServerPlayerEntity))
 			return;
 
