@@ -1,13 +1,6 @@
 package insane96mcp.progressivebosses.setup;
 
-import insane96mcp.progressivebosses.ProgressiveBosses;
-
 public class Strings {
-	public static class NBTTags {
-		public static final String SPAWNED_WITHERS = ProgressiveBosses.RESOURCE_PREFIX + "spawned_withers";
-		public static final String KILLED_DRAGONS = ProgressiveBosses.RESOURCE_PREFIX + "killed_dragons";
-	}
-
 	public static class Translatable {
 		public static final String PLAYER_SET_BOSS_DIFFICULTY = "command.player_set_boss_difficulty";
 		public static final String PLAYER_ADD_BOSS_DIFFICULTY = "command.player_add_boss_difficulty";

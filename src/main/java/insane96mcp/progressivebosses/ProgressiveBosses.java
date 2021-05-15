@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses;
 
 import insane96mcp.progressivebosses.commands.DifficultyCommand;
-import insane96mcp.progressivebosses.setup.ModConfig;
+import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.ModItems;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -24,7 +24,7 @@ public class ProgressiveBosses {
 
 	public ProgressiveBosses() {
 		//FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-		ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, ModConfig.COMMON_SPEC);
+		ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
 		MinecraftForge.EVENT_BUS.register(this);
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		ModItems.ITEMS.register(modEventBus);

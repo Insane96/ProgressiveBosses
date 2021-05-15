@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.events.entities;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.events.entities.ai.DragonMinionAttackNearestGoal;
-import insane96mcp.progressivebosses.setup.ModConfig;
+import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.utils.MathRandom;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -98,7 +98,7 @@ public class Dragon {
 		if (killedCount == 0)
 			return;
 
-		if (!ModConfig.COMMON.dragon.general.sumKilledDragonsDifficulty.get() && killedCount > 0)
+		if (!Config.COMMON.dragon.general.sumKilledDragonsDifficulty.get() && killedCount > 0)
 			killedCount /= players.size();
 
 		setHealth(dragon, killedCount);
@@ -109,7 +109,7 @@ public class Dragon {
 	}
 
 	private static void crystalCages(EnderDragonEntity dragon, float killedCount) {
-		int moreCagesAtDifficulty = ModConfig.COMMON.dragon.crystal.moreCagesAtDifficulty.get();
+		int moreCagesAtDifficulty = Config.COMMON.dragon.crystal.moreCagesAtDifficulty.get();
 
 		if (moreCagesAtDifficulty == -1)
 			return;
@@ -161,7 +161,7 @@ public class Dragon {
 	}
 
 	private static void moreCrystals(EnderDragonEntity dragon, float killedCount) {
-		int moreCrystalsAtDifficulty = ModConfig.COMMON.dragon.crystal.moreCrystalsAtDifficulty.get();
+		int moreCrystalsAtDifficulty = Config.COMMON.dragon.crystal.moreCrystalsAtDifficulty.get();
 
 		if (moreCrystalsAtDifficulty == -1)
 			return;
@@ -208,7 +208,7 @@ public class Dragon {
 
 	private static void setHealth(EnderDragonEntity dragon, float killedCount) {
 		ModifiableAttributeInstance attribute = dragon.getAttribute(Attributes.MAX_HEALTH);
-		AttributeModifier healthModifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "dragon_bonus_health", killedCount * ModConfig.COMMON.dragon.health.bonusPerDifficulty.get(), AttributeModifier.Operation.ADDITION);
+		AttributeModifier healthModifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "dragon_bonus_health", killedCount * Config.COMMON.dragon.health.bonusPerDifficulty.get(), AttributeModifier.Operation.ADDITION);
 		attribute.applyPersistentModifier(healthModifier);
 		//attribute.setBaseValue(attribute.getBaseValue() + (killedCount * ModConfig.COMMON.dragon.health.bonusPerDifficulty.get()));
 		dragon.setHealth((float) attribute.getValue());
@@ -247,16 +247,16 @@ public class Dragon {
 
 			//Add XP per more than 1 player around
 			if (playersAround > 1)
-				xp += (500 * ((ModConfig.COMMON.dragon.rewards.bonusExperience.get() + 1) * difficulty / 100f) * (playersAround - playersFirstTime));
+				xp += (500 * ((Config.COMMON.dragon.rewards.bonusExperience.get() + 1) * difficulty / 100f) * (playersAround - playersFirstTime));
 
 		} else {
 
 			//Add bonus XP for the normal experience drop
-			xp += (int) (500 * (ModConfig.COMMON.dragon.rewards.bonusExperience.get() * difficulty / 100f));
+			xp += (int) (500 * (Config.COMMON.dragon.rewards.bonusExperience.get() * difficulty / 100f));
 
 			//Add XP per more than 1 player around
 			if (playersAround > 1)
-				xp += (500 * ((ModConfig.COMMON.dragon.rewards.bonusExperience.get() + 1) * difficulty / 100f) * (playersAround - 1));
+				xp += (500 * ((Config.COMMON.dragon.rewards.bonusExperience.get() + 1) * difficulty / 100f) * (playersAround - 1));
 		}
 
 		while (xp > 0) {
@@ -289,7 +289,7 @@ public class Dragon {
 		for (ServerPlayerEntity player : players) {
 			CompoundNBT playerTags = player.getPersistentData();
 			c = playerTags.getInt("progressivebosses:killed_dragons");
-			if (c >= ModConfig.COMMON.dragon.general.maxDifficulty.get())
+			if (c >= Config.COMMON.dragon.general.maxDifficulty.get())
 				continue;
 			playerTags.putInt("progressivebosses:killed_dragons", c + 1);
 		}
@@ -313,7 +313,7 @@ public class Dragon {
 		if (difficulty == 0)
 			return;
 
-		event.setAmount((float) (event.getAmount() * (1 + difficulty * (ModConfig.COMMON.dragon.attack.bonusAttackDamage.get() / 100.0))));
+		event.setAmount((float) (event.getAmount() * (1 + difficulty * (Config.COMMON.dragon.attack.bonusAttackDamage.get() / 100.0))));
 	}
 
 	private static void onAcidDamage(LivingHurtEvent event) {
@@ -331,7 +331,7 @@ public class Dragon {
 		if (difficulty == 0)
 			return;
 
-		event.setAmount((float) (event.getAmount() * (1 + difficulty * (ModConfig.COMMON.dragon.attack.bonusAcidPoolDamage.get() / 100.0))));
+		event.setAmount((float) (event.getAmount() * (1 + difficulty * (Config.COMMON.dragon.attack.bonusAcidPoolDamage.get() / 100.0))));
 	}
 
 	private static void dropEgg(EnderDragonEntity dragon, World world) {
@@ -377,8 +377,8 @@ public class Dragon {
 		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
 			return;
 
-		double fireballMaxChance = ModConfig.COMMON.dragon.attack.fireballMaxChance.get();
-		double maxChanceAtDifficulty = ModConfig.COMMON.dragon.attack.maxChanceAtDifficulty.get();
+		double fireballMaxChance = Config.COMMON.dragon.attack.fireballMaxChance.get();
+		double maxChanceAtDifficulty = Config.COMMON.dragon.attack.maxChanceAtDifficulty.get();
 
 		if (fireballMaxChance == 0f)
 			return;
@@ -413,8 +413,8 @@ public class Dragon {
 		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
 			return;
 
-		double chargePlayerMaxChance = ModConfig.COMMON.dragon.attack.chargePlayerMaxChance.get();
-		double maxChanceAtDifficulty = ModConfig.COMMON.dragon.attack.maxChanceAtDifficulty.get();
+		double chargePlayerMaxChance = Config.COMMON.dragon.attack.chargePlayerMaxChance.get();
+		double maxChanceAtDifficulty = Config.COMMON.dragon.attack.maxChanceAtDifficulty.get();
 
 		if (chargePlayerMaxChance == 0f)
 			return;
@@ -443,7 +443,7 @@ public class Dragon {
 	}
 
 	private static void heal(EnderDragonEntity dragon, CompoundNBT tags) {
-		if (ModConfig.COMMON.dragon.health.maximumBonusRegen.get() == 0.0f)
+		if (Config.COMMON.dragon.health.maximumBonusRegen.get() == 0.0f)
 			return;
 
 		if (dragon.ticksExisted % 20 != 0)
@@ -454,8 +454,8 @@ public class Dragon {
 		if (difficulty == 0)
 			return;
 
-		double maxHeal = ModConfig.COMMON.dragon.health.maximumBonusRegen.get();
-		double heal = difficulty * ModConfig.COMMON.dragon.health.bonusRegenPerSpawned.get();
+		double maxHeal = Config.COMMON.dragon.health.maximumBonusRegen.get();
+		double heal = difficulty * Config.COMMON.dragon.health.bonusRegenPerSpawned.get();
 
 		if (heal > maxHeal)
 			heal = maxHeal;
@@ -467,7 +467,7 @@ public class Dragon {
 	}
 
 	private static void spawnEndermites(EnderDragonEntity dragon, World world) {
-		if (ModConfig.COMMON.dragon.larvae.maxSpawned.get() == 0)
+		if (Config.COMMON.dragon.larvae.maxSpawned.get() == 0)
 			return;
 
 		CompoundNBT tags = dragon.getPersistentData();
@@ -476,21 +476,21 @@ public class Dragon {
 		//tags.putBoolean("mobspropertiesrandomness:checked", true);
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
-		if (difficulty < ModConfig.COMMON.dragon.larvae.difficultyToSpawnOneMore.get())
+		if (difficulty < Config.COMMON.dragon.larvae.difficultyToSpawnOneMore.get())
 			return;
 
 		int cooldown = tags.getInt("progressivebosses:endermites_cooldown");
 		if (cooldown > 0) {
 			tags.putInt("progressivebosses:endermites_cooldown", cooldown - 1);
 		} else {
-			int cooldownReduction = (int) (difficulty * ModConfig.COMMON.dragon.larvae.cooldownReduction.get());
-			cooldown = MathRandom.getInt(world.rand, ModConfig.COMMON.dragon.larvae.minCooldown.get() - cooldownReduction, ModConfig.COMMON.dragon.larvae.maxCooldown.get() - cooldownReduction);
+			int cooldownReduction = (int) (difficulty * Config.COMMON.dragon.larvae.cooldownReduction.get());
+			cooldown = MathRandom.getInt(world.rand, Config.COMMON.dragon.larvae.minCooldown.get() - cooldownReduction, Config.COMMON.dragon.larvae.maxCooldown.get() - cooldownReduction);
 			tags.putInt("progressivebosses:endermites_cooldown", cooldown);
 			for (int i = 1; i <= difficulty; i++) {
-				if (i / ModConfig.COMMON.dragon.larvae.difficultyToSpawnOneMore.get() > ModConfig.COMMON.dragon.larvae.maxSpawned.get())
+				if (i / Config.COMMON.dragon.larvae.difficultyToSpawnOneMore.get() > Config.COMMON.dragon.larvae.maxSpawned.get())
 					break;
 
-				if (i % ModConfig.COMMON.dragon.larvae.difficultyToSpawnOneMore.get() == 0) {
+				if (i % Config.COMMON.dragon.larvae.difficultyToSpawnOneMore.get() == 0) {
 					EndermiteEntity endermite = new EndermiteEntity(EntityType.ENDERMITE, world);
 					CompoundNBT endermiteTags = endermite.getPersistentData();
 					//Scaling Health
@@ -532,7 +532,7 @@ public class Dragon {
 	}
 
 	private static void spawnShulkers(EnderDragonEntity dragon, World world) {
-		if (ModConfig.COMMON.dragon.minions.difficultyToSpawn.get() <= 0)
+		if (Config.COMMON.dragon.minions.difficultyToSpawn.get() <= 0)
 			return;
 
 		CompoundNBT tags = dragon.getPersistentData();
@@ -541,15 +541,15 @@ public class Dragon {
 		//tags.putBoolean("mpr:prevent_processing", true);
 
 		float difficulty = tags.getFloat("progressivebosses:difficulty");
-		if (difficulty < ModConfig.COMMON.dragon.minions.difficultyToSpawn.get())
+		if (difficulty < Config.COMMON.dragon.minions.difficultyToSpawn.get())
 			return;
 
 		int cooldown = tags.getInt("progressivebosses:shulkers_cooldown");
 		if (cooldown > 0) {
 			tags.putInt("progressivebosses:shulkers_cooldown", cooldown - 1);
 		} else {
-			int cooldownReduction = (int) (difficulty * ModConfig.COMMON.dragon.minions.cooldownReduction.get());
-			cooldown = MathRandom.getInt(world.rand, ModConfig.COMMON.dragon.minions.minCooldown.get() - cooldownReduction, ModConfig.COMMON.dragon.minions.maxCooldown.get() - cooldownReduction);
+			int cooldownReduction = (int) (difficulty * Config.COMMON.dragon.minions.cooldownReduction.get());
+			cooldown = MathRandom.getInt(world.rand, Config.COMMON.dragon.minions.minCooldown.get() - cooldownReduction, Config.COMMON.dragon.minions.maxCooldown.get() - cooldownReduction);
 			tags.putInt("progressivebosses:shulkers_cooldown", cooldown);
 
 			ShulkerEntity shulker = new ShulkerEntity(EntityType.SHULKER, world);

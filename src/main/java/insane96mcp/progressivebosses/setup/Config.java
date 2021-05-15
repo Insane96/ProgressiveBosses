@@ -1,27 +1,36 @@
 package insane96mcp.progressivebosses.setup;
 
+import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.base.Modules;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
 
-public class ModConfig {
+@Mod.EventBusSubscriber(modid = ProgressiveBosses.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD)
+public class Config {
     public static final ForgeConfigSpec COMMON_SPEC;
     public static final CommonConfig COMMON;
 
+    public static final ForgeConfigSpec.Builder builder;
+
     static {
-        final Pair<CommonConfig, ForgeConfigSpec> specPair = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+        builder = new ForgeConfigSpec.Builder();
+        final Pair<CommonConfig, ForgeConfigSpec> specPair = builder.configure(CommonConfig::new);
         COMMON = specPair.getLeft();
         COMMON_SPEC = specPair.getRight();
     }
 
     public static class CommonConfig {
-        public final Wither wither;
-        public final Dragon dragon;
-
         public CommonConfig(final ForgeConfigSpec.Builder builder) {
-            wither = new Wither(builder);
-            dragon = new Dragon(builder);
+            Modules.init();
         }
+    }
+
+    @SubscribeEvent
+    public static void onModConfigEvent(final net.minecraftforge.fml.config.ModConfig.ModConfigEvent event) {
+        Modules.loadConfig();
     }
 
     public static class Wither {
