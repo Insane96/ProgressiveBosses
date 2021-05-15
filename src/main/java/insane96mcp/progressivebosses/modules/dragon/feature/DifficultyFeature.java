@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.DimensionType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -54,7 +55,7 @@ public class DifficultyFeature extends Feature {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
-	public void setDifficulty(EntityJoinWorldEvent event) {
+	public void onSpawn(EntityJoinWorldEvent event) {
 		if (!event.getWorld().getDimensionKey().getLocation().equals(DimensionType.THE_END.getLocation()))
 			return;
 
@@ -76,38 +77,35 @@ public class DifficultyFeature extends Feature {
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
 		List<ServerPlayerEntity> players = event.getWorld().getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
-		if (players.size() == 0)
-			return;
 
 		int eggsToDrop = 0;
-
 		float killedTotal = 0;
-		for (ServerPlayerEntity player : players) {
-			CompoundNBT playerTags = player.getPersistentData();
-			int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
-			boolean hasGotEgg = playerTags.getBoolean(Strings.Tags.HAS_GOT_EGG);
-			if (killedDragons == 0 || hasGotEgg) {
-				dragon.getFightManager().previouslyKilled = false;
-				eggsToDrop++;
-				playerTags.putBoolean(Strings.Tags.HAS_GOT_EGG, true);
-			}
-			killedTotal += killedDragons;
-		}
-
-		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, eggsToDrop);
-
-		//If no players are found in the Main End Island, try to get the nearest player
-		if (killedTotal == 0) {
+		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
+		if (players.size() == 0) {
 			PlayerEntity nearestPlayer = event.getWorld().getClosestPlayer(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ(), Double.MAX_VALUE, true);
 			if (nearestPlayer instanceof ServerPlayerEntity) {
 				ServerPlayerEntity player = (ServerPlayerEntity) nearestPlayer;
 				CompoundNBT playerTags = player.getPersistentData();
 				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
 				killedTotal += killedDragons;
-				if (killedDragons < this.maxDifficulty)
-					playerTags.putInt(Strings.Tags.KILLED_DRAGONS, killedDragons + 1);
 			}
 		}
+		//Otherwise sum the players' difficulties
+		else {
+			for (ServerPlayerEntity player : players) {
+				CompoundNBT playerTags = player.getPersistentData();
+				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
+				boolean hasGotEgg = playerTags.getBoolean(Strings.Tags.HAS_GOT_EGG);
+				if (killedDragons == 0 || hasGotEgg) {
+					dragon.getFightManager().previouslyKilled = false;
+					eggsToDrop++;
+					playerTags.putBoolean(Strings.Tags.HAS_GOT_EGG, true);
+				}
+				killedTotal += killedDragons;
+			}
+		}
+
+		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, eggsToDrop);
 
 		if (killedTotal == 0)
 			return;
@@ -116,6 +114,45 @@ public class DifficultyFeature extends Feature {
 			killedTotal /= players.size();
 
 		dragonTags.putFloat(Strings.Tags.KILLED_DRAGONS, killedTotal);
+	}
+
+	@SubscribeEvent
+	public void onDeath(LivingDeathEvent event) {
+		if (!(event.getEntity() instanceof EnderDragonEntity))
+			return;
+
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		CompoundNBT tags = dragon.getPersistentData();
+		if (tags.getBoolean("progressivebosses:has_been_killed"))
+			return;
+		tags.putBoolean("progressivebosses:has_been_killed", true);
+
+		int radius = 256;
+		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
+		BlockPos pos2 = new BlockPos(radius, radius, radius);
+		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+
+		List<ServerPlayerEntity> players = dragon.world.getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
+		if (players.size() == 0) {
+			PlayerEntity nearestPlayer = dragon.world.getClosestPlayer(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ(), Double.MAX_VALUE, true);
+			if (nearestPlayer instanceof ServerPlayerEntity) {
+				ServerPlayerEntity player = (ServerPlayerEntity) nearestPlayer;
+				CompoundNBT playerTags = player.getPersistentData();
+				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
+				if (killedDragons < this.maxDifficulty)
+					playerTags.putInt(Strings.Tags.KILLED_DRAGONS, killedDragons + 1);
+			}
+		}
+		//Otherwise sum the players' difficulties
+		else {
+			for (ServerPlayerEntity player : players) {
+				CompoundNBT playerTags = player.getPersistentData();
+				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
+				if (killedDragons < this.maxDifficulty)
+					playerTags.putInt(Strings.Tags.KILLED_DRAGONS, killedDragons + 1);
+			}
+		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

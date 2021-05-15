@@ -59,7 +59,7 @@ public class DifficultyFeature extends Feature {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
-	public void setDifficulty(EntityJoinWorldEvent event) {
+	public void onSpawn(EntityJoinWorldEvent event) {
 		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
@@ -74,21 +74,9 @@ public class DifficultyFeature extends Feature {
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
 		List<ServerPlayerEntity> players = event.getWorld().getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
-		if (players.size() == 0)
-			return;
-
 		float spawnedTotal = 0;
-		for (ServerPlayerEntity player : players) {
-			CompoundNBT playerTags = player.getPersistentData();
-			int spawnedWithers = playerTags.getInt(Strings.Tags.SPAWNED_WITHERS);
-			spawnedTotal += spawnedWithers;
-			if (spawnedWithers >= this.maxDifficulty)
-				continue;
-			playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, spawnedWithers + 1);
-		}
-
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
-		if (spawnedTotal == 0) {
+		if (players.size() == 0) {
 			PlayerEntity nearestPlayer = event.getWorld().getClosestPlayer(wither.getPosX(), wither.getPosY(), wither.getPosZ(), Double.MAX_VALUE, true);
 			if (nearestPlayer instanceof ServerPlayerEntity) {
 				ServerPlayerEntity player = (ServerPlayerEntity) nearestPlayer;
@@ -97,6 +85,17 @@ public class DifficultyFeature extends Feature {
 				spawnedTotal += spawnedWithers;
 				if (spawnedWithers < this.maxDifficulty)
 					playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, spawnedWithers + 1);
+			}
+		}
+		//Otherwise sum the players' difficulties
+		else {
+			for (ServerPlayerEntity player : players) {
+				CompoundNBT playerTags = player.getPersistentData();
+				int spawnedWithers = playerTags.getInt(Strings.Tags.SPAWNED_WITHERS);
+				spawnedTotal += spawnedWithers;
+				if (spawnedWithers >= this.maxDifficulty)
+					continue;
+				playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, spawnedWithers + 1);
 			}
 		}
 
