@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.events.entities;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -52,7 +51,6 @@ public class Wither {
 		if (!Config.COMMON.wither.general.sumSpawnedWitherDifficulty.get())
 			spawnedCount /= players.size();
 
-		setHealth(wither, spawnedCount);
 		setArmor(wither, spawnedCount);
 		setExperience(wither, spawnedCount);
 
@@ -64,19 +62,6 @@ public class Wither {
 
 	private static void setExperience(WitherEntity wither, float difficulty) {
 		//wither.experienceValue = 50 + (int) (50 * (Config.COMMON.wither.rewards.bonusExperience.get() * difficulty / 100f));
-	}
-
-	private static void setHealth(WitherEntity wither, float spawnedCount) {
-		/*ModifiableAttributeInstance health = wither.getAttribute(Attributes.MAX_HEALTH);
-		AttributeModifier modifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "wither_bonus_health", spawnedCount * Config.COMMON.wither.health.bonusPerDifficulty.get(), AttributeModifier.Operation.ADDITION);
-		health.applyPersistentModifier(modifier);
-
-		boolean hasInvulTicks = wither.getInvulTime() > 0;
-
-		if (hasInvulTicks)
-			wither.setHealth(Math.max(1, (float) health.getValue() - 200));
-		else
-			wither.setHealth((float) health.getValue());*/
 	}
 
 	private static void setArmor(WitherEntity wither, float killedCount) {
@@ -103,43 +88,10 @@ public class Wither {
 		if (wither.getHealth() < 0)
 			return;
 
-		if (wither.getInvulTime() == 1){
-			fixBedrockStuck(wither);
-			explode(wither);
-		}
-
 		if (wither.getInvulTime() > 0) {
-			wither.bossInfo.setPercent(wither.getHealth() / wither.getMaxHealth());
 		} else {
 			spawnSkeletons(wither, world);
-			heal(wither, tags);
 		}*/
-	}
-
-	private static void heal(WitherEntity wither, CompoundNBT tags) {
-		/*if (Config.COMMON.wither.health.maximumBonusRegen.get() == 0.0f)
-			return;
-
-		float difficulty = tags.getFloat("progressivebosses:difficulty");
-
-		if (difficulty <= 0)
-			return;
-
-		if (wither.getHealth() <= 0f)
-			return;
-
-		double maxHeal = Config.COMMON.wither.health.maximumBonusRegen.get();
-		double heal = difficulty * Config.COMMON.wither.health.bonusRegenPerSpawned.get();
-
-		if (heal > maxHeal)
-			heal = maxHeal;
-
-		heal /= 20.0;
-
-		double health = wither.getHealth();
-
-		if (wither.getHealth() < wither.getMaxHealth() && wither.getHealth() > 0.0f)
-			wither.setHealth((float) (health + heal));*/
 	}
 
 	private static void spawnSkeletons(WitherEntity wither, World world) {

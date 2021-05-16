@@ -37,14 +37,12 @@ public class Config {
         public static String name = "Wither";
 
         public final Minions minions;
-        public final Health health;
         public final Armor armor;
         public final Rewards rewards;
 
         public Wither(final ForgeConfigSpec.Builder builder) {
             builder.push(name);
             minions = new Minions(builder);
-            health = new Health(builder);
             armor = new Armor(builder);
             rewards = new Rewards(builder);
             builder.pop();
@@ -88,28 +86,6 @@ public class Config {
                 maxHealth = builder
                         .comment("Minimum Health with which Wither Minions can spawn with")
                         .defineInRange("Max Health", 20, 0, 1024);
-                builder.pop();
-            }
-        }
-
-        public static class Health {
-            public static String name = "Health";
-
-            public ConfigValue<Double> bonusPerDifficulty;
-            public ConfigValue<Double> maximumBonusRegen;
-            public ConfigValue<Double> bonusRegenPerSpawned;
-
-            public Health(final ForgeConfigSpec.Builder builder) {
-                builder.push(name);
-                bonusPerDifficulty = builder
-                        .comment("Increase Wither's Health by this value per difficulty")
-                        .defineInRange("Health Bonus per Difficulty", 10.0, 0.0, Double.MAX_VALUE);
-                maximumBonusRegen = builder
-                        .comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the natural regeneration of the Wither (1 Health per Second). It's not recommended to go over 1.0f without mods that adds stronger things to kill the Wither")
-                        .defineInRange("Maximum Bonus Regeneration", 1.0, 0.0, Double.MAX_VALUE);
-                bonusRegenPerSpawned = builder
-                        .comment("How many half hearts will the Wither regen more per difficulty. This doesn't affect the natural regeneration of the Wither (1 Health per Second). (E.g. By default, with 6 Withers spawned, the Wither will heal 1.3 health per second).")
-                        .defineInRange("Bonus Regeneration per Difficulty", 0.05, 0.0, Double.MAX_VALUE);
                 builder.pop();
             }
         }
