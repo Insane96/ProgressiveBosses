@@ -27,7 +27,7 @@ public class MiscFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> preventGettingStuckConfig;
 
 	public double explosionPowerBonus = 0.3d;
-	public int explosionCausesFireAtDifficulty = 10;
+	public int explosionCausesFireAtDifficulty = 8;
 	public boolean preventGettingStuck = true;
 
 	public MiscFeature(Module module) {
@@ -72,7 +72,7 @@ public class MiscFeature extends Feature {
 		if (wither.getHealth() < 0)
 			return;
 
-		if (wither.getInvulTime() != 1) {
+		if (wither.getInvulTime() == 1) {
 			if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither))
 				return;
 
@@ -90,6 +90,7 @@ public class MiscFeature extends Feature {
 		}
 	}
 
+	@SubscribeEvent
 	public void onExplosion(ExplosionEvent.Start event) {
 		if (!this.isEnabled())
 			return;
