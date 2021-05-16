@@ -8,7 +8,7 @@ public class Strings {
 
 		public static final String SPAWNED_WITHERS = ProgressiveBosses.RESOURCE_PREFIX + "spawned_withers";
 		public static final String KILLED_DRAGONS = ProgressiveBosses.RESOURCE_PREFIX + "killed_dragons";
-		public static final String HAS_GOT_EGG = ProgressiveBosses.RESOURCE_PREFIX + "has_got_egg";
+		public static final String FIRST_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "first_dragon";
 
 		public static final String EGGS_TO_DROP = ProgressiveBosses.RESOURCE_PREFIX + "eggs_to_drop";
 	}

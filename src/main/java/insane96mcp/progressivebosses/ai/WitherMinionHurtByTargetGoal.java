@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.events.entities.ai;
+package insane96mcp.progressivebosses.ai;
 
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.EntityPredicate;

@@ -36,7 +36,6 @@ public class Config {
     public static class Wither {
         public static String name = "Wither";
 
-        public final General general;
         public final Misc misc;
         public final Minions minions;
         public final Health health;
@@ -45,35 +44,12 @@ public class Config {
 
         public Wither(final ForgeConfigSpec.Builder builder) {
             builder.push(name);
-            general = new General(builder);
             misc = new Misc(builder);
             minions = new Minions(builder);
             health = new Health(builder);
             armor = new Armor(builder);
             rewards = new Rewards(builder);
             builder.pop();
-        }
-
-        public static class General {
-            public static String name = "General";
-
-            public ConfigValue<Integer> spawnRadiusPlayerCheck;
-            public ConfigValue<Boolean> sumSpawnedWitherDifficulty;
-            public ConfigValue<Integer> maxDifficulty;
-
-            public General(final ForgeConfigSpec.Builder builder) {
-                builder.push(name);
-                spawnRadiusPlayerCheck = builder
-                        .comment("How much blocks from wither will be scanned for players to check for difficulty")
-                        .defineInRange("Spawn Radius Player Check", 96, 16, Integer.MAX_VALUE);
-                sumSpawnedWitherDifficulty = builder
-                        .comment("If true and there are more players around the Wither, the Wither will have his stats based on the sum of both players difficulty. If false, the Wither stats will be based on the average of the difficulty of the players around")
-                        .define("Sum Spawned Wither Difficulty", false);
-                maxDifficulty = builder
-                        .comment("The Maximum difficulty (times spawned) reachable by Wither. By default is set to 72 because the Wither reaches the maximum amount of health (1024, handled by Minecraft. Some mods can increase this) after 72 withers spawned.")
-                        .defineInRange("Max Difficulty", 72, 1, Integer.MAX_VALUE);
-                builder.pop();
-            }
         }
 
         public static class Misc {

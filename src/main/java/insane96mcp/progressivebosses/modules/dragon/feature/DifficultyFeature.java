@@ -90,6 +90,12 @@ public class DifficultyFeature extends Feature {
 				ServerPlayerEntity player = (ServerPlayerEntity) nearestPlayer;
 				CompoundNBT playerTags = player.getPersistentData();
 				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
+				boolean firstDragon = playerTags.getBoolean(Strings.Tags.FIRST_DRAGON);
+				if (killedDragons == 0 || firstDragon) {
+					dragon.getFightManager().previouslyKilled = false;
+					eggsToDrop++;
+					playerTags.putBoolean(Strings.Tags.FIRST_DRAGON, false);
+				}
 				killedTotal += killedDragons;
 			}
 		}
@@ -98,11 +104,11 @@ public class DifficultyFeature extends Feature {
 			for (ServerPlayerEntity player : players) {
 				CompoundNBT playerTags = player.getPersistentData();
 				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
-				boolean hasGotEgg = playerTags.getBoolean(Strings.Tags.HAS_GOT_EGG);
-				if (killedDragons == 0 || hasGotEgg) {
+				boolean firstDragon = playerTags.getBoolean(Strings.Tags.FIRST_DRAGON);
+				if (killedDragons == 0 || firstDragon) {
 					dragon.getFightManager().previouslyKilled = false;
 					eggsToDrop++;
-					playerTags.putBoolean(Strings.Tags.HAS_GOT_EGG, true);
+					playerTags.putBoolean(Strings.Tags.FIRST_DRAGON, false);
 				}
 				killedTotal += killedDragons;
 			}
@@ -175,7 +181,7 @@ public class DifficultyFeature extends Feature {
 		if (!playerTags.contains(Strings.Tags.KILLED_DRAGONS))
 			playerTags.putInt(Strings.Tags.KILLED_DRAGONS, this.startingDifficulty);
 
-		if (!playerTags.contains(Strings.Tags.HAS_GOT_EGG))
-			playerTags.putBoolean(Strings.Tags.HAS_GOT_EGG, false);
+		if (!playerTags.contains(Strings.Tags.FIRST_DRAGON))
+			playerTags.putBoolean(Strings.Tags.FIRST_DRAGON, true);
 	}
 }
