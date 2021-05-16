@@ -36,7 +36,6 @@ public class Config {
     public static class Wither {
         public static String name = "Wither";
 
-        public final Misc misc;
         public final Minions minions;
         public final Health health;
         public final Armor armor;
@@ -44,30 +43,11 @@ public class Config {
 
         public Wither(final ForgeConfigSpec.Builder builder) {
             builder.push(name);
-            misc = new Misc(builder);
             minions = new Minions(builder);
             health = new Health(builder);
             armor = new Armor(builder);
             rewards = new Rewards(builder);
             builder.pop();
-        }
-
-        public static class Misc {
-            public static String name = "Misc";
-
-            public ConfigValue<Double> explosionPowerBonus;
-            public ConfigValue<Integer> explosionCausesFireAtDifficulty;
-
-            public Misc(final ForgeConfigSpec.Builder builder) {
-                builder.push(name);
-                explosionPowerBonus = builder
-                        .comment("How much explosion power (after the invulnerability) will the Wither gain for each difficulty point. Explosion Radius is capped to 13. Base Wither Explosion Power is 7.0. Setting this to 0 will not increase the Wither Explosion Power.")
-                        .defineInRange("Explosion Power Bonus", 0.08d, 0d, 4d);
-                explosionCausesFireAtDifficulty = builder
-                        .comment("At this difficulty the Wither Explosion will cause fire. Set to -1 to disable.")
-                        .defineInRange("Explosion Causes Fire at Difficulty", 10, -1, Integer.MAX_VALUE);
-                builder.pop();
-            }
         }
 
         public static class Minions {

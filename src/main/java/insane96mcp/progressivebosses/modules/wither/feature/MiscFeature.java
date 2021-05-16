@@ -87,6 +87,8 @@ public class MiscFeature extends Feature {
 
 			if (flag.get())
 				wither.world.playEvent((PlayerEntity)null, 1022, wither.getPosition(), 0);
+
+			wither.setPosition(wither.getPosX(), wither.getPosY() - 1.5, wither.getPosZ());
 		}
 	}
 

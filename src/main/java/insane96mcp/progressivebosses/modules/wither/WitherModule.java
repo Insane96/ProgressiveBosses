@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.modules.wither;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.modules.wither.feature.DifficultyFeature;
+import insane96mcp.progressivebosses.modules.wither.feature.HealthFeature;
 import insane96mcp.progressivebosses.modules.wither.feature.MiscFeature;
 import insane96mcp.progressivebosses.setup.Config;
 
@@ -11,6 +12,7 @@ public class WitherModule extends Module {
 
 	public DifficultyFeature difficultyFeature;
 	public MiscFeature miscFeature;
+	public HealthFeature healthFeature;
 
 	public WitherModule() {
 		super(Config.builder);
@@ -18,6 +20,7 @@ public class WitherModule extends Module {
 		//Must be the first one to be initialized, otherwise the other modules will not get the correct difficulty settings
 		difficultyFeature = new DifficultyFeature(this);
 		miscFeature = new MiscFeature(this);
+		healthFeature = new HealthFeature(this);
 		Config.builder.pop();
 	}
 
@@ -26,5 +29,6 @@ public class WitherModule extends Module {
 		super.loadConfig();
 		difficultyFeature.loadConfig();
 		miscFeature.loadConfig();
+		healthFeature.loadConfig();
 	}
 }

@@ -62,26 +62,6 @@ public class Wither {
 		tags.putInt("progressivebosses:skeletons_cooldown", cooldown);*/
 	}
 
-	private static void fixBedrockStuck(WitherEntity wither) {
-		/*if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither))
-			return;
-
-		//if (!wither.isEntityInsideOpaqueBlock())
-			//return;
-
-		Stream<BlockPos> blocks = BlockPos.getAllInBox(wither.getPosition().add(-1, -1, -1), wither.getPosition().add(1, 4, 1));
-		AtomicBoolean flag = new AtomicBoolean(false);
-		blocks.forEach(pos -> {
-			BlockState state = wither.world.getBlockState(pos);
-			if (state.canEntityDestroy(wither.world, pos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, pos, state)) {
-				flag.set(wither.world.destroyBlock(pos, true, wither) || flag.get());
-			}
-		});
-
-		if (flag.get())
-			wither.world.playEvent((PlayerEntity)null, 1022, wither.getPosition(), 0);*/
-	}
-
 	private static void setExperience(WitherEntity wither, float difficulty) {
 		//wither.experienceValue = 50 + (int) (50 * (Config.COMMON.wither.rewards.bonusExperience.get() * difficulty / 100f));
 	}
@@ -100,6 +80,7 @@ public class Wither {
 	}
 
 	private static void setArmor(WitherEntity wither, float killedCount) {
+		//Armor only when < half health
 		/*ModifiableAttributeInstance attribute = wither.getAttribute(Attributes.ARMOR);
 		double armor = killedCount * Config.COMMON.wither.armor.bonusPerDifficulty.get();
 		if (armor > Config.COMMON.wither.armor.maximum.get())
@@ -133,32 +114,6 @@ public class Wither {
 			spawnSkeletons(wither, world);
 			heal(wither, tags);
 		}*/
-	}
-
-	private static void explode(WitherEntity wither) {
-/*
-//TODO Cancel vanilla explosion
-		if (Config.COMMON.wither.misc.explosionCausesFireAtDifficulty.get() == -1 &&
-				Config.COMMON.wither.misc.explosionPowerBonus.get() == 0d)
-			return;
-
-		float difficulty = wither.getPersistentData().getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
-
-		if (difficulty <= 0)
-			return;
-
-		float explosionPower = (float) (7.0f + (Config.COMMON.wither.misc.explosionPowerBonus.get() * difficulty));
-
-		if (explosionPower > 13f)
-			explosionPower = 13f;
-
-		boolean fireExplosion = difficulty >= Config.COMMON.wither.misc.explosionCausesFireAtDifficulty.get();
-
-		if (Config.COMMON.wither.misc.explosionCausesFireAtDifficulty.get() == -1)
-			fireExplosion = false;
-
-		Explosion.Mode explosion$mode = net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither) ? Explosion.Mode.DESTROY : Explosion.Mode.NONE;
-		wither.world.createExplosion(wither, wither.getPosX(), wither.getPosYEye(), wither.getPosZ(), explosionPower, fireExplosion, explosion$mode);*/
 	}
 
 	private static void heal(WitherEntity wither, CompoundNBT tags) {
