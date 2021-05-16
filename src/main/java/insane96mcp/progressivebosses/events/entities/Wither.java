@@ -51,29 +51,10 @@ public class Wither {
 		if (!Config.COMMON.wither.general.sumSpawnedWitherDifficulty.get())
 			spawnedCount /= players.size();
 
-		setArmor(wither, spawnedCount);
-		setExperience(wither, spawnedCount);
-
 		tags.putFloat("progressivebosses:difficulty", spawnedCount);
 
 		int cooldown = MathRandom.getInt(wither.world.rand, Config.COMMON.wither.minions.minCooldown.get(), Config.COMMON.wither.minions.maxCooldown.get());
 		tags.putInt("progressivebosses:skeletons_cooldown", cooldown);*/
-	}
-
-	private static void setExperience(WitherEntity wither, float difficulty) {
-		//wither.experienceValue = 50 + (int) (50 * (Config.COMMON.wither.rewards.bonusExperience.get() * difficulty / 100f));
-	}
-
-	private static void setArmor(WitherEntity wither, float killedCount) {
-		//Armor only when < half health
-		/*ModifiableAttributeInstance attribute = wither.getAttribute(Attributes.ARMOR);
-		double armor = killedCount * Config.COMMON.wither.armor.bonusPerDifficulty.get();
-		if (armor > Config.COMMON.wither.armor.maximum.get())
-			armor = Config.COMMON.wither.armor.maximum.get();
-
-		AttributeModifier modifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "wither_bonus_armor", armor, AttributeModifier.Operation.ADDITION);
-
-		attribute.applyPersistentModifier(modifier);*/
 	}
 
 	public static void update(LivingEvent.LivingUpdateEvent event) {

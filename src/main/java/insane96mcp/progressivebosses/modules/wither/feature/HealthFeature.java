@@ -88,16 +88,17 @@ public class HealthFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (this.bonusRegenPerDifficulty == 0d || this.maxBonusRegen == 0d)
-			return;
-
 		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
 
-		bonusHeal(wither);
 		fixInvulBossBar(wither);
+
+		if (this.bonusRegenPerDifficulty == 0d || this.maxBonusRegen == 0d)
+			return;
+
+		bonusHeal(wither);
 	}
 
 	private void bonusHeal(WitherEntity wither) {

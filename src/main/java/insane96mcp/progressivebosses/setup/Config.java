@@ -37,13 +37,11 @@ public class Config {
         public static String name = "Wither";
 
         public final Minions minions;
-        public final Armor armor;
         public final Rewards rewards;
 
         public Wither(final ForgeConfigSpec.Builder builder) {
             builder.push(name);
             minions = new Minions(builder);
-            armor = new Armor(builder);
             rewards = new Rewards(builder);
             builder.pop();
         }
@@ -86,25 +84,6 @@ public class Config {
                 maxHealth = builder
                         .comment("Minimum Health with which Wither Minions can spawn with")
                         .defineInRange("Max Health", 20, 0, 1024);
-                builder.pop();
-            }
-        }
-
-        //TODO Rework and add Toughness too
-        public static class Armor {
-            public static String name = "Armor";
-
-            public ConfigValue<Double> bonusPerDifficulty;
-            public ConfigValue<Double> maximum;
-
-            public Armor(final ForgeConfigSpec.Builder builder) {
-                builder.push(name);
-                bonusPerDifficulty = builder
-                        .comment("How much armor points will have Withers per Difficulty")
-                        .defineInRange("Bonus Armor per Difficulty", 0.25, 0.0, 30.0);
-                maximum = builder
-                        .comment("Maximum armor that Withers can spawn with")
-                        .defineInRange("Maximum Armor", 10.0, 0.0, 30.0);
                 builder.pop();
             }
         }

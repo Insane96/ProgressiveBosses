@@ -2,10 +2,7 @@ package insane96mcp.progressivebosses.modules.wither;
 
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.progressivebosses.modules.wither.feature.DifficultyFeature;
-import insane96mcp.progressivebosses.modules.wither.feature.HealthFeature;
-import insane96mcp.progressivebosses.modules.wither.feature.MiscFeature;
-import insane96mcp.progressivebosses.modules.wither.feature.ResistancesFeature;
+import insane96mcp.progressivebosses.modules.wither.feature.*;
 import insane96mcp.progressivebosses.setup.Config;
 
 @Label(name = "Wither")
@@ -15,6 +12,7 @@ public class WitherModule extends Module {
 	public MiscFeature miscFeature;
 	public HealthFeature healthFeature;
 	public ResistancesFeature resistancesFeature;
+	public RewardFeature rewardFeature;
 
 	public WitherModule() {
 		super(Config.builder);
@@ -24,6 +22,7 @@ public class WitherModule extends Module {
 		miscFeature = new MiscFeature(this);
 		healthFeature = new HealthFeature(this);
 		resistancesFeature = new ResistancesFeature(this);
+		rewardFeature = new RewardFeature(this);
 		Config.builder.pop();
 	}
 
@@ -34,5 +33,6 @@ public class WitherModule extends Module {
 		miscFeature.loadConfig();
 		healthFeature.loadConfig();
 		resistancesFeature.loadConfig();
+		rewardFeature.loadConfig();
 	}
 }
