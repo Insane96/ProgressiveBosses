@@ -55,6 +55,9 @@ public class HealthFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
+		if (event.getWorld().isRemote)
+			return;
+
 		if (!this.isEnabled())
 			return;
 
@@ -85,6 +88,9 @@ public class HealthFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+		if (event.getEntity().world.isRemote)
+			return;
+
 		if (!this.isEnabled())
 			return;
 

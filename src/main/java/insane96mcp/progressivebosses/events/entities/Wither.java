@@ -4,77 +4,11 @@ import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 
 import java.util.function.Predicate;
 
 public class Wither {
-	public static void setStats(EntityJoinWorldEvent event) {
-		/*if (!(event.getEntity() instanceof WitherEntity))
-			return;
-
-		WitherEntity wither = (WitherEntity) event.getEntity();
-
-		CompoundNBT tags = wither.getPersistentData();
-		boolean alreadyProcessed = tags.getBoolean("progressivebosses:processed");
-
-		if (alreadyProcessed)
-			return;
-
-		tags.putBoolean("progressivebosses:processed", true);
-
-		int radius = Config.COMMON.wither.general.spawnRadiusPlayerCheck.get();
-		BlockPos pos1 = wither.getPosition().add(-radius, -radius, -radius);
-		BlockPos pos2 = wither.getPosition().add(radius, radius, radius);
-		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
-
-		List<ServerPlayerEntity> players = event.getWorld().getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
-		if (players.size() == 0)
-			return;
-
-		float spawnedCount = 1;
-		for (ServerPlayerEntity player : players) {
-			CompoundNBT playerTags = player.getPersistentData();
-			int c = playerTags.getInt("progressivebosses:spawned_withers");
-			spawnedCount += c;
-			if (c >= Config.COMMON.wither.general.maxDifficulty.get())
-				continue;
-			playerTags.putInt("progressivebosses:spawned_withers", c + 1);
-		}
-
-		if (spawnedCount == 1)
-			return;
-
-		if (!Config.COMMON.wither.general.sumSpawnedWitherDifficulty.get())
-			spawnedCount /= players.size();
-
-		tags.putFloat("progressivebosses:difficulty", spawnedCount);
-
-		int cooldown = MathRandom.getInt(wither.world.rand, Config.COMMON.wither.minions.minCooldown.get(), Config.COMMON.wither.minions.maxCooldown.get());
-		tags.putInt("progressivebosses:skeletons_cooldown", cooldown);*/
-	}
-
-	public static void update(LivingEvent.LivingUpdateEvent event) {
-		/*if (!(event.getEntity() instanceof WitherEntity))
-			return;
-
-		World world = event.getEntity().world;
-
-		WitherEntity wither = (WitherEntity) event.getEntity();
-		CompoundNBT tags = wither.getPersistentData();
-
-		if (wither.getHealth() < 0)
-			return;
-
-		if (wither.getInvulTime() > 0) {
-		} else {
-			spawnSkeletons(wither, world);
-		}*/
-	}
-
 	private static void spawnSkeletons(WitherEntity wither, World world) {
 
 		/*if (Config.COMMON.wither.minions.maxSpawned.get() == 0)
@@ -261,35 +195,5 @@ public class Wither {
 				}
 			}
 		}*/
-	}
-
-	public static void setDrops(LivingDropsEvent event) {
-		/*if (!(event.getEntityLiving() instanceof WitherEntity))
-			return;
-
-		WitherEntity wither = (WitherEntity) event.getEntityLiving();
-
-		CompoundNBT tags = wither.getPersistentData();
-		float difficulty = tags.getFloat("progressivebosses:difficulty");
-
-		double chance = Config.COMMON.wither.rewards.shardPerDifficulty.get() * difficulty;
-		if (chance > Config.COMMON.wither.rewards.shardMaxChance.get())
-			chance = Config.COMMON.wither.rewards.shardMaxChance.get();
-
-		int tries = (int) (difficulty / Config.COMMON.wither.rewards.shardDivider.get()) + 1;
-		if (tries > Config.COMMON.wither.rewards.shardMaxCount.get())
-			tries = Config.COMMON.wither.rewards.shardMaxCount.get();
-		int count = 0;
-		for (int i = 0; i < tries; i++) {
-			if (wither.world.rand.nextFloat() >= chance / 100f)
-				continue;
-			count++;
-		}
-		if (count == 0)
-			return;
-
-		ItemEntity shard = new ItemEntity(wither.world, wither.getPositionVec().getX(), wither.getPositionVec().getY(), wither.getPositionVec().getZ(), new ItemStack(ModItems.NETHER_STAR_SHARD.get(), count));
-
-		event.getDrops().add(shard);*/
 	}
 }

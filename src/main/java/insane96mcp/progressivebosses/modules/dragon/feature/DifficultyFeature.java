@@ -56,6 +56,9 @@ public class DifficultyFeature extends Feature {
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onSpawn(EntityJoinWorldEvent event) {
+		if (event.getWorld().isRemote)
+			return;
+
 		if (!this.isEnabled())
 			return;
 
@@ -127,6 +130,9 @@ public class DifficultyFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
+		if (event.getEntity().world.isRemote)
+			return;
+
 		if (!this.isEnabled())
 			return;
 
@@ -169,6 +175,9 @@ public class DifficultyFeature extends Feature {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void setPlayerData(EntityJoinWorldEvent event) {
+		if (event.getWorld().isRemote)
+			return;
+
 		if (!this.isEnabled())
 			return;
 

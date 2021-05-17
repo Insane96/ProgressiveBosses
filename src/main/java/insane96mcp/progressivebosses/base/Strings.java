@@ -8,6 +8,7 @@ public class Strings {
 
 		public static final String SPAWNED_WITHERS = ProgressiveBosses.RESOURCE_PREFIX + "spawned_withers";
 		public static final String WITHER_BONUS_HEALTH = ProgressiveBosses.RESOURCE_PREFIX + "wither_bonus_health";
+		public static final String WITHER_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "wither_minion_cooldown";
 
 		public static final String KILLED_DRAGONS = ProgressiveBosses.RESOURCE_PREFIX + "killed_dragons";
 		public static final String FIRST_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "first_dragon";

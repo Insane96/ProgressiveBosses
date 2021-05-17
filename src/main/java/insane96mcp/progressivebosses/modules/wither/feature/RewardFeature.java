@@ -29,7 +29,7 @@ public class RewardFeature extends Feature {
 
 	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,2,2,MINIMUM,SCALING",
 			"progressivebosses:nether_star_shard,2,4,4,MINIMUM,SCALING",
-			"progressivebosses:nether_star_shard,3,6,8,MINIMUM,SCALING",
+			"progressivebosses:nether_star_shard,3,6,6,MINIMUM,SCALING",
 			"progressivebosses:nether_star_shard,4,8,8,MINIMUM,SCALING");
 
 	public double bonusExperience = 20d;
@@ -76,6 +76,9 @@ public class RewardFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
+		if (event.getWorld().isRemote)
+			return;
+
 		if (!this.isEnabled())
 			return;
 

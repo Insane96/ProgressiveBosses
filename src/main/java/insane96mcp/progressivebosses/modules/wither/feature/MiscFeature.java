@@ -55,6 +55,9 @@ public class MiscFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+		if (event.getEntity().world.isRemote)
+			return;
+
 		if (!this.isEnabled())
 			return;
 

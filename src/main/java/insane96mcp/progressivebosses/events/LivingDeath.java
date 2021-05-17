@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.events;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.events.entities.Dragon;
-import insane96mcp.progressivebosses.events.entities.Wither;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,6 +15,5 @@ public class LivingDeath {
             return;
 
         Dragon.onDeath(event);
-        Wither.onDeath(event);
     }
 }
