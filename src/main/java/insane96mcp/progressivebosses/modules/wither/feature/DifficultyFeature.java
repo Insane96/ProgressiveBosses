@@ -106,8 +106,8 @@ public class DifficultyFeature extends Feature {
 		}
 
 		//If still no players are found then surrender
-		if (spawnedTotal == 0)
-			return;
+		//if (spawnedTotal == 0)
+		//return;
 
 		if (!this.sumSpawnedWitherDifficulty)
 			spawnedTotal /= players.size();
