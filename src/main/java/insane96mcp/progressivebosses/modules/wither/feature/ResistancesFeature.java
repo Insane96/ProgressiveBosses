@@ -11,16 +11,16 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@Label(name = "Resistances & Weaknesses", description = "Handles Damage Taken Reduction and Increase")
+@Label(name = "Resistances & Vulnerabilities", description = "Handles the Damage Resistances and Vulnerabilities")
 public class ResistancesFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Double> damageReductionPerDifficultyOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxDamageReductionPerDifficultyOnHalfHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> magicDamageMultiplierConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> magicDamageBonusConfig;
 
 	public double damageReductionPerDifficultyOnHalfHealth = 4d;
 	public double maxDamageReductionPerDifficultyOnHalfHealth = 32d;
-	public double magicDamageMultiplier = 3d;
+	public double magicDamageBonus = 5d;
 
 	public ResistancesFeature(Module module) {
 		super(Config.builder, module);
@@ -31,9 +31,9 @@ public class ResistancesFeature extends Feature {
 		maxDamageReductionPerDifficultyOnHalfHealthConfig = Config.builder
 				.comment("Cap for 'Damage reduction per Difficulty below half health'")
 				.defineInRange("Max Damage reduction per Difficulty below half health", maxDamageReductionPerDifficultyOnHalfHealth, 0d, 100f);
-		magicDamageMultiplierConfig = Config.builder
-				.comment("When the wither receives damage, if magic, will be multiplied by this value")
-				.defineInRange("Magic Damage Multiplier", magicDamageMultiplier, 0d, 100f);
+		magicDamageBonusConfig = Config.builder
+				.comment("Bonus magic damage based off missing health. 5 means that the Wither will receive bonus damage equal to 5% of the missing health. E.g. The difficulty = 0 Wither (with 300 max health) is at 1/3 of health (so it's missing 200hp), if he were to take magic damage he will receive 200 * 5% = 10 more damage.")
+				.defineInRange("Magic Damage Bonus", magicDamageBonus, 0d, 100f);
 		Config.builder.pop();
 	}
 
@@ -42,7 +42,7 @@ public class ResistancesFeature extends Feature {
 		super.loadConfig();
 		this.damageReductionPerDifficultyOnHalfHealth = this.damageReductionPerDifficultyOnHalfHealthConfig.get();
 		this.maxDamageReductionPerDifficultyOnHalfHealth = this.maxDamageReductionPerDifficultyOnHalfHealthConfig.get();
-		this.magicDamageMultiplier = this.magicDamageMultiplierConfig.get();
+		this.magicDamageBonus = this.magicDamageBonusConfig.get();
 	}
 
 	@SubscribeEvent
@@ -57,12 +57,14 @@ public class ResistancesFeature extends Feature {
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
-
-		if (event.getSource().isMagicDamage()) {
-			event.setAmount(event.getAmount() * (float)this.magicDamageMultiplier);
+		//Handle Magic Damage
+		if (event.getSource().isMagicDamage() && this.magicDamageBonus > 0d) {
+			double missingHealth = wither.getMaxHealth() - wither.getHealth();
+			event.setAmount((event.getAmount() + (float) (this.magicDamageBonus * 0.01 * missingHealth)));
 		}
+		//Handle Damage Reduction
 		else {
-			if (wither.getHealth() > wither.getMaxHealth() / 2f)
+			if (!wither.isCharged())
 				return;
 
 			CompoundNBT tags = wither.getPersistentData();
