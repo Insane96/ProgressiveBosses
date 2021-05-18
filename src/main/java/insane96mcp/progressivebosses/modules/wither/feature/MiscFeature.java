@@ -72,7 +72,7 @@ public class MiscFeature extends Feature {
 		WitherEntity wither = (WitherEntity) event.getEntity();
 		CompoundNBT tags = wither.getPersistentData();
 
-		if (wither.getHealth() < 0)
+		if (wither.getHealth() <= 0)
 			return;
 
 		if (wither.getInvulTime() == 1) {
