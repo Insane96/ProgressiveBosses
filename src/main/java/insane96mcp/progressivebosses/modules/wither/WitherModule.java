@@ -13,6 +13,7 @@ public class WitherModule extends Module {
 	public HealthFeature healthFeature;
 	public ResistancesFeature resistancesFeature;
 	public RewardFeature rewardFeature;
+	public MinionFeature minionFeature;
 
 	public WitherModule() {
 		super(Config.builder);
@@ -23,6 +24,7 @@ public class WitherModule extends Module {
 		healthFeature = new HealthFeature(this);
 		resistancesFeature = new ResistancesFeature(this);
 		rewardFeature = new RewardFeature(this);
+		minionFeature = new MinionFeature(this);
 		Config.builder.pop();
 	}
 
@@ -34,5 +36,6 @@ public class WitherModule extends Module {
 		healthFeature.loadConfig();
 		resistancesFeature.loadConfig();
 		rewardFeature.loadConfig();
+		minionFeature.loadConfig();
 	}
 }
