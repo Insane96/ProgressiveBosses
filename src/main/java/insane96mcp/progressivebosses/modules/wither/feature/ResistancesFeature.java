@@ -19,7 +19,7 @@ public class ResistancesFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> magicDamageBonusConfig;
 
 	public double damageReductionPerDifficultyOnHalfHealth = 4d;
-	public double maxDamageReductionPerDifficultyOnHalfHealth = 32d;
+	public double maxDamageReductionPerDifficultyOnHalfHealth = 35d;
 	public double magicDamageBonus = 5d;
 
 	public ResistancesFeature(Module module) {
