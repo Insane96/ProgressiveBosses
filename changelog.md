@@ -1,5 +1,5 @@
-#Changelog
-##Alpha 3.0.0
+# Changelog
+## Alpha 3.0.0
 * Rewritten the mod to be modular. Now requires InsaneLib
     * The mod now works with Modules and Features, both can be easily disabled
 * Wither
