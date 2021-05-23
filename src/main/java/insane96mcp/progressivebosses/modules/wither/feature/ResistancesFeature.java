@@ -20,7 +20,7 @@ public class ResistancesFeature extends Feature {
 
 	public double damageReductionPerDifficultyOnHalfHealth = 4d;
 	public double maxDamageReductionPerDifficultyOnHalfHealth = 35d;
-	public double magicDamageBonus = 5d;
+	public double magicDamageBonus = 200d;
 
 	public ResistancesFeature(Module module) {
 		super(Config.builder, module);
@@ -32,8 +32,8 @@ public class ResistancesFeature extends Feature {
 				.comment("Cap for 'Damage reduction per Difficulty below half health'")
 				.defineInRange("Max Damage reduction per Difficulty below half health", maxDamageReductionPerDifficultyOnHalfHealth, 0d, 100f);
 		magicDamageBonusConfig = Config.builder
-				.comment("Bonus magic damage based off missing health. 5 means that the Wither will receive bonus damage equal to 5% of the missing health. E.g. The difficulty = 0 Wither (with 300 max health) is at 1/3 of health (so it's missing 200hp), if he were to take magic damage he will receive 200 * 5% = 10 more damage.")
-				.defineInRange("Magic Damage Bonus", magicDamageBonus, 0d, 100f);
+				.comment("Bonus magic damage based off missing health. 150 means that every 150 missing health the damage will be amplified by 100%. E.g. The difficulty = 0 Wither (with 300 max health) is at half health (so it's missing 150hp), on magic damage he will receive 'magic_damage * (missing_health / magic_damage_bonus + 1)' = 'magic_damage * (150 / 150 + 1)' = 'magic_damage * 2'.")
+				.defineInRange("Magic Damage Bonus", magicDamageBonus, 0d, 1024f);
 		Config.builder.pop();
 	}
 
@@ -50,7 +50,7 @@ public class ResistancesFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (this.damageReductionPerDifficultyOnHalfHealth == 0d || this.maxDamageReductionPerDifficultyOnHalfHealth == 0d)
+		if ((this.damageReductionPerDifficultyOnHalfHealth == 0d || this.maxDamageReductionPerDifficultyOnHalfHealth == 0d) && this.magicDamageBonus == 0d)
 			return;
 
 		if (!(event.getEntity() instanceof WitherEntity))
@@ -60,8 +60,9 @@ public class ResistancesFeature extends Feature {
 		//Handle Magic Damage
 		if (event.getSource().isMagicDamage() && this.magicDamageBonus > 0d) {
 			double missingHealth = wither.getMaxHealth() - wither.getHealth();
-			event.setAmount((event.getAmount() + (float) (this.magicDamageBonus * 0.01 * missingHealth)));
+			event.setAmount((event.getAmount() * (float) (missingHealth / (this.magicDamageBonus) + 1)));
 		}
+
 		//Handle Damage Reduction
 		if (!wither.isCharged())
 			return;
