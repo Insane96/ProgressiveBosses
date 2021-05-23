@@ -1,4 +1,22 @@
 # Changelog
+## Alpha 3.0.1
+* Fixed possible freeze on Wither / Dragon load
+* Wither
+    * New Attack Feature
+        * Wither will no longer follow the player unless it's not in range (so the Wither will no longer try to stand on the head of the player ...)
+        * Wither attacks twice as fast with the Middle Head when below half health
+        * Fixes https://bugs.mojang.com/browse/MC-29274
+    * Minions
+        * Now wield a Stone Sword. Have 60% chance to replace the sword with a bow when Wither's over half health and 8% chance when below half health.
+        * Min and Max Cooldown decreased (15~30 secs -> 12~24 secs). Cooldown below half health increased (35% -> 50%) (5~10.5 secs -> 6~12 secs)
+        * Reduced Max Wither Minions Around (16)
+    * Rewards
+        * Nether Star Shards now stack up to 32 and are "indestructible" (have 16k hearts)
+    * Resistances & Weakneses
+        * Changed Bonus Magic Damage: every 200 missing health the damage will be amplified by 100%. `(Magic Damage + 5% of Missing Health -> Magic Damage * (Missing Health / 200 + 1))`
+* Dragon
+    * Fixed having wrong Difficulty Tag
+
 ## Alpha 3.0.0
 * Rewritten the mod to be modular. Now requires InsaneLib
     * The mod now works with Modules and Features, both can be easily disabled
