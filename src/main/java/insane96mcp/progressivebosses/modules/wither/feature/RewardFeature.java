@@ -13,7 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -97,6 +97,43 @@ public class RewardFeature extends Feature {
 	}
 
 	@SubscribeEvent
+	public void onDeath(LivingDeathEvent event) {
+		if (!this.isEnabled())
+			return;
+
+		if (this.dropsList.isEmpty())
+			return;
+
+		if (!(event.getEntityLiving() instanceof WitherEntity))
+			return;
+
+		WitherEntity wither = (WitherEntity) event.getEntityLiving();
+
+		CompoundNBT tags = wither.getPersistentData();
+		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
+		for (Drop drop : this.dropsList) {
+			if (drop.amount == 0)
+				continue;
+			if (difficulty < drop.difficultyRequired)
+				continue;
+
+			double chance = drop.chance / 100d;
+			if (difficulty >= drop.difficultyRequired && drop.chanceMode == Drop.ChanceMode.SCALING)
+				chance *= difficulty - drop.difficultyRequired + 1;
+
+			if (RandomHelper.getDouble(wither.world.rand, 0d, 1d) >= chance)
+				continue;
+
+			ItemEntity itemEntity = new ItemEntity(wither.world, wither.getPositionVec().getX(), wither.getPositionVec().getY(), wither.getPositionVec().getZ(), new ItemStack(ForgeRegistries.ITEMS.getValue(drop.itemId), drop.amount));
+			CompoundNBT compoundNBT = new CompoundNBT();
+			itemEntity.writeAdditional(compoundNBT);
+			compoundNBT.putShort("Health", Short.MAX_VALUE);
+			itemEntity.readAdditional(compoundNBT);
+			wither.world.addEntity(itemEntity);
+		}
+	}
+
+	/*@SubscribeEvent
 	public void setDrops(LivingDropsEvent event) {
 		if (!this.isEnabled())
 			return;
@@ -127,5 +164,5 @@ public class RewardFeature extends Feature {
 			ItemEntity itemEntity = new ItemEntity(wither.world, wither.getPositionVec().getX(), wither.getPositionVec().getY(), wither.getPositionVec().getZ(), new ItemStack(ForgeRegistries.ITEMS.getValue(drop.itemId), drop.amount));
 			event.getDrops().add(itemEntity);
 		}
-	}
+	}*/
 }
