@@ -82,7 +82,7 @@ public class DifficultyFeature extends Feature {
 		BlockPos pos2 = new BlockPos(radius, radius, radius);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
-		List<ServerPlayerEntity> players = event.getWorld().getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
 
 		int eggsToDrop = 0;
 		float killedTotal = 0;
@@ -119,13 +119,13 @@ public class DifficultyFeature extends Feature {
 
 		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, eggsToDrop);
 
-		if (killedTotal == 0)
-			return;
+		//if (killedTotal == 0)
+			//return;
 
 		if (!this.sumKilledDragonDifficulty)
 			killedTotal /= players.size();
 
-		dragonTags.putFloat(Strings.Tags.KILLED_DRAGONS, killedTotal);
+		dragonTags.putFloat(Strings.Tags.DIFFICULTY, killedTotal);
 	}
 
 	@SubscribeEvent

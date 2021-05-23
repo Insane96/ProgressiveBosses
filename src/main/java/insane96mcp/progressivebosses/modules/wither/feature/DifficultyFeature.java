@@ -79,7 +79,7 @@ public class DifficultyFeature extends Feature {
 		BlockPos pos2 = wither.getPosition().add(this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
-		List<ServerPlayerEntity> players = event.getWorld().getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
 		float spawnedTotal = 0;
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0) {
