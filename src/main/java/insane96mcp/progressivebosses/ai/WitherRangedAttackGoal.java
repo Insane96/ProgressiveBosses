@@ -12,18 +12,18 @@ public class WitherRangedAttackGoal extends Goal {
 	private final WitherEntity wither;
 	private LivingEntity target;
 	private int attackTime = -1;
-	private final double speedModifier;
 	private int seeTime;
 	private final int attackInterval;
 	private final float attackRadius;
 	private final float attackRadiusSqr;
+	private final boolean doubleASOnHalfHealth;
 
-	public WitherRangedAttackGoal(WitherEntity wither, double speedModifier, int attackInterval, float attackRadius) {
+	public WitherRangedAttackGoal(WitherEntity wither, int attackInterval, float attackRadius, boolean doubleASOnHalfHealth) {
 		this.wither = wither;
-		this.speedModifier = speedModifier;
 		this.attackInterval = attackInterval;
 		this.attackRadius = attackRadius;
 		this.attackRadiusSqr = attackRadius * attackRadius;
+		this.doubleASOnHalfHealth = doubleASOnHalfHealth;
 		this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 	}
 
@@ -100,7 +100,7 @@ public class WitherRangedAttackGoal extends Goal {
 			}*/
 			this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
 			this.attackTime = this.attackInterval;
-			if (this.wither.isCharged())
+			if (this.wither.isCharged() && this.doubleASOnHalfHealth)
 				this.attackTime /= 2;
 
 		}
