@@ -91,11 +91,11 @@ public class MiscFeature extends Feature {
 			if (flag.get())
 				wither.world.playEvent((PlayerEntity)null, 1022, wither.getPosition(), 0);
 
-			//TODO: Ugly, but moves the wither up to 2 blocks down
-			if (!world.getBlockState(wither.getPosition().down()).isSolid())
-				wither.setPosition(wither.getPosX(), wither.getPosY() - 1, wither.getPosZ());
-			if (!world.getBlockState(wither.getPosition().down()).isSolid())
-				wither.setPosition(wither.getPosX(), wither.getPosY() - 1, wither.getPosZ());
+			//Moves the Wither up to 2 blocks down only if possible
+			for (int i = 0; i < 2; i++) {
+				if (!world.getBlockState(wither.getPosition().down()).isSolid())
+					wither.setPosition(wither.getPosX(), wither.getPosY() - 1, wither.getPosZ());
+			}
 		}
 	}
 
