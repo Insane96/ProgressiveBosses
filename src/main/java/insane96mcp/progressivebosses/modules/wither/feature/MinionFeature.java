@@ -20,6 +20,9 @@ import net.minecraft.entity.monster.WitherSkeletonEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.EquipmentSlotType;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
@@ -57,7 +60,7 @@ public class MinionFeature extends Feature {
 	public int minionAtDifficulty = 1;
 	public int bonusMinionEveryDifficulty = 2;
 	public int maxSpawned = 8;
-	public int maxAround = 20;
+	public int maxAround = 16;
 	public int minCooldown = 300;
 	public int maxCooldown = 600;
 	public double cooldownMultiplierBelowHalfHealth = 0.35d;
@@ -236,6 +239,8 @@ public class MinionFeature extends Feature {
 			witherSkeleton.setCustomName(new TranslationTextComponent(Strings.Translatable.WITHER_MINION));
 			witherSkeleton.deathLootTable = LootTables.EMPTY;
 			witherSkeleton.experienceValue = 1;
+			witherSkeleton.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_SWORD));
+			witherSkeleton.setDropChance(EquipmentSlotType.MAINHAND, Float.MIN_VALUE);
 
 			ModifiableAttributeInstance movementSpeed = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
 			double speedBonus = this.bonusSpeedPerDifficulty / 100d;
