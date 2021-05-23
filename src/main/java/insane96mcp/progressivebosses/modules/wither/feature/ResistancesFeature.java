@@ -63,15 +63,13 @@ public class ResistancesFeature extends Feature {
 			event.setAmount((event.getAmount() + (float) (this.magicDamageBonus * 0.01 * missingHealth)));
 		}
 		//Handle Damage Reduction
-		else {
-			if (!wither.isCharged())
-				return;
+		if (!wither.isCharged())
+			return;
 
-			CompoundNBT tags = wither.getPersistentData();
-			float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
+		CompoundNBT tags = wither.getPersistentData();
+		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
-			float damageReduction = (float) Math.min(this.maxDamageReductionPerDifficultyOnHalfHealth, difficulty * this.damageReductionPerDifficultyOnHalfHealth) / 100f;
-			event.setAmount(event.getAmount() * (1f - damageReduction));
-		}
+		float damageReduction = (float) Math.min(this.maxDamageReductionPerDifficultyOnHalfHealth, difficulty * this.damageReductionPerDifficultyOnHalfHealth) / 100f;
+		event.setAmount(event.getAmount() * (1f - damageReduction));
 	}
 }
