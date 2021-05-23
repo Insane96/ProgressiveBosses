@@ -56,16 +56,24 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> cooldownMultiplierBelowHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> bonusSpeedPerDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> killMinionOnWitherDeathConfig;
+	//Equipment
+	private final ForgeConfigSpec.ConfigValue<Boolean> hasSwordConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> preHalfHealthBowChanceConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> halfHealthBowChanceConfig;
 
 	public int minionAtDifficulty = 1;
 	public int bonusMinionEveryDifficulty = 2;
 	public int maxSpawned = 8;
 	public int maxAround = 16;
-	public int minCooldown = 300;
-	public int maxCooldown = 600;
-	public double cooldownMultiplierBelowHalfHealth = 0.35d;
+	public int minCooldown = 240;
+	public int maxCooldown = 480;
+	public double cooldownMultiplierBelowHalfHealth = 0.5d;
 	public double bonusSpeedPerDifficulty = 1d;
 	public boolean killMinionOnWitherDeath = true;
+	//Equipment
+	public boolean hasSword = true;
+	public double preHalfHealthBowChance = 0.6d;
+	public double halfHealthBowChance = 0.08d;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);
@@ -97,6 +105,19 @@ public class MinionFeature extends Feature {
 		killMinionOnWitherDeathConfig = Config.builder
 				.comment("Wither Minions will die when the Wither that spawned them dies. (Note: only minions in a 128 blocks radius will be killed)")
 				.define("Kill Minions on Wither Death", killMinionOnWitherDeath);
+
+		Config.builder.push("Equipment");
+		hasSwordConfig = Config.builder
+				.comment("Wither Minions will spawn with a Stone Sword")
+				.define("Has Sword", hasSword);
+		preHalfHealthBowChanceConfig = Config.builder
+				.comment("Chance for the Wither Minion to spawn with a bow when Wither's above Half Health")
+				.defineInRange("Bow Chance Over Half Health", preHalfHealthBowChance, 0d, 100d);
+		halfHealthBowChanceConfig = Config.builder
+				.comment("Chance for the Wither Minion to spawn with a bow when Wither's below Half Health")
+				.defineInRange("Bow Chance Below Half Health", halfHealthBowChance, 0d, 100d);
+		Config.builder.pop();
+
 		Config.builder.pop();
 	}
 
@@ -112,6 +133,10 @@ public class MinionFeature extends Feature {
 		this.cooldownMultiplierBelowHalfHealth = this.cooldownMultiplierBelowHalfHealthConfig.get();
 		this.bonusSpeedPerDifficulty = this.bonusSpeedPerDifficultyConfig.get();
 		this.killMinionOnWitherDeath = this.killMinionOnWitherDeathConfig.get();
+		//Equipment
+		this.hasSword = this.hasSwordConfig.get();
+		this.preHalfHealthBowChance = this.preHalfHealthBowChanceConfig.get();
+		this.halfHealthBowChance = this.halfHealthBowChanceConfig.get();
 	}
 
 	@SubscribeEvent
@@ -129,7 +154,7 @@ public class MinionFeature extends Feature {
 
 		CompoundNBT witherTags = wither.getPersistentData();
 
-		int cooldown = RandomHelper.getInt(wither.world.rand, this.minCooldown, this.maxCooldown);
+		int cooldown = (int) (RandomHelper.getInt(wither.world.rand, this.minCooldown, this.maxCooldown) * this.cooldownMultiplierBelowHalfHealth);
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown);
 	}
 
@@ -202,13 +227,11 @@ public class MinionFeature extends Feature {
 			return;
 
 		int minCooldown = this.minCooldown;
-		if (wither.isCharged())
-			minCooldown *= this.cooldownMultiplierBelowHalfHealth;
 		int maxCooldown = this.maxCooldown;
-		if (wither.isCharged())
-			maxCooldown *= this.cooldownMultiplierBelowHalfHealth;
 
 		cooldown = RandomHelper.getInt(world.rand, minCooldown, maxCooldown);
+		if (wither.isCharged())
+			cooldown *= this.cooldownMultiplierBelowHalfHealth;
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown - 1);
 
 		int minionSpawnedCount = 0;
@@ -239,8 +262,7 @@ public class MinionFeature extends Feature {
 			witherSkeleton.setCustomName(new TranslationTextComponent(Strings.Translatable.WITHER_MINION));
 			witherSkeleton.deathLootTable = LootTables.EMPTY;
 			witherSkeleton.experienceValue = 1;
-			witherSkeleton.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_SWORD));
-			witherSkeleton.setDropChance(EquipmentSlotType.MAINHAND, Float.MIN_VALUE);
+			setEquipment(wither, witherSkeleton);
 
 			ModifiableAttributeInstance movementSpeed = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
 			double speedBonus = this.bonusSpeedPerDifficulty / 100d;
@@ -296,6 +318,21 @@ public class MinionFeature extends Feature {
 					break;
 				}
 			}
+		}
+	}
+
+	private void setEquipment(WitherEntity witherEntity, WitherSkeletonEntity witherSkeletonEntity) {
+		witherSkeletonEntity.setDropChance(EquipmentSlotType.MAINHAND, Float.MIN_VALUE);
+		if (this.hasSword)
+			witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_SWORD));
+
+		if (witherEntity.isCharged()) {
+			if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < this.halfHealthBowChance)
+				witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
+		}
+		else {
+			if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < this.preHalfHealthBowChance)
+				witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
 		}
 	}
 
