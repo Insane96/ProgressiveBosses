@@ -44,7 +44,7 @@ public class DifficultyFeature extends Feature {
 				.comment("The Maximum difficulty (times spawned) reachable by Wither. By default is set to 72 because the Wither reaches the maximum amount of health (1024, capped by Minecraft. Some mods can increase this) after 72 withers spawned.")
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
 		startingDifficultyConfig = Config.builder
-				.comment("How much difficulty will players start with when joining a world?")
+				.comment("How much difficulty will players start with when joining a world? Note that this will apply when the first Wither is spawned so if the player has already spawned one this will not apply.")
 				.defineInRange("Starting Difficulty", startingDifficulty, 0, Integer.MAX_VALUE);
 		Config.builder.pop();
 	}
