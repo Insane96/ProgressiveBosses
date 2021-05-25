@@ -32,6 +32,9 @@ public class WitherRangedAttackGoal extends Goal {
 	 * method as well.
 	 */
 	public boolean shouldExecute() {
+		if (this.wither.getInvulTime() > 0) {
+			return false;
+		}
 		int targetId = this.wither.getWatchedTargetId(0);
 		Entity entity = this.wither.world.getEntityByID(targetId);
 		if (entity == null)
@@ -89,15 +92,6 @@ public class WitherRangedAttackGoal extends Goal {
 				return;
 			}
 
-			//float distanceRatio = MathHelper.sqrt(distanceSq) / this.attackRadius;
-			/*if (wither.isCharged()) {
-				for (int h = 0; h < 3; h++) {
-					this.wither.launchWitherSkullToCoords(h, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
-				}
-			}
-			else {
-				this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
-			}*/
 			this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
 			this.attackTime = this.attackInterval;
 			if (this.wither.isCharged() && this.doubleASOnHalfHealth)

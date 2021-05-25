@@ -92,9 +92,11 @@ public class MiscFeature extends Feature {
 				wither.world.playEvent((PlayerEntity)null, 1022, wither.getPosition(), 0);
 
 			//Moves the Wither up to 2 blocks down only if possible
-			for (int i = 0; i < 2; i++) {
-				if (!world.getBlockState(wither.getPosition().down()).isSolid())
-					wither.setPosition(wither.getPosX(), wither.getPosY() - 1, wither.getPosZ());
+			if (!tags.contains(Strings.Tags.CHARGE_ATTACK)) {
+				for (int i = 0; i < 2; i++) {
+					if (!world.getBlockState(wither.getPosition().down()).isSolid())
+						wither.setPosition(wither.getPosX(), wither.getPosY() - 1, wither.getPosZ());
+				}
 			}
 		}
 	}

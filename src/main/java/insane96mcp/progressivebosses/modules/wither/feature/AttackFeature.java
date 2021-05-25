@@ -3,6 +3,8 @@ package insane96mcp.progressivebosses.modules.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.progressivebosses.ai.WitherChargeAttackGoal;
+import insane96mcp.progressivebosses.ai.WitherDoNothingGoal;
 import insane96mcp.progressivebosses.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
@@ -14,6 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -65,16 +68,48 @@ public class AttackFeature extends Feature {
 		setWitherAI(wither);
 	}
 
+	@SubscribeEvent
+	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+		if (event.getEntity().getEntityWorld().isRemote)
+			return;
+
+		if (!this.isEnabled())
+			return;
+
+		if (!(event.getEntity() instanceof WitherEntity))
+			return;
+
+		WitherEntity wither = (WitherEntity) event.getEntity();
+		CompoundNBT witherTags = wither.getPersistentData();
+		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK)){
+			if (wither.ticksExisted % 10 == 0 && wither.getInvulTime() > 0) {
+				wither.setHealth(wither.getHealth() - 10f + (wither.getMaxHealth() * 0.015f));
+			}
+			return;
+		}
+
+		if (wither.getHealth() / wither.getMaxHealth() <= 0.10d) {
+			wither.setInvulTime(150);
+			for (int h = 0; h < 3; h++)
+				wither.updateWatchedTargetId(h, 0);
+			witherTags.putBoolean(Strings.Tags.CHARGE_ATTACK, true);
+		}
+	}
+
 	public void setWitherAI(WitherEntity wither) {
 		ArrayList<Goal> toRemove = new ArrayList<>();
 		wither.goalSelector.goals.forEach(goal -> {
 			if (goal.getGoal() instanceof RangedAttackGoal)
 				toRemove.add(goal.getGoal());
+			if (goal.getGoal() instanceof WitherEntity.DoNothingGoal)
+				toRemove.add(goal.getGoal());
 		});
 
 		toRemove.forEach(wither.goalSelector::removeGoal);
 
+		wither.goalSelector.addGoal(0, new WitherDoNothingGoal(wither));
 		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  40, 20.0f, this.twiceAttackSpeedOnHalfHealth));
+		wither.goalSelector.addGoal(2, new WitherChargeAttackGoal(wither));
 
 		//Fixes https://bugs.mojang.com/browse/MC-29274
 		wither.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(wither, PlayerEntity.class, 0, false, false, null));
