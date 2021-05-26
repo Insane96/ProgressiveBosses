@@ -25,6 +25,7 @@ import net.minecraft.world.server.ServerWorld;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 public class WitherChargeAttackGoal extends Goal {
@@ -68,28 +69,27 @@ public class WitherChargeAttackGoal extends Goal {
 	public void tick() {
 		this.wither.getNavigator().clearPath();
 		if (this.wither.getInvulTime() == 150) {
-			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 2.0f, 2.0f);
+			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 4.0f, 2.0f);
 		}
-		else if (this.wither.getInvulTime() == 30) {
-			CompoundNBT witherTags = wither.getPersistentData();
+		else if (this.wither.getInvulTime() == 60) {
 			this.target = GetRandomNearPlayer(this.wither);
 			if (target != null) {
 				this.targetPos = this.target.getPositionVec();
 				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0f, 2.0f);
 			}
 			else {
-				this.wither.setMotion(Vector3d.ZERO);
 				this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 7f, Explosion.Mode.DESTROY);
 				this.wither.setInvulTime(0);
 			}
 		}
 		if (this.wither.getInvulTime() < 30) {
-			double mult = 45d / this.wither.getInvulTime();
+			double mult = 50d / this.wither.getInvulTime();
 			Vector3d diff = this.targetPos.subtract(this.wither.getPositionVec()).normalize().mul(mult, mult, mult);
 			this.wither.setMotion(diff.x, diff.y, diff.z);
 			this.wither.getLookController().setLookPosition(this.targetPos);
 			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(this.wither.getPosX() - 2, this.wither.getPosY() - 2, this.wither.getPosZ() - 2, this.wither.getPosX() + 2, this.wither.getPosY() + 6, this.wither.getPosZ() + 2);
 			Stream<BlockPos> blocks = BlockPos.getAllInBox(axisAlignedBB);
+			AtomicBoolean hasBrokenBlocks = new AtomicBoolean(false);
 			blocks.forEach(blockPos -> {
 				BlockState state = wither.world.getBlockState(blockPos);
 				if (state.canEntityDestroy(wither.world, blockPos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state)) {
@@ -97,8 +97,13 @@ public class WitherChargeAttackGoal extends Goal {
 					LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerWorld)this.wither.world)).withRandom(this.wither.world.rand).withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(blockPos)).withParameter(LootParameters.TOOL, ItemStack.EMPTY).withNullableParameter(LootParameters.BLOCK_ENTITY, tileentity);
 					state.getDrops(lootcontext$builder).forEach(itemStack -> this.wither.world.addEntity(new ItemEntity(this.wither.world, blockPos.getX() + .5d, blockPos.getY() + .5d, blockPos.getZ() + .5d, itemStack)));
 					wither.world.setBlockState(blockPos, Blocks.AIR.getDefaultState());
+					if (!hasBrokenBlocks.get())
+						hasBrokenBlocks.set(true);
 				}
 			});
+
+			if (hasBrokenBlocks.get() && this.wither.getInvulTime() % 4 == 0)
+				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_BREAK_BLOCK, SoundCategory.HOSTILE, 1.0f, 0.75f);
 		}
 		else {
 			this.wither.setMotion(Vector3d.ZERO);

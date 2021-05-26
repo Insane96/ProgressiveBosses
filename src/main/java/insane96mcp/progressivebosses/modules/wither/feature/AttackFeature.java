@@ -26,9 +26,11 @@ public class AttackFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> applyToVanillaWitherConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> twiceAttackSpeedOnHalfHealthConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackAtHealthPercentageConfig;
 
 	public boolean applyToVanillaWither = true;
 	public boolean twiceAttackSpeedOnHalfHealth = true;
+	public double chargeAttackAtHealthPercentage = 0.2d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -39,6 +41,9 @@ public class AttackFeature extends Feature {
 		twiceAttackSpeedOnHalfHealthConfig = Config.builder
 				.comment("The middle head will attack twice as fast when the Wither drops below half health.")
 				.define("Twice Attack Speed on Half Health", twiceAttackSpeedOnHalfHealth);
+		chargeAttackAtHealthPercentageConfig = Config.builder
+				.comment("The Wither will charge an attack when dropping below this health percentage.")
+				.defineInRange("Charge Attack at Health Percentage", chargeAttackAtHealthPercentage, 0d, 1d);
 		Config.builder.pop();
 	}
 
@@ -47,6 +52,7 @@ public class AttackFeature extends Feature {
 		super.loadConfig();
 		this.applyToVanillaWither = this.applyToVanillaWitherConfig.get();
 		this.twiceAttackSpeedOnHalfHealth = this.twiceAttackSpeedOnHalfHealthConfig.get();
+		this.chargeAttackAtHealthPercentage = this.chargeAttackAtHealthPercentageConfig.get();
 	}
 
 	@SubscribeEvent
@@ -83,12 +89,12 @@ public class AttackFeature extends Feature {
 		CompoundNBT witherTags = wither.getPersistentData();
 		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK)){
 			if (wither.ticksExisted % 10 == 0 && wither.getInvulTime() > 0) {
-				wither.setHealth(wither.getHealth() - 10f + (wither.getMaxHealth() * 0.015f));
+				wither.setHealth(wither.getHealth() - 10f + (wither.getMaxHealth() * 0.01f));
 			}
 			return;
 		}
 
-		if (wither.getHealth() / wither.getMaxHealth() <= 0.10d) {
+		if (wither.getHealth() / wither.getMaxHealth() <= this.chargeAttackAtHealthPercentage) {
 			wither.setInvulTime(150);
 			for (int h = 0; h < 3; h++)
 				wither.updateWatchedTargetId(h, 0);
