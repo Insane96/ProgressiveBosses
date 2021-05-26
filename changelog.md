@@ -1,4 +1,15 @@
 # Changelog
+## Alpha 3.0.2
+* Rewards
+    * Inverted the chances for Shards to drop:  
+      `8% chance * (Difficulty - 1)` from Difficulty = 2 to drop 1 Nether Star Shard  
+      `6% chance * (Difficulty - 3)` from Difficulty = 4 to drop 2 Nether Star Shard  
+      `4% chance * (Difficulty - 5)` from Difficulty = 6 to drop 3 Nether Star Shard  
+      `2% chance * (Difficulty - 7)` from Difficulty = 8 to drop 4 Nether Star Shard  
+      E.g. At difficulty = 10 you have 72% chance to drop 1 shard + 42% chance to drop 2 shards + 20% chance to drop 3 shards + 6% chance to drop 4 shards.
+* Attack
+    * Added a charge attack. At 20% health the wither will enter a still status where after 4.5 secs will target a player and after 1.5 more seconds will charge at him, destroying everything in its path and exploding at arrival (or after 1.5 secs of charging if for some reasons can't get to the target point).
+
 ## Alpha 3.0.1
 * Fixed possible freeze on Wither / Dragon load
 * Wither
