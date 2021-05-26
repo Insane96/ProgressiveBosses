@@ -41,7 +41,7 @@ public class DifficultyFeature extends Feature {
 				.comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 82 because the Ender Dragon reaches the maximum amount of health (1024, handled by Minecraft. Some mods can increase this) after 82 Dragons killed.")
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
 		startingDifficultyConfig = Config.builder
-				.comment("How much difficulty will players start with when joining a world?")
+				.comment("How much difficulty will players start with when joining a world?  Note that this will apply when the first Dragon is killed so if the player has already killed one this will not apply.")
 				.defineInRange("Starting Difficulty", startingDifficulty, 0, Integer.MAX_VALUE);
 		Config.builder.pop();
 	}
