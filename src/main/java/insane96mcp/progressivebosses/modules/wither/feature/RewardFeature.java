@@ -27,10 +27,10 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> dropsListConfig;
 
-	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,2,2,MINIMUM,SCALING",
-			"progressivebosses:nether_star_shard,2,4,4,MINIMUM,SCALING",
-			"progressivebosses:nether_star_shard,3,6,6,MINIMUM,SCALING",
-			"progressivebosses:nether_star_shard,4,8,8,MINIMUM,SCALING");
+	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,2,8,MINIMUM,SCALING",
+			"progressivebosses:nether_star_shard,2,4,6,MINIMUM,SCALING",
+			"progressivebosses:nether_star_shard,3,6,4,MINIMUM,SCALING",
+			"progressivebosses:nether_star_shard,4,8,2,MINIMUM,SCALING");
 
 	public double bonusExperience = 20d;
 	public ArrayList<Drop> dropsList;
@@ -133,36 +133,4 @@ public class RewardFeature extends Feature {
 		}
 	}
 
-	/*@SubscribeEvent
-	public void setDrops(LivingDropsEvent event) {
-		if (!this.isEnabled())
-			return;
-
-		if (this.dropsList.isEmpty())
-			return;
-
-		if (!(event.getEntityLiving() instanceof WitherEntity))
-			return;
-
-		WitherEntity wither = (WitherEntity) event.getEntityLiving();
-
-		CompoundNBT tags = wither.getPersistentData();
-		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
-		for (Drop drop : this.dropsList) {
-			if (drop.amount == 0)
-				continue;
-			if (difficulty < drop.difficultyRequired)
-				continue;
-
-			double chance = drop.chance / 100d;
-			if (difficulty >= drop.difficultyRequired && drop.chanceMode == Drop.ChanceMode.SCALING)
-				chance *= difficulty - drop.difficultyRequired + 1;
-
-			if (RandomHelper.getDouble(wither.world.rand, 0d, 1d) >= chance)
-				continue;
-
-			ItemEntity itemEntity = new ItemEntity(wither.world, wither.getPositionVec().getX(), wither.getPositionVec().getY(), wither.getPositionVec().getZ(), new ItemStack(ForgeRegistries.ITEMS.getValue(drop.itemId), drop.amount));
-			event.getDrops().add(itemEntity);
-		}
-	}*/
 }
