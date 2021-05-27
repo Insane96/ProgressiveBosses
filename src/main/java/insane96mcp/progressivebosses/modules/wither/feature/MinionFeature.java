@@ -7,6 +7,7 @@ import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.ai.WitherMinionHurtByTargetGoal;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
+import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -60,6 +61,7 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> hasSwordConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> preHalfHealthBowChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> halfHealthBowChanceConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> powerSharpnessChanceConfig;
 
 	public int minionAtDifficulty = 1;
 	public int bonusMinionEveryDifficulty = 2;
@@ -74,6 +76,7 @@ public class MinionFeature extends Feature {
 	public boolean hasSword = true;
 	public double preHalfHealthBowChance = 0.6d;
 	public double halfHealthBowChance = 0.08d;
+	public double powerSharpnessChance = 0.07d;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);
@@ -116,6 +119,9 @@ public class MinionFeature extends Feature {
 		halfHealthBowChanceConfig = Config.builder
 				.comment("Chance for the Wither Minion to spawn with a bow when Wither's below Half Health")
 				.defineInRange("Bow Chance Below Half Health", halfHealthBowChance, 0d, 100d);
+		powerSharpnessChanceConfig = Config.builder
+				.comment("Chance for the Wither Minion Sword / Bow to be enchanted with Sharpness / Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
+				.defineInRange("Power / Sharpness Chance", powerSharpnessChance, 0d, 5d);
 		Config.builder.pop();
 
 		Config.builder.pop();
@@ -137,6 +143,7 @@ public class MinionFeature extends Feature {
 		this.hasSword = this.hasSwordConfig.get();
 		this.preHalfHealthBowChance = this.preHalfHealthBowChanceConfig.get();
 		this.halfHealthBowChance = this.halfHealthBowChanceConfig.get();
+		this.powerSharpnessChance = this.powerSharpnessChanceConfig.get();
 	}
 
 	@SubscribeEvent
@@ -260,14 +267,18 @@ public class MinionFeature extends Feature {
 
 			witherSkeleton.setPosition(x + 0.5f, y + 0.5f, z + 0.5f);
 			witherSkeleton.setCustomName(new TranslationTextComponent(Strings.Translatable.WITHER_MINION));
+			setEquipment(wither, witherSkeleton, difficulty);
 			witherSkeleton.deathLootTable = LootTables.EMPTY;
 			witherSkeleton.experienceValue = 1;
-			setEquipment(wither, witherSkeleton);
 
 			ModifiableAttributeInstance movementSpeed = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
 			double speedBonus = (this.bonusSpeedPerDifficulty / 100d) * difficulty;
 			AttributeModifier movementSpeedModifier = new AttributeModifier(Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
 			movementSpeed.applyPersistentModifier(movementSpeedModifier);
+
+			ModifiableAttributeInstance followRange = witherSkeleton.getAttribute(Attributes.FOLLOW_RANGE);
+			AttributeModifier followRangeBonus = new AttributeModifier(Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
+			followRange.applyPersistentModifier(followRangeBonus);
 
 			//No need since EntityJoinWorldEvent is triggered
 			//setMinionAI(witherSkeleton);
@@ -321,18 +332,31 @@ public class MinionFeature extends Feature {
 		}
 	}
 
-	private void setEquipment(WitherEntity witherEntity, WitherSkeletonEntity witherSkeletonEntity) {
+	private void setEquipment(WitherEntity witherEntity, WitherSkeletonEntity witherSkeletonEntity, float difficulty) {
 		witherSkeletonEntity.setDropChance(EquipmentSlotType.MAINHAND, Float.MIN_VALUE);
-		if (this.hasSword)
-			witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.STONE_SWORD));
 
+		int level = (int) (this.powerSharpnessChance * difficulty);
+		if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - level)
+			level++;
+
+		ItemStack sword = new ItemStack(Items.STONE_SWORD);
+		if (level > 0)
+			sword.addEnchantment(Enchantments.SHARPNESS, level);
+		if (this.hasSword)
+			witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, sword);
+
+		ItemStack bow = new ItemStack(Items.BOW);
+		if (level > 0)
+			bow.addEnchantment(Enchantments.POWER, level);
 		if (witherEntity.isCharged()) {
-			if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < this.halfHealthBowChance)
-				witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
+			if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < this.halfHealthBowChance) {
+				witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, bow);
+			}
 		}
 		else {
-			if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < this.preHalfHealthBowChance)
-				witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
+			if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < this.preHalfHealthBowChance) {
+				witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, bow);
+			}
 		}
 	}
 
