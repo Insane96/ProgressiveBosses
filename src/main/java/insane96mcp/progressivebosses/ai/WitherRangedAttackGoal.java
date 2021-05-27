@@ -101,14 +101,13 @@ public class WitherRangedAttackGoal extends Goal {
 			if (this.wither.isCharged() && this.doubleASOnHalfHealth)
 				this.attackTime /= 2;
 
-			int nearBonusAS = 0;
 			if (this.increaseASOnNear) {
 				float distance = this.wither.getDistance(this.target);
 				if (distance < this.attackRadius) {
-					nearBonusAS = (int) Math.round((this.attackInterval * 0.4d) * (1d - (distance / this.attackRadius)));
+					int nearBonusAS = (int) Math.round((this.attackInterval * 0.4d) * (1d - (distance / this.attackRadius)));
+					this.attackTime -= nearBonusAS;
 				}
 			}
-			this.attackTime -= nearBonusAS;
 		}
 
 	}
