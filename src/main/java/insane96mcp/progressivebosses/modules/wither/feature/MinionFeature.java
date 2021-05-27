@@ -220,7 +220,7 @@ public class MinionFeature extends Feature {
 		if (players.isEmpty())
 			return;
 
-		List<WitherSkeletonEntity> minionsInAABB = world.getEntitiesWithinAABB(WitherSkeletonEntity.class, bb);
+		List<WitherSkeletonEntity> minionsInAABB = world.getEntitiesWithinAABB(WitherSkeletonEntity.class, wither.getBoundingBox().grow(16));
 		int minionsCountInAABB = minionsInAABB.size();
 
 		if (minionsCountInAABB >= this.maxAround)
