@@ -95,6 +95,12 @@ public class WitherRangedAttackGoal extends Goal {
 			if (!canSee)
 				return;
 
+			this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
+			this.attackTime = this.attackInterval;
+
+			if (this.wither.isCharged() && this.doubleASOnHalfHealth)
+				this.attackTime /= 2;
+
 			int nearBonusAS = 0;
 			if (this.increaseASOnNear) {
 				float distance = this.wither.getDistance(this.target);
@@ -102,10 +108,6 @@ public class WitherRangedAttackGoal extends Goal {
 					nearBonusAS = (int) Math.round((this.attackInterval * 0.4d) * (1d - (distance / this.attackRadius)));
 				}
 			}
-			this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
-			this.attackTime = this.attackInterval;
-			if (this.wither.isCharged() && this.doubleASOnHalfHealth)
-				this.attackTime /= 2;
 			this.attackTime -= nearBonusAS;
 		}
 
