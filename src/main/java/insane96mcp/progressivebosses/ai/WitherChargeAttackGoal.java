@@ -71,7 +71,7 @@ public class WitherChargeAttackGoal extends Goal {
 		if (this.wither.getInvulTime() == 200) {
 			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 4.0f, 2.0f);
 		}
-		else if (this.wither.getInvulTime() == 60) {
+		else if (this.wither.getInvulTime() == 70) {
 			this.target = GetRandomNearPlayer(this.wither);
 			if (target != null) {
 				this.targetPos = this.target.getPositionVec();
