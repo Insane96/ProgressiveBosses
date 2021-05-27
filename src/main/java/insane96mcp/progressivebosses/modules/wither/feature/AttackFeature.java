@@ -95,7 +95,7 @@ public class AttackFeature extends Feature {
 		}
 
 		if (wither.getHealth() / wither.getMaxHealth() <= this.chargeAttackAtHealthPercentage) {
-			wither.setInvulTime(150);
+			wither.setInvulTime(200);
 			for (int h = 0; h < 3; h++)
 				wither.updateWatchedTargetId(h, 0);
 			witherTags.putBoolean(Strings.Tags.CHARGE_ATTACK, true);
