@@ -265,7 +265,7 @@ public class MinionFeature extends Feature {
 			setEquipment(wither, witherSkeleton);
 
 			ModifiableAttributeInstance movementSpeed = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
-			double speedBonus = this.bonusSpeedPerDifficulty / 100d;
+			double speedBonus = (this.bonusSpeedPerDifficulty / 100d) * difficulty;
 			AttributeModifier movementSpeedModifier = new AttributeModifier(Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
 			movementSpeed.applyPersistentModifier(movementSpeedModifier);
 
