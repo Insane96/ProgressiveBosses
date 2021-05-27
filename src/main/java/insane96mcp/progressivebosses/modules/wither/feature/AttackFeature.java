@@ -49,7 +49,7 @@ public class AttackFeature extends Feature {
 				.comment("The middle head will attack twice as fast when the Wither drops below half health.")
 				.define("Twice Attack Speed on Half Health", twiceAttackSpeedOnHalfHealth);
 		increaseAttackSpeedWhenNearConfig = Config.builder
-				.comment("The middle head will attack faster (up to 33% of the attack speed) the nearer the target is to the Wither.")
+				.comment("The middle head will attack faster (up to 40% of the attack speed) the nearer the target is to the Wither.")
 				.define("Increase Attack Speed when Near", increaseAttackSpeedWhenNear);
 		chargeAttackAtHealthPercentageConfig = Config.builder
 				.comment("The Wither will charge an attack when dropping below this health percentage.")
