@@ -16,14 +16,18 @@ public class WitherRangedAttackGoal extends Goal {
 	private final int attackInterval;
 	private final float attackRadius;
 	private final float attackRadiusSqr;
+	//Doubles the rate of attack of the middle head when health drops below half
 	private final boolean doubleASOnHalfHealth;
+	//Increases the rate of attack of the middle head the closer the player is to the wither
+	private final boolean increaseASOnNear;
 
-	public WitherRangedAttackGoal(WitherEntity wither, int attackInterval, float attackRadius, boolean doubleASOnHalfHealth) {
+	public WitherRangedAttackGoal(WitherEntity wither, int attackInterval, float attackRadius, boolean doubleASOnHalfHealth, boolean increaseASOnNear) {
 		this.wither = wither;
 		this.attackInterval = attackInterval;
 		this.attackRadius = attackRadius;
 		this.attackRadiusSqr = attackRadius * attackRadius;
 		this.doubleASOnHalfHealth = doubleASOnHalfHealth;
+		this.increaseASOnNear = increaseASOnNear;
 		this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 	}
 
@@ -88,15 +92,21 @@ public class WitherRangedAttackGoal extends Goal {
 		this.wither.getLookController().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
 
 		if (--this.attackTime <= 0) {
-			if (!canSee) {
+			if (!canSee)
 				return;
-			}
 
+			int nearBonusAS = 0;
+			if (this.increaseASOnNear) {
+				float distance = this.wither.getDistance(this.target);
+				if (distance < this.attackRadius) {
+					nearBonusAS = (int) Math.round((this.attackInterval * 0.4d) * (1d - (distance / this.attackRadius)));
+				}
+			}
 			this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
 			this.attackTime = this.attackInterval;
 			if (this.wither.isCharged() && this.doubleASOnHalfHealth)
 				this.attackTime /= 2;
-
+			this.attackTime -= nearBonusAS;
 		}
 
 	}
