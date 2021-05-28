@@ -27,6 +27,8 @@ public class Strings {
 		public static final String MOVEMENT_SPEED_BONUS = ProgressiveBosses.RESOURCE_PREFIX + "movement_speed_bonus";
 		public static final UUID FOLLOW_RANGE_BONUS_UUID = UUID.fromString("58eb2705-8b21-41b6-8b8e-412fcdaeda97");
 		public static final String FOLLOW_RANGE_BONUS = ProgressiveBosses.RESOURCE_PREFIX + "follow_range_bonus";
+		public static final UUID SWIM_SPEED_BONUS_UUID = UUID.fromString("d7007c0f-4533-4911-870b-63cce20328f0");
+		public static final String SWIM_SPEED_BONUS = ProgressiveBosses.RESOURCE_PREFIX + "swim_speed_bonus";
 	}
 
 	public static class Translatable {

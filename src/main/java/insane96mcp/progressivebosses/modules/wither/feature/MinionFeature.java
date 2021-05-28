@@ -34,6 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -70,7 +71,7 @@ public class MinionFeature extends Feature {
 	public int minCooldown = 240;
 	public int maxCooldown = 480;
 	public double cooldownMultiplierBelowHalfHealth = 0.5d;
-	public double bonusSpeedPerDifficulty = 1d;
+	public double bonusSpeedPerDifficulty = 0.005d;
 	public boolean killMinionOnWitherDeath = true;
 	//Equipment
 	public boolean hasSword = true;
@@ -91,7 +92,7 @@ public class MinionFeature extends Feature {
 				.comment("Maximum Minions spawned by the Wither")
 				.defineInRange("Max Minions Spawned", maxSpawned, 0, Integer.MAX_VALUE);
 		maxAroundConfig = Config.builder
-				.comment("Maximum amount of Minions that can be around the Wither in a 32 block radius. After this number is reached the Wither will stop spawning minions. Set to 0 to disable this check")
+				.comment("Maximum amount of Minions that can be around the Wither in a 16 block radius. After this number is reached the Wither will stop spawning minions. Set to 0 to disable this check")
 				.defineInRange("Max Minions Around", maxAround, 0, Integer.MAX_VALUE);
 		minCooldownConfig = Config.builder
 				.comment("Minimum ticks (20 ticks = 1 seconds) after Minions can spwan.")
@@ -103,7 +104,7 @@ public class MinionFeature extends Feature {
 				.comment("Min and Max cooldowns are multiplied by this value when the Wither drops below half health. Set to 1 to not change the cooldown when the wither's health drops below half.")
 				.defineInRange("Cooldown Multiplier Below Half Health", cooldownMultiplierBelowHalfHealth, 0d, Double.MAX_VALUE);
 		bonusSpeedPerDifficultyConfig = Config.builder
-				.comment("Percentage bonus speed per difficulty.")
+				.comment("Percentage bonus speed per difficulty. (0.01 means 1%)")
 				.defineInRange("Bonus Movement Speed Per Difficulty", bonusSpeedPerDifficulty, 0d, Double.MAX_VALUE);
 		killMinionOnWitherDeathConfig = Config.builder
 				.comment("Wither Minions will die when the Wither that spawned them dies. (Note: only minions in a 128 blocks radius will be killed)")
@@ -272,13 +273,19 @@ public class MinionFeature extends Feature {
 			witherSkeleton.experienceValue = 1;
 
 			ModifiableAttributeInstance movementSpeed = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
-			double speedBonus = (this.bonusSpeedPerDifficulty / 100d) * difficulty;
+			double speedBonus = this.bonusSpeedPerDifficulty * difficulty;
 			AttributeModifier movementSpeedModifier = new AttributeModifier(Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
 			movementSpeed.applyPersistentModifier(movementSpeedModifier);
 
 			ModifiableAttributeInstance followRange = witherSkeleton.getAttribute(Attributes.FOLLOW_RANGE);
-			AttributeModifier followRangeBonus = new AttributeModifier(Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
+			AttributeModifier followRangeBonus = new AttributeModifier(Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 16, AttributeModifier.Operation.ADDITION);
 			followRange.applyPersistentModifier(followRangeBonus);
+
+			ModifiableAttributeInstance swimSpeed = witherSkeleton.getAttribute(ForgeMod.SWIM_SPEED.get());
+			if (swimSpeed != null) {
+				AttributeModifier swimSpeedBonus = new AttributeModifier(Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 3d, AttributeModifier.Operation.MULTIPLY_BASE);
+				swimSpeed.applyPersistentModifier(swimSpeedBonus);
+			}
 
 			//No need since EntityJoinWorldEvent is triggered
 			//setMinionAI(witherSkeleton);
