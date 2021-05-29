@@ -29,7 +29,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> applyToVanillaWitherConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> increasedAttackDamageConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> twiceAttackSpeedOnHalfHealthConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> attackSpeedMultiplierOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackAtHealthPercentageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
@@ -37,10 +37,10 @@ public class AttackFeature extends Feature {
 	public boolean applyToVanillaWither = true;
 	public int attackInterval = 50;
 	public double increasedAttackDamage = 0.02d;
-	public boolean twiceAttackSpeedOnHalfHealth = true;
+	public double attackSpeedMultiplierOnHalfHealth = 0.66666667d;
 	public boolean increaseAttackSpeedWhenNear = true;
 	public double chargeAttackAtHealthPercentage = 0.2d;
-	public double skullVelocityMultiplier = 3d;
+	public double skullVelocityMultiplier = 2.5d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -54,9 +54,9 @@ public class AttackFeature extends Feature {
 		increasedAttackDamageConfig = Config.builder
 				.comment("Percentage bonus damage for the wither per difficulty.")
 				.defineInRange("Increased Attack Damage", increasedAttackDamage, 0d, Integer.MAX_VALUE);
-		twiceAttackSpeedOnHalfHealthConfig = Config.builder
+		attackSpeedMultiplierOnHalfHealthConfig = Config.builder
 				.comment("The middle head will attack twice as fast when the Wither drops below half health.")
-				.define("Twice Attack Speed on Half Health", twiceAttackSpeedOnHalfHealth);
+				.defineInRange("Attack Speed Multiplier on Half Health", attackSpeedMultiplierOnHalfHealth, 0d, Double.MAX_VALUE);
 		increaseAttackSpeedWhenNearConfig = Config.builder
 				.comment("The middle head will attack faster (up to 40% of the attack speed) the nearer the target is to the Wither.")
 				.define("Increase Attack Speed when Near", increaseAttackSpeedWhenNear);
@@ -75,7 +75,7 @@ public class AttackFeature extends Feature {
 		this.applyToVanillaWither = this.applyToVanillaWitherConfig.get();
 		this.attackInterval = this.attackIntervalConfig.get();
 		this.increasedAttackDamage = this.increasedAttackDamageConfig.get();
-		this.twiceAttackSpeedOnHalfHealth = this.twiceAttackSpeedOnHalfHealthConfig.get();
+		this.attackSpeedMultiplierOnHalfHealth = this.attackSpeedMultiplierOnHalfHealthConfig.get();
 		this.increaseAttackSpeedWhenNear = this.increaseAttackSpeedWhenNearConfig.get();
 		this.chargeAttackAtHealthPercentage = this.chargeAttackAtHealthPercentageConfig.get();
 		this.skullVelocityMultiplier = this.skullVelocityMultiplierConfig.get();
@@ -172,7 +172,7 @@ public class AttackFeature extends Feature {
 		toRemove.forEach(wither.goalSelector::removeGoal);
 
 		wither.goalSelector.addGoal(0, new WitherDoNothingGoal(wither));
-		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.twiceAttackSpeedOnHalfHealth, this.increaseAttackSpeedWhenNear));
+		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.attackSpeedMultiplierOnHalfHealth, this.increaseAttackSpeedWhenNear));
 		wither.goalSelector.addGoal(2, new WitherChargeAttackGoal(wither));
 
 		//Fixes https://bugs.mojang.com/browse/MC-29274

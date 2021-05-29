@@ -16,17 +16,17 @@ public class WitherRangedAttackGoal extends Goal {
 	private final int attackInterval;
 	private final float attackRadius;
 	private final float attackRadiusSqr;
-	//Doubles the rate of attack of the middle head when health drops below half
-	private final boolean doubleASOnHalfHealth;
+	//Multiplied by the rate of attack when health drops below half
+	private final double attackSpeedMultiplier;
 	//Increases the rate of attack of the middle head the closer the player is to the wither
 	private final boolean increaseASOnNear;
 
-	public WitherRangedAttackGoal(WitherEntity wither, int attackInterval, float attackRadius, boolean doubleASOnHalfHealth, boolean increaseASOnNear) {
+	public WitherRangedAttackGoal(WitherEntity wither, int attackInterval, float attackRadius, double attackSpeedMultiplier, boolean increaseASOnNear) {
 		this.wither = wither;
 		this.attackInterval = attackInterval;
 		this.attackRadius = attackRadius;
 		this.attackRadiusSqr = attackRadius * attackRadius;
-		this.doubleASOnHalfHealth = doubleASOnHalfHealth;
+		this.attackSpeedMultiplier = attackSpeedMultiplier;
 		this.increaseASOnNear = increaseASOnNear;
 		this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 	}
@@ -98,11 +98,16 @@ public class WitherRangedAttackGoal extends Goal {
 			/*if (Modules.witherModule.attackFeature.skullBonusVelocity > 0d)
 				this.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
 			else*/
+			if (RandomHelper.getFloat(this.wither.getRNG(), 0f, 1f) < .1f)
+				for (int h = 0; h < 3; h++) {
+					this.wither.launchWitherSkullToCoords(h, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
+				}
+			else
 				this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
 			this.attackTime = this.attackInterval;
 
-			if (this.wither.isCharged() && this.doubleASOnHalfHealth)
-				this.attackTime /= 2;
+			if (this.wither.isCharged() && this.attackSpeedMultiplier > 0d)
+				this.attackTime *= this.attackSpeedMultiplier;
 
 			if (this.increaseASOnNear) {
 				float distance = this.wither.getDistance(this.target);

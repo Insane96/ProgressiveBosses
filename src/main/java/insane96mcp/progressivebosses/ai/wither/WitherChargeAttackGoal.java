@@ -74,7 +74,7 @@ public class WitherChargeAttackGoal extends Goal {
 		else if (this.wither.getInvulTime() > 70 && this.wither.getInvulTime() < 170 && this.wither.getInvulTime() % 3 == 0) {
 			LivingEntity livingEntity = GetRandomNearPlayer(this.wither);
 			if (livingEntity != null) {
-				this.wither.launchWitherSkullToCoords(0, livingEntity.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), livingEntity.getPosY() + (double)livingEntity.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), livingEntity.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), false);
+				this.wither.launchWitherSkullToCoords(0, livingEntity.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), livingEntity.getPosY() + (double)livingEntity.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), livingEntity.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), false);
 				this.wither.getLookController().setLookPositionWithEntity(livingEntity, 30.0F, 30.0F);
 			}
 		}
