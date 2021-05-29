@@ -71,6 +71,13 @@ public class WitherChargeAttackGoal extends Goal {
 		if (this.wither.getInvulTime() == 200) {
 			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 4.0f, 2.0f);
 		}
+		else if (this.wither.getInvulTime() > 70 && this.wither.getInvulTime() < 170 && this.wither.getInvulTime() % 3 == 0) {
+			LivingEntity livingEntity = GetRandomNearPlayer(this.wither);
+			if (livingEntity != null) {
+				this.wither.launchWitherSkullToCoords(0, livingEntity.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), livingEntity.getPosY() + (double)livingEntity.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), livingEntity.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), false);
+				this.wither.getLookController().setLookPositionWithEntity(livingEntity, 30.0F, 30.0F);
+			}
+		}
 		else if (this.wither.getInvulTime() == 70) {
 			this.target = GetRandomNearPlayer(this.wither);
 			if (target != null) {
@@ -78,7 +85,7 @@ public class WitherChargeAttackGoal extends Goal {
 				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0f, 2.0f);
 			}
 			else {
-				this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 7f, Explosion.Mode.DESTROY);
+				this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 9f, Explosion.Mode.DESTROY);
 				this.wither.setInvulTime(0);
 			}
 		}
@@ -110,7 +117,7 @@ public class WitherChargeAttackGoal extends Goal {
 		}
 		if (this.wither.getInvulTime() < 30 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 16d) {
 			this.wither.setMotion(Vector3d.ZERO);
-			this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 7f, Explosion.Mode.DESTROY);
+			this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 9f, Explosion.Mode.DESTROY);
 			this.wither.setInvulTime(0);
 		}
 	}
