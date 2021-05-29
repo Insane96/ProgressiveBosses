@@ -65,18 +65,18 @@ public class MinionFeature extends Feature {
 
 	public int minionAtDifficulty = 1;
 	public int bonusMinionEveryDifficulty = 2;
-	public int maxSpawned = 8;
+	public int maxSpawned = 6;
 	public int maxAround = 16;
 	public int minCooldown = 240;
 	public int maxCooldown = 480;
-	public double cooldownMultiplierBelowHalfHealth = 0.5d;
+	public double cooldownMultiplierBelowHalfHealth = 0.6d;
 	public double bonusSpeedPerDifficulty = 0.004d;
 	public boolean killMinionOnWitherDeath = true;
 	//Equipment
 	public boolean hasSword = true;
 	public double preHalfHealthBowChance = 0.6d;
 	public double halfHealthBowChance = 0.08d;
-	public double powerSharpnessChance = 0.07d;
+	public double powerSharpnessChance = 0.0625d;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);
