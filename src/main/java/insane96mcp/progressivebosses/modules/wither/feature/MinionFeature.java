@@ -70,7 +70,7 @@ public class MinionFeature extends Feature {
 	public int minCooldown = 240;
 	public int maxCooldown = 480;
 	public double cooldownMultiplierBelowHalfHealth = 0.5d;
-	public double bonusSpeedPerDifficulty = 0.005d;
+	public double bonusSpeedPerDifficulty = 0.004d;
 	public boolean killMinionOnWitherDeath = true;
 	//Equipment
 	public boolean hasSword = true;
