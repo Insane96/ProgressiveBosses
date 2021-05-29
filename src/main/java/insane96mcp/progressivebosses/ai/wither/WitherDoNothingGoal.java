@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.ai;
+package insane96mcp.progressivebosses.ai.wither;
 
 import insane96mcp.progressivebosses.base.Strings;
 import net.minecraft.entity.ai.goal.Goal;

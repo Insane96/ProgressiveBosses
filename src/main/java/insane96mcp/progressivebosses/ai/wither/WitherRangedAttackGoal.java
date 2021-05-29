@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.ai;
+package insane96mcp.progressivebosses.ai.wither;
 
 import insane96mcp.insanelib.utils.RandomHelper;
 import net.minecraft.entity.Entity;
@@ -95,7 +95,10 @@ public class WitherRangedAttackGoal extends Goal {
 			if (!canSee)
 				return;
 
-			this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
+			/*if (Modules.witherModule.attackFeature.skullBonusVelocity > 0d)
+				this.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
+			else*/
+				this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
 			this.attackTime = this.attackInterval;
 
 			if (this.wither.isCharged() && this.doubleASOnHalfHealth)
@@ -109,6 +112,31 @@ public class WitherRangedAttackGoal extends Goal {
 				}
 			}
 		}
-
 	}
+
+	/*public void launchWitherSkullToCoords(int head, double x, double y, double z, boolean invulnerable) {
+		if (!this.wither.isSilent()) {
+			this.wither.world.playEvent((PlayerEntity)null, 1024, this.wither.getPosition(), 0);
+		}
+
+		double d0 = this.wither.getHeadX(head);
+		double d1 = this.wither.getHeadY(head);
+		double d2 = this.wither.getHeadZ(head);
+		double d3 = x - d0;
+		double d4 = y - d1;
+		double d5 = z - d2;
+		CompoundNBT compoundNBT = this.wither.getPersistentData();
+		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+		WitherSkullEntity witherskullentity = new WitherSkullEntity(this.wither.world, this.wither, d3, d4, d5);
+		witherskullentity.setShooter(this.wither);
+		witherskullentity.accelerationX *= 1 + (Modules.witherModule.attackFeature.skullBonusVelocity * difficulty);
+		witherskullentity.accelerationY *= 1 + (Modules.witherModule.attackFeature.skullBonusVelocity * difficulty);
+		witherskullentity.accelerationZ *= 1 + (Modules.witherModule.attackFeature.skullBonusVelocity * difficulty);
+		if (invulnerable) {
+			witherskullentity.setSkullInvulnerable(true);
+		}
+
+		witherskullentity.setRawPosition(d0, d1, d2);
+		this.wither.world.addEntity(witherskullentity);
+	}*/
 }

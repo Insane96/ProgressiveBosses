@@ -3,9 +3,9 @@ package insane96mcp.progressivebosses.modules.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.progressivebosses.ai.WitherChargeAttackGoal;
-import insane96mcp.progressivebosses.ai.WitherDoNothingGoal;
-import insane96mcp.progressivebosses.ai.WitherRangedAttackGoal;
+import insane96mcp.progressivebosses.ai.wither.WitherChargeAttackGoal;
+import insane96mcp.progressivebosses.ai.wither.WitherDoNothingGoal;
+import insane96mcp.progressivebosses.ai.wither.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.ai.goal.Goal;
@@ -13,28 +13,34 @@ import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
 
-@Label(name = "Attack", description = "Makes the Wither smarter (will no longer try to stand on the player's head ...) and attack faster below Half Health")
+@Label(name = "Attack", description = "Makes the Wither smarter (will no longer try to stand on the player's head ...), attack faster and hit harder")
 public class AttackFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> applyToVanillaWitherConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> attackSpeedConfig;
+	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> increasedAttackDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> twiceAttackSpeedOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackAtHealthPercentageConfig;
+	//private final ForgeConfigSpec.ConfigValue<Double> skullBonusVelocityConfig;
 
 	public boolean applyToVanillaWither = true;
-	public int attackSpeed = 50;
+	public int attackInterval = 50;
+	public double increasedAttackDamage = 0.02d;
 	public boolean twiceAttackSpeedOnHalfHealth = true;
 	public boolean increaseAttackSpeedWhenNear = true;
 	public double chargeAttackAtHealthPercentage = 0.2d;
+	//public double skullBonusVelocity = 0.05d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -42,9 +48,12 @@ public class AttackFeature extends Feature {
 		applyToVanillaWitherConfig = Config.builder
 				.comment("If the AI changes should be applied to the first wither spawned too.")
 				.define("Apply to Vanilla Wither", applyToVanillaWither);
-		attackSpeedConfig = Config.builder
+		attackIntervalConfig = Config.builder
 				.comment("Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
-				.defineInRange("Attack Speed", attackSpeed, 0, Integer.MAX_VALUE);
+				.defineInRange("Attack Interval", attackInterval, 0, Integer.MAX_VALUE);
+		increasedAttackDamageConfig = Config.builder
+				.comment("Percentage bonus damage for the wither per difficulty.")
+				.defineInRange("Increased Attack Damage", increasedAttackDamage, 0d, Integer.MAX_VALUE);
 		twiceAttackSpeedOnHalfHealthConfig = Config.builder
 				.comment("The middle head will attack twice as fast when the Wither drops below half health.")
 				.define("Twice Attack Speed on Half Health", twiceAttackSpeedOnHalfHealth);
@@ -54,6 +63,9 @@ public class AttackFeature extends Feature {
 		chargeAttackAtHealthPercentageConfig = Config.builder
 				.comment("The Wither will charge an attack when dropping below this health percentage.")
 				.defineInRange("Charge Attack at Health Percentage", chargeAttackAtHealthPercentage, 0d, 1d);
+		/*skullBonusVelocityConfig = Config.builder
+				.comment("Wither Skull Projectiles will be this percentage faster per level.")
+				.defineInRange("Skull Bonus Velocity", skullBonusVelocity, 0d, 1d);*/
 		Config.builder.pop();
 	}
 
@@ -61,9 +73,12 @@ public class AttackFeature extends Feature {
 	public void loadConfig() {
 		super.loadConfig();
 		this.applyToVanillaWither = this.applyToVanillaWitherConfig.get();
+		this.attackInterval = this.attackIntervalConfig.get();
+		this.increasedAttackDamage = this.increasedAttackDamageConfig.get();
 		this.twiceAttackSpeedOnHalfHealth = this.twiceAttackSpeedOnHalfHealthConfig.get();
 		this.increaseAttackSpeedWhenNear = this.increaseAttackSpeedWhenNearConfig.get();
 		this.chargeAttackAtHealthPercentage = this.chargeAttackAtHealthPercentageConfig.get();
+		//this.skullBonusVelocity = this.skullBonusVelocityConfig.get();
 	}
 
 	@SubscribeEvent
@@ -93,6 +108,9 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
+		if (this.chargeAttackAtHealthPercentage == 0d)
+			return;
+
 		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
@@ -113,6 +131,28 @@ public class AttackFeature extends Feature {
 		}
 	}
 
+	@SubscribeEvent
+	public void onLivingDamage(LivingHurtEvent event) {
+		if (event.getEntity().getEntityWorld().isRemote)
+			return;
+
+		if (!this.isEnabled())
+			return;
+
+		if (this.increasedAttackDamage == 0d)
+			return;
+
+		if (!(event.getSource().getImmediateSource() instanceof WitherSkullEntity) || !(event.getSource().getTrueSource() instanceof WitherEntity))
+			return;
+
+		WitherSkullEntity witherSkull = (WitherSkullEntity) event.getSource().getImmediateSource();
+		WitherEntity wither = (WitherEntity) event.getSource().getTrueSource();
+		CompoundNBT compoundNBT = wither.getPersistentData();
+		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+
+		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAttackDamage * difficulty)));
+	}
+
 	public void setWitherAI(WitherEntity wither) {
 		ArrayList<Goal> toRemove = new ArrayList<>();
 		wither.goalSelector.goals.forEach(goal -> {
@@ -125,7 +165,7 @@ public class AttackFeature extends Feature {
 		toRemove.forEach(wither.goalSelector::removeGoal);
 
 		wither.goalSelector.addGoal(0, new WitherDoNothingGoal(wither));
-		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackSpeed, 24.0f, this.twiceAttackSpeedOnHalfHealth, this.increaseAttackSpeedWhenNear));
+		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.twiceAttackSpeedOnHalfHealth, this.increaseAttackSpeedWhenNear));
 		wither.goalSelector.addGoal(2, new WitherChargeAttackGoal(wither));
 
 		//Fixes https://bugs.mojang.com/browse/MC-29274
