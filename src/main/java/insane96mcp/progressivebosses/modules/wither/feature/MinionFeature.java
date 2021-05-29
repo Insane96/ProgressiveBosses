@@ -4,7 +4,6 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.RandomHelper;
-import insane96mcp.progressivebosses.ai.WitherMinionHurtByTargetGoal;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.enchantment.Enchantments;
@@ -429,7 +428,7 @@ public class MinionFeature extends Feature {
 		}
 		toRemove.clear();
 
-		witherSkeletonEntity.targetSelector.addGoal(1, new WitherMinionHurtByTargetGoal(witherSkeletonEntity, WitherEntity.class));
+		witherSkeletonEntity.targetSelector.addGoal(1, new HurtByTargetGoal(witherSkeletonEntity, WitherEntity.class, WitherSkeletonEntity.class));
 		witherSkeletonEntity.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witherSkeletonEntity, PlayerEntity.class, true));
 		witherSkeletonEntity.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witherSkeletonEntity, IronGolemEntity.class, true));
 		witherSkeletonEntity.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witherSkeletonEntity, MobEntity.class, 0, false, false, NOT_UNDEAD));
