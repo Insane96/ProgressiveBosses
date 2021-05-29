@@ -32,7 +32,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> twiceAttackSpeedOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackAtHealthPercentageConfig;
-	//private final ForgeConfigSpec.ConfigValue<Double> skullBonusVelocityConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
 
 	public boolean applyToVanillaWither = true;
 	public int attackInterval = 50;
@@ -40,7 +40,7 @@ public class AttackFeature extends Feature {
 	public boolean twiceAttackSpeedOnHalfHealth = true;
 	public boolean increaseAttackSpeedWhenNear = true;
 	public double chargeAttackAtHealthPercentage = 0.2d;
-	//public double skullBonusVelocity = 0.05d;
+	public double skullVelocityMultiplier = 3d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -63,9 +63,9 @@ public class AttackFeature extends Feature {
 		chargeAttackAtHealthPercentageConfig = Config.builder
 				.comment("The Wither will charge an attack when dropping below this health percentage.")
 				.defineInRange("Charge Attack at Health Percentage", chargeAttackAtHealthPercentage, 0d, 1d);
-		/*skullBonusVelocityConfig = Config.builder
-				.comment("Wither Skull Projectiles will be this percentage faster per level.")
-				.defineInRange("Skull Bonus Velocity", skullBonusVelocity, 0d, 1d);*/
+		skullVelocityMultiplierConfig = Config.builder
+				.comment("Wither Skull Projectiles speed will be multiplied by this value.")
+				.defineInRange("Skull Velocity Multiplier", skullVelocityMultiplier, 0d, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
 
@@ -78,11 +78,18 @@ public class AttackFeature extends Feature {
 		this.twiceAttackSpeedOnHalfHealth = this.twiceAttackSpeedOnHalfHealthConfig.get();
 		this.increaseAttackSpeedWhenNear = this.increaseAttackSpeedWhenNearConfig.get();
 		this.chargeAttackAtHealthPercentage = this.chargeAttackAtHealthPercentageConfig.get();
-		//this.skullBonusVelocity = this.skullBonusVelocityConfig.get();
+		this.skullVelocityMultiplier = this.skullVelocityMultiplierConfig.get();
 	}
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
+		if (event.getEntity() instanceof WitherSkullEntity && this.isEnabled() && this.skullVelocityMultiplier > 0d){
+			WitherSkullEntity witherSkullEntity = (WitherSkullEntity) event.getEntity();
+			witherSkullEntity.accelerationX *= this.skullVelocityMultiplier;
+			witherSkullEntity.accelerationY *= this.skullVelocityMultiplier;
+			witherSkullEntity.accelerationZ *= this.skullVelocityMultiplier;
+		}
+
 		if (event.getWorld().isRemote)
 			return;
 
