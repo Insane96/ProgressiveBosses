@@ -1,10 +1,12 @@
 package insane96mcp.progressivebosses.ai.wither;
 
 import insane96mcp.insanelib.utils.RandomHelper;
+import insane96mcp.progressivebosses.base.Strings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.util.EnumSet;
 
@@ -91,13 +93,19 @@ public class WitherRangedAttackGoal extends Goal {
 
 		this.wither.getLookController().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
 
-		if (--this.attackTime <= 0) {
+		CompoundNBT witherTags = wither.getPersistentData();
+		int barrageAttackTick = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
+		if (barrageAttackTick > 0) {
+			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
 			if (!canSee)
 				return;
-
-			/*if (Modules.witherModule.attackFeature.skullBonusVelocity > 0d)
-				this.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
-			else*/
+			if (barrageAttackTick % 2 == 0) {
+				this.wither.launchWitherSkullToCoords(0, this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), this.target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), false);
+			}
+		}
+		else if (--this.attackTime <= 0) {
+			if (!canSee)
+				return;
 			if (RandomHelper.getFloat(this.wither.getRNG(), 0f, 1f) < .1f)
 				for (int h = 0; h < 3; h++) {
 					this.wither.launchWitherSkullToCoords(h, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);

@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.modules.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.ai.wither.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.ai.wither.WitherDoNothingGoal;
 import insane96mcp.progressivebosses.ai.wither.WitherRangedAttackGoal;
@@ -32,6 +33,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> attackSpeedMultiplierOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackAtHealthPercentageConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> barrageAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
 
 	public boolean applyToVanillaWither = true;
@@ -40,6 +42,7 @@ public class AttackFeature extends Feature {
 	public double attackSpeedMultiplierOnHalfHealth = 0.66666667d;
 	public boolean increaseAttackSpeedWhenNear = true;
 	public double chargeAttackAtHealthPercentage = 0.2d;
+	public double barrageAttackChance = 0.001d;
 	public double skullVelocityMultiplier = 2.5d;
 
 	public AttackFeature(Module module) {
@@ -63,6 +66,9 @@ public class AttackFeature extends Feature {
 		chargeAttackAtHealthPercentageConfig = Config.builder
 				.comment("The Wither will charge an attack when dropping below this health percentage.")
 				.defineInRange("Charge Attack at Health Percentage", chargeAttackAtHealthPercentage, 0d, 1d);
+		barrageAttackChanceConfig = Config.builder
+				.comment("Chance (per difficulty) every time the Wither takes damage to start a barrage attack.")
+				.defineInRange("Barrage Attack Chance", barrageAttackChance, 0d, 1d);
 		skullVelocityMultiplierConfig = Config.builder
 				.comment("Wither Skull Projectiles speed will be multiplied by this value.")
 				.defineInRange("Skull Velocity Multiplier", skullVelocityMultiplier, 0d, Double.MAX_VALUE);
@@ -78,6 +84,7 @@ public class AttackFeature extends Feature {
 		this.attackSpeedMultiplierOnHalfHealth = this.attackSpeedMultiplierOnHalfHealthConfig.get();
 		this.increaseAttackSpeedWhenNear = this.increaseAttackSpeedWhenNearConfig.get();
 		this.chargeAttackAtHealthPercentage = this.chargeAttackAtHealthPercentageConfig.get();
+		this.barrageAttackChance = this.barrageAttackChanceConfig.get();
 		this.skullVelocityMultiplier = this.skullVelocityMultiplierConfig.get();
 	}
 
@@ -139,7 +146,7 @@ public class AttackFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onLivingDamage(LivingHurtEvent event) {
+	public void onPlayerDamage(LivingHurtEvent event) {
 		if (event.getEntity().getEntityWorld().isRemote)
 			return;
 
@@ -152,12 +159,36 @@ public class AttackFeature extends Feature {
 		if (!(event.getSource().getImmediateSource() instanceof WitherSkullEntity) || !(event.getSource().getTrueSource() instanceof WitherEntity))
 			return;
 
-		//WitherSkullEntity witherSkull = (WitherSkullEntity) event.getSource().getImmediateSource();
 		WitherEntity wither = (WitherEntity) event.getSource().getTrueSource();
 		CompoundNBT compoundNBT = wither.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAttackDamage * difficulty)));
+	}
+
+	@SubscribeEvent
+	public void onWitherDamage(LivingHurtEvent event) {
+		if (event.getEntity().getEntityWorld().isRemote)
+			return;
+
+		if (!this.isEnabled())
+			return;
+
+		if (this.barrageAttackChance == 0d)
+			return;
+
+		if (!(event.getEntityLiving() instanceof WitherEntity))
+			return;
+
+		WitherEntity wither = (WitherEntity) event.getEntityLiving();
+		CompoundNBT compoundNBT = wither.getPersistentData();
+		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+
+		if (RandomHelper.getDouble(wither.getRNG(), 0d, 1d) < this.barrageAttackChance * difficulty) {
+			int barrage = compoundNBT.getInt(Strings.Tags.BARRAGE_ATTACK);
+			compoundNBT.putInt(Strings.Tags.BARRAGE_ATTACK, barrage + 80);
+		}
+
 	}
 
 	public void setWitherAI(WitherEntity wither) {
