@@ -35,7 +35,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
 
 	public boolean applyToVanillaWither = true;
-	public int attackInterval = 50;
+	public int attackInterval = 40;
 	public double increasedAttackDamage = 0.02d;
 	public double attackSpeedMultiplierOnHalfHealth = 0.66666667d;
 	public boolean increaseAttackSpeedWhenNear = true;
@@ -55,7 +55,7 @@ public class AttackFeature extends Feature {
 				.comment("Percentage bonus damage for the wither per difficulty.")
 				.defineInRange("Increased Attack Damage", increasedAttackDamage, 0d, Integer.MAX_VALUE);
 		attackSpeedMultiplierOnHalfHealthConfig = Config.builder
-				.comment("The middle head will attack twice as fast when the Wither drops below half health.")
+				.comment("The middle head will attack this faster when the Wither drops below half health.")
 				.defineInRange("Attack Speed Multiplier on Half Health", attackSpeedMultiplierOnHalfHealth, 0d, Double.MAX_VALUE);
 		increaseAttackSpeedWhenNearConfig = Config.builder
 				.comment("The middle head will attack faster (up to 40% of the attack speed) the nearer the target is to the Wither.")
@@ -152,7 +152,7 @@ public class AttackFeature extends Feature {
 		if (!(event.getSource().getImmediateSource() instanceof WitherSkullEntity) || !(event.getSource().getTrueSource() instanceof WitherEntity))
 			return;
 
-		WitherSkullEntity witherSkull = (WitherSkullEntity) event.getSource().getImmediateSource();
+		//WitherSkullEntity witherSkull = (WitherSkullEntity) event.getSource().getImmediateSource();
 		WitherEntity wither = (WitherEntity) event.getSource().getTrueSource();
 		CompoundNBT compoundNBT = wither.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
