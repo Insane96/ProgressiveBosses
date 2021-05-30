@@ -43,7 +43,7 @@ public class WitherChargeAttackGoal extends Goal {
 	 * method as well.
 	 */
 	public boolean shouldExecute() {
-		if (this.wither.getInvulTime() != 150)
+		if (this.wither.getInvulTime() != 200)
 			return false;
 		CompoundNBT witherTags = wither.getPersistentData();
 		return witherTags.contains(Strings.Tags.CHARGE_ATTACK);
@@ -71,25 +71,21 @@ public class WitherChargeAttackGoal extends Goal {
 		if (this.wither.getInvulTime() == 200) {
 			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 4.0f, 2.0f);
 		}
-		else if (this.wither.getInvulTime() > 70 && this.wither.getInvulTime() < 170 && this.wither.getInvulTime() % 3 == 0) {
-			LivingEntity livingEntity = GetRandomNearPlayer(this.wither);
-			if (livingEntity != null) {
-				this.wither.launchWitherSkullToCoords(0, livingEntity.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), livingEntity.getPosY() + (double)livingEntity.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), livingEntity.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), false);
-				this.wither.getLookController().setLookPositionWithEntity(livingEntity, 30.0F, 30.0F);
-			}
-		}
 		else if (this.wither.getInvulTime() == 70) {
 			this.target = GetRandomNearPlayer(this.wither);
 			if (target != null) {
 				this.targetPos = this.target.getPositionVec();
-				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 1.0f, 2.0f);
+				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 4.0f, 2.0f);
 			}
 			else {
 				this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 9f, Explosion.Mode.DESTROY);
 				this.wither.setInvulTime(0);
 			}
 		}
-		if (this.wither.getInvulTime() < 30) {
+		if (this.wither.getInvulTime() == 30) {
+			this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.HOSTILE, 4.0f, 0.8f);
+		}
+		else if (this.wither.getInvulTime() < 30) {
 			double mult = 50d / this.wither.getInvulTime();
 			Vector3d diff = this.targetPos.subtract(this.wither.getPositionVec()).normalize().mul(mult, mult, mult);
 			this.wither.setMotion(diff.x, diff.y, diff.z);
