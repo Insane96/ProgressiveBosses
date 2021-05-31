@@ -11,7 +11,8 @@
         * Charge attack time before charge reduced (7.5 seconds -> 10 seconds)
         * Charge attack target selection before charge increased (1.5 secs -> 2 secs)
     * Rewards
-        * Shards drop changed: 
+        * Shards drop changed:  
+        16% chance to drop a shard, trying as many times as the difficulty. So at 5 difficulty you have 16% chance to drop a shard + 16% chance to drop a shard + 16% chance to drop a shard + and so on, up to 5 times.
     * Minions
         * Minions now have 6.25% chance per difficulty to get a Sharpness / Power enchantment on equipment. Every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.
         * Minions now have a higher follow range (16 -> 32)
@@ -32,7 +33,7 @@
           `2% chance * (Difficulty - 7)` from Difficulty = 8 to drop 4 Nether Star Shard  
           E.g. At difficulty = 10 you have 72% chance to drop 1 shard + 42% chance to drop 2 shards + 20% chance to drop 3 shards + 6% chance to drop 4 shards.
     * Attack
-        * Added a charge attack. At 20% health the wither will enter a still status where after 4.5 secs will target a player and after 1.5 more seconds will charge at him, destroying everything in its path and exploding at arrival (or after 1.5 secs of charging if for some reasons can't get to the target point).
+        * Added a charge attack. At 20% health the wither will enter a still status where after 4.5 secs will target a player and after 1.5 seconds will charge at him, destroying everything in its path and exploding at arrival (or after 1.5 secs of charging if for some reasons can't get to the target point).
 
 ## Alpha 3.0.1
 * Fixed possible freeze on Wither / Dragon load
