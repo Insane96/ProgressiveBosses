@@ -32,6 +32,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.Constants;
@@ -66,7 +67,7 @@ public class MinionFeature extends Feature {
 	public int minionAtDifficulty = 1;
 	public int bonusMinionEveryDifficulty = 2;
 	public int maxSpawned = 6;
-	public int maxAround = 16;
+	public int maxAround = 20;
 	public int minCooldown = 240;
 	public int maxCooldown = 480;
 	public double cooldownMultiplierBelowHalfHealth = 0.6d;
@@ -106,7 +107,7 @@ public class MinionFeature extends Feature {
 				.comment("Percentage bonus speed per difficulty. (0.01 means 1%)")
 				.defineInRange("Bonus Movement Speed Per Difficulty", bonusSpeedPerDifficulty, 0d, Double.MAX_VALUE);
 		killMinionOnWitherDeathConfig = Config.builder
-				.comment("Wither Minions will die when the Wither that spawned them dies. (Note: only minions in a 128 blocks radius will be killed)")
+				.comment("Wither Minions will die when the Wither that spawned them dies.")
 				.define("Kill Minions on Wither Death", killMinionOnWitherDeath);
 
 		Config.builder.push("Equipment");
@@ -309,6 +310,9 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
+		if (event.getEntity().world.isRemote)
+			return;
+
 		if (!this.isEnabled())
 			return;
 
@@ -319,22 +323,17 @@ public class MinionFeature extends Feature {
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
-		World world = wither.world;
+		ServerWorld world = (ServerWorld) wither.world;
 
 		CompoundNBT tags = wither.getPersistentData();
 		ListNBT minionsList = tags.getList(Strings.Tags.MINIONS, Constants.NBT.TAG_COMPOUND);
 
-		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(new BlockPos(wither.getPosition().add(-128, -128, -128)), wither.getPosition().add(128, 128, 128));
-		List<WitherSkeletonEntity> witherSkeletons = world.getEntitiesWithinAABB(WitherSkeletonEntity.class, axisAlignedBB);
 		for (int i = 0; i < minionsList.size(); i++) {
 			UUID uuid = minionsList.getCompound(i).getUniqueId("uuid");
-
-			for (WitherSkeletonEntity skeleton : witherSkeletons) {
-				if (skeleton.getUniqueID().equals(uuid)) {
-					skeleton.addPotionEffect(new EffectInstance(Effects.INSTANT_HEALTH, 10000, 0, false, false));
-					break;
-				}
-			}
+			WitherSkeletonEntity witherSkeletonEntity = (WitherSkeletonEntity) world.getEntityByUuid(uuid);
+			if (witherSkeletonEntity == null)
+				continue;
+			witherSkeletonEntity.addPotionEffect(new EffectInstance(Effects.INSTANT_HEALTH, 10000, 0, false, false));
 		}
 	}
 
