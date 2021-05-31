@@ -16,6 +16,9 @@ import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.world.Difficulty;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -29,23 +32,25 @@ public class AttackFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> applyToVanillaWitherConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> increasedAttackDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> attackSpeedMultiplierOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackAtHealthPercentageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> barrageAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> increasedAttackDamageConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> chanceForWither3Config;
 
 	public boolean applyToVanillaWither = true;
 	public int attackInterval = 40;
-	public double increasedAttackDamage = 0.02d;
 	public double attackSpeedMultiplierOnHalfHealth = 0.66666667d;
 	public boolean increaseAttackSpeedWhenNear = true;
 	public double chargeAttackAtHealthPercentage = 0.2d;
 	public double barrageAttackChance = 0.004d;
 	public double maxBarrageAttackChance = 0.08d;
 	public double skullVelocityMultiplier = 2.5d;
+	public double increasedAttackDamage = 0.02d;
+	public double chanceForWither3 = 0.01d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -56,9 +61,6 @@ public class AttackFeature extends Feature {
 		attackIntervalConfig = Config.builder
 				.comment("Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
 				.defineInRange("Attack Interval", attackInterval, 0, Integer.MAX_VALUE);
-		increasedAttackDamageConfig = Config.builder
-				.comment("Percentage bonus damage for the wither per difficulty.")
-				.defineInRange("Increased Attack Damage", increasedAttackDamage, 0d, Integer.MAX_VALUE);
 		attackSpeedMultiplierOnHalfHealthConfig = Config.builder
 				.comment("The middle head will attack this faster when the Wither drops below half health.")
 				.defineInRange("Attack Speed Multiplier on Half Health", attackSpeedMultiplierOnHalfHealth, 0d, Double.MAX_VALUE);
@@ -74,9 +76,19 @@ public class AttackFeature extends Feature {
 		maxBarrageAttackChanceConfig = Config.builder
 				.comment("Max Chance for the barrage attack.")
 				.defineInRange("Max Barrage Attack Chance", maxBarrageAttackChance, 0d, 1d);
+		//Skulls
+		Config.builder.comment("Wither Skull Changes").push("Skulls");
 		skullVelocityMultiplierConfig = Config.builder
 				.comment("Wither Skull Projectiles speed will be multiplied by this value.")
 				.defineInRange("Skull Velocity Multiplier", skullVelocityMultiplier, 0d, Double.MAX_VALUE);
+		increasedAttackDamageConfig = Config.builder
+				.comment("Percentage bonus damage dealt by Wither skulls.")
+				.defineInRange("Increased Attack Damage", increasedAttackDamage, 0d, Double.MAX_VALUE);
+		chanceForWither3Config = Config.builder
+				.comment("Percentage chance per difficulty for Wither Skulls to apply Wither III instead of II.")
+				.defineInRange("Chance for Wither III", chanceForWither3, 0d, Double.MAX_VALUE);
+		Config.builder.pop();
+
 		Config.builder.pop();
 	}
 
@@ -85,13 +97,14 @@ public class AttackFeature extends Feature {
 		super.loadConfig();
 		this.applyToVanillaWither = this.applyToVanillaWitherConfig.get();
 		this.attackInterval = this.attackIntervalConfig.get();
-		this.increasedAttackDamage = this.increasedAttackDamageConfig.get();
 		this.attackSpeedMultiplierOnHalfHealth = this.attackSpeedMultiplierOnHalfHealthConfig.get();
 		this.increaseAttackSpeedWhenNear = this.increaseAttackSpeedWhenNearConfig.get();
 		this.chargeAttackAtHealthPercentage = this.chargeAttackAtHealthPercentageConfig.get();
 		this.barrageAttackChance = this.barrageAttackChanceConfig.get();
 		this.maxBarrageAttackChance = this.maxBarrageAttackChanceConfig.get();
 		this.skullVelocityMultiplier = this.skullVelocityMultiplierConfig.get();
+		this.increasedAttackDamage = this.increasedAttackDamageConfig.get();
+		this.chanceForWither3 = this.chanceForWither3Config.get();
 	}
 
 	@SubscribeEvent
@@ -163,7 +176,7 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (this.increasedAttackDamage == 0d)
+		if (this.increasedAttackDamage == 0d && this.chanceForWither3 == 0d)
 			return;
 
 		if (!(event.getSource().getImmediateSource() instanceof WitherSkullEntity) || !(event.getSource().getTrueSource() instanceof WitherEntity))
@@ -173,7 +186,20 @@ public class AttackFeature extends Feature {
 		CompoundNBT compoundNBT = wither.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
-		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAttackDamage * difficulty)));
+		if (this.increasedAttackDamage > 0d)
+			event.setAmount(event.getAmount() * (float)(1d + (this.increasedAttackDamage * difficulty)));
+
+		double chance = this.chanceForWither3 * difficulty;
+		if (RandomHelper.getDouble(wither.getRNG(), 0d, 1d) < chance) {
+			int i = 0;
+			if (wither.world.getDifficulty() == Difficulty.NORMAL)
+				i = 10;
+			else if (wither.world.getDifficulty() == Difficulty.HARD)
+				i = 40;
+
+			if (i > 0)
+				event.getEntityLiving().addPotionEffect(new EffectInstance(Effects.WITHER, 20 * i, 2));
+		}
 	}
 
 	@SubscribeEvent
@@ -200,7 +226,7 @@ public class AttackFeature extends Feature {
 		double chance = Math.min(this.barrageAttackChance * difficulty, this.maxBarrageAttackChance);
 		if (RandomHelper.getDouble(wither.getRNG(), 0d, 1d) < chance) {
 			int barrage = compoundNBT.getInt(Strings.Tags.BARRAGE_ATTACK);
-			compoundNBT.putInt(Strings.Tags.BARRAGE_ATTACK, barrage + 80);
+			compoundNBT.putInt(Strings.Tags.BARRAGE_ATTACK, barrage + 100);
 		}
 
 	}
