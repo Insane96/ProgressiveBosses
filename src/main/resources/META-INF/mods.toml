@@ -12,6 +12,10 @@ authors="Insane96MCP"
 description='''
 Make Bosses harder the more you respawn them. Adding Health, Armor and some Abilities.
 '''
+# Catalogue icon
+itemIcon = "minecraft:wither_skeleton_skull"
+# Configured background
+configBackground = "minecraft:textures/block/netherack.png"
 [[dependencies.progressivebosses]]
     modId="forge"
     mandatory=true
