@@ -18,8 +18,8 @@ public class ResistancesFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> maxDamageReductionPerDifficultyOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> magicDamageBonusConfig;
 
-	public double damageReductionPerDifficultyOnHalfHealth = 4d;
-	public double maxDamageReductionPerDifficultyOnHalfHealth = 35d;
+	public double damageReductionPerDifficultyOnHalfHealth = 0.04d;
+	public double maxDamageReductionPerDifficultyOnHalfHealth = 0.35d;
 	public double magicDamageBonus = 200d;
 
 	public ResistancesFeature(Module module) {
@@ -27,10 +27,10 @@ public class ResistancesFeature extends Feature {
 		Config.builder.comment(this.getDescription()).push(this.getName());
 		damageReductionPerDifficultyOnHalfHealthConfig = Config.builder
 				.comment("Percentage Damage Resistance as the Wither drops below half health.")
-				.defineInRange("Damage reduction per Difficulty below half health", damageReductionPerDifficultyOnHalfHealth, 0d, 100f);
+				.defineInRange("Damage reduction per Difficulty below half health", damageReductionPerDifficultyOnHalfHealth, 0d, 1d);
 		maxDamageReductionPerDifficultyOnHalfHealthConfig = Config.builder
 				.comment("Cap for 'Damage reduction per Difficulty below half health'")
-				.defineInRange("Max Damage reduction per Difficulty below half health", maxDamageReductionPerDifficultyOnHalfHealth, 0d, 100f);
+				.defineInRange("Max Damage reduction per Difficulty below half health", maxDamageReductionPerDifficultyOnHalfHealth, 0d, 1d);
 		magicDamageBonusConfig = Config.builder
 				.comment("Bonus magic damage based off missing health. 150 means that every 150 missing health the damage will be amplified by 100%. E.g. The difficulty = 0 Wither (with 300 max health) is at half health (so it's missing 150hp), on magic damage he will receive 'magic_damage * (missing_health / magic_damage_bonus + 1)' = 'magic_damage * (150 / 150 + 1)' = 'magic_damage * 2'.")
 				.defineInRange("Magic Damage Bonus", magicDamageBonus, 0d, 1024f);
@@ -70,7 +70,7 @@ public class ResistancesFeature extends Feature {
 		CompoundNBT tags = wither.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
-		float damageReduction = (float) Math.min(this.maxDamageReductionPerDifficultyOnHalfHealth, difficulty * this.damageReductionPerDifficultyOnHalfHealth) / 100f;
+		float damageReduction = (float) Math.min(this.maxDamageReductionPerDifficultyOnHalfHealth, difficulty * this.damageReductionPerDifficultyOnHalfHealth);
 		event.setAmount(event.getAmount() * (1f - damageReduction));
 	}
 }

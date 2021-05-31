@@ -31,15 +31,15 @@ import java.util.ArrayList;
 public class AttackFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> applyToVanillaWitherConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> attackSpeedMultiplierOnHalfHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackAtHealthPercentageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> barrageAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> increasedAttackDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chanceForWither3Config;
+	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> attackSpeedMultiplierOnHalfHealthConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 
 	public boolean applyToVanillaWither = true;
 	public int attackInterval = 40;
@@ -58,15 +58,6 @@ public class AttackFeature extends Feature {
 		applyToVanillaWitherConfig = Config.builder
 				.comment("If the AI changes should be applied to the first wither spawned too.")
 				.define("Apply to Vanilla Wither", applyToVanillaWither);
-		attackIntervalConfig = Config.builder
-				.comment("Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
-				.defineInRange("Attack Interval", attackInterval, 0, Integer.MAX_VALUE);
-		attackSpeedMultiplierOnHalfHealthConfig = Config.builder
-				.comment("The middle head will attack this faster when the Wither drops below half health.")
-				.defineInRange("Attack Speed Multiplier on Half Health", attackSpeedMultiplierOnHalfHealth, 0d, Double.MAX_VALUE);
-		increaseAttackSpeedWhenNearConfig = Config.builder
-				.comment("The middle head will attack faster (up to 40% of the attack speed) the nearer the target is to the Wither.")
-				.define("Increase Attack Speed when Near", increaseAttackSpeedWhenNear);
 		chargeAttackAtHealthPercentageConfig = Config.builder
 				.comment("The Wither will charge an attack when dropping below this health percentage.")
 				.defineInRange("Charge Attack at Health Percentage", chargeAttackAtHealthPercentage, 0d, 1d);
@@ -87,6 +78,18 @@ public class AttackFeature extends Feature {
 		chanceForWither3Config = Config.builder
 				.comment("Percentage chance per difficulty for Wither Skulls to apply Wither III instead of II.")
 				.defineInRange("Chance for Wither III", chanceForWither3, 0d, Double.MAX_VALUE);
+		Config.builder.pop();
+
+		Config.builder.comment("Attack Speed Changes").push("Attack Speed");
+		attackIntervalConfig = Config.builder
+				.comment("Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
+				.defineInRange("Attack Interval", attackInterval, 0, Integer.MAX_VALUE);
+		attackSpeedMultiplierOnHalfHealthConfig = Config.builder
+				.comment("The middle head will attack this faster when the Wither drops below half health.")
+				.defineInRange("Attack Speed Multiplier on Half Health", attackSpeedMultiplierOnHalfHealth, 0d, Double.MAX_VALUE);
+		increaseAttackSpeedWhenNearConfig = Config.builder
+				.comment("The middle head will attack faster (up to 40% of the attack speed) the nearer the target is to the Wither.")
+				.define("Increase Attack Speed when Near", increaseAttackSpeedWhenNear);
 		Config.builder.pop();
 
 		Config.builder.pop();
