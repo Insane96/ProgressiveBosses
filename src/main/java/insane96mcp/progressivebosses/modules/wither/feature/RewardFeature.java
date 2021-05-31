@@ -7,10 +7,14 @@ import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.modules.wither.classutils.Drop;
 import insane96mcp.progressivebosses.setup.Config;
+import insane96mcp.progressivebosses.setup.ModItems;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -27,10 +31,11 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> dropsListConfig;
 
-	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,2,8,MINIMUM,SCALING",
+	/*private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,2,8,MINIMUM,SCALING",
 			"progressivebosses:nether_star_shard,2,4,6,MINIMUM,SCALING",
 			"progressivebosses:nether_star_shard,3,6,4,MINIMUM,SCALING",
-			"progressivebosses:nether_star_shard,4,8,2,MINIMUM,SCALING");
+			"progressivebosses:nether_star_shard,4,8,2,MINIMUM,SCALING");*/
+	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,1,0.16,PER_DIFFICULTY,FLAT");
 
 	public double bonusExperience = 20d;
 	public ArrayList<Drop> dropsList;
@@ -46,9 +51,10 @@ public class RewardFeature extends Feature {
 						"item: item id\n" +
 						"amount: amount\n" +
 						"difficulty_required: the amount of difficulty required for the item to drop, works differently based on mode\n" +
-						"chance: chance for the drop to happen\n" +
+						"chance: chance for the drop to happen, between 0 and 1\n" +
 						"difficulty_mode:\n" +
 						"* MINIMUM: will try to drop the item when the difficulty matches or is higher\n" +
+						"* PER_DIFFICULTY: will try to drop the item once per difficulty (e.g. at difficulty 10, difficulty required 3, there is the chance to drop the item, trying 7 times)\n" +
 						"chance_mode:\n" +
 						"* FLAT: chance is the percentage chance for the item to drop if the difficulty criteria matches\n" +
 						"* SCALING: each point of difficulty >= 'difficulty to drop the item' will be multiplied by the chance (e.g. chance 2% and difficulty 10, difficulty required 5, chance to drop the item will be chance * (difficulty - difficulty_required + 1) = 2% * (10 - 5 + 1) = 12%)\n" +
@@ -117,20 +123,38 @@ public class RewardFeature extends Feature {
 			if (difficulty < drop.difficultyRequired)
 				continue;
 
-			double chance = drop.chance / 100d;
+			double chance = drop.chance;
 			if (difficulty >= drop.difficultyRequired && drop.chanceMode == Drop.ChanceMode.SCALING)
 				chance *= difficulty - drop.difficultyRequired + 1;
 
-			if (RandomHelper.getDouble(wither.world.rand, 0d, 1d) >= chance)
-				continue;
+			if (drop.difficultyMode == Drop.DifficultyMode.MINIMUM) {
+				if (RandomHelper.getDouble(wither.world.rand, 0d, 1d) >= chance)
+					continue;
+				wither.world.addEntity(createDrop(wither.world, wither.getPositionVec(), ForgeRegistries.ITEMS.getValue(drop.itemId), drop.amount));
+			}
+			else if (drop.difficultyMode == Drop.DifficultyMode.PER_DIFFICULTY) {
+				int tries = (int) (difficulty - drop.difficultyRequired + 1);
+				if (tries == 0)
+					continue;
+				for (int i = 0; i < tries; i++) {
+					if (RandomHelper.getDouble(wither.world.rand, 0d, 1d) >= chance)
+						continue;
 
-			ItemEntity itemEntity = new ItemEntity(wither.world, wither.getPositionVec().getX(), wither.getPositionVec().getY(), wither.getPositionVec().getZ(), new ItemStack(ForgeRegistries.ITEMS.getValue(drop.itemId), drop.amount));
+					wither.world.addEntity(createDrop(wither.world, wither.getPositionVec(), ForgeRegistries.ITEMS.getValue(drop.itemId), drop.amount));
+				}
+			}
+		}
+	}
+
+	private static ItemEntity createDrop(World world, Vector3d pos, Item item, int amount) {
+		ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(item, amount));
+		//If it's a nether star shard set it as "invincible"
+		if (item.getRegistryName().equals(ModItems.NETHER_STAR_SHARD.get().getRegistryName())) {
 			CompoundNBT compoundNBT = new CompoundNBT();
 			itemEntity.writeAdditional(compoundNBT);
 			compoundNBT.putShort("Health", Short.MAX_VALUE);
 			itemEntity.readAdditional(compoundNBT);
-			wither.world.addEntity(itemEntity);
 		}
+		return itemEntity;
 	}
-
 }

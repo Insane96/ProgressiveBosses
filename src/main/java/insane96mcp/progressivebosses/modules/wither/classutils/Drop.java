@@ -90,7 +90,7 @@ public class Drop {
 
 	public enum DifficultyMode {
 		MINIMUM,
-		MULTIPLE
+		PER_DIFFICULTY
 	}
 
 	public enum ChanceMode {

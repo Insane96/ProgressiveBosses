@@ -2,14 +2,16 @@
 ## Alpha 3.0.3
 * Wither
     * Attack
+        * Added the Barrage attack: everytime the Wither takes damage there's a 0.4% chance per difficulty (max 8%) to trigger a barrage attack, the Wither starts shooting skulls to the target, at the rate of 10 per second for 4 seconds.
         * Wither skulls now deal 2% more damage per difficulty and travel 2.5 times as fast
         * The wither will now attack faster the nearer the target is (up to 30% faster over base attack interval)
         * Attack interval reduction when below half health reduced (50% -> 33.3%)
         * There's now a 10% chance the all the 3 heads will fire a skull when the middle skull attacks
-        * the Wither launch a barrage of skulls to the target player, at the rate of 10 per second for 4 seconds.
         * The explosion power when landing the charge attack is now 9 instead of scaling with the Stronger Explosion Feature in the Misc Module
         * Charge attack time before charge reduced (7.5 seconds -> 10 seconds)
         * Charge attack target selection before charge increased (1.5 secs -> 2 secs)
+    * Rewards
+        * Shards drop changed: 
     * Minions
         * Minions now have 6.25% chance per difficulty to get a Sharpness / Power enchantment on equipment. Every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.
         * Minions now have a higher follow range (16 -> 32)
