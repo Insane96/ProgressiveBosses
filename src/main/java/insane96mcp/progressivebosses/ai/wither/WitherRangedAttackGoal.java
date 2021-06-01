@@ -96,9 +96,9 @@ public class WitherRangedAttackGoal extends Goal {
 		CompoundNBT witherTags = wither.getPersistentData();
 		int barrageAttackTick = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
 		if (barrageAttackTick > 0) {
-			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
 			if (!canSee)
 				return;
+			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
 			if (barrageAttackTick % 2 == 0) {
 				this.wither.launchWitherSkullToCoords(0, this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), this.target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), false);
 			}
