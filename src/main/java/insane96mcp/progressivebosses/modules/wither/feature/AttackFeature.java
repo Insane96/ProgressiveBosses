@@ -47,7 +47,7 @@ public class AttackFeature extends Feature {
 	public boolean increaseAttackSpeedWhenNear = true;
 	public double chargeAttackAtHealthPercentage = 0.2d;
 	public double barrageAttackChance = 0.004d;
-	public double maxBarrageAttackChance = 0.08d;
+	public double maxBarrageAttackChance = 0.10d;
 	public double skullVelocityMultiplier = 2.5d;
 	public double increasedAttackDamage = 0.02d;
 	public double chanceForWither3 = 0.01d;

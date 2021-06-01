@@ -1,4 +1,14 @@
 # Changelog
+## Alpha 3.0.4
+* Added Catalogue and Configured icon and background
+* Adjusted configs
+* Wither
+    * Attack
+        * Wither Skulls now have 1% chance per difficulty to inflict Wither III instead of II
+        * Increased barrage duration (4 secs -> 5 secs)
+        * Increased max barrage chance (8% -> 10%)
+    * Minions
+        * Increased max Minion Around (16 -> 20)
 ## Alpha 3.0.3
 * Wither
     * Attack
