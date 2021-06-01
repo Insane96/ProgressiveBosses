@@ -100,7 +100,7 @@ public class WitherRangedAttackGoal extends Goal {
 				return;
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
 			if (barrageAttackTick % 2 == 0) {
-				this.wither.launchWitherSkullToCoords(0, this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), this.target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2.5d, 2.5d), false);
+				this.wither.launchWitherSkullToCoords(0, this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), this.target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), false);
 			}
 		}
 		else if (--this.attackTime <= 0) {
@@ -108,7 +108,7 @@ public class WitherRangedAttackGoal extends Goal {
 				return;
 			if (RandomHelper.getFloat(this.wither.getRNG(), 0f, 1f) < .1f)
 				for (int h = 0; h < 3; h++) {
-					this.wither.launchWitherSkullToCoords(h, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
+					this.wither.launchWitherSkullToCoords(h, this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -0.75d, 0.75d), this.target.getPosY() + RandomHelper.getDouble(this.wither.getRNG(), -0.75d, 0.75d) + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -0.75d, 0.75d), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
 				}
 			else
 				this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);

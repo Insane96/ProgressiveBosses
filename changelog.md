@@ -5,8 +5,10 @@
 * Wither
     * Attack
         * Wither Skulls now have 1% chance per difficulty to inflict Wither III instead of II
-        * Increased barrage duration (4 secs -> 5 secs)
-        * Increased max barrage chance (8% -> 10%)
+        * Increased max barrage chance (8% -> 10%), but halved it when Wither's above half health
+        * Barrage attack now is more precise
+        * Barrage attack duration is now 2.5 seconds, doubled when the wither's below half health
+        * Barrage attack no longer ticks down if the wither doesn't see the target
     * Minions
         * Increased max Minion Around (16 -> 20)
 ## Alpha 3.0.3
