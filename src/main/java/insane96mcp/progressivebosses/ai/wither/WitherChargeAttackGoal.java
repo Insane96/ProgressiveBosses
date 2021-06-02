@@ -68,7 +68,7 @@ public class WitherChargeAttackGoal extends Goal {
 	 */
 	public void tick() {
 		this.wither.getNavigator().clearPath();
-		if (this.wither.getInvulTime() == 200) {
+		if (this.wither.getInvulTime() == 170) {
 			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 4.0f, 2.0f);
 		}
 		else if (this.wither.getInvulTime() == 70) {
