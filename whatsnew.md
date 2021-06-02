@@ -4,6 +4,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
 
 ## Base mod
 * Mod now requires InsaneLib. This means that the mod is now split in Modules (Wither and Dragon) and Features that can be disabled separately.
+* The command can now be used to summon "mod's entities".
 
 ## Wither
 * Difficulty Feature
@@ -16,7 +17,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Explosion now generates fire from lower difficulty (at 10 difficulty -> at 8 difficulty).
 * Health Feature
     * **Takes care of the Wither's health**
-    * Max Bonus Health regeneration has been increased (1 hp/s -> 2 hp/s)
+    * Max Bonus Health regeneration has been increased. (1 hp/s -> 2 hp/s)
 * Resistances and Weakneses Feature
     * Repalces the Armor feature and adds a new way to deal more damage to the Wither
     * Wither now has 4% damage resistance per difficulty when he drops below half health. Maximum 35% damage resistance.
