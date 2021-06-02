@@ -16,9 +16,6 @@ import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.world.Difficulty;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -36,7 +33,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> increasedAttackDamageConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> chanceForWither3Config;
+	//private final ForgeConfigSpec.ConfigValue<Double> chanceForWither3Config;
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> attackSpeedMultiplierOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
@@ -48,7 +45,7 @@ public class AttackFeature extends Feature {
 	//Skulls
 	public double skullVelocityMultiplier = 2.5d;
 	public double increasedAttackDamage = 0.02d;
-	public double chanceForWither3 = 0.01d;
+	//public double chanceForWither3 = 0.01d;
 	//Attack Speed
 	public int attackInterval = 40;
 	public double attackSpeedMultiplierOnHalfHealth = 0.66666667d;
@@ -77,9 +74,9 @@ public class AttackFeature extends Feature {
 		increasedAttackDamageConfig = Config.builder
 				.comment("Percentage bonus damage dealt by Wither skulls.")
 				.defineInRange("Increased Attack Damage", increasedAttackDamage, 0d, Double.MAX_VALUE);
-		chanceForWither3Config = Config.builder
+		/*chanceForWither3Config = Config.builder
 				.comment("Percentage chance per difficulty for Wither Skulls to apply Wither III instead of II.")
-				.defineInRange("Chance for Wither III", chanceForWither3, 0d, Double.MAX_VALUE);
+				.defineInRange("Chance for Wither III", chanceForWither3, 0d, Double.MAX_VALUE);*/
 		Config.builder.pop();
 		//Attack Speed
 		Config.builder.comment("Attack Speed Changes").push("Attack Speed");
@@ -107,7 +104,7 @@ public class AttackFeature extends Feature {
 		//Skulls
 		this.skullVelocityMultiplier = this.skullVelocityMultiplierConfig.get();
 		this.increasedAttackDamage = this.increasedAttackDamageConfig.get();
-		this.chanceForWither3 = this.chanceForWither3Config.get();
+		//this.chanceForWither3 = this.chanceForWither3Config.get();
 		//Attack Speed
 		this.attackInterval = this.attackIntervalConfig.get();
 		this.attackSpeedMultiplierOnHalfHealth = this.attackSpeedMultiplierOnHalfHealthConfig.get();
@@ -183,7 +180,7 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (this.increasedAttackDamage == 0d && this.chanceForWither3 == 0d)
+		if (this.increasedAttackDamage == 0d /*&& this.chanceForWither3 == 0d*/)
 			return;
 
 		if (!(event.getSource().getImmediateSource() instanceof WitherSkullEntity) || !(event.getSource().getTrueSource() instanceof WitherEntity))
@@ -196,7 +193,7 @@ public class AttackFeature extends Feature {
 		if (this.increasedAttackDamage > 0d)
 			event.setAmount(event.getAmount() * (float)(1d + (this.increasedAttackDamage * difficulty)));
 
-		double chance = this.chanceForWither3 * difficulty;
+		/*double chance = this.chanceForWither3 * difficulty;
 		if (RandomHelper.getDouble(wither.getRNG(), 0d, 1d) < chance) {
 			int i = 0;
 			if (wither.world.getDifficulty() == Difficulty.NORMAL)
@@ -206,7 +203,7 @@ public class AttackFeature extends Feature {
 
 			if (i > 0)
 				event.getEntityLiving().addPotionEffect(new EffectInstance(Effects.WITHER, 20 * i, 2));
-		}
+		}*/
 	}
 
 	@SubscribeEvent

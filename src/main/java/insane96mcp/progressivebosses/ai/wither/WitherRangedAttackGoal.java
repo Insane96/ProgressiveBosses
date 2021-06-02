@@ -86,10 +86,13 @@ public class WitherRangedAttackGoal extends Goal {
 			this.seeTime = 0;
 		}
 
-		if (distanceSq <= (double)this.attackRadiusSqr && this.seeTime >= 5) {
+		if (distanceSq <= (double)this.attackRadiusSqr && this.seeTime > 0) {
 			//Stops the wither from chasing the player
 			this.wither.setMotion(0d, wither.getMotion().y, 0d);
 		}
+		/*else if (this.seeTime <= 0 && !this.wither.world.getBlockState(this.wither.getPosition().down()).isSolid()) {
+			this.wither.setMotion(wither.getMotion().x, -1.0d, wither.getMotion().z);
+		}*/
 
 		this.wither.getLookController().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
 
