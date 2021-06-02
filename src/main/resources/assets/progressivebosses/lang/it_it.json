@@ -1,10 +1,12 @@
 {
   "item.progressivebosses.nether_star_shard": "Scheggia di Stella del Nether",
-  "wither.minion": "Minion del Wither",
-  "dragon.larva": "Larva del Drago",
-  "dragon.minion": "Minion del Drago",
-  "command.player_get_wither_difficulty": "%s ha evocato %d Wither",
-  "command.player_get_dragon_difficulty": "%s ha ucciso %d Draghi",
-  "command.player_set_boss_difficulty": "Impostata la difficolta di %s del %s a %d",
-  "command.player_add_boss_difficulty": "Aggiunta %d di difficoltà del %s a %s (ora %d)"
+  "progressivebosses:wither_minion": "Minion del Wither",
+  "progressivebosses:dragon_larva": "Larva del Drago",
+  "progressivebosses:dragon_minion": "Minion del Drago",
+  "progressivebosses:command.player_get_wither_difficulty": "%s ha evocato %d Wither",
+  "progressivebosses:command.player_get_dragon_difficulty": "%s ha ucciso %d Draghi",
+  "progressivebosses:command.player_set_boss_difficulty": "Impostata la difficolta di %s del %s a %d",
+  "progressivebosses:command.player_add_boss_difficulty": "Aggiunta %d di difficoltà del %s a %s (ora %d)",
+  "progressivebosses:command.summoned_entity": "Evocato %s con difficoltà %d",
+  "progressivebosses:command.summon_invalid_entity": "L'entità %s non è valida"
 }

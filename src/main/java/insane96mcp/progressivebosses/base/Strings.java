@@ -19,6 +19,8 @@ public class Strings {
 		public static final String KILLED_DRAGONS = ProgressiveBosses.RESOURCE_PREFIX + "killed_dragons";
 		public static final String FIRST_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "first_dragon";
 		public static final String EGGS_TO_DROP = ProgressiveBosses.RESOURCE_PREFIX + "eggs_to_drop";
+		public static final String DRAGON_MINION = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion";
+		public static final String DRAGON_LARVA = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva";
 		public static final String DRAGON_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion_cooldown";
 		public static final String DRAGON_LARVA_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva_cooldown";
 	}
@@ -37,8 +39,12 @@ public class Strings {
 		public static final String PLAYER_ADD_BOSS_DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "command.player_add_boss_difficulty";
 		public static final String PLAYER_GET_WITHER_DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "command.player_get_wither_difficulty";
 		public static final String PLAYER_GET_DRAGON_DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "command.player_get_dragon_difficulty";
+		public static final String SUMMONED_ENTITY = ProgressiveBosses.RESOURCE_PREFIX + "command.summoned_entity";
+		public static final String SUMMON_ENTITY_INVALID = ProgressiveBosses.RESOURCE_PREFIX + "command.summon_entity_invalid";
 
-		public static final String WITHER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "wither.minion";
+		public static final String WITHER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "wither_minion";
+		public static final String DRAGON_MINION = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion";
+		public static final String DRAGON_LARVA = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva";
 	}
 	public static class Items {
 		public static final String NETHER_STAR_SHARD = "nether_star_shard";

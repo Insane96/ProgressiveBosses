@@ -20,43 +20,63 @@ public class DifficultyCommand {
 
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("progressivebosses").requires(source -> source.hasPermissionLevel(2))
-            .then(Commands.argument("targetPlayer", EntityArgument.player())
-                .then(Commands.literal("get")
+            .then(Commands.literal("get")
+                .then(Commands.argument("targetPlayer", EntityArgument.player())
                     .then(Commands.literal("wither")
                         .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither"))
                     )
                     .then(Commands.literal("dragon")
                         .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon"))
                     )
-                        .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), ""))
+                    .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), ""))
                 )
-                .then(Commands.literal("set")
+            )
+            .then(Commands.literal("set")
+                .then(Commands.argument("targetPlayer", EntityArgument.player())
                     .then(Commands.literal("wither")
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.witherModule.difficultyFeature.maxDifficulty))
-                            .executes(context -> setBossDifficulty(context.getSource(),EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount"))
-                            )
+                            .executes(context -> setBossDifficulty(context.getSource(),EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
                         )
                     )
                     .then(Commands.literal("dragon")
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragonModule.difficultyFeature.maxDifficulty))
-                            .executes(context -> setBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon", IntegerArgumentType.getInteger(context, "amount")
-                            ))
+                            .executes(context -> setBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon", IntegerArgumentType.getInteger(context, "amount")))
                         )
                     )
                 )
-                .then(Commands.literal("add")
+            )
+            .then(Commands.literal("add")
+                .then(Commands.argument("targetPlayer", EntityArgument.player())
                     .then(Commands.literal("wither")
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.witherModule.difficultyFeature.maxDifficulty))
-                            .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")
-                            ))
+                            .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
                         )
                     )
                     .then(Commands.literal("dragon")
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragonModule.difficultyFeature.maxDifficulty))
-                            .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"),"dragon", IntegerArgumentType.getInteger(context, "amount"))
-                            )
+                            .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"),"dragon", IntegerArgumentType.getInteger(context, "amount")))
                         )
                     )
+                )
+            )
+            .then(Commands.literal("summon")
+                .then(Commands.literal(Strings.Tags.WITHER_MINION)
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.witherModule.difficultyFeature.maxDifficulty))
+                        .executes(context -> summon(context.getSource(), Strings.Tags.WITHER_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
+                    )
+                    .executes(context -> summon(context.getSource(), context.getSource().asPlayer(), Strings.Tags.WITHER_MINION))
+                )
+                .then(Commands.literal(Strings.Tags.DRAGON_MINION)
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragonModule.difficultyFeature.maxDifficulty))
+                        .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
+                    )
+                    .executes(context -> summon(context.getSource(), context.getSource().asPlayer(), Strings.Tags.DRAGON_MINION))
+                )
+                .then(Commands.literal(Strings.Tags.DRAGON_LARVA)
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragonModule.difficultyFeature.maxDifficulty))
+                        .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, IntegerArgumentType.getInteger(context, "difficulty")))
+                    )
+                    .executes(context -> summon(context.getSource(), context.getSource().asPlayer(), Strings.Tags.DRAGON_LARVA))
                 )
             )
         );
@@ -107,5 +127,38 @@ public class DifficultyCommand {
             source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.KILLED_DRAGONS)), true);
             return 1;
         }
+    }
+
+    private static int summon(CommandSource source, String entity, int difficulty) {
+        switch (entity) {
+            case Strings.Tags.WITHER_MINION:
+                Modules.witherModule.minionFeature.summonMinion(source.getWorld(), source.getPos(), difficulty, false);
+                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                return 1;
+
+            case Strings.Tags.DRAGON_MINION:
+                //Modules.dragonModule.minionFeature.summonMinion(source.getWorld(), source.getPos(), difficulty, false);
+                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                return 1;
+
+            case Strings.Tags.DRAGON_LARVA:
+                //Modules.dragonModule.minionFeature.summonLarva(source.getWorld(), source.getPos(), difficulty, false);
+                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                return 1;
+
+            default:
+                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMON_ENTITY_INVALID, entity), true);
+                return 0;
+        }
+    }
+
+    private static int summon(CommandSource source, ServerPlayerEntity targetPlayer, String entity) {
+        int spawnedWithers = targetPlayer.getPersistentData().getInt(Strings.Tags.SPAWNED_WITHERS);
+        int killedDragons = targetPlayer.getPersistentData().getInt(Strings.Tags.KILLED_DRAGONS);
+        if (entity.contains("wither"))
+            return summon(source, entity, spawnedWithers);
+        else if (entity.contains("dragon"))
+            return summon(source, entity, killedDragons);
+        return 0;
     }
 }
