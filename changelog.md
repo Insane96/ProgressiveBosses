@@ -1,4 +1,8 @@
 # Changelog
+## Alpha 3.0.6
+* Fixed charged attack no longer working
+* Changed command to use `/progressivebosses difficulty <set/add/get>` instead of `/progressivebosses <set/add/get>`
+
 ## Alpha 3.0.5
 * Reworked the command `/progressivebosses`, you can now summon "mod's entities"
 * Fixed italian translation

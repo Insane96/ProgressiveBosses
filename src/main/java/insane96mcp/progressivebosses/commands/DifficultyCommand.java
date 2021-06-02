@@ -20,41 +20,43 @@ public class DifficultyCommand {
 
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         dispatcher.register(Commands.literal("progressivebosses").requires(source -> source.hasPermissionLevel(2))
-            .then(Commands.literal("get")
-                .then(Commands.argument("targetPlayer", EntityArgument.player())
-                    .then(Commands.literal("wither")
-                        .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither"))
-                    )
-                    .then(Commands.literal("dragon")
-                        .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon"))
-                    )
-                    .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), ""))
-                )
-            )
-            .then(Commands.literal("set")
-                .then(Commands.argument("targetPlayer", EntityArgument.player())
-                    .then(Commands.literal("wither")
-                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.witherModule.difficultyFeature.maxDifficulty))
-                            .executes(context -> setBossDifficulty(context.getSource(),EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
+            .then(Commands.literal("difficulty")
+                .then(Commands.literal("get")
+                    .then(Commands.argument("targetPlayer", EntityArgument.player())
+                        .then(Commands.literal("wither")
+                            .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither"))
                         )
-                    )
-                    .then(Commands.literal("dragon")
-                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragonModule.difficultyFeature.maxDifficulty))
-                            .executes(context -> setBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon", IntegerArgumentType.getInteger(context, "amount")))
+                        .then(Commands.literal("dragon")
+                            .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon"))
                         )
+                        .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), ""))
                     )
                 )
-            )
-            .then(Commands.literal("add")
-                .then(Commands.argument("targetPlayer", EntityArgument.player())
-                    .then(Commands.literal("wither")
-                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.witherModule.difficultyFeature.maxDifficulty))
-                            .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
+                .then(Commands.literal("set")
+                    .then(Commands.argument("targetPlayer", EntityArgument.player())
+                        .then(Commands.literal("wither")
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.witherModule.difficultyFeature.maxDifficulty))
+                                .executes(context -> setBossDifficulty(context.getSource(),EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
+                            )
+                        )
+                        .then(Commands.literal("dragon")
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragonModule.difficultyFeature.maxDifficulty))
+                                .executes(context -> setBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon", IntegerArgumentType.getInteger(context, "amount")))
+                            )
                         )
                     )
-                    .then(Commands.literal("dragon")
-                        .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragonModule.difficultyFeature.maxDifficulty))
-                            .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"),"dragon", IntegerArgumentType.getInteger(context, "amount")))
+                )
+                .then(Commands.literal("add")
+                    .then(Commands.argument("targetPlayer", EntityArgument.player())
+                        .then(Commands.literal("wither")
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.witherModule.difficultyFeature.maxDifficulty))
+                                .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
+                            )
+                        )
+                        .then(Commands.literal("dragon")
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragonModule.difficultyFeature.maxDifficulty))
+                                .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"),"dragon", IntegerArgumentType.getInteger(context, "amount")))
+                            )
                         )
                     )
                 )
@@ -138,12 +140,12 @@ public class DifficultyCommand {
 
             case Strings.Tags.DRAGON_MINION:
                 //Modules.dragonModule.minionFeature.summonMinion(source.getWorld(), source.getPos(), difficulty, false);
-                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                //source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 
             case Strings.Tags.DRAGON_LARVA:
                 //Modules.dragonModule.minionFeature.summonLarva(source.getWorld(), source.getPos(), difficulty, false);
-                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                //source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 
             default:
