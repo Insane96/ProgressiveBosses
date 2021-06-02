@@ -56,7 +56,7 @@
         * Fixes https://bugs.mojang.com/browse/MC-29274
     * Minions
         * Now wield a Stone Sword. Have 60% chance to replace the sword with a bow when Wither's over half health and 8% chance when below half health.
-        * Min and Max Cooldown decreased (15~30 secs -> 12~24 secs). Cooldown below half health increased (35% -> 50%) (5~10.5 secs -> 6~12 secs)
+        * Min and Max Cooldown decreased (15-30 secs -> 12-24 secs). Cooldown below half health increased (35% -> 50%) (5-10.5 secs -> 6-12 secs)
         * Reduced Max Wither Minions Around (16)
     * Rewards
         * Nether Star Shards now stack up to 32 and are "indestructible" (have 16k hearts)
