@@ -30,6 +30,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -245,13 +246,6 @@ public class MinionFeature extends Feature {
 		int minionSpawnedCount = 0;
 		for (int i = this.minionAtDifficulty; i <= difficulty; i += this.bonusMinionEveryDifficulty) {
 
-			WitherSkeletonEntity witherSkeleton = new WitherSkeletonEntity(EntityType.WITHER_SKELETON, world);
-			CompoundNBT minionTags = witherSkeleton.getPersistentData();
-			minionTags.putBoolean(Strings.Tags.WITHER_MINION, true);
-
-			minionTags.putBoolean("mobspropertiesrandomness:processed", true);
-			//TODO Scaling health
-
 			int x = 0, y = 0, z = 0;
 			//Tries to spawn the Minion up to 5 times
 			for (int t = 0; t < 5; t++) {
@@ -259,33 +253,14 @@ public class MinionFeature extends Feature {
 				y = (int) (wither.getPosY() + 3);
 				z = (int) (wither.getPositionVec().getZ() + (RandomHelper.getInt(world.rand, -3, 3)));
 
-				y = getYSpawn(witherSkeleton, new BlockPos(x, y, z), world, 8);
+				y = getYSpawn(EntityType.WITHER_SKELETON, new BlockPos(x, y, z), world, 8);
 				if (y != -1)
 					break;
 			}
 			if (y <= 0)
 				continue;
 
-			witherSkeleton.setPosition(x + 0.5f, y + 0.5f, z + 0.5f);
-			witherSkeleton.setCustomName(new TranslationTextComponent(Strings.Translatable.WITHER_MINION));
-			setEquipment(wither, witherSkeleton, difficulty);
-			witherSkeleton.deathLootTable = LootTables.EMPTY;
-			witherSkeleton.experienceValue = 1;
-
-			ModifiableAttributeInstance movementSpeed = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
-			double speedBonus = this.bonusSpeedPerDifficulty * difficulty;
-			AttributeModifier movementSpeedModifier = new AttributeModifier(Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
-			movementSpeed.applyPersistentModifier(movementSpeedModifier);
-
-			ModifiableAttributeInstance followRange = witherSkeleton.getAttribute(Attributes.FOLLOW_RANGE);
-			AttributeModifier followRangeBonus = new AttributeModifier(Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 16, AttributeModifier.Operation.ADDITION);
-			followRange.applyPersistentModifier(followRangeBonus);
-
-			ModifiableAttributeInstance swimSpeed = witherSkeleton.getAttribute(ForgeMod.SWIM_SPEED.get());
-			if (swimSpeed != null) {
-				AttributeModifier swimSpeedBonus = new AttributeModifier(Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 3d, AttributeModifier.Operation.MULTIPLY_BASE);
-				swimSpeed.applyPersistentModifier(swimSpeedBonus);
-			}
+			WitherSkeletonEntity witherSkeleton = summonMinion(world, new Vector3d(x + 0.5, y + 0.5, z + 0.5), difficulty, wither.isCharged());
 
 			//No need since EntityJoinWorldEvent is triggered
 			//setMinionAI(witherSkeleton);
@@ -295,8 +270,6 @@ public class MinionFeature extends Feature {
 			uuid.putUniqueId("uuid", witherSkeleton.getUniqueID());
 			minionsList.add(uuid);
 			witherTags.put(Strings.Tags.MINIONS, minionsList);
-
-			world.addEntity(witherSkeleton);
 
 			minionSpawnedCount++;
 			if (minionSpawnedCount >= this.maxSpawned)
@@ -337,11 +310,11 @@ public class MinionFeature extends Feature {
 		}
 	}
 
-	private void setEquipment(WitherEntity witherEntity, WitherSkeletonEntity witherSkeletonEntity, float difficulty) {
+	private void setEquipment(WitherSkeletonEntity witherSkeletonEntity, float difficulty, boolean isCharged) {
 		witherSkeletonEntity.setDropChance(EquipmentSlotType.MAINHAND, Float.MIN_VALUE);
 
 		int level = (int) (this.powerSharpnessChance * difficulty);
-		if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - level)
+		if (RandomHelper.getDouble(witherSkeletonEntity.world.getRandom(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - level)
 			level++;
 
 		ItemStack sword = new ItemStack(Items.STONE_SWORD);
@@ -353,13 +326,13 @@ public class MinionFeature extends Feature {
 		ItemStack bow = new ItemStack(Items.BOW);
 		if (level > 0)
 			bow.addEnchantment(Enchantments.POWER, level);
-		if (witherEntity.isCharged()) {
-			if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < this.halfHealthBowChance) {
+		if (isCharged) {
+			if (RandomHelper.getDouble(witherSkeletonEntity.world.getRandom(), 0d, 1d) < this.halfHealthBowChance) {
 				witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, bow);
 			}
 		}
 		else {
-			if (RandomHelper.getDouble(witherEntity.getRNG(), 0d, 1d) < this.preHalfHealthBowChance) {
+			if (RandomHelper.getDouble(witherSkeletonEntity.world.getRandom(), 0d, 1d) < this.preHalfHealthBowChance) {
 				witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, bow);
 			}
 		}
@@ -367,14 +340,13 @@ public class MinionFeature extends Feature {
 
 	/**
 	 * Returns -1 when no spawn spots are found, otherwise the Y coord
-	 * @param witherSkeletonEntity
 	 * @param pos
 	 * @param world
 	 * @param minRelativeY
 	 * @return
 	 */
-	private static int getYSpawn(WitherSkeletonEntity witherSkeletonEntity, BlockPos pos, World world, int minRelativeY) {
-		int height = (int) Math.ceil(witherSkeletonEntity.getHeight());
+	private static int getYSpawn(EntityType entityType, BlockPos pos, World world, int minRelativeY) {
+		int height = (int) Math.ceil(entityType.getHeight());
 		int fittingYPos = -1;
 		for (int y = pos.getY(); y > pos.getY() - minRelativeY; y--) {
 			boolean viable = true;
@@ -431,5 +403,38 @@ public class MinionFeature extends Feature {
 		witherSkeletonEntity.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witherSkeletonEntity, PlayerEntity.class, true));
 		witherSkeletonEntity.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witherSkeletonEntity, IronGolemEntity.class, true));
 		witherSkeletonEntity.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witherSkeletonEntity, MobEntity.class, 0, false, false, NOT_UNDEAD));
+	}
+
+	public WitherSkeletonEntity summonMinion(World world, Vector3d pos, float difficulty, boolean isCharged) {
+		WitherSkeletonEntity witherSkeleton = new WitherSkeletonEntity(EntityType.WITHER_SKELETON, world);
+		CompoundNBT minionTags = witherSkeleton.getPersistentData();
+		minionTags.putBoolean(Strings.Tags.WITHER_MINION, true);
+
+		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
+		//TODO Scaling health
+
+		witherSkeleton.setPosition(pos.x, pos.y, pos.z);
+		witherSkeleton.setCustomName(new TranslationTextComponent(Strings.Translatable.WITHER_MINION));
+		setEquipment(witherSkeleton, difficulty, isCharged);
+		witherSkeleton.deathLootTable = LootTables.EMPTY;
+		witherSkeleton.experienceValue = 1;
+
+		ModifiableAttributeInstance movementSpeed = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
+		double speedBonus = this.bonusSpeedPerDifficulty * difficulty;
+		AttributeModifier movementSpeedModifier = new AttributeModifier(Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
+		movementSpeed.applyPersistentModifier(movementSpeedModifier);
+
+		ModifiableAttributeInstance followRange = witherSkeleton.getAttribute(Attributes.FOLLOW_RANGE);
+		AttributeModifier followRangeBonus = new AttributeModifier(Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 16, AttributeModifier.Operation.ADDITION);
+		followRange.applyPersistentModifier(followRangeBonus);
+
+		ModifiableAttributeInstance swimSpeed = witherSkeleton.getAttribute(ForgeMod.SWIM_SPEED.get());
+		if (swimSpeed != null) {
+			AttributeModifier swimSpeedBonus = new AttributeModifier(Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 3d, AttributeModifier.Operation.MULTIPLY_BASE);
+			swimSpeed.applyPersistentModifier(swimSpeedBonus);
+		}
+
+		world.addEntity(witherSkeleton);
+		return witherSkeleton;
 	}
 }
