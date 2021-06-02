@@ -64,6 +64,7 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> preHalfHealthBowChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> halfHealthBowChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> powerSharpnessChanceConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> punchKnockbackChanceConfig;
 
 	public int minionAtDifficulty = 1;
 	public int bonusMinionEveryDifficulty = 2;
@@ -79,6 +80,7 @@ public class MinionFeature extends Feature {
 	public double preHalfHealthBowChance = 0.6d;
 	public double halfHealthBowChance = 0.08d;
 	public double powerSharpnessChance = 0.0625d;
+	public double punchKnockbackChance = 0.03d;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);
@@ -117,13 +119,16 @@ public class MinionFeature extends Feature {
 				.define("Has Sword", hasSword);
 		preHalfHealthBowChanceConfig = Config.builder
 				.comment("Chance for the Wither Minion to spawn with a bow when Wither's above Half Health")
-				.defineInRange("Bow Chance Over Half Health", preHalfHealthBowChance, 0d, 100d);
+				.defineInRange("Bow Chance Over Half Health", preHalfHealthBowChance, 0d, 1d);
 		halfHealthBowChanceConfig = Config.builder
 				.comment("Chance for the Wither Minion to spawn with a bow when Wither's below Half Health")
-				.defineInRange("Bow Chance Below Half Health", halfHealthBowChance, 0d, 100d);
+				.defineInRange("Bow Chance Below Half Health", halfHealthBowChance, 0d, 1d);
 		powerSharpnessChanceConfig = Config.builder
 				.comment("Chance for the Wither Minion Sword / Bow to be enchanted with Sharpness / Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
-				.defineInRange("Power / Sharpness Chance", powerSharpnessChance, 0d, 5d);
+				.defineInRange("Power / Sharpness Chance", powerSharpnessChance, 0d, Double.MAX_VALUE);
+		punchKnockbackChanceConfig = Config.builder
+				.comment("Chance for the Wither Minion Sword / Bow to be enchanted with Knockback / Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
+				.defineInRange("Punch / Knockback Chance", punchKnockbackChance, 0d, Double.MAX_VALUE);
 		Config.builder.pop();
 
 		Config.builder.pop();
@@ -146,6 +151,7 @@ public class MinionFeature extends Feature {
 		this.preHalfHealthBowChance = this.preHalfHealthBowChanceConfig.get();
 		this.halfHealthBowChance = this.halfHealthBowChanceConfig.get();
 		this.powerSharpnessChance = this.powerSharpnessChanceConfig.get();
+		this.punchKnockbackChance = this.punchKnockbackChanceConfig.get();
 	}
 
 	@SubscribeEvent
@@ -313,19 +319,27 @@ public class MinionFeature extends Feature {
 	private void setEquipment(WitherSkeletonEntity witherSkeletonEntity, float difficulty, boolean isCharged) {
 		witherSkeletonEntity.setDropChance(EquipmentSlotType.MAINHAND, Float.MIN_VALUE);
 
-		int level = (int) (this.powerSharpnessChance * difficulty);
-		if (RandomHelper.getDouble(witherSkeletonEntity.world.getRandom(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - level)
-			level++;
+		int powerSharpnessLevel = (int) (this.powerSharpnessChance * difficulty);
+		if (RandomHelper.getDouble(witherSkeletonEntity.world.getRandom(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - powerSharpnessLevel)
+			powerSharpnessLevel++;
+
+		int punchKnockbackLevel = (int) (this.punchKnockbackChance * difficulty);
+		if (RandomHelper.getDouble(witherSkeletonEntity.world.getRandom(), 0d, 1d) < (this.punchKnockbackChance * difficulty) - punchKnockbackLevel)
+			punchKnockbackLevel++;
 
 		ItemStack sword = new ItemStack(Items.STONE_SWORD);
-		if (level > 0)
-			sword.addEnchantment(Enchantments.SHARPNESS, level);
+		if (powerSharpnessLevel > 0)
+			sword.addEnchantment(Enchantments.SHARPNESS, powerSharpnessLevel);
+		if (punchKnockbackLevel > 0)
+			sword.addEnchantment(Enchantments.KNOCKBACK, punchKnockbackLevel);
 		if (this.hasSword)
 			witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, sword);
 
 		ItemStack bow = new ItemStack(Items.BOW);
-		if (level > 0)
-			bow.addEnchantment(Enchantments.POWER, level);
+		if (powerSharpnessLevel > 0)
+			bow.addEnchantment(Enchantments.POWER, powerSharpnessLevel);
+		if (punchKnockbackLevel > 0)
+			bow.addEnchantment(Enchantments.PUNCH, punchKnockbackLevel);
 		if (isCharged) {
 			if (RandomHelper.getDouble(witherSkeletonEntity.world.getRandom(), 0d, 1d) < this.halfHealthBowChance) {
 				witherSkeletonEntity.setItemStackToSlot(EquipmentSlotType.MAINHAND, bow);
