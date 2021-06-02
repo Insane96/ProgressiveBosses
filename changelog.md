@@ -1,4 +1,10 @@
 # Changelog
+## Alpha 3.0.5
+* Reworked the command `/progressivebosses`, you can now summon "mod's entities"
+* Fixed italian translation
+* Removed Russian Translation, needs to be remade
+* Reduced the wither Invincibility time during charging phase. (10 -> 8.5)
+
 ## Alpha 3.0.4
 * Added Catalogue and Configured icon and background
 * Adjusted configs

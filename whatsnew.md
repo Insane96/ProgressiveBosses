@@ -1,10 +1,10 @@
 # What's New in Progressive Bosses 3
 
-If you're new to the mod, I recommend getting a look at this: https://www.insane96.eu/projects/mods/progressivebosses/ to understand the mod
+If you're new to the mod, I recommend getting a look at this: https://www.insane96.eu/projects/mods/progressivebosses/ before reading this page.
 
 ## Base mod
 * Mod now requires InsaneLib. This means that the mod is now split in Modules (Wither and Dragon) and Features that can be disabled separately.
-* The command can now be used to summon "mod's entities".
+* Reworked the command `/progressivebosses`, you can now summon "mod's entities".
 
 ## Wither
 * Difficulty Feature
