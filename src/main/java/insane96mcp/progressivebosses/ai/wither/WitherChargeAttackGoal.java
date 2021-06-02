@@ -43,7 +43,7 @@ public class WitherChargeAttackGoal extends Goal {
 	 * method as well.
 	 */
 	public boolean shouldExecute() {
-		if (this.wither.getInvulTime() != 200)
+		if (this.wither.getInvulTime() != 170)
 			return false;
 		CompoundNBT witherTags = wither.getPersistentData();
 		return witherTags.contains(Strings.Tags.CHARGE_ATTACK);
