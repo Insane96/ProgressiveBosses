@@ -1,6 +1,6 @@
 # Changelog
 ## Alpha 3.0.7
-* Removed chance for Wither III. Wither 3 almost completely prevents knockback since deals damage continuously
+* Removed chance for Wither III. Wither 3 almost completely prevented knockback since dealt damage continuously
 * Added 4% chance per difficulty for Wither Minions to have Punch / knockback enchanted equipment
 * Wither will try to not get stuck on the ceiling of caves
 
@@ -26,6 +26,7 @@
         * Barrage attack no longer ticks down if the wither doesn't see the target
     * Minions
         * Increased max Minion Around (16 -> 20)
+
 ## Alpha 3.0.3
 * Wither
     * Attack
@@ -49,7 +50,7 @@
         * Reduced Speed Bonus per difficulty (1% -> 0.4%)
         * Wither now checks in a 16 blocks radius for Minions instead of 32 to stop spawning them
         * Fixed bonus movement speed not begin applied
-    
+
 ## Alpha 3.0.2
 * Wither
     * Rewards

@@ -82,10 +82,10 @@ public class WitherChargeAttackGoal extends Goal {
 				this.wither.setInvulTime(0);
 			}
 		}
-		if (this.wither.getInvulTime() == 30) {
+		if (this.wither.getInvulTime() == 40) {
 			this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.HOSTILE, 4.0f, 0.8f);
 		}
-		else if (this.wither.getInvulTime() < 30) {
+		else if (this.wither.getInvulTime() < 40) {
 			double mult = 50d / this.wither.getInvulTime();
 			Vector3d diff = this.targetPos.subtract(this.wither.getPositionVec()).normalize().mul(mult, mult, mult);
 			this.wither.setMotion(diff.x, diff.y, diff.z);
@@ -111,7 +111,7 @@ public class WitherChargeAttackGoal extends Goal {
 		else {
 			this.wither.setMotion(Vector3d.ZERO);
 		}
-		if (this.wither.getInvulTime() < 30 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 16d) {
+		if (this.wither.getInvulTime() < 40 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 9d) {
 			this.wither.setMotion(Vector3d.ZERO);
 			this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 9f, Explosion.Mode.DESTROY);
 			this.wither.setInvulTime(0);
