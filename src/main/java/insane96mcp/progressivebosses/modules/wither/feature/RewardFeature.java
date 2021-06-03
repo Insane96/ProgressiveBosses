@@ -136,11 +136,15 @@ public class RewardFeature extends Feature {
 				int tries = (int) (difficulty - drop.difficultyRequired + 1);
 				if (tries == 0)
 					continue;
+				int dropped = 0;
 				for (int i = 0; i < tries; i++) {
 					if (RandomHelper.getDouble(wither.world.rand, 0d, 1d) >= chance)
 						continue;
-
+					dropped++;
 					wither.world.addEntity(createDrop(wither.world, wither.getPositionVec(), ForgeRegistries.ITEMS.getValue(drop.itemId), drop.amount));
+				}
+				if (drop.itemId.equals(ModItems.NETHER_STAR_SHARD.getId()) && dropped < difficulty * chance) {
+					wither.world.addEntity(createDrop(wither.world, wither.getPositionVec(), ForgeRegistries.ITEMS.getValue(drop.itemId), (int) (Math.round(difficulty * chance - dropped))));
 				}
 			}
 		}
