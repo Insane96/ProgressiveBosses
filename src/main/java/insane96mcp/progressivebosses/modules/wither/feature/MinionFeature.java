@@ -432,6 +432,7 @@ public class MinionFeature extends Feature {
 		setEquipment(witherSkeleton, difficulty, isCharged);
 		witherSkeleton.deathLootTable = LootTables.EMPTY;
 		witherSkeleton.experienceValue = 1;
+		witherSkeleton.enablePersistence();
 
 		ModifiableAttributeInstance movementSpeed = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
 		double speedBonus = this.bonusSpeedPerDifficulty * difficulty;
