@@ -111,7 +111,7 @@ public class WitherRangedAttackGoal extends Goal {
 				return;
 			if (RandomHelper.getFloat(this.wither.getRNG(), 0f, 1f) < .1f)
 				for (int h = 0; h < 3; h++) {
-					this.wither.launchWitherSkullToCoords(h, this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -0.75d, 0.75d), this.target.getPosY() + RandomHelper.getDouble(this.wither.getRNG(), -0.75d, 0.75d) + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -0.75d, 0.75d), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
+					this.wither.launchWitherSkullToCoords(h, this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -1d, 1d), this.target.getPosY() + RandomHelper.getDouble(this.wither.getRNG(), -1d, 1d) + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -1d, 1d), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
 				}
 			else
 				this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);

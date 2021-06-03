@@ -1,4 +1,9 @@
 # Changelog
+## Alpha 3.0.7
+* Removed chance for Wither III. Wither 3 almost completely prevents knockback since deals damage continuously
+* Added 4% chance per difficulty for Wither Minions to have Punch / knockback enchanted equipment
+* Wither will try to not get stuck on the ceiling of caves
+
 ## Alpha 3.0.6
 * Fixed charged attack no longer working
 * Changed command to use `/progressivebosses difficulty <set/add/get>` instead of `/progressivebosses <set/add/get>`
