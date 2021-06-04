@@ -20,7 +20,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Max Bonus Health regeneration has been increased. (1 hp/s -> 2 hp/s)
 * Resistances and Weakneses Feature
     * **Repalces the Armor feature and adds a new way to deal more damage to the Wither.**
-    * Wither now has 4% damage resistance per difficulty when he drops below half health. Maximum 35% damage resistance.
+  * Wither now has 1% damage resistance per difficulty when he's above half health (up to 20%), both doubled when he drops below half health.
     * Wither now takes more magic damage based off his missing Health. Every 200 hp missing the magic damage is amplified by 100%.
 * Rewards Feature
     * **Makes the Wither drop more experience and Nether Star Shards.**
@@ -40,7 +40,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
 * Brand NEW Attack Feature
     * **Overhauls the attacks of the wither**
     * Wither will no longer follow the player unless it's not in range (so the Wither will no longer try to stand on the head of the player ...).
-    * Wither now attacks faster 33.3% faster when below half health, and will attack even faster (up to 30% faster) when the target is near him.
+    * Wither's middle head will now fire skulls up to 75% faster when the target is near him.
     * Brand new Charge Attack: when at 20% health the Wither will enter an invincible status for 8.5 seconds where after 5 seconds will target a player and after 2 seconds will charge to him destroying everything in its path and exploding at arrival.
     * New Barrage attack: when the Wither takes damage there's a 0.2% chance (max 5%, both doubled when the Wither's below half health) per difficulty to trigger the barrage attack. The Wither will start shoting skulls to random targets nearby at the rate of 10 per second for 2.5 seconds (duration doubled when below half health).
     * Wither Skulls now deal 2% more damage per difficulty and travel 2.5 times as fast.

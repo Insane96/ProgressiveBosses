@@ -1,5 +1,6 @@
 # Changelog
 ## Alpha 3.0.7
+* Swapped `<get/set/add>` and `<targetPlayer>` in che command (`/progressivebosses difficulty <get/set/add> <targetPlayer>` -> `/progressivebosses difficulty <targetPlayer> <get/set/add>`)
 * Wither
     * Resistances & Vulnerabilities
         * Added damage reduction before half health: 1% per difficulty up to 15%.
@@ -9,6 +10,8 @@
         * Added a config option to prevent the spawning of the Wither outside The Nether (or on the Nether roof)
     * Attack
         * Removed chance for Wither III. Wither 3 almost completely prevented knockback since dealt damage continuously
+        * Removed increased attack speed on half health
+        * Attack Interval when near decreased (up to 30% -> up to 75%)
         * Wither will try to not get stuck on the ceiling of caves
     * Rewards
         * Nether Star Shards drop amount are now guaranteed to be at least 16% of Wither's Difficulty

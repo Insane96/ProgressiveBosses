@@ -35,7 +35,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> increasedAttackDamageConfig;
 	//private final ForgeConfigSpec.ConfigValue<Double> chanceForWither3Config;
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> attackSpeedMultiplierOnHalfHealthConfig;
+	//private final ForgeConfigSpec.ConfigValue<Double> attackSpeedMultiplierOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 
 	public boolean applyToVanillaWither = true;
@@ -48,7 +48,7 @@ public class AttackFeature extends Feature {
 	//public double chanceForWither3 = 0.01d;
 	//Attack Speed
 	public int attackInterval = 40;
-	public double attackSpeedMultiplierOnHalfHealth = 0.66666667d;
+	//public double attackSpeedMultiplierOnHalfHealth = 0.66666667d;
 	public boolean increaseAttackSpeedWhenNear = true;
 
 	public AttackFeature(Module module) {
@@ -83,9 +83,9 @@ public class AttackFeature extends Feature {
 		attackIntervalConfig = Config.builder
 				.comment("Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
 				.defineInRange("Attack Interval", attackInterval, 0, Integer.MAX_VALUE);
-		attackSpeedMultiplierOnHalfHealthConfig = Config.builder
+		/*attackSpeedMultiplierOnHalfHealthConfig = Config.builder
 				.comment("The middle head will attack this faster when the Wither drops below half health.")
-				.defineInRange("Attack Speed Multiplier on Half Health", attackSpeedMultiplierOnHalfHealth, 0d, Double.MAX_VALUE);
+				.defineInRange("Attack Speed Multiplier on Half Health", attackSpeedMultiplierOnHalfHealth, 0d, Double.MAX_VALUE);*/
 		increaseAttackSpeedWhenNearConfig = Config.builder
 				.comment("The middle head will attack faster (up to 40% of the attack speed) the nearer the target is to the Wither.")
 				.define("Increase Attack Speed when Near", increaseAttackSpeedWhenNear);
@@ -107,7 +107,7 @@ public class AttackFeature extends Feature {
 		//this.chanceForWither3 = this.chanceForWither3Config.get();
 		//Attack Speed
 		this.attackInterval = this.attackIntervalConfig.get();
-		this.attackSpeedMultiplierOnHalfHealth = this.attackSpeedMultiplierOnHalfHealthConfig.get();
+		//this.attackSpeedMultiplierOnHalfHealth = this.attackSpeedMultiplierOnHalfHealthConfig.get();
 		this.increaseAttackSpeedWhenNear = this.increaseAttackSpeedWhenNearConfig.get();
 	}
 
@@ -252,7 +252,7 @@ public class AttackFeature extends Feature {
 		toRemove.forEach(wither.goalSelector::removeGoal);
 
 		wither.goalSelector.addGoal(0, new WitherDoNothingGoal(wither));
-		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.attackSpeedMultiplierOnHalfHealth, this.increaseAttackSpeedWhenNear));
+		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.increaseAttackSpeedWhenNear));
 		wither.goalSelector.addGoal(2, new WitherChargeAttackGoal(wither));
 
 		//Fixes https://bugs.mojang.com/browse/MC-29274
