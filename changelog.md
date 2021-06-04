@@ -2,7 +2,7 @@
 ## Alpha 3.0.7
 * Wither
     * Resistances & Vulnerabilities
-        * Added damage reduction before half health: 1% per difficulty up to 20%.
+        * Added damage reduction before half health: 1% per difficulty up to 15%.
         * Decreased damage reduction on half health (4% -> 2%)
         * Increased max damage reduction on half health (35% -> 40%)
     * Misc
