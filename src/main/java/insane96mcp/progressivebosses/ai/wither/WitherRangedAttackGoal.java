@@ -18,7 +18,7 @@ public class WitherRangedAttackGoal extends Goal {
 	private final int attackInterval;
 	private final float attackRadius;
 	private final float attackRadiusSqr;
-	//Multiplied by the rate of attack when health drops below half
+	//Attack Interval multiplied by this when Wither's health drops below half
 	private final double attackSpeedMultiplier;
 	//Increases the rate of attack of the middle head the closer the player is to the wither
 	private final boolean increaseASOnNear;
