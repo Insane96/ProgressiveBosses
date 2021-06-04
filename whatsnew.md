@@ -12,14 +12,14 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Allows the Wither to get the difficulty on spawn.
     * Also has a new config option to set the starting difficulty.
 * Misc Feature
-    * It's responsible for some small features.
+    * **It's responsible for some small features.**
     * The Wither's spawn explosion power has been increased (+0.08 explosion power per difficulty -> +0.3 explosion power per difficulty).
     * Explosion now generates fire from lower difficulty (at 10 difficulty -> at 8 difficulty).
 * Health Feature
     * **Takes care of the Wither's health**
     * Max Bonus Health regeneration has been increased. (1 hp/s -> 2 hp/s)
 * Resistances and Weakneses Feature
-    * Repalces the Armor feature and adds a new way to deal more damage to the Wither
+    * **Repalces the Armor feature and adds a new way to deal more damage to the Wither.**
     * Wither now has 4% damage resistance per difficulty when he drops below half health. Maximum 35% damage resistance.
     * Wither now takes more magic damage based off his missing Health. Every 200 hp missing the magic damage is amplified by 100%.
 * Rewards Feature
