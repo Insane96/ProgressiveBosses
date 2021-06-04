@@ -1,11 +1,20 @@
 # Changelog
 ## Alpha 3.0.7
-* Added a config option to prevent the spawning of the Wither outside The Nether (or on the Nether roof)
-* Removed chance for Wither III. Wither 3 almost completely prevented knockback since dealt damage continuously
-* Added 4% chance per difficulty for Wither Minions to have Punch / knockback enchanted equipment
-* Wither Minions will no longer despawn
-* Wither will try to not get stuck on the ceiling of caves
-* Nether Star Shards drop amount are now guaranteed to be at least 16% of Wither's Difficulty 
+* Wither
+    * Resistances & Vulnerabilities
+        * Added damage reduction before half health: 1% per difficulty up to 20%.
+        * Decreased damage reduction on half health (4% -> 2%)
+        * Increased max damage reduction on half health (35% -> 40%)
+    * Misc
+        * Added a config option to prevent the spawning of the Wither outside The Nether (or on the Nether roof)
+    * Attack
+        * Removed chance for Wither III. Wither 3 almost completely prevented knockback since dealt damage continuously
+        * Wither will try to not get stuck on the ceiling of caves
+    * Rewards
+        * Nether Star Shards drop amount are now guaranteed to be at least 16% of Wither's Difficulty
+    * Minions
+        * Added 4% chance per difficulty for Wither Minions to have Punch / knockback enchanted equipment
+        * Wither Minions will no longer despawn
 
 ## Alpha 3.0.6
 * Fixed charged attack no longer working
