@@ -20,7 +20,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Max Bonus Health regeneration has been increased. (1 hp/s -> 2 hp/s)
 * Resistances and Weakneses Feature
     * **Repalces the Armor feature and adds a new way to deal more damage to the Wither.**
-  * Wither now has 1% damage resistance per difficulty when he's above half health (up to 20%), both doubled when he drops below half health.
+  * Wither now has 1% damage resistance per difficulty when he's above half health (up to 15%), increased to 2% (up to 40%) when he drops below half health.
     * Wither now takes more magic damage based off his missing Health. Every 200 hp missing the magic damage is amplified by 100%.
 * Rewards Feature
     * **Makes the Wither drop more experience and Nether Star Shards.**
@@ -32,7 +32,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Health is no longer randomized, so it's now 20 hp as normal Wither Skellys.
     * Movement Speed bonus no longer replaces the base value and is now configurable. Also reduced the movement speed bonus (+1% speed per difficulty -> +0.4% speed per difficulty).
     * Minions now see the player from farther away. (16 blocks -> 32 blocks)
-    * Minions now swim 4 times as fast.
+    * Minions now can swim and do it 4 times as fast.
     * Now wield a Stone Sword. Also have 60% chance to replace the sword with a bow when Wither's over half health and 8% chance when below half health. There's a 6.25% chance per difficulty to get a Sharpness / Power enchantment on equipment. There's also a 4% chance per difficulty to get Knockback / Punch on equipment. Every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.
     * Cooldown is no longer decreased by difficulty, instead now is decreased by 40% when the Wither drops below half health. Also, the Min and Max cooldown have been increased. (10-20 seconds -> 12-24 seconds)
     * Increased the max number of minions that can be near a Wither before he stops spawning them (16 -> 20). Also, the range to check for max minions around has been halved. (32 blocks -> 16 blocks)

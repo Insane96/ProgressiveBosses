@@ -17,6 +17,7 @@
         * Nether Star Shards drop amount are now guaranteed to be at least 16% of Wither's Difficulty
     * Minions
         * Added 4% chance per difficulty for Wither Minions to have Punch / knockback enchanted equipment
+        * Can now swim
         * Wither Minions will no longer despawn
 
 ## Alpha 3.0.6

@@ -401,6 +401,8 @@ public class MinionFeature extends Feature {
 		}
 		toRemove.clear();
 
+		witherSkeletonEntity.goalSelector.addGoal(1, new SwimGoal(witherSkeletonEntity));
+
 		witherSkeletonEntity.targetSelector.goals.forEach(goal -> {
 			if (goal.getGoal() instanceof NearestAttackableTargetGoal)
 				toRemove.add(goal.getGoal());
