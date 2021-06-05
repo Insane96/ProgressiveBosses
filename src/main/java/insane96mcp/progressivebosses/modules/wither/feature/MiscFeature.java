@@ -200,7 +200,7 @@ public class MiscFeature extends Feature {
 
 		boolean hasSoulSandNearby = false;
 		for (Direction dir : Direction.values()) {
-			if (world.getBlockState(pos.add(dir.getDirectionVec())).getBlock().equals(Blocks.SOUL_SAND)){
+			if (world.getBlockState(pos.add(dir.getDirectionVec())).getBlock().equals(Blocks.SOUL_SAND) || world.getBlockState(pos.add(dir.getDirectionVec())).getBlock().equals(Blocks.SOUL_SOIL)){
 				hasSoulSandNearby = true;
 				break;
 			}
