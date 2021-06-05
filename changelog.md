@@ -13,6 +13,8 @@
         * Removed chance for Wither III. Wither 3 almost completely prevented knockback since dealt damage continuously
         * Removed increased attack speed on half health
         * Attack Interval when near decreased (up to 30% -> up to 75%)
+        * Charge attack reworked. When the Wither takes damage there's a 0.1% chance (max 4%, both doubled when the Wither's below half health) to start the charge attack. The Wither enters an invincible state where after 2 seconds will target a random player nearby and charge to him dealing massive damage and knocking back everyone in its path. If he can't find a target, will make a small explosion in place. He still regains 2% of it's maximum health each second
+        * Items dropped by the charge attack will now despawn after a minute to reduce lag
         * Wither will try to not get stuck on the ceiling of caves
     * Rewards
         * Nether Star Shards drop amount are now guaranteed to be at least 16% of Wither's Difficulty

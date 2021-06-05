@@ -14,6 +14,7 @@ import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EntityDamageSource;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -43,10 +44,16 @@ public class WitherChargeAttackGoal extends Goal {
 	 * method as well.
 	 */
 	public boolean shouldExecute() {
-		if (this.wither.getInvulTime() != 170)
+		if (this.wither.getInvulTime() != 70)
 			return false;
 		CompoundNBT witherTags = wither.getPersistentData();
 		return witherTags.contains(Strings.Tags.CHARGE_ATTACK);
+	}
+
+	public void startExecuting() {
+		this.wither.getNavigator().clearPath();
+		for (int h = 0; h < 3; h++)
+			this.wither.updateWatchedTargetId(h, 0);
 	}
 
 	/**
@@ -61,59 +68,67 @@ public class WitherChargeAttackGoal extends Goal {
 	 */
 	public void resetTask() {
 		this.target = null;
+		CompoundNBT witherTags = wither.getPersistentData();
+		witherTags.remove(Strings.Tags.CHARGE_ATTACK);
+		this.wither.setMotion(this.wither.getMotion().mul(0.1d, 0.1d, 0.1d));
 	}
 
 	/**
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
-		this.wither.getNavigator().clearPath();
-		if (this.wither.getInvulTime() == 170) {
-			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 4.0f, 2.0f);
-		}
-		else if (this.wither.getInvulTime() == 70) {
+		if (this.wither.getInvulTime() > 30)
+			this.wither.setMotion(Vector3d.ZERO);
+
+		if (this.wither.getInvulTime() == 70)
+			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 5.0f, 2.0f);
+		else if (this.wither.getInvulTime() == 30) {
 			this.target = GetRandomNearPlayer(this.wither);
 			if (target != null) {
 				this.targetPos = this.target.getPositionVec();
 				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 4.0f, 2.0f);
 			}
 			else {
-				this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 9f, Explosion.Mode.DESTROY);
+				this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 6f, Explosion.Mode.DESTROY);
 				this.wither.setInvulTime(0);
 			}
+			//this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.HOSTILE, 4.0f, 0.8f);
 		}
-		if (this.wither.getInvulTime() == 40) {
-			this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.HOSTILE, 4.0f, 0.8f);
-		}
-		else if (this.wither.getInvulTime() < 40) {
-			double mult = 50d / this.wither.getInvulTime();
+		else if (this.wither.getInvulTime() < 30) {
+			double mult = 100d / this.wither.getInvulTime();
 			Vector3d diff = this.targetPos.subtract(this.wither.getPositionVec()).normalize().mul(mult, mult, mult);
-			this.wither.setMotion(diff.x, diff.y, diff.z);
+			this.wither.setMotion(diff.x, diff.y * 0.6, diff.z);
 			this.wither.getLookController().setLookPosition(this.targetPos);
 			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(this.wither.getPosX() - 2, this.wither.getPosY() - 2, this.wither.getPosZ() - 2, this.wither.getPosX() + 2, this.wither.getPosY() + 6, this.wither.getPosZ() + 2);
 			Stream<BlockPos> blocks = BlockPos.getAllInBox(axisAlignedBB);
 			AtomicBoolean hasBrokenBlocks = new AtomicBoolean(false);
 			blocks.forEach(blockPos -> {
 				BlockState state = wither.world.getBlockState(blockPos);
-				if (state.canEntityDestroy(wither.world, blockPos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state)) {
+				if (state.canEntityDestroy(wither.world, blockPos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
 					TileEntity tileentity = state.hasTileEntity() ? this.wither.world.getTileEntity(blockPos) : null;
 					LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerWorld)this.wither.world)).withRandom(this.wither.world.rand).withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(blockPos)).withParameter(LootParameters.TOOL, ItemStack.EMPTY).withNullableParameter(LootParameters.BLOCK_ENTITY, tileentity);
-					state.getDrops(lootcontext$builder).forEach(itemStack -> this.wither.world.addEntity(new ItemEntity(this.wither.world, blockPos.getX() + .5d, blockPos.getY() + .5d, blockPos.getZ() + .5d, itemStack)));
+					state.getDrops(lootcontext$builder).forEach(itemStack -> {
+						ItemEntity itemEntity = new ItemEntity(this.wither.world, blockPos.getX() + .5d, blockPos.getY() + .5d, blockPos.getZ() + .5d, itemStack);
+						CompoundNBT compound = new CompoundNBT();
+						compound.putShort("Age", (short)(6000 - 1200));
+						itemEntity.readAdditional(compound);
+						this.wither.world.addEntity(itemEntity);
+					});
 					wither.world.setBlockState(blockPos, Blocks.AIR.getDefaultState());
-					if (!hasBrokenBlocks.get())
-						hasBrokenBlocks.set(true);
+					hasBrokenBlocks.set(true);
 				}
 			});
 
-			if (hasBrokenBlocks.get() && this.wither.getInvulTime() % 4 == 0)
+			if (hasBrokenBlocks.get() /*&& this.wither.getInvulTime() % 4 == 0*/)
 				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_BREAK_BLOCK, SoundCategory.HOSTILE, 1.0f, 0.75f);
+
+			axisAlignedBB = axisAlignedBB.grow(0.75d);
+			this.wither.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB).forEach(entity -> {
+				entity.attackEntityFrom(new EntityDamageSource("charge_attack", this.wither), 16f);
+				entity.applyKnockback(1f, this.wither.getPosX() - entity.getPosX(), this.wither.getPosZ() - entity.getPosZ());
+			});
 		}
-		else {
-			this.wither.setMotion(Vector3d.ZERO);
-		}
-		if (this.wither.getInvulTime() < 40 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 9d) {
-			this.wither.setMotion(Vector3d.ZERO);
-			this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 9f, Explosion.Mode.DESTROY);
+		if ((this.wither.getInvulTime() < 30 && this.wither.getInvulTime() > 0 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d) || this.wither.getInvulTime() == 1) {
 			this.wither.setInvulTime(0);
 		}
 	}

@@ -28,27 +28,25 @@ import java.util.ArrayList;
 public class AttackFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> applyToVanillaWitherConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackAtHealthPercentageConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackChanceConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> maxChargeAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> barrageAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> increasedAttackDamageConfig;
-	//private final ForgeConfigSpec.ConfigValue<Double> chanceForWither3Config;
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
-	//private final ForgeConfigSpec.ConfigValue<Double> attackSpeedMultiplierOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 
 	public boolean applyToVanillaWither = true;
-	public double chargeAttackAtHealthPercentage = 0.2d;
+	public double chargeAttackChance = 0.0015d;
+	public double maxChargeAttackChance = 0.04d;
 	public double barrageAttackChance = 0.002d;
 	public double maxBarrageAttackChance = 0.05d;
 	//Skulls
 	public double skullVelocityMultiplier = 2.5d;
 	public double increasedAttackDamage = 0.02d;
-	//public double chanceForWither3 = 0.01d;
 	//Attack Speed
 	public int attackInterval = 40;
-	//public double attackSpeedMultiplierOnHalfHealth = 0.66666667d;
 	public boolean increaseAttackSpeedWhenNear = true;
 
 	public AttackFeature(Module module) {
@@ -57,9 +55,12 @@ public class AttackFeature extends Feature {
 		applyToVanillaWitherConfig = Config.builder
 				.comment("If the AI changes should be applied to the first wither spawned too.")
 				.define("Apply to Vanilla Wither", applyToVanillaWither);
-		chargeAttackAtHealthPercentageConfig = Config.builder
-				.comment("The Wither will charge an attack when dropping below this health percentage.")
-				.defineInRange("Charge Attack at Health Percentage", chargeAttackAtHealthPercentage, 0d, 1d);
+		chargeAttackChanceConfig = Config.builder
+				.comment("Chance (per difficulty) every time the Wither takes damage to start a charce attack. The chance is doubled when the Wither is below half health.")
+				.defineInRange("Charge Attack Chance", chargeAttackChance, 0d, 1d);
+		maxChargeAttackChanceConfig = Config.builder
+				.comment("Max Chance for the charge attack. The max chance is doubled when the Wither is below half health.")
+				.defineInRange("Charge Attack Chance", maxChargeAttackChance, 0d, 1d);
 		barrageAttackChanceConfig = Config.builder
 				.comment("Chance (per difficulty) every time the Wither takes damage to start a barrage attack. The chance is doubled when the Wither is below half health")
 				.defineInRange("Barrage Attack Chance", barrageAttackChance, 0d, 1d);
@@ -74,18 +75,12 @@ public class AttackFeature extends Feature {
 		increasedAttackDamageConfig = Config.builder
 				.comment("Percentage bonus damage dealt by Wither skulls.")
 				.defineInRange("Increased Attack Damage", increasedAttackDamage, 0d, Double.MAX_VALUE);
-		/*chanceForWither3Config = Config.builder
-				.comment("Percentage chance per difficulty for Wither Skulls to apply Wither III instead of II.")
-				.defineInRange("Chance for Wither III", chanceForWither3, 0d, Double.MAX_VALUE);*/
 		Config.builder.pop();
 		//Attack Speed
 		Config.builder.comment("Attack Speed Changes").push("Attack Speed");
 		attackIntervalConfig = Config.builder
 				.comment("Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
 				.defineInRange("Attack Interval", attackInterval, 0, Integer.MAX_VALUE);
-		/*attackSpeedMultiplierOnHalfHealthConfig = Config.builder
-				.comment("The middle head will attack this faster when the Wither drops below half health.")
-				.defineInRange("Attack Speed Multiplier on Half Health", attackSpeedMultiplierOnHalfHealth, 0d, Double.MAX_VALUE);*/
 		increaseAttackSpeedWhenNearConfig = Config.builder
 				.comment("The middle head will attack faster (up to 40% of the attack speed) the nearer the target is to the Wither.")
 				.define("Increase Attack Speed when Near", increaseAttackSpeedWhenNear);
@@ -98,16 +93,15 @@ public class AttackFeature extends Feature {
 	public void loadConfig() {
 		super.loadConfig();
 		this.applyToVanillaWither = this.applyToVanillaWitherConfig.get();
-		this.chargeAttackAtHealthPercentage = this.chargeAttackAtHealthPercentageConfig.get();
+		this.chargeAttackChance = this.chargeAttackChanceConfig.get();
+		this.maxChargeAttackChance = this.maxChargeAttackChanceConfig.get();
 		this.barrageAttackChance = this.barrageAttackChanceConfig.get();
 		this.maxBarrageAttackChance = this.maxBarrageAttackChanceConfig.get();
 		//Skulls
 		this.skullVelocityMultiplier = this.skullVelocityMultiplierConfig.get();
 		this.increasedAttackDamage = this.increasedAttackDamageConfig.get();
-		//this.chanceForWither3 = this.chanceForWither3Config.get();
 		//Attack Speed
 		this.attackInterval = this.attackIntervalConfig.get();
-		//this.attackSpeedMultiplierOnHalfHealth = this.attackSpeedMultiplierOnHalfHealthConfig.get();
 		this.increaseAttackSpeedWhenNear = this.increaseAttackSpeedWhenNearConfig.get();
 	}
 
@@ -146,7 +140,7 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (this.chargeAttackAtHealthPercentage == 0d)
+		if (this.chargeAttackChance == 0d || this.maxChargeAttackChance == 0d)
 			return;
 
 		if (!event.getEntity().isAlive())
@@ -162,13 +156,6 @@ public class AttackFeature extends Feature {
 				wither.setHealth(wither.getHealth() - 10f + (wither.getMaxHealth() * 0.01f));
 			}
 			return;
-		}
-
-		if (wither.getHealth() / wither.getMaxHealth() <= this.chargeAttackAtHealthPercentage) {
-			wither.setInvulTime(170);
-			for (int h = 0; h < 3; h++)
-				wither.updateWatchedTargetId(h, 0);
-			witherTags.putBoolean(Strings.Tags.CHARGE_ATTACK, true);
 		}
 	}
 
@@ -192,22 +179,10 @@ public class AttackFeature extends Feature {
 
 		if (this.increasedAttackDamage > 0d)
 			event.setAmount(event.getAmount() * (float)(1d + (this.increasedAttackDamage * difficulty)));
-
-		/*double chance = this.chanceForWither3 * difficulty;
-		if (RandomHelper.getDouble(wither.getRNG(), 0d, 1d) < chance) {
-			int i = 0;
-			if (wither.world.getDifficulty() == Difficulty.NORMAL)
-				i = 10;
-			else if (wither.world.getDifficulty() == Difficulty.HARD)
-				i = 40;
-
-			if (i > 0)
-				event.getEntityLiving().addPotionEffect(new EffectInstance(Effects.WITHER, 20 * i, 2));
-		}*/
 	}
 
 	@SubscribeEvent
-	public void onWitherDamage(LivingHurtEvent event) {
+	public void onWitherDamageBarrage(LivingHurtEvent event) {
 		if (event.getEntity().getEntityWorld().isRemote)
 			return;
 
@@ -224,18 +199,49 @@ public class AttackFeature extends Feature {
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getEntityLiving();
-		CompoundNBT compoundNBT = wither.getPersistentData();
-		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+		CompoundNBT witherTags = wither.getPersistentData();
+		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
 
 		double chance = Math.min(this.barrageAttackChance * difficulty, this.maxBarrageAttackChance);
 		if (wither.isCharged())
 			chance *= 2d;
 		if (RandomHelper.getDouble(wither.getRNG(), 0d, 1d) < chance) {
-			int barrage = compoundNBT.getInt(Strings.Tags.BARRAGE_ATTACK);
+			int barrage = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
 			int duration = 50;
 			if (wither.isCharged())
 				duration *= 2;
-			compoundNBT.putInt(Strings.Tags.BARRAGE_ATTACK, barrage + duration);
+			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrage + duration);
+		}
+
+	}
+
+	@SubscribeEvent
+	public void onWitherDamageCharge(LivingHurtEvent event) {
+		if (event.getEntity().getEntityWorld().isRemote)
+			return;
+
+		if (!this.isEnabled())
+			return;
+
+		if (this.chargeAttackChance == 0d || this.maxChargeAttackChance == 0d)
+			return;
+
+		if (!event.getEntity().isAlive())
+			return;
+
+		if (!(event.getEntityLiving() instanceof WitherEntity))
+			return;
+
+		WitherEntity wither = (WitherEntity) event.getEntityLiving();
+		CompoundNBT witherTags = wither.getPersistentData();
+		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
+
+		double chance = Math.min(this.chargeAttackChance * difficulty, this.maxChargeAttackChance);
+		if (wither.isCharged())
+			chance *= 2d;
+		if (RandomHelper.getDouble(wither.getRNG(), 0d, 1d) < chance) {
+			wither.setInvulTime(70);
+			witherTags.putBoolean(Strings.Tags.CHARGE_ATTACK, true);
 		}
 
 	}

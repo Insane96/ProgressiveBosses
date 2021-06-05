@@ -42,7 +42,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * **Overhauls the attacks of the wither**
     * Wither will no longer follow the player unless it's not in range (so the Wither will no longer try to stand on the head of the player ...).
     * Wither's middle head will now fire skulls up to 75% faster when the target is near him.
-    * Brand new Charge Attack: when at 20% health the Wither will enter an invincible status for 8.5 seconds where after 5 seconds will target a player and after 2 seconds will charge to him destroying everything in its path and exploding at arrival.
+    * Brand new Charge Attack: When the Wither takes damage there's a 0.1% chance (max 4%, both doubled when the Wither's below half health) to start the charge attack. The Wither will enter an invincible status where after 2 seconds will target a random player nearby and charge to him dealing massive damage and knocking back everyone in its path.
     * New Barrage attack: when the Wither takes damage there's a 0.2% chance (max 5%, both doubled when the Wither's below half health) per difficulty to trigger the barrage attack. The Wither will start shoting skulls to random targets nearby at the rate of 10 per second for 2.5 seconds (duration doubled when below half health).
     * Wither Skulls now deal 2% more damage per difficulty and travel 2.5 times as fast.
-    * There's a 10% chance when attacking to shot 3 skulls instead of 1.
+    * There's a 10% chance when attacking to shot 3 low precision skulls instead of 1.
