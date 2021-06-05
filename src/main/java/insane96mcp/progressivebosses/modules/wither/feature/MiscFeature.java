@@ -94,6 +94,7 @@ public class MiscFeature extends Feature {
 		if (!wither.isAlive())
 			return;
 
+		//Overrides the block breaking in wither's updateAI since LivingUpdateEvent is called before
 		if (wither.blockBreakCounter == 1) {
 			--wither.blockBreakCounter;
 			if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither)) {
