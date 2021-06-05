@@ -14,6 +14,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
 * Misc Feature
     * **It's responsible for some small features.**
     * The Wither's spawn explosion power has been increased (+0.08 explosion power per difficulty -> +0.3 explosion power per difficulty).
+    * The Wither will now break blocks faster and even below and above him. This removes the "prevent getting stuck" feature since now he always breaks blocks below him.
     * Explosion now generates fire from lower difficulty (at 10 difficulty -> at 8 difficulty).
 * Health Feature
     * **Takes care of the Wither's health**

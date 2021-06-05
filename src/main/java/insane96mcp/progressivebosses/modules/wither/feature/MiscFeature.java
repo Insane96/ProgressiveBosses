@@ -10,33 +10,33 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.Stream;
 
 @Label(name = "Misc", description = "Handles various small features, such as the explosion")
 public class MiscFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Double> explosionPowerBonusConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> explosionCausesFireAtDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> preventGettingStuckConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> fasterBlockBreakingConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> biggerBlockBreakingConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> witherNetherOnlyConfig;
 
 	public double explosionPowerBonus = 0.3d;
 	public int explosionCausesFireAtDifficulty = 8;
-	public boolean preventGettingStuck = true;
+	public boolean fasterBlockBreaking = true;
+	public boolean biggerBlockBreaking = true;
 	public boolean witherNetherOnly = false;
 
 	public MiscFeature(Module module) {
@@ -48,9 +48,12 @@ public class MiscFeature extends Feature {
 		explosionCausesFireAtDifficultyConfig = Config.builder
 				.comment("At this difficulty the Wither Explosion will cause fire. Set to -1 to disable.")
 				.defineInRange("Explosion Causes Fire at Difficulty", explosionCausesFireAtDifficulty, -1, Integer.MAX_VALUE);
-		preventGettingStuckConfig = Config.builder
-				.comment("The Wither will try to not get stuck in bedrock for easy killing.")
-				.define("Prevent Getting Stuck", preventGettingStuck);
+		fasterBlockBreakingConfig = Config.builder
+				.comment("The Wither will no longer wait 1 full second before breaking blocks when he's hit, instead just 0.5s")
+				.define("Faster Breaking Blocks", fasterBlockBreaking);
+		biggerBlockBreakingConfig = Config.builder
+				.comment("The Wither will break even blocks below him when hit.")
+				.define("Bigger Breaking Blocks", biggerBlockBreaking);
 		witherNetherOnlyConfig = Config.builder
 				.comment("The wither can only be spawned in the Nether.\n" +
 						"Note that this feature completely disables Wither Skulls from begin placed nearby Soul Sand when not in the Nether or when on the Nether Roof.\n" +
@@ -64,7 +67,8 @@ public class MiscFeature extends Feature {
 		super.loadConfig();
 		this.explosionPowerBonus = this.explosionPowerBonusConfig.get();
 		this.explosionCausesFireAtDifficulty = this.explosionCausesFireAtDifficultyConfig.get();
-		this.preventGettingStuck = this.preventGettingStuckConfig.get();
+		this.fasterBlockBreaking = this.fasterBlockBreakingConfig.get();
+		this.biggerBlockBreaking = this.biggerBlockBreakingConfig.get();
 		this.witherNetherOnly = this.witherNetherOnlyConfig.get();
 
 		if (this.witherNetherOnly)
@@ -79,41 +83,42 @@ public class MiscFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!this.preventGettingStuck)
+		if (!this.biggerBlockBreaking)
 			return;
 
 		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
-		World world = event.getEntity().world;
-
 		WitherEntity wither = (WitherEntity) event.getEntity();
-		CompoundNBT tags = wither.getPersistentData();
 
-		if (wither.getHealth() <= 0)
+		if (!wither.isAlive())
 			return;
 
-		if (wither.getInvulTime() == 1) {
-			if (!net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither))
-				return;
+		if (wither.blockBreakCounter == 1) {
+			--wither.blockBreakCounter;
+			if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither)) {
+				int i1 = MathHelper.floor(wither.getPosY());
+				int l1 = MathHelper.floor(wither.getPosX());
+				int i2 = MathHelper.floor(wither.getPosZ());
+				boolean flag = false;
 
-			Stream<BlockPos> blocks = BlockPos.getAllInBox(wither.getPosition().add(-1, -1, -1), wither.getPosition().add(1, 4, 1));
-			AtomicBoolean flag = new AtomicBoolean(false);
-			blocks.forEach(pos -> {
-				BlockState state = wither.world.getBlockState(pos);
-				if (state.canEntityDestroy(wither.world, pos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, pos, state)) {
-					flag.set(wither.world.destroyBlock(pos, true, wither) || flag.get());
+				for(int k2 = -1; k2 <= 1; ++k2) {
+					for(int l2 = -1; l2 <= 1; ++l2) {
+						for(int j = -1; j <= 4; ++j) {
+							int i3 = l1 + k2;
+							int k = i1 + j;
+							int l = i2 + l2;
+							BlockPos blockpos = new BlockPos(i3, k, l);
+							BlockState blockstate = wither.world.getBlockState(blockpos);
+							if (blockstate.canEntityDestroy(wither.world, blockpos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockpos, blockstate)) {
+								flag = wither.world.destroyBlock(blockpos, true, wither) || flag;
+							}
+						}
+					}
 				}
-			});
 
-			if (flag.get())
-				wither.world.playEvent((PlayerEntity)null, 1022, wither.getPosition(), 0);
-
-			//Moves the Wither up to 2 blocks down only if possible
-			if (!tags.contains(Strings.Tags.CHARGE_ATTACK)) {
-				for (int i = 0; i < 2; i++) {
-					if (!world.getBlockState(wither.getPosition().down()).isSolid())
-						wither.setPosition(wither.getPosX(), wither.getPosY() - 1, wither.getPosZ());
+				if (flag) {
+					wither.world.playEvent(null, 1022, wither.getPosition(), 0);
 				}
 			}
 		}
@@ -153,13 +158,33 @@ public class MiscFeature extends Feature {
 	}
 
 	@SubscribeEvent
+	public void onWitherDamage(LivingHurtEvent event) {
+		if (event.getEntity().getEntityWorld().isRemote)
+			return;
+
+		if (!this.isEnabled())
+			return;
+
+		if (!this.fasterBlockBreaking)
+			return;
+
+		if (!event.getEntity().isAlive())
+			return;
+
+		if (!(event.getEntityLiving() instanceof WitherEntity))
+			return;
+
+		WitherEntity wither = (WitherEntity) event.getEntityLiving();
+		wither.blockBreakCounter = 10;
+	}
+
+	@SubscribeEvent
 	public void onRightClickBlock(PlayerInteractEvent.RightClickBlock event) {
 		if (!this.isEnabled())
 			return;
 
 		if (!this.witherNetherOnly)
 			return;
-
 
 		if (event.getItemStack().getItem() == Items.WITHER_SKELETON_SKULL && !canPlaceSkull(event.getWorld(), event.getPos().add(event.getFace().getDirectionVec()))) {
 			event.setCanceled(true);

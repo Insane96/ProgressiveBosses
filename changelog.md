@@ -7,7 +7,8 @@
         * Decreased damage reduction on half health (4% -> 2%)
         * Increased max damage reduction on half health (35% -> 40%)
     * Misc
-        * Added a config option to prevent the spawning of the Wither outside The Nether (or on the Nether roof)
+        * Block breaking when hit will now happen faster and will break blocks below Wither's too, this feature makes prevent getting stuck useles, so has been removed
+        * Added a config option to prevent the spawning of the Wither outside The Nether (or on the Nether roof). Disabled by default
     * Attack
         * Removed chance for Wither III. Wither 3 almost completely prevented knockback since dealt damage continuously
         * Removed increased attack speed on half health
