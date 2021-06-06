@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.ai.wither;
 
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.modules.wither.feature.AttackFeature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;
@@ -44,7 +45,7 @@ public class WitherChargeAttackGoal extends Goal {
 	 * method as well.
 	 */
 	public boolean shouldExecute() {
-		if (this.wither.getInvulTime() != 70)
+		if (this.wither.getInvulTime() != AttackFeature.Consts.CHARGE_ATTACK_TICK_START)
 			return false;
 		CompoundNBT witherTags = wither.getPersistentData();
 		return witherTags.contains(Strings.Tags.CHARGE_ATTACK);
@@ -77,12 +78,12 @@ public class WitherChargeAttackGoal extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
-		if (this.wither.getInvulTime() > 30)
+		if (this.wither.getInvulTime() > AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE)
 			this.wither.setMotion(Vector3d.ZERO);
 
-		if (this.wither.getInvulTime() == 70)
+		if (this.wither.getInvulTime() == AttackFeature.Consts.CHARGE_ATTACK_TICK_START)
 			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 5.0f, 2.0f);
-		else if (this.wither.getInvulTime() == 30) {
+		else if (this.wither.getInvulTime() == AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
 			this.target = GetRandomNearPlayer(this.wither);
 			if (target != null) {
 				this.targetPos = this.target.getPositionVec();
@@ -94,7 +95,7 @@ public class WitherChargeAttackGoal extends Goal {
 			}
 			//this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.HOSTILE, 4.0f, 0.8f);
 		}
-		else if (this.wither.getInvulTime() < 30) {
+		else if (this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
 			double mult = 100d / this.wither.getInvulTime();
 			Vector3d diff = this.targetPos.subtract(this.wither.getPositionVec()).normalize().mul(mult, mult, mult);
 			this.wither.setMotion(diff.x, diff.y * 0.6, diff.z);
@@ -124,11 +125,12 @@ public class WitherChargeAttackGoal extends Goal {
 
 			axisAlignedBB = axisAlignedBB.grow(0.75d);
 			this.wither.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB).forEach(entity -> {
-				entity.attackEntityFrom(new EntityDamageSource("charge_attack", this.wither), 16f);
+				entity.attackEntityFrom(new EntityDamageSource("charge_attack", this.wither), 10f);
 				entity.applyKnockback(1f, this.wither.getPosX() - entity.getPosX(), this.wither.getPosZ() - entity.getPosZ());
 			});
 		}
-		if ((this.wither.getInvulTime() < 30 && this.wither.getInvulTime() > 0 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d) || this.wither.getInvulTime() == 1) {
+		//If the wither's charging and is 2 blocks from the target point OR is about to finish the invulnerability time then prevent the explosion and stop the attack
+		if ((this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulTime() > 0 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d) || this.wither.getInvulTime() == 1) {
 			this.wither.setInvulTime(0);
 		}
 	}

@@ -4,4 +4,4 @@
 /data remove entity @e[type=wither,limit=1] ForgeData.progressivebosses:charge_attack
 /data modify entity @e[type=wither,limit=1] Health set value 20
 /data modify entity @e[type=wither,limit=1] ForgeData.progressivebosses:charge_attack set value 1b
-/data modify entity @e[type=wither,limit=1] Invul set value 70
+/data modify entity @e[type=wither,limit=1] Invul set value 90

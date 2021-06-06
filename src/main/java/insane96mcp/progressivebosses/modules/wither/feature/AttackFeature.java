@@ -151,11 +151,10 @@ public class AttackFeature extends Feature {
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
 		CompoundNBT witherTags = wither.getPersistentData();
-		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK)){
-			if (wither.ticksExisted % 10 == 0 && wither.getInvulTime() > 0) {
-				wither.setHealth(wither.getHealth() - 10f + (wither.getMaxHealth() * 0.01f));
-			}
-			return;
+		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.ticksExisted % 10 == 0){
+			float missingHealth = wither.getMaxHealth() - wither.getHealth();
+			//Remove the vanilla health regeneration when he's invulnerable and adds 1% health regeneration of the missing health per second
+			wither.setHealth(wither.getHealth() - 10f + (missingHealth * 0.005f));
 		}
 	}
 
@@ -167,13 +166,17 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (this.increasedAttackDamage == 0d /*&& this.chanceForWither3 == 0d*/)
+		if (this.increasedAttackDamage == 0d)
 			return;
 
-		if (!(event.getSource().getImmediateSource() instanceof WitherSkullEntity) || !(event.getSource().getTrueSource() instanceof WitherEntity))
+		WitherEntity wither;
+		if (event.getSource().getImmediateSource() instanceof WitherEntity)
+			wither = (WitherEntity) event.getSource().getImmediateSource();
+		else if (event.getSource().getTrueSource() instanceof WitherEntity)
+			wither = (WitherEntity) event.getSource().getTrueSource();
+		else
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getSource().getTrueSource();
 		CompoundNBT compoundNBT = wither.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
@@ -240,7 +243,7 @@ public class AttackFeature extends Feature {
 		if (wither.isCharged())
 			chance *= 2d;
 		if (RandomHelper.getDouble(wither.getRNG(), 0d, 1d) < chance) {
-			wither.setInvulTime(70);
+			wither.setInvulTime(Consts.CHARGE_ATTACK_TICK_START);
 			witherTags.putBoolean(Strings.Tags.CHARGE_ATTACK, true);
 		}
 
@@ -263,5 +266,10 @@ public class AttackFeature extends Feature {
 
 		//Fixes https://bugs.mojang.com/browse/MC-29274
 		wither.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(wither, PlayerEntity.class, 0, false, false, null));
+	}
+
+	public static class Consts {
+		public static final int CHARGE_ATTACK_TICK_START = 90;
+		public static final int CHARGE_ATTACK_TICK_CHARGE = 30;
 	}
 }

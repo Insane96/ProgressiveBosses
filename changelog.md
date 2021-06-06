@@ -11,9 +11,10 @@
         * Added a config option to prevent the spawning of the Wither outside The Nether (or on the Nether roof). Disabled by default
     * Attack
         * Removed chance for Wither III. Wither 3 almost completely prevented knockback since dealt damage continuously
-        * Removed increased attack speed on half health
-        * Attack Interval when near decreased (up to 30% -> up to 75%)
-        * Charge attack reworked. When the Wither takes damage there's a 0.1% chance (max 4%, both doubled when the Wither's below half health) to start the charge attack. The Wither enters an invincible state where after 2 seconds will target a random player nearby and charge to him dealing massive damage and knocking back everyone in its path. If he can't find a target, will make a small explosion in place. He still regains 2% of it's maximum health each second
+        * Removed bonus attack speed when on half health
+        * Wither's Attack speed is now 0.5 skulls/second
+        * Attack Speed when near increased (up to 0.71 skulls/sec -> up to 2 skulls/sec)
+        * Charge attack reworked. When the Wither takes damage there's a 0.1% chance (max 4%, both doubled when the Wither's below half health) to start the charge attack. The Wither enters an invincible state where after 3 seconds will target a random player nearby and charge to him dealing massive damage and knocking back everyone in its path. If he can't find a target, will make a small explosion in place. Reduced health regeneration when charging (2% max health/second -> 1% missing health/second)
         * Items dropped by the charge attack will now despawn after a minute to reduce lag
         * Wither will try to not get stuck on the ceiling of caves
     * Rewards
