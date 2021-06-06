@@ -93,7 +93,6 @@ public class WitherChargeAttackGoal extends Goal {
 				this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 6f, Explosion.Mode.DESTROY);
 				this.wither.setInvulTime(0);
 			}
-			//this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_AMBIENT, SoundCategory.HOSTILE, 4.0f, 0.8f);
 		}
 		else if (this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
 			double mult = 100d / this.wither.getInvulTime();
@@ -120,7 +119,7 @@ public class WitherChargeAttackGoal extends Goal {
 				}
 			});
 
-			if (hasBrokenBlocks.get() /*&& this.wither.getInvulTime() % 4 == 0*/)
+			if (hasBrokenBlocks.get())
 				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_BREAK_BLOCK, SoundCategory.HOSTILE, 1.0f, 0.75f);
 
 			axisAlignedBB = axisAlignedBB.grow(0.75d);
