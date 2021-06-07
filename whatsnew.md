@@ -35,6 +35,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Minions now see the player from farther away. (16 blocks -> 32 blocks)
     * Minions now can swim and do it 4 times as fast.
     * Now wield a Stone Sword. Also have 60% chance to replace the sword with a bow when Wither's over half health and 8% chance when below half health. There's a 6.25% chance per difficulty to get a Sharpness / Power enchantment on equipment. There's also a 4% chance per difficulty to get Knockback / Punch on equipment. Every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.
+    * Now drop normal Wither Skeletons experience instead of 1 xp
     * Cooldown is no longer decreased by difficulty, instead now is decreased by 40% when the Wither drops below half health. Also, the Min and Max cooldown have been increased. (10-20 seconds -> 12-24 seconds)
     * Increased the max number of minions that can be near a Wither before he stops spawning them (16 -> 20). Also, the range to check for max minions around has been halved. (32 blocks -> 16 blocks)
     * Reduced the max amount of Minions spawned at once. (8 -> 6)

@@ -21,6 +21,7 @@
     * Rewards
         * Nether Star Shards drop amount are now guaranteed to be at least 16% of Wither's Difficulty
     * Minions
+        * Now drop normal Wither Skeletons experience instead of 1 xp
         * Added 4% chance per difficulty for Wither Minions to have Punch / knockback enchanted equipment
         * Can now swim
         * Wither Minions will no longer despawn
