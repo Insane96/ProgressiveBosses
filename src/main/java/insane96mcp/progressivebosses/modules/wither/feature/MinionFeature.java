@@ -433,7 +433,6 @@ public class MinionFeature extends Feature {
 		witherSkeleton.setCustomName(new TranslationTextComponent(Strings.Translatable.WITHER_MINION));
 		setEquipment(witherSkeleton, difficulty, isCharged);
 		witherSkeleton.deathLootTable = LootTables.EMPTY;
-		witherSkeleton.experienceValue = 1;
 		witherSkeleton.enablePersistence();
 
 		ModifiableAttributeInstance movementSpeed = witherSkeleton.getAttribute(Attributes.MOVEMENT_SPEED);
