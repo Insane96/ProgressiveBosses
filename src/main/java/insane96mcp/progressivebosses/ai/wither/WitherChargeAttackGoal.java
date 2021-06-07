@@ -1,6 +1,5 @@
 package insane96mcp.progressivebosses.ai.wither;
 
-import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.modules.wither.feature.AttackFeature;
 import net.minecraft.block.BlockState;
@@ -9,7 +8,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootContext;
 import net.minecraft.loot.LootParameters;
@@ -24,9 +22,7 @@ import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.server.ServerWorld;
 
-import javax.annotation.Nullable;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
@@ -84,9 +80,11 @@ public class WitherChargeAttackGoal extends Goal {
 		if (this.wither.getInvulTime() == AttackFeature.Consts.CHARGE_ATTACK_TICK_START)
 			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 5.0f, 2.0f);
 		else if (this.wither.getInvulTime() == AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
-			this.target = GetRandomNearPlayer(this.wither);
+			this.target = this.wither.world.getClosestPlayer(this.wither, 64d);
 			if (target != null) {
 				this.targetPos = this.target.getPositionVec();
+				Vector3d forward = this.targetPos.subtract(this.wither.getPositionVec()).normalize();
+				this.targetPos = this.targetPos.add(forward.mul(4d, 4d, 4d));
 				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 4.0f, 2.0f);
 			}
 			else {
@@ -95,9 +93,9 @@ public class WitherChargeAttackGoal extends Goal {
 			}
 		}
 		else if (this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
-			double mult = 100d / this.wither.getInvulTime();
+			double mult = 60d / this.wither.getInvulTime();
 			Vector3d diff = this.targetPos.subtract(this.wither.getPositionVec()).normalize().mul(mult, mult, mult);
-			this.wither.setMotion(diff.x, diff.y * 0.6, diff.z);
+			this.wither.setMotion(diff.x, diff.y * 0.5, diff.z);
 			this.wither.getLookController().setLookPosition(this.targetPos);
 			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(this.wither.getPosX() - 2, this.wither.getPosY() - 2, this.wither.getPosZ() - 2, this.wither.getPosX() + 2, this.wither.getPosY() + 6, this.wither.getPosZ() + 2);
 			Stream<BlockPos> blocks = BlockPos.getAllInBox(axisAlignedBB);
@@ -122,24 +120,15 @@ public class WitherChargeAttackGoal extends Goal {
 			if (hasBrokenBlocks.get())
 				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_BREAK_BLOCK, SoundCategory.HOSTILE, 1.0f, 0.75f);
 
-			axisAlignedBB = axisAlignedBB.grow(0.75d);
+			axisAlignedBB = axisAlignedBB.grow(1d);
 			this.wither.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB).forEach(entity -> {
 				entity.attackEntityFrom(new EntityDamageSource("charge_attack", this.wither), 10f);
 				entity.applyKnockback(1f, this.wither.getPosX() - entity.getPosX(), this.wither.getPosZ() - entity.getPosZ());
 			});
 		}
 		//If the wither's charging and is 2 blocks from the target point OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-		if ((this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulTime() > 0 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d) || this.wither.getInvulTime() == 1) {
+		if ((this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulTime() > 0 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 3d) || this.wither.getInvulTime() == 1) {
 			this.wither.setInvulTime(0);
 		}
-	}
-
-	@Nullable
-	public LivingEntity GetRandomNearPlayer(WitherEntity witherEntity) {
-		List<ServerPlayerEntity> players = this.wither.world.getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, this.wither.getBoundingBox().grow(64d));
-		if (players.isEmpty())
-			return null;
-		int r = RandomHelper.getInt(this.wither.world.rand, 0, players.size());
-		return players.get(r);
 	}
 }
