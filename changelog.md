@@ -5,7 +5,7 @@
     * Resistances & Vulnerabilities
         * Added damage reduction before half health: 1% per difficulty up to 15%.
         * Decreased damage reduction per difficulty on half health (4% -> 2%)
-        * Increased max damage reduction on half health (35% -> 40%)
+        * Increased max damage reduction on half health (35% -> 36%)
     * Misc
         * Block breaking when hit will now happen faster and will break blocks below Wither's too, this feature makes prevent getting stuck useles, so has been removed
         * Added a config option to prevent the spawning of the Wither outside The Nether (or on the Nether roof). Disabled by default

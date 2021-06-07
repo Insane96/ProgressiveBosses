@@ -8,5 +8,7 @@
   "progressivebosses:command.player_set_boss_difficulty": "Impostata la difficolta di %s del %s a %d",
   "progressivebosses:command.player_add_boss_difficulty": "Aggiunta %d di difficoltà del %s a %s (ora %d)",
   "progressivebosses:command.summoned_entity": "Evocato %s con difficoltà %d",
-  "progressivebosses:command.summon_invalid_entity": "L'entità %s non è valida"
+  "progressivebosses:command.summon_invalid_entity": "L'entità %s non è valida",
+
+  "death.attack.charge_attack": "%1$s è stato caricato da %2$s"
 }

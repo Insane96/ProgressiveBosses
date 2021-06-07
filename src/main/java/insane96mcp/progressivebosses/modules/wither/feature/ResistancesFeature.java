@@ -23,7 +23,7 @@ public class ResistancesFeature extends Feature {
 	public double damageReductionBeforeHalfHealth = 0.01d;
 	public double maxDamageReductionBeforeHalfHealth = 0.15d;
 	public double damageReductionOnHalfHealth = 0.02d;
-	public double maxDamageReductionOnHalfHealth = 0.40d;
+	public double maxDamageReductionOnHalfHealth = 0.36d;
 	public double magicDamageBonus = 200d;
 
 	public ResistancesFeature(Module module) {
