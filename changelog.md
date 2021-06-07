@@ -14,7 +14,8 @@
         * Removed bonus attack speed when on half health
         * Wither's Attack speed is now 0.5 skulls/second
         * Attack Speed when near increased (up to 0.71 skulls/sec -> up to 2 skulls/sec)
-        * Charge attack reworked. When the Wither takes damage there's 1.5% chance (doubled when the Wither's below half health) to start the charge attack. The Wither enters an invincible state where after 3 seconds will target a random player nearby and charge to him dealing massive damage (scaling with ) and knocking back everyone in its path. If he can't find a target, will make a small explosion in place. Reduced health regeneration when charging (2% max health/second -> 1% missing health/second)
+        * Charge attack reworked. When the Wither takes damage there's 1.5% chance (doubled when the Wither's below half health) to start the charge attack. The Wither enters an invincible state where after 3 seconds will target the nearest player and charges to him dealing massive damage (scaling with Increased Damage feature) and knocking back everyone in its path. If he can't find a target, will make a small explosion in place. 
+        * Reduced health regeneration when charging (2% max health/second -> 1% missing health/second)
         * Items dropped by the charge attack will now despawn after a minute to reduce lag
         * Wither will try to not get stuck on the ceiling of caves
     * Rewards
