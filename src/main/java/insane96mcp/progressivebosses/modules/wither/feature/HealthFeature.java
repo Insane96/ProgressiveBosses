@@ -93,17 +93,13 @@ public class HealthFeature extends Feature {
 		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
+		if (this.bonusRegenPerDifficulty == 0d || this.maxBonusRegen == 0d)
+			return;
+
 		WitherEntity wither = (WitherEntity) event.getEntity();
 
 		fixInvulBossBar(wither);
 
-		if (this.bonusRegenPerDifficulty == 0d || this.maxBonusRegen == 0d)
-			return;
-
-		bonusHeal(wither);
-	}
-
-	private void bonusHeal(WitherEntity wither) {
 		if (wither.getInvulTime() > 0)
 			return;
 
@@ -123,6 +119,7 @@ public class HealthFeature extends Feature {
 
 		wither.heal(heal);
 	}
+
 
 	private void fixInvulBossBar(WitherEntity wither) {
 		if (wither.getInvulTime() == 0)
