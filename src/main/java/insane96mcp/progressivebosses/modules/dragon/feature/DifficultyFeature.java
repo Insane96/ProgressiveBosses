@@ -139,10 +139,6 @@ public class DifficultyFeature extends Feature {
 			return;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		/*CompoundNBT tags = dragon.getPersistentData();
-		if (tags.getBoolean("progressivebosses:has_been_killed"))
-			return;
-		tags.putBoolean("progressivebosses:has_been_killed", true);*/
 
 		int radius = 256;
 		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);

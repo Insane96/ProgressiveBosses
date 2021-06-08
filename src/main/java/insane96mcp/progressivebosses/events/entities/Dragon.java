@@ -7,63 +7,11 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class Dragon {
 	public static void setStats(EntityJoinWorldEvent event) {
-		/*if (!event.getWorld().getDimensionKey().getLocation().equals(DimensionType.THE_END.getLocation()))
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragonEntity))
-			return;
-
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-
-		if (dragon.getFightManager() == null)
-			return;
-
-		CompoundNBT tags = dragon.getPersistentData();
-		boolean alreadyProcessed = tags.getBoolean("progressivebosses:processed");
-
-		if (alreadyProcessed)
-			return;
-
-		tags.putBoolean("progressivebosses:processed", true);
-
-		int radius = 160;
-		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
-		BlockPos pos2 = new BlockPos(radius, radius, radius);
-		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
-
-		List<ServerPlayerEntity> players = event.getWorld().getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
-		if (players.size() == 0)
-			return;
-
-		int c;
-		int eggsToDrop = 0;
-
-		float killedCount = 0;
-		for (ServerPlayerEntity player : players) {
-			CompoundNBT playerTags = player.getPersistentData();
-			c = playerTags.getInt("progressivebosses:killed_dragons");
-			if (c == 0) {
-				dragon.getFightManager().previouslyKilled = false;
-
-				eggsToDrop++;
-			}
-			killedCount += c;
-		}
-
-		tags.putInt("progressivebosses:eggs_to_drop", eggsToDrop);
-
-
-		if (killedCount == 0)
-			return;
-
-		if (!Config.COMMON.dragon.general.sumKilledDragonsDifficulty.get() && killedCount > 0)
-			killedCount /= players.size();
-
+/*
 		setHealth(dragon, killedCount);
 		crystalCages(dragon, killedCount);
 		moreCrystals(dragon, killedCount);
-
-		tags.putFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty", killedCount);*/
+*/
 	}
 
 	/*private static void crystalCages(EnderDragonEntity dragon, float killedCount) {
