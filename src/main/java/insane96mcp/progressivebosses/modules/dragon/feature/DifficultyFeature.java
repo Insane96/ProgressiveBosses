@@ -54,6 +54,7 @@ public class DifficultyFeature extends Feature {
 		startingDifficulty = startingDifficultyConfig.get();
 	}
 
+	//Set dragon difficulty
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onSpawn(EntityJoinWorldEvent event) {
 		if (event.getWorld().isRemote)
@@ -119,15 +120,13 @@ public class DifficultyFeature extends Feature {
 
 		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, eggsToDrop);
 
-		//if (killedTotal == 0)
-			//return;
-
 		if (!this.sumKilledDragonDifficulty)
 			killedTotal /= players.size();
 
 		dragonTags.putFloat(Strings.Tags.DIFFICULTY, killedTotal);
 	}
 
+	//Increase Player Difficulty
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
 		if (event.getEntity().world.isRemote)
@@ -140,17 +139,17 @@ public class DifficultyFeature extends Feature {
 			return;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		CompoundNBT tags = dragon.getPersistentData();
+		/*CompoundNBT tags = dragon.getPersistentData();
 		if (tags.getBoolean("progressivebosses:has_been_killed"))
 			return;
-		tags.putBoolean("progressivebosses:has_been_killed", true);
+		tags.putBoolean("progressivebosses:has_been_killed", true);*/
 
 		int radius = 256;
 		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
 		BlockPos pos2 = new BlockPos(radius, radius, radius);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
-		List<ServerPlayerEntity> players = dragon.world.getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		List<ServerPlayerEntity> players = dragon.world.getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0) {
 			PlayerEntity nearestPlayer = dragon.world.getClosestPlayer(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ(), Double.MAX_VALUE, true);
