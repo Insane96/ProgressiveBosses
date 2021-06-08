@@ -15,8 +15,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.UUID;
-
 @Label(name = "Health", description = "Bonus Health and Bonus regeneration. The feature even fixes the Wither health bar not updating on spawn.")
 public class HealthFeature extends Feature {
 
@@ -28,8 +26,6 @@ public class HealthFeature extends Feature {
 	public double maxBonusRegen = 2d;
 	public double bonusRegenPerDifficulty = 0.05d;
 
-	private static final UUID WITHER_BONUS_HEALTH = UUID.fromString("fbc1822d-0491-4f6a-9195-c1f2cb783e82");
-
 	public HealthFeature(Module module) {
 		super(Config.builder, module);
 		Config.builder.comment(this.getDescription()).push(this.getName());
@@ -37,7 +33,7 @@ public class HealthFeature extends Feature {
 				.comment("Increase Wither's Health by this value per difficulty")
 				.defineInRange("Health Bonus per Difficulty", bonusPerDifficulty, 0.0, Double.MAX_VALUE);
 		maximumBonusRegenConfig = Config.builder
-				.comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the natural regeneration of the Wither (1 Health per Second). It's not recommended to go over 1.0f without mods that adds stronger things to kill the Wither")
+				.comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the natural regeneration of the Wither (1 Health per Second).")
 				.defineInRange("Maximum Bonus Regeneration", maxBonusRegen, 0.0, Double.MAX_VALUE);
 		bonusRegenPerDifficultyConfig = Config.builder
 				.comment("How many half hearts will the Wither regen more per difficulty. This doesn't affect the natural regeneration of the Wither (1 Health per Second). (E.g. By default, with 6 Withers spawned, the Wither will heal 1.3 health per second).")
@@ -69,13 +65,13 @@ public class HealthFeature extends Feature {
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
 
-		if (wither.getAttribute(Attributes.MAX_HEALTH).getModifier(WITHER_BONUS_HEALTH) != null)
+		if (wither.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
 			return;
 
 		CompoundNBT witherTags = wither.getPersistentData();
 		double difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
 		ModifiableAttributeInstance health = wither.getAttribute(Attributes.MAX_HEALTH);
-		AttributeModifier modifier = new AttributeModifier(WITHER_BONUS_HEALTH, Strings.Tags.WITHER_BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
+		AttributeModifier modifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
 		health.applyPersistentModifier(modifier);
 
 		boolean hasInvulTicks = wither.getInvulTime() > 0;
