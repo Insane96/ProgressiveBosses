@@ -106,6 +106,8 @@ public class AttackFeature extends Feature {
 			witherSkullEntity.accelerationX *= this.skullVelocityMultiplier;
 			witherSkullEntity.accelerationY *= this.skullVelocityMultiplier;
 			witherSkullEntity.accelerationZ *= this.skullVelocityMultiplier;
+			if (witherSkullEntity.accelerationX > 10 || witherSkullEntity.accelerationY > 10 || witherSkullEntity.accelerationZ > 10)
+				event.getEntity().onKillCommand();
 			return;
 		}
 
