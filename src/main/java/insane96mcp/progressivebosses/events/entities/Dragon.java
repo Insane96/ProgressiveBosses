@@ -8,7 +8,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 public class Dragon {
 	public static void setStats(EntityJoinWorldEvent event) {
 /*
-		setHealth(dragon, killedCount);
 		crystalCages(dragon, killedCount);
 		moreCrystals(dragon, killedCount);
 */
@@ -110,14 +109,6 @@ public class Dragon {
 			if (crystalSpawned == crystalsInvolved)
 				break;
 		}
-	}
-
-	private static void setHealth(EnderDragonEntity dragon, float killedCount) {
-		ModifiableAttributeInstance attribute = dragon.getAttribute(Attributes.MAX_HEALTH);
-		AttributeModifier healthModifier = new AttributeModifier(ProgressiveBosses.RESOURCE_PREFIX + "dragon_bonus_health", killedCount * Config.COMMON.dragon.health.bonusPerDifficulty.get(), AttributeModifier.Operation.ADDITION);
-		attribute.applyPersistentModifier(healthModifier);
-		//attribute.setBaseValue(attribute.getBaseValue() + (killedCount * ModConfig.COMMON.dragon.health.bonusPerDifficulty.get()));
-		dragon.setHealth((float) attribute.getValue());
 	}
 
 	private static void dropMoreExperience(EnderDragonEntity dragon, World world) {

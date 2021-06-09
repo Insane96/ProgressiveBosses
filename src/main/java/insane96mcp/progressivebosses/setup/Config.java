@@ -36,8 +36,6 @@ public class Config {
     public static class Dragon {
         public static String name = "Dragon";
 
-        public final General general;
-        public final Health health;
         public final Larvae larvae;
         public final Minions minions;
         public final Rewards rewards;
@@ -46,54 +44,12 @@ public class Config {
 
         public Dragon(final ForgeConfigSpec.Builder builder) {
             builder.push(name);
-            general = new General(builder);
-            health = new Health(builder);
             larvae = new Larvae(builder);
             minions = new Minions(builder);
             rewards = new Rewards(builder);
             attack = new Attack(builder);
             crystal = new Crystal(builder);
             builder.pop();
-        }
-
-        public static class General {
-            public static String name = "General";
-
-            public ConfigValue<Boolean> sumKilledDragonsDifficulty;
-            public ConfigValue<Integer> maxDifficulty;
-
-            public General(final ForgeConfigSpec.Builder builder) {
-                builder.push(name);
-                sumKilledDragonsDifficulty = builder
-                        .comment("If true and there are more players around the Dragon, she will have his stats based on the sum of both players' difficulty. If false, the Dragon stats will be based on the average of the difficulty of the players around.")
-                        .define("Sum Killed Dragons Difficulty", false);
-                maxDifficulty = builder
-                        .comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 82 because the Ender Dragon reaches the maximum amount of health (1024, handled by Minecraft. Some mods can increase this) after 82 Dragons killed.")
-                        .defineInRange("Max Difficulty", 82, 1, Integer.MAX_VALUE);
-                builder.pop();
-            }
-        }
-
-        public static class Health {
-            public static String name = "Health";
-
-            public ConfigValue<Double> bonusPerDifficulty;
-            public ConfigValue<Double> maximumBonusRegen;
-            public ConfigValue<Double> bonusRegenPerSpawned;
-
-            public Health(final ForgeConfigSpec.Builder builder) {
-                builder.push(name);
-                bonusPerDifficulty = builder
-                        .comment("Increase Ender Dragon's Health by this value per difficulty")
-                        .defineInRange("Health Bonus per Difficulty", 10.0, 0.0, Double.MAX_VALUE);
-                maximumBonusRegen = builder
-                        .comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the regeneration of the Ender Dragon from Crystals. It's not recommended to go over 1.0f without mods that adds stronger things to kill the Ender Dragon")
-                        .defineInRange("Maximum Bonus Regeneration", 0.5, 0.0, Double.MAX_VALUE);
-                bonusRegenPerSpawned = builder
-                        .comment("How many half hearts will the Ender Dragon regen per difficulty. This doesn't affect the regeneration of the Ender Dragon from Crystals. (E.g. With 6 Dragons killed, the Dragon will heal 0.6 health per second without Crystals).")
-                        .defineInRange("Bonus Regeneration per Difficulty", 0.025, 0.0, Double.MAX_VALUE);
-                builder.pop();
-            }
         }
 
         public static class Larvae {

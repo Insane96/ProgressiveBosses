@@ -3,17 +3,20 @@ package insane96mcp.progressivebosses.modules.dragon;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.modules.dragon.feature.DifficultyFeature;
+import insane96mcp.progressivebosses.modules.dragon.feature.HealthFeature;
 import insane96mcp.progressivebosses.setup.Config;
 
 @Label(name = "Dragon")
 public class DragonModule extends Module {
 
 	public DifficultyFeature difficultyFeature;
+	public HealthFeature healthFeature;
 
 	public DragonModule() {
 		super(Config.builder);
 		pushConfig(Config.builder);
 		difficultyFeature = new DifficultyFeature(this);
+		healthFeature = new HealthFeature(this);
 		Config.builder.pop();
 	}
 
@@ -21,5 +24,6 @@ public class DragonModule extends Module {
 	public void loadConfig() {
 		super.loadConfig();
 		difficultyFeature.loadConfig();
+		healthFeature.loadConfig();
 	}
 }
