@@ -1,9 +1,7 @@
 package insane96mcp.progressivebosses.events.entities;
 
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class Dragon {
 	public static void setStats(EntityJoinWorldEvent event) {
@@ -161,74 +159,6 @@ public class Dragon {
 			xp -= i;
 			world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.getPositionVec().getX(), dragon.getPositionVec().getY(), dragon.getPositionVec().getZ(), i));
 		}
-	}
-*/
-	public static void onDeath(LivingDeathEvent event) {
-		/*if (!(event.getEntity() instanceof EnderDragonEntity))
-			return;
-
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		CompoundNBT tags = dragon.getPersistentData();
-		if (tags.getBoolean("progressivebosses:has_been_killed"))
-			return;
-		tags.putBoolean("progressivebosses:has_been_killed", true);
-
-		int radius = 160;
-		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
-		BlockPos pos2 = new BlockPos(radius, radius, radius);
-		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
-
-		List<ServerPlayerEntity> players = dragon.world.getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
-		if (players.size() == 0)
-			return;
-
-		int c;
-		for (ServerPlayerEntity player : players) {
-			CompoundNBT playerTags = player.getPersistentData();
-			c = playerTags.getInt("progressivebosses:killed_dragons");
-			if (c >= Config.COMMON.dragon.general.maxDifficulty.get())
-				continue;
-			playerTags.putInt("progressivebosses:killed_dragons", c + 1);
-		}*/
-	}
-
-
-	public static void onPlayerDamage(LivingHurtEvent event) {
-		//onDirectDamage(event);
-		//onAcidDamage(event);
-	}
-
-	/*private static void onDirectDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getImmediateSource() instanceof EnderDragonEntity))
-			return;
-
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getSource().getImmediateSource();
-		CompoundNBT tags = dragon.getPersistentData();
-
-		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
-
-		if (difficulty == 0)
-			return;
-
-		event.setAmount((float) (event.getAmount() * (1 + difficulty * (Config.COMMON.dragon.attack.bonusAttackDamage.get() / 100.0))));
-	}
-
-	private static void onAcidDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getTrueSource() instanceof EnderDragonEntity))
-			return;
-
-		if (!(event.getSource().getImmediateSource() instanceof AreaEffectCloudEntity))
-			return;
-
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getSource().getTrueSource();
-		CompoundNBT tags = dragon.getPersistentData();
-
-		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
-
-		if (difficulty == 0)
-			return;
-
-		event.setAmount((float) (event.getAmount() * (1 + difficulty * (Config.COMMON.dragon.attack.bonusAcidPoolDamage.get() / 100.0))));
 	}
 
 	private static void dropEgg(EnderDragonEntity dragon, World world) {

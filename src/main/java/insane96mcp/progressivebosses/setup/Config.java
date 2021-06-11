@@ -39,7 +39,6 @@ public class Config {
         public final Larvae larvae;
         public final Minions minions;
         public final Rewards rewards;
-        public final Attack attack;
         public final Crystal crystal;
 
         public Dragon(final ForgeConfigSpec.Builder builder) {
@@ -47,7 +46,6 @@ public class Config {
             larvae = new Larvae(builder);
             minions = new Minions(builder);
             rewards = new Rewards(builder);
-            attack = new Attack(builder);
             crystal = new Crystal(builder);
             builder.pop();
         }
@@ -122,37 +120,6 @@ public class Config {
                 firstDragonPerPlayer = builder
                         .comment("Should the first Dragon killed per Player always drop the egg and the first Dragon experience (12k instead of 500)? If true means that every player will get the Dragon Egg as they kill their first Dragon (yes even when 2 players kill the dragon)")
                         .define("First Dragon per Player", true);
-                builder.pop();
-            }
-        }
-
-        public static class Attack {
-            public static String name = "Attack";
-
-            public ConfigValue<Double> bonusAttackDamage;
-            public ConfigValue<Double> bonusAcidPoolDamage;
-            public ConfigValue<Double> chargePlayerMaxChance;
-            public ConfigValue<Double> fireballMaxChance;
-            public ConfigValue<Double> maxChanceAtDifficulty;
-
-            public Attack(final ForgeConfigSpec.Builder builder){
-                builder.push(name);
-
-                bonusAttackDamage = builder
-                        .comment("How much more percentage damage does the Ender Dragon deal per difficulty? Setting to 0 will disable this feature.")
-                        .defineInRange("Bonus Attack Damage", 10.0, 0.0, Double.MAX_VALUE);
-                bonusAcidPoolDamage = builder
-                        .comment("How much more percentage damage does the Ender Dragon's Acid Pool per difficulty? Setting to 0 will disable this feature.\nRemember that in vanilla the Acid Pool is magic damage and only Protection enchantment can reduce it.")
-                        .defineInRange("Bonus Acid Pool Damage", 10.0, 0.0, Double.MAX_VALUE);
-                chargePlayerMaxChance = builder
-                        .comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance each tick (1/20th of second) when roaming around to attack the player.\\nThis defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher. The actual formula is\\n(this_value% / 'Max Chance at Difficulty') * difficulty * (1 / remaining_crystals).\\nSetting to 0 will disable this feature.")
-                        .defineInRange("Charge Player Max Chance", 1, 0.0, Double.MAX_VALUE);
-                fireballMaxChance = builder
-                        .comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance each tick (1/20th of second) when roaming around to spit a fireball.\\nThis defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher. The actual formula is\\n(this_value% / 'Max Chance at Difficulty') * difficulty * (1 / remaining_crystals).\\nSetting to 0 will disable this feature.")
-                        .defineInRange("Fireball Max Chance", 1.5, 0.0, Double.MAX_VALUE);
-                maxChanceAtDifficulty = builder
-                        .comment("Defines at which difficulty the Dragon has max chance to attack or spit fireballs when all crystals are destroyed (see 'Fireball Max Chance' and 'Charge Player Max Chance')")
-                        .defineInRange("Max Chance at Difficulty", 16, 0.0, Double.MAX_VALUE);
                 builder.pop();
             }
         }

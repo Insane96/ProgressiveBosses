@@ -155,7 +155,7 @@ public class AttackFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onPlayerDamage(LivingHurtEvent event) {
+	public void onDamageDealt(LivingHurtEvent event) {
 		if (event.getEntity().getEntityWorld().isRemote)
 			return;
 
