@@ -13,6 +13,6 @@ public class MixinLandingPhase {
 	@Inject(at = @At("HEAD"), method = "getMaxRiseOrFall()F", cancellable = true)
 	private void getMaxRiseOrFall(CallbackInfoReturnable<Float> callback) {
 		if (Modules.dragonModule.attackFeature.increaseMaxRiseAndFall)
-			callback.setReturnValue(24f);
+			callback.setReturnValue(12f);
 	}
 }
