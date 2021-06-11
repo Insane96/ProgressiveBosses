@@ -5,7 +5,8 @@
     * Health
         * Increased Max Health regeneration (0.5 -> 1.0)
     * Attack
-        * 
+        * The Ender Dragon will miss the player less when charging.
+        * Area of search for the player has been incrased to 150d
 * Wither
     * Cleaned up some things
 

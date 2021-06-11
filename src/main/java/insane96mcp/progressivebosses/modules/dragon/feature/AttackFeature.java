@@ -117,9 +117,8 @@ public class AttackFeature extends Feature {
 
 		if (rng >= chance)
 			return;
-		LogHelper.info("charge rng: %f %f", rng, chance);
 
-		ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(192d), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
+		ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(150d), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
 
 		if (player == null)
 			return;
@@ -156,9 +155,7 @@ public class AttackFeature extends Feature {
 		if (rng >= chance)
 			return;
 
-		LogHelper.info("fireball rng: %f %f", rng, chance);
-
-		ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(192d), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
+		ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(150d), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
 
 		if (player == null)
 			return;
