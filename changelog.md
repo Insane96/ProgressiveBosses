@@ -1,4 +1,14 @@
 # Changelog
+
+## Alpha 3.1.0
+* Dragon port!
+    * Health
+        * Increased Max Health regeneration (0.5 -> 1.0)
+    * Attack
+        * 
+* Wither
+    * Cleaned up some things
+
 ## Alpha 3.0.7
 * Swapped `<get/set/add>` and `<targetPlayer>` in che command (`/progressivebosses difficulty <get/set/add> <targetPlayer>` -> `/progressivebosses difficulty <targetPlayer> <get/set/add>`)
 * Wither
