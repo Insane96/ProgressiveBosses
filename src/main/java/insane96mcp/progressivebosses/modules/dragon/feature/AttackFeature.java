@@ -27,6 +27,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> chargePlayerMaxChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> fireballMaxChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxChanceAtDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> increaseMaxRiseAndFallConfig;
 
 	//TODO Nerf, at max difficulty is player 1 shot and Unbr III armor 3-shot-break
 	public double increasedDirectDamage = 0.10d;
@@ -35,6 +36,7 @@ public class AttackFeature extends Feature {
 	public double chargePlayerMaxChance = 0.01d;
 	public double fireballMaxChance = 0.015;
 	public double maxChanceAtDifficulty = 16;
+	public boolean increaseMaxRiseAndFall = true;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -61,6 +63,9 @@ public class AttackFeature extends Feature {
 		maxChanceAtDifficultyConfig = Config.builder
 				.comment("Defines at which difficulty the Dragon has max chance to attack or spit fireballs when all crystals are destroyed (see 'Fireball Max Chance' and 'Charge Player Max Chance')")
 				.defineInRange("Max Chance at Difficulty", maxChanceAtDifficulty, 0.0, Double.MAX_VALUE);
+		increaseMaxRiseAndFallConfig = Config.builder
+				.comment("Since around 1.13/1.14 the Ender Dragon can no longer dive for more than about 3 blocks so she takes a lot to rise / fall. With this active the dragon will be able to rise and fall many more blocks, making easier to hit the player and approach the center.")
+				.define("Increase Max Rise and Fall", increaseMaxRiseAndFall);
 		Config.builder.pop();
 	}
 
@@ -72,6 +77,7 @@ public class AttackFeature extends Feature {
 		this.chargePlayerMaxChance = this.chargePlayerMaxChanceConfig.get();
 		this.fireballMaxChance = this.fireballMaxChanceConfig.get();
 		this.maxChanceAtDifficulty = this.maxChanceAtDifficultyConfig.get();
+		this.increaseMaxRiseAndFall = this.increaseMaxRiseAndFallConfig.get();
 	}
 
 	@SubscribeEvent
@@ -117,6 +123,7 @@ public class AttackFeature extends Feature {
 
 		if (rng >= chance)
 			return;
+		LogHelper.info("charge");
 
 		ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(150d), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
 
