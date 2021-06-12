@@ -29,7 +29,7 @@ public class RewardFeature extends Feature {
 			"progressivebosses:nether_star_shard,4,8,2,MINIMUM,SCALING");*/
 	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,1,0.16,PER_DIFFICULTY,FLAT");
 
-	public double bonusExperience = 20d;
+	public double bonusExperience = 0.5d;
 	public ArrayList<Drop> dropsList;
 
 	public RewardFeature(Module module) {
@@ -81,7 +81,7 @@ public class RewardFeature extends Feature {
 		CompoundNBT witherTags = wither.getPersistentData();
 		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
 
-		wither.experienceValue = 50 + (int) (50 * (this.bonusExperience * difficulty / 100f));
+		wither.experienceValue = 50 + (int) (50 * (this.bonusExperience * difficulty));
 	}
 
 	@SubscribeEvent
