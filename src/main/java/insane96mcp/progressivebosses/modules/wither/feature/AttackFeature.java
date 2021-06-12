@@ -9,6 +9,7 @@ import insane96mcp.progressivebosses.ai.wither.WitherDoNothingGoal;
 import insane96mcp.progressivebosses.ai.wither.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.RangedAttackGoal;
@@ -101,15 +102,7 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getEntity() instanceof WitherSkullEntity && this.isEnabled() && this.skullVelocityMultiplier > 0d){
-			WitherSkullEntity witherSkullEntity = (WitherSkullEntity) event.getEntity();
-			witherSkullEntity.accelerationX *= this.skullVelocityMultiplier;
-			witherSkullEntity.accelerationY *= this.skullVelocityMultiplier;
-			witherSkullEntity.accelerationZ *= this.skullVelocityMultiplier;
-			if (witherSkullEntity.accelerationX > 10 || witherSkullEntity.accelerationY > 10 || witherSkullEntity.accelerationZ > 10)
-				event.getEntity().onKillCommand();
-			return;
-		}
+		witherSkullSpeed(event.getEntity());
 
 		if (event.getWorld().isRemote)
 			return;
@@ -126,6 +119,25 @@ public class AttackFeature extends Feature {
 			return;
 
 		setWitherAI(wither);
+	}
+
+	private void witherSkullSpeed(Entity entity) {
+		if (!(entity instanceof WitherSkullEntity))
+			return;
+
+		if (!this.isEnabled() || this.skullVelocityMultiplier == 0d)
+			return;
+
+		WitherSkullEntity witherSkullEntity = (WitherSkullEntity) entity;
+
+		if (Math.abs(witherSkullEntity.accelerationX) > 10 || Math.abs(witherSkullEntity.accelerationY) > 10 || Math.abs(witherSkullEntity.accelerationZ) > 10) {
+			entity.onKillCommand();
+			return;
+		}
+
+		witherSkullEntity.accelerationX *= this.skullVelocityMultiplier;
+		witherSkullEntity.accelerationY *= this.skullVelocityMultiplier;
+		witherSkullEntity.accelerationZ *= this.skullVelocityMultiplier;
 	}
 
 	@SubscribeEvent
