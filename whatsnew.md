@@ -25,7 +25,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Wither now takes more magic damage based off his missing Health. Every 200 hp missing the magic damage is amplified by 100%.
 * Rewards Feature
     * **Makes the Wither drop more experience and Nether Star Shards.**
-    * Bonus experience has been doubled! (10% bonus experience per difficulty -> 20% bonus experience per difficulty).
+    * Bonus experience has been increased massively! (+10% experience per difficulty -> +50% experience per difficulty).
     * 16% chance to drop a shard up to the current difficulty, minimum 16% of difficulty. So at 5 difficulty you have 16% chance to drop a shard + 16% chance to drop a shard + 16% chance to drop a shard + and so on, up to 5 times.
 * Minions Feature
     * **Let the Wither get some help**

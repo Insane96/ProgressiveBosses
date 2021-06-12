@@ -5,13 +5,14 @@
     * Health
         * Increased Max Health regeneration (0.5 -> 1.0)
     * Attack
-        * The Ender Dragon will miss the player less when charging. Also dives faster, instead of turning continuously to charge the player / land in the middle
+        * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously to charge the player / land in the middle
         * Area of search for the player has been incrased to 150d
     * Rewards
-        * Increased Bonus Experience per difficulty (10% -> 30%)
+        * Increased Bonus Experience per difficulty (+10% per difficulty -> +30% per difficulty)
         * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time otherwise 500 + the bonus experience
         * Can now have custom rewards difficulty based (like the Wither)
 * Wither
+    * Hugely increased Bonus Experience (+20% per difficulty -> +50% per difficulty)
     * Cleaned up some things
 
 ## Alpha 3.0.7
