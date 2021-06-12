@@ -38,14 +38,12 @@ public class Config {
 
         public final Larvae larvae;
         public final Minions minions;
-        public final Rewards rewards;
         public final Crystal crystal;
 
         public Dragon(final ForgeConfigSpec.Builder builder) {
             builder.push(name);
             larvae = new Larvae(builder);
             minions = new Minions(builder);
-            rewards = new Rewards(builder);
             crystal = new Crystal(builder);
             builder.pop();
         }
@@ -102,24 +100,6 @@ public class Config {
                 cooldownReduction = builder
                         .comment("For each difficulty the Minion spawn cooldown min and max values will be reduced by this value (E.g. with 10 difficulty and this set to 10, the Minion cooldown min will be 1100 and max 1700)")
                         .defineInRange("Cooldown Reduction Per Difficulty", 10, 0, Integer.MAX_VALUE);
-                builder.pop();
-            }
-        }
-
-        public static class Rewards {
-            public static String name = "Rewards";
-
-            public ConfigValue<Double> bonusExperience;
-            public ConfigValue<Boolean> firstDragonPerPlayer;
-
-            public Rewards(final ForgeConfigSpec.Builder builder) {
-                builder.push(name);
-                bonusExperience = builder
-                        .comment("How much more experience (percentage) will Ender Dragon drop per Difficulty. The percentage is additive (e.g. with this set to 10%, 7 Ender Dragons killed = 70% more experience)")
-                        .defineInRange("Bonus Experience per Difficulty", 10.0, 0.0, Double.MAX_VALUE);
-                firstDragonPerPlayer = builder
-                        .comment("Should the first Dragon killed per Player always drop the egg and the first Dragon experience (12k instead of 500)? If true means that every player will get the Dragon Egg as they kill their first Dragon (yes even when 2 players kill the dragon)")
-                        .define("First Dragon per Player", true);
                 builder.pop();
             }
         }

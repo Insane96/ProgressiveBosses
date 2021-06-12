@@ -1,11 +1,21 @@
-package insane96mcp.progressivebosses.modules.wither.classutils;
+package insane96mcp.progressivebosses.classutils;
 
 import insane96mcp.insanelib.utils.LogHelper;
+import insane96mcp.insanelib.utils.RandomHelper;
+import insane96mcp.progressivebosses.setup.ModItems;
+import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Drop {
 
@@ -96,5 +106,59 @@ public class Drop {
 	public enum ChanceMode {
 		FLAT,
 		SCALING
+	}
+
+	public static ArrayList<Drop> parseDropsList(List<? extends String> list) {
+		ArrayList<Drop> drops = new ArrayList<>();
+		for (String line : list) {
+			Drop drop = Drop.parseLine(line);
+			if (drop != null)
+				drops.add(drop);
+		}
+		return drops;
+	}
+
+	public void drop(World world, Vector3d pos, float difficulty) {
+		if (this.amount == 0)
+			return;
+		if (difficulty < this.difficultyRequired)
+			return;
+
+		double chance = this.chance;
+		if (difficulty >= this.difficultyRequired && this.chanceMode == Drop.ChanceMode.SCALING)
+			chance *= difficulty - this.difficultyRequired + 1;
+
+		if (this.difficultyMode == Drop.DifficultyMode.MINIMUM) {
+			if (RandomHelper.getDouble(world.rand, 0d, 1d) >= chance)
+				return;
+			world.addEntity(createDrop(world, pos, ForgeRegistries.ITEMS.getValue(this.itemId), this.amount));
+		}
+		else if (this.difficultyMode == Drop.DifficultyMode.PER_DIFFICULTY) {
+			int tries = (int) (difficulty - this.difficultyRequired + 1);
+			if (tries == 0)
+				return;
+			int dropped = 0;
+			for (int i = 0; i < tries; i++) {
+				if (RandomHelper.getDouble(world.rand, 0d, 1d) >= chance)
+					continue;
+				dropped++;
+				world.addEntity(createDrop(world, pos, ForgeRegistries.ITEMS.getValue(this.itemId), this.amount));
+			}
+			if (this.itemId.equals(ModItems.NETHER_STAR_SHARD.getId()) && dropped < difficulty * chance) {
+				world.addEntity(createDrop(world, pos, ForgeRegistries.ITEMS.getValue(this.itemId), (int) (Math.round(difficulty * chance - dropped))));
+			}
+		}
+	}
+
+	private static ItemEntity createDrop(World world, Vector3d pos, Item item, int amount) {
+		ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(item, amount));
+		//If it's a nether star shard set it as "invincible"
+		if (item.getRegistryName().equals(ModItems.NETHER_STAR_SHARD.get().getRegistryName())) {
+			CompoundNBT compoundNBT = new CompoundNBT();
+			itemEntity.writeAdditional(compoundNBT);
+			compoundNBT.putShort("Health", Short.MAX_VALUE);
+			itemEntity.readAdditional(compoundNBT);
+		}
+		return itemEntity;
 	}
 }

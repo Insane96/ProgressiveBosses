@@ -7,6 +7,10 @@
     * Attack
         * The Ender Dragon will miss the player less when charging. Also dives faster, instead of turning continuously to charge the player / land in the middle
         * Area of search for the player has been incrased to 150d
+    * Rewards
+        * Increased Bonus Experience per difficulty (10% -> 30%)
+        * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time otherwise 500 + the bonus experience
+        * Can now have custom rewards difficulty based (like the Wither)
 * Wither
     * Cleaned up some things
 

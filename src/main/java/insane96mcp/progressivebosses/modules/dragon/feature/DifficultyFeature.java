@@ -85,40 +85,26 @@ public class DifficultyFeature extends Feature {
 
 		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
 
-		int eggsToDrop = 0;
+		int playersFirstDragon = 0;
 		float killedTotal = 0;
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0) {
-			PlayerEntity nearestPlayer = event.getWorld().getClosestPlayer(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ(), Double.MAX_VALUE, true);
-			if (nearestPlayer instanceof ServerPlayerEntity) {
-				ServerPlayerEntity player = (ServerPlayerEntity) nearestPlayer;
-				CompoundNBT playerTags = player.getPersistentData();
-				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
-				boolean firstDragon = playerTags.getBoolean(Strings.Tags.FIRST_DRAGON);
-				if (killedDragons == 0 || firstDragon) {
-					dragon.getFightManager().previouslyKilled = false;
-					eggsToDrop++;
-					playerTags.putBoolean(Strings.Tags.FIRST_DRAGON, false);
-				}
-				killedTotal += killedDragons;
-			}
+			ServerPlayerEntity nearestPlayer = (ServerPlayerEntity) event.getWorld().getClosestPlayer(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ(), Double.MAX_VALUE, true);
+			players.add(nearestPlayer);
 		}
-		//Otherwise sum the players' difficulties
-		else {
-			for (ServerPlayerEntity player : players) {
-				CompoundNBT playerTags = player.getPersistentData();
-				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
-				boolean firstDragon = playerTags.getBoolean(Strings.Tags.FIRST_DRAGON);
-				if (killedDragons == 0 || firstDragon) {
-					dragon.getFightManager().previouslyKilled = false;
-					eggsToDrop++;
-					playerTags.putBoolean(Strings.Tags.FIRST_DRAGON, false);
-				}
-				killedTotal += killedDragons;
+
+		for (ServerPlayerEntity player : players) {
+			CompoundNBT playerTags = player.getPersistentData();
+			int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
+			killedTotal += killedDragons;
+			boolean firstDragon = playerTags.getBoolean(Strings.Tags.FIRST_DRAGON);
+			if (firstDragon) {
+				playersFirstDragon++;
+				playerTags.remove(Strings.Tags.FIRST_DRAGON);
 			}
 		}
 
-		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, eggsToDrop);
+		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, playersFirstDragon);
 
 		if (!this.sumKilledDragonDifficulty)
 			killedTotal /= players.size();

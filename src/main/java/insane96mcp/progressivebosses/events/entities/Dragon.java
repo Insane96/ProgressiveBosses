@@ -10,8 +10,8 @@ public class Dragon {
 		moreCrystals(dragon, killedCount);
 */
 	}
-
-	/*private static void crystalCages(EnderDragonEntity dragon, float killedCount) {
+/*
+	private static void crystalCages(EnderDragonEntity dragon, float killedCount) {
 		int moreCagesAtDifficulty = Config.COMMON.dragon.crystal.moreCagesAtDifficulty.get();
 
 		if (moreCagesAtDifficulty == -1)
@@ -161,22 +161,6 @@ public class Dragon {
 		}
 	}
 
-	private static void dropEgg(EnderDragonEntity dragon, World world) {
-		if (dragon.deathTicks != 100)
-			return;
-
-		CompoundNBT tags = dragon.getPersistentData();
-
-		int eggsToDrop = tags.getInt("progressivebosses:eggs_to_drop");
-
-		if (dragon.getFightManager() != null && !dragon.getFightManager().hasPreviouslyKilledDragon()) {
-			eggsToDrop--;
-		}
-
-		for (int i = 0; i < eggsToDrop; i++) {
-			world.setBlockState(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.getDefaultState());
-		}
-	}
 */
 
 	public static void update(LivingUpdateEvent event) {
@@ -188,110 +172,13 @@ public class Dragon {
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 		CompoundNBT tags = dragon.getPersistentData();
 
-		spitFireball(dragon);
-		chargePlayer(dragon);
 		spawnEndermites(dragon, world);
 		spawnShulkers(dragon, world);
-		heal(dragon, tags);
 		dropEgg(dragon, world);
 		dropMoreExperience(dragon, world);*/
 	}
 
-	/*private static void spitFireball(EnderDragonEntity dragon) {
-		if (dragon.getFightManager() == null)
-			return;
-
-		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
-			return;
-
-		double fireballMaxChance = Config.COMMON.dragon.attack.fireballMaxChance.get();
-		double maxChanceAtDifficulty = Config.COMMON.dragon.attack.maxChanceAtDifficulty.get();
-
-		if (fireballMaxChance == 0f)
-			return;
-
-		CompoundNBT tags = dragon.getPersistentData();
-
-		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
-
-		double chance = (fireballMaxChance / 100d) / maxChanceAtDifficulty;
-		chance *= difficulty;
-		int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
-		chance *= (1f / crystalsAlive);
-
-		if (chance > fireballMaxChance)
-			chance = fireballMaxChance;
-
-		if (Math.random() < chance) {
-			ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(128.0D), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
-
-			if (player == null)
-				return;
-
-			dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
-			dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
-		}
-	}
-
-	private static void chargePlayer(EnderDragonEntity dragon) {
-		if (dragon.getFightManager() == null)
-			return;
-
-		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
-			return;
-
-		double chargePlayerMaxChance = Config.COMMON.dragon.attack.chargePlayerMaxChance.get();
-		double maxChanceAtDifficulty = Config.COMMON.dragon.attack.maxChanceAtDifficulty.get();
-
-		if (chargePlayerMaxChance == 0f)
-			return;
-
-		CompoundNBT tags = dragon.getPersistentData();
-
-		float difficulty = tags.getFloat(ProgressiveBosses.RESOURCE_PREFIX + "difficulty");
-
-		double chance = (chargePlayerMaxChance / 100d) / maxChanceAtDifficulty;
-		chance *= difficulty;
-		int crystalsAlive = dragon.getFightManager().getNumAliveCrystals() + 1;
-		chance *= (1f / crystalsAlive);
-
-		if (chance > chargePlayerMaxChance)
-			chance = chargePlayerMaxChance;
-
-		if (Math.random() < chance) {
-			ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(128.0D), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
-
-			if (player == null)
-				return;
-
-			dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-			dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(player.getPositionVec());
-		}
-	}
-
-	private static void heal(EnderDragonEntity dragon, CompoundNBT tags) {
-		if (Config.COMMON.dragon.health.maximumBonusRegen.get() == 0.0f)
-			return;
-
-		if (dragon.ticksExisted % 20 != 0)
-			return;
-
-		float difficulty = tags.getFloat("progressivebosses:difficulty");
-
-		if (difficulty == 0)
-			return;
-
-		double maxHeal = Config.COMMON.dragon.health.maximumBonusRegen.get();
-		double heal = difficulty * Config.COMMON.dragon.health.bonusRegenPerSpawned.get();
-
-		if (heal > maxHeal)
-			heal = maxHeal;
-
-		float health = dragon.getHealth();
-
-		if (dragon.getHealth() < dragon.getMaxHealth() && dragon.getHealth() > 0.0f)
-			dragon.setHealth((float) (health + heal));
-	}
+	/*
 
 	private static void spawnEndermites(EnderDragonEntity dragon, World world) {
 		if (Config.COMMON.dragon.larvae.maxSpawned.get() == 0)
