@@ -5,6 +5,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.modules.dragon.feature.AttackFeature;
 import insane96mcp.progressivebosses.modules.dragon.feature.DifficultyFeature;
 import insane96mcp.progressivebosses.modules.dragon.feature.HealthFeature;
+import insane96mcp.progressivebosses.modules.dragon.feature.RewardFeature;
 import insane96mcp.progressivebosses.setup.Config;
 
 @Label(name = "Dragon")
@@ -13,6 +14,7 @@ public class DragonModule extends Module {
 	public DifficultyFeature difficultyFeature;
 	public HealthFeature healthFeature;
 	public AttackFeature attackFeature;
+	public RewardFeature rewardFeature;
 
 	public DragonModule() {
 		super(Config.builder);
@@ -20,6 +22,7 @@ public class DragonModule extends Module {
 		difficultyFeature = new DifficultyFeature(this);
 		healthFeature = new HealthFeature(this);
 		attackFeature = new AttackFeature(this);
+		rewardFeature = new RewardFeature(this);
 		Config.builder.pop();
 	}
 
@@ -29,5 +32,6 @@ public class DragonModule extends Module {
 		difficultyFeature.loadConfig();
 		healthFeature.loadConfig();
 		attackFeature.loadConfig();
+		rewardFeature.loadConfig();
 	}
 }

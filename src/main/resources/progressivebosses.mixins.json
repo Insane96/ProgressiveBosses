@@ -5,6 +5,7 @@
 	"refmap": "modid.refmap.json",
 	"mixins": [
 		"MixinChargingPlayerPhase",
+		"MixinDragonFireballEntity",
 		"MixinLandingPhase"
 	],
 	"minVersion": "0.8"

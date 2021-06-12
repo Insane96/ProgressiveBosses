@@ -7,17 +7,26 @@ import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPredicate;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.IndirectEntityDamageSource;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 @Label(name = "Attack", description = "Makes the dragon hit harder and more often")
 public class AttackFeature extends Feature {
@@ -28,6 +37,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> fireballMaxChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxChanceAtDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseMaxRiseAndFallConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
 
 	//TODO Nerf, at max difficulty is player 1 shot and Unbr III armor 3-shot-break
 	public double increasedDirectDamage = 0.10d;
@@ -37,6 +47,7 @@ public class AttackFeature extends Feature {
 	public double fireballMaxChance = 0.015;
 	public double maxChanceAtDifficulty = 16;
 	public boolean increaseMaxRiseAndFall = true;
+	public boolean fireballExplosionDamages = true;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -66,6 +77,10 @@ public class AttackFeature extends Feature {
 		increaseMaxRiseAndFallConfig = Config.builder
 				.comment("Since around 1.13/1.14 the Ender Dragon can no longer dive for more than about 3 blocks so she takes a lot to rise / fall. With this active the dragon will be able to rise and fall many more blocks, making easier to hit the player and approach the center.")
 				.define("Increase Max Rise and Fall", increaseMaxRiseAndFall);
+
+		fireballExplosionDamagesConfig = Config.builder
+				.comment("On impact the Acid Fireball will deal magic damage in an area.")
+				.define("Fireball Explosion Magic Damage", fireballExplosionDamages);
 		Config.builder.pop();
 	}
 
@@ -123,7 +138,6 @@ public class AttackFeature extends Feature {
 
 		if (rng >= chance)
 			return;
-		LogHelper.info("charge");
 
 		ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(150d), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
 
@@ -211,5 +225,19 @@ public class AttackFeature extends Feature {
 			return;
 
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAcidPoolDamage * difficulty)));
+	}
+
+	public void onFireballImpact(DragonFireballEntity fireball, @Nullable Entity shooter, RayTraceResult result) {
+		if (!this.isEnabled())
+			return;
+
+		if (!this.fireballExplosionDamages)
+			return;
+		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(result.getHitVec(), result.getHitVec()).grow(4d);
+		List<LivingEntity> livingEntities = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB);
+		for (LivingEntity livingEntity : livingEntities) {
+			if (livingEntity.getDistanceSq(fireball.getPositionVec()) < 20.25d)
+				livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), (float)6);
+		}
 	}
 }

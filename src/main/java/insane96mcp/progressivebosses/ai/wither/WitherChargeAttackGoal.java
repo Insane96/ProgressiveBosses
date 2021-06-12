@@ -122,7 +122,7 @@ public class WitherChargeAttackGoal extends Goal {
 
 			axisAlignedBB = axisAlignedBB.grow(1d);
 			this.wither.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB).forEach(entity -> {
-				entity.attackEntityFrom(new EntityDamageSource("charge_attack", this.wither), 10f);
+				entity.attackEntityFrom(new EntityDamageSource(Strings.Translatable.WITHER_CHARGE_ATTACK, this.wither), 10f);
 				entity.applyKnockback(1f, this.wither.getPosX() - entity.getPosX(), this.wither.getPosZ() - entity.getPosZ());
 			});
 		}

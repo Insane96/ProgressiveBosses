@@ -44,8 +44,12 @@ public class Strings {
 		public static final String SUMMON_ENTITY_INVALID = ProgressiveBosses.RESOURCE_PREFIX + "command.summon_entity_invalid";
 
 		public static final String WITHER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "wither_minion";
+		public static final String WITHER_CHARGE_ATTACK = ProgressiveBosses.RESOURCE_PREFIX + "wither_charge_attack";
+
 		public static final String DRAGON_MINION = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion";
 		public static final String DRAGON_LARVA = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva";
+
+		public static final String DRAGON_FIREBALL = ProgressiveBosses.RESOURCE_PREFIX + "dragon_fireball";
 	}
 	public static class Items {
 		public static final String NETHER_STAR_SHARD = "nether_star_shard";

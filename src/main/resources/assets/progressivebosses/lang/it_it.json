@@ -10,5 +10,6 @@
   "progressivebosses:command.summoned_entity": "Evocato %s con difficoltà %d",
   "progressivebosses:command.summon_invalid_entity": "L'entità %s non è valida",
 
-  "death.attack.charge_attack": "%1$s è stato caricato da %2$s"
+  "death.attack.progressivebosses:wither_charge_attack": "%1$s è stato caricato da %2$s",
+  "death.attack.progressivebosses:dragon_fireball": "%1$s è stato fireballed da %2$s"
 }
