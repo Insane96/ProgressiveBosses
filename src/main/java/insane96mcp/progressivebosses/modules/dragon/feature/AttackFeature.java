@@ -236,15 +236,13 @@ public class AttackFeature extends Feature {
 
 		if (!this.fireballExplosionDamages)
 			return;
+
 		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(result.getHitVec(), result.getHitVec()).grow(4d);
 		List<LivingEntity> livingEntities = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB);
 		for (LivingEntity livingEntity : livingEntities) {
 			if (livingEntity.getDistanceSq(fireball.getPositionVec()) < 20.25d)
 				livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), (float)6);
 		}
-
-		if (fireball.world.isRemote)
-			return;
 
 		AreaEffectCloud3DEntity areaeffectcloudentity = new AreaEffectCloud3DEntity(fireball.world, fireball.getPosX(), fireball.getPosY() + 5, fireball.getPosZ());
 		if (shooter instanceof LivingEntity) {

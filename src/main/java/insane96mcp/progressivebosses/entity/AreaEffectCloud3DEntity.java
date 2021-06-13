@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.entity;
 
 import com.google.common.collect.Lists;
 import insane96mcp.insanelib.utils.RandomHelper;
+import insane96mcp.progressivebosses.setup.ModEntities;
 import net.minecraft.entity.*;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.play.server.SSpawnObjectPacket;
@@ -21,7 +22,8 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloudEntity {
 	}
 
 	public AreaEffectCloud3DEntity(World worldIn, double x, double y, double z) {
-		super(worldIn, x, y, z);
+		this(ModEntities.AREA_EFFECT_CLOUD_3D.get(), worldIn);
+		this.setPosition(x, y, z);
 	}
 
 	@Override
