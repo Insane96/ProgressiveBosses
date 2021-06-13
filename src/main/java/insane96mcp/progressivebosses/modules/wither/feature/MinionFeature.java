@@ -230,12 +230,12 @@ public class MinionFeature extends Feature {
 		BlockPos pos1 = wither.getPosition().add(-radius, -radius, -radius);
 		BlockPos pos2 = wither.getPosition().add(radius, radius, radius);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
-		List<ServerPlayerEntity> players = world.getEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		List<ServerPlayerEntity> players = world.getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
 
 		if (players.isEmpty())
 			return;
 
-		List<WitherSkeletonEntity> minionsInAABB = world.getEntitiesWithinAABB(WitherSkeletonEntity.class, wither.getBoundingBox().grow(16));
+		List<WitherSkeletonEntity> minionsInAABB = world.getLoadedEntitiesWithinAABB(WitherSkeletonEntity.class, wither.getBoundingBox().grow(16));
 		int minionsCountInAABB = minionsInAABB.size();
 
 		if (minionsCountInAABB >= this.maxAround)

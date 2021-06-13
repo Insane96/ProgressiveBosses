@@ -20,5 +20,6 @@ public class PlayerClone {
         CompoundNBT oldPlayerData = oldPlayer.getPersistentData();
         newPlayer.getPersistentData().putInt(Strings.Tags.SPAWNED_WITHERS, oldPlayerData.getInt(Strings.Tags.SPAWNED_WITHERS));
         newPlayer.getPersistentData().putInt(Strings.Tags.KILLED_DRAGONS, oldPlayerData.getInt(Strings.Tags.KILLED_DRAGONS));
+        newPlayer.getPersistentData().putInt(Strings.Tags.FIRST_DRAGON, oldPlayerData.getInt(Strings.Tags.FIRST_DRAGON));
     }
 }

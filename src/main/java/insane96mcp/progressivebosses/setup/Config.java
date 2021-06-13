@@ -37,13 +37,11 @@ public class Config {
         public static String name = "Dragon";
 
         public final Larvae larvae;
-        public final Minions minions;
         public final Crystal crystal;
 
         public Dragon(final ForgeConfigSpec.Builder builder) {
             builder.push(name);
             larvae = new Larvae(builder);
-            minions = new Minions(builder);
             crystal = new Crystal(builder);
             builder.pop();
         }
@@ -73,32 +71,6 @@ public class Config {
                         .defineInRange("Max Cooldown", 1200, 1, Integer.MAX_VALUE);
                 cooldownReduction = builder
                         .comment("For each difficulty the Larvae spawn cooldown min and max values will be reduced by this value (E.g. with 10 difficulty and this set to 5, the Larvae cooldown min will be 550 and max 1150)")
-                        .defineInRange("Cooldown Reduction Per Difficulty", 10, 0, Integer.MAX_VALUE);
-                builder.pop();
-            }
-        }
-
-        public static class Minions {
-            public static String name = "Minion";
-
-            public ConfigValue<Integer> difficultyToSpawn;
-            public ConfigValue<Integer> minCooldown;
-            public ConfigValue<Integer> maxCooldown;
-            public ConfigValue<Integer> cooldownReduction;
-
-            public Minions(final ForgeConfigSpec.Builder builder) {
-                builder.push(name);
-                difficultyToSpawn = builder
-                        .comment("Minimum Difficulty required for the Ender Dragon to start spawning Dragon's Minions during the fight. Set to -1 to disable Dragon's Minions spawning")
-                        .defineInRange("Difficulty to Spawn Minions", 1, 0, Integer.MAX_VALUE);
-                minCooldown = builder
-                        .comment("After how many minimum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn a Minion")
-                        .defineInRange("Min Cooldown", 1200, 1, Integer.MAX_VALUE);
-                maxCooldown = builder
-                        .comment("After how many maximum ticks (20 ticks = 1 second) the Ender Dragon will try to spawn a Minion")
-                        .defineInRange("Max Cooldown", 1800, 1, Integer.MAX_VALUE);
-                cooldownReduction = builder
-                        .comment("For each difficulty the Minion spawn cooldown min and max values will be reduced by this value (E.g. with 10 difficulty and this set to 10, the Minion cooldown min will be 1100 and max 1700)")
                         .defineInRange("Cooldown Reduction Per Difficulty", 10, 0, Integer.MAX_VALUE);
                 builder.pop();
             }

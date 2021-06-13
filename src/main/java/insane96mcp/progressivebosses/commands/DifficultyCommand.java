@@ -135,12 +135,12 @@ public class DifficultyCommand {
                 return 1;
 
             case Strings.Tags.DRAGON_MINION:
-                //Modules.dragonModule.minionFeature.summonMinion(source.getWorld(), source.getPos(), difficulty, false);
-                //source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                Modules.dragonModule.minionFeature.summonMinion(source.getWorld(), source.getPos(), difficulty);
+                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 
             case Strings.Tags.DRAGON_LARVA:
-                //Modules.dragonModule.minionFeature.summonLarva(source.getWorld(), source.getPos(), difficulty, false);
+                //Modules.dragonModule.larvaFeature.summonLarva(source.getWorld(), source.getPos(), difficulty, false);
                 //source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 

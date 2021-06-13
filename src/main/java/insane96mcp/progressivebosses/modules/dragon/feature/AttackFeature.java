@@ -3,24 +3,30 @@ package insane96mcp.progressivebosses.modules.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.entity.AreaEffectCloud3DEntity;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.IndirectEntityDamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.feature.EndPodiumFeature;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -39,7 +45,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseMaxRiseAndFallConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
 
-	//TODO Nerf, at max difficulty is player 1 shot and Unbr III armor 3-shot-break
+	//TODO Nerf, at max difficulty is player 1 shot and Unbr III armor 4-shot-break
 	public double increasedDirectDamage = 0.10d;
 	//TODO Nerf, but not too much
 	public double increasedAcidPoolDamage = 0.10d;
@@ -59,7 +65,6 @@ public class AttackFeature extends Feature {
 				.comment("How much more damage per difficulty (percentage) does the Ender Dragon's Acid Pool deal per difficulty?")
 				.defineInRange("Bonus Acid Pool Damage", increasedAcidPoolDamage, 0.0, Double.MAX_VALUE);
 
-		//TODO Maybe change this per hit instead of on update?
 		chargePlayerMaxChanceConfig = Config.builder
 				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance each tick (1/20th of second) when roaming around to attack the player.\n" +
 						"This defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher. The actual formula is\n" +
@@ -93,11 +98,7 @@ public class AttackFeature extends Feature {
 		this.fireballMaxChance = this.fireballMaxChanceConfig.get();
 		this.maxChanceAtDifficulty = this.maxChanceAtDifficultyConfig.get();
 		this.increaseMaxRiseAndFall = this.increaseMaxRiseAndFallConfig.get();
-	}
-
-	@SubscribeEvent
-	public void onSpawn(EntityJoinWorldEvent event) {
-
+		this.fireballExplosionDamages = this.fireballExplosionDamagesConfig.get();
 	}
 
 	@SubscribeEvent
@@ -139,7 +140,9 @@ public class AttackFeature extends Feature {
 		if (rng >= chance)
 			return;
 
-		ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(150d), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
+		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
+		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(dragon.world, bb);
 
 		if (player == null)
 			return;
@@ -176,7 +179,9 @@ public class AttackFeature extends Feature {
 		if (rng >= chance)
 			return;
 
-		ServerPlayerEntity player = (ServerPlayerEntity) dragon.world.getClosestPlayer(new EntityPredicate().setDistance(150d), dragon, dragon.getPosX(), dragon.getPosX(), dragon.getPosX());
+		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
+		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(dragon.world, bb);
 
 		if (player == null)
 			return;
@@ -209,8 +214,6 @@ public class AttackFeature extends Feature {
 			return;
 
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDirectDamage * difficulty)));
-
-		LogHelper.info("dmg: %f", event.getAmount());
 	}
 
 	private void onAcidDamage(LivingHurtEvent event) {
@@ -239,5 +242,31 @@ public class AttackFeature extends Feature {
 			if (livingEntity.getDistanceSq(fireball.getPositionVec()) < 20.25d)
 				livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), (float)6);
 		}
+
+		if (fireball.world.isRemote)
+			return;
+
+		AreaEffectCloud3DEntity areaeffectcloudentity = new AreaEffectCloud3DEntity(fireball.world, fireball.getPosX(), fireball.getPosY() + 5, fireball.getPosZ());
+		if (shooter instanceof LivingEntity) {
+			areaeffectcloudentity.setOwner((LivingEntity)shooter);
+		}
+
+		areaeffectcloudentity.setParticleData(ParticleTypes.DRAGON_BREATH);
+		areaeffectcloudentity.setRadius(3.0F);
+		areaeffectcloudentity.setDuration(600);
+		areaeffectcloudentity.setRadiusPerTick((7.0F - areaeffectcloudentity.getRadius()) / (float)areaeffectcloudentity.getDuration());
+		areaeffectcloudentity.addEffect(new EffectInstance(Effects.INSTANT_DAMAGE, 1, 1));
+
+		fireball.world.addEntity(areaeffectcloudentity);
+	}
+
+	@Nullable
+	public PlayerEntity getRandomPlayer(World world, AxisAlignedBB boundingBox) {
+		List<PlayerEntity> players = world.getLoadedEntitiesWithinAABB(PlayerEntity.class, boundingBox);
+		if (players.isEmpty())
+			return null;
+
+		int r = RandomHelper.getInt(world.rand, 0, players.size());
+		return players.get(r);
 	}
 }

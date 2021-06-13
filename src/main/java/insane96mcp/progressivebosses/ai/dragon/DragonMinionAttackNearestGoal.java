@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.ai;
+package insane96mcp.progressivebosses.ai.dragon;
 
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.monster.ShulkerEntity;
@@ -9,12 +9,15 @@ import net.minecraft.world.Difficulty;
 
 public class DragonMinionAttackNearestGoal extends NearestAttackableTargetGoal<PlayerEntity> {
     public DragonMinionAttackNearestGoal(ShulkerEntity shulkerEntity) {
-        super(shulkerEntity, PlayerEntity.class, false);
+        super(shulkerEntity, PlayerEntity.class, 0, false, false, null);
+        //allowUnseeable
+        this.targetEntitySelector.setLineOfSiteRequired();
     }
 
     public boolean shouldExecute() {
-        return this.goalOwner.world.getDifficulty() == Difficulty.PEACEFUL ? false : super.shouldExecute();
+        return this.goalOwner.world.getDifficulty() != Difficulty.PEACEFUL && super.shouldExecute();
     }
+
 
     protected AxisAlignedBB getTargetableArea(double targetDistance) {
         Direction direction = ((ShulkerEntity) this.goalOwner).getAttachmentFacing();

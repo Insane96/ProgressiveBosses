@@ -11,6 +11,9 @@
         * Increased Bonus Experience per difficulty (+10% per difficulty -> +30% per difficulty)
         * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time otherwise 500 + the bonus experience
         * Can now have custom rewards difficulty based (like the Wither)
+    * Vulnerabilities and Resistances
+        * +50% melee damage when not in the center podium
+        * -10% melee damage when in the center podium
 * Wither
     * Hugely increased Bonus Experience (+20% per difficulty -> +50% per difficulty)
     * Cleaned up some things

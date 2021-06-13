@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.ai;
+package insane96mcp.progressivebosses.ai.dragon;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -14,10 +14,11 @@ public class DragonMinionAttackGoal extends Goal {
     private int attackTime;
     private final ShulkerEntity shulker;
 
-    private int baseAttackTime = 40;
+    private final int baseAttackInterval;
 
-    public DragonMinionAttackGoal(ShulkerEntity shulker) {
+    public DragonMinionAttackGoal(ShulkerEntity shulker, int attackInterval) {
         this.shulker = shulker;
+        this.baseAttackInterval = attackInterval;
         this.setMutexFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
@@ -31,7 +32,7 @@ public class DragonMinionAttackGoal extends Goal {
     }
 
     public void startExecuting() {
-        this.attackTime = this.baseAttackTime;
+        this.attackTime = this.baseAttackInterval + shulker.world.rand.nextInt(this.baseAttackInterval / 2);
         shulker.updateArmorModifier(100);
     }
 
@@ -48,11 +49,14 @@ public class DragonMinionAttackGoal extends Goal {
         if (livingentity == null)
             return;
         shulker.getLookController().setLookPositionWithEntity(livingentity, 180.0F, 180.0F);
-        double d0 = shulker.getDistance(livingentity);
-        if (d0 < 96.0) {
+        double d0 = shulker.getDistanceSq(livingentity.getPositionVec());
+        if (d0 < 9216d) { //96 blocks
             if (this.attackTime <= 0) {
-                this.attackTime = this.baseAttackTime + shulker.world.rand.nextInt(10) * this.baseAttackTime / 2;
-                shulker.world.addEntity(new ShulkerBulletEntity(shulker.world, shulker, livingentity, shulker.getAttachmentFacing().getAxis()));
+                this.attackTime = this.baseAttackInterval + shulker.world.rand.nextInt(this.baseAttackInterval);
+                ShulkerBulletEntity bullet = new ShulkerBulletEntity(shulker.world, shulker, livingentity, shulker.getAttachmentFacing().getAxis());
+                //CompoundNBT nbt = bullet.getPersistentData();
+                //nbt.putBoolean(Strings.Tags.BLINDNESS_BULLET, true);
+                shulker.world.addEntity(bullet);
                 shulker.playSound(SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (shulker.world.rand.nextFloat() - shulker.world.rand.nextFloat()) * 0.2F + 1.0F);
             }
         } else {
