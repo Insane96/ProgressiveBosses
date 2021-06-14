@@ -7,6 +7,7 @@ import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.entity.AreaEffectCloud3DEntity;
 import insane96mcp.progressivebosses.setup.Config;
+import insane96mcp.progressivebosses.setup.Reflection;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -19,9 +20,7 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.IndirectEntityDamageSource;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.*;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
@@ -230,32 +229,56 @@ public class AttackFeature extends Feature {
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAcidPoolDamage * difficulty)));
 	}
 
-	public void onFireballImpact(DragonFireballEntity fireball, @Nullable Entity shooter, RayTraceResult result) {
+	public boolean onFireballImpact(DragonFireballEntity fireball, @Nullable Entity shooter, RayTraceResult result) {
 		if (!this.isEnabled())
-			return;
+			return false;
 
-		if (!this.fireballExplosionDamages)
-			return;
-
-		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(result.getHitVec(), result.getHitVec()).grow(4d);
-		List<LivingEntity> livingEntities = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB);
-		for (LivingEntity livingEntity : livingEntities) {
-			if (livingEntity.getDistanceSq(fireball.getPositionVec()) < 20.25d)
-				livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), (float)6);
+		if (this.fireballExplosionDamages) {
+			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(result.getHitVec(), result.getHitVec()).grow(4d);
+			List<LivingEntity> livingEntities = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB);
+			for (LivingEntity livingEntity : livingEntities) {
+				if (livingEntity.getDistanceSq(fireball.getPositionVec()) < 20.25d)
+					livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), (float)6);
+			}
 		}
 
-		AreaEffectCloud3DEntity areaeffectcloudentity = new AreaEffectCloud3DEntity(fireball.world, fireball.getPosX(), fireball.getPosY() + 5, fireball.getPosZ());
-		if (shooter instanceof LivingEntity) {
-			areaeffectcloudentity.setOwner((LivingEntity)shooter);
+		RayTraceResult.Type raytraceresult$type = result.getType();
+		if (raytraceresult$type == RayTraceResult.Type.ENTITY) {
+			Reflection.ProjectileEntity_onEntityHit(fireball, (EntityRayTraceResult)result);
+		} else if (raytraceresult$type == RayTraceResult.Type.BLOCK) {
+			Reflection.ProjectileEntity_onBlockHit(fireball, (BlockRayTraceResult)result);
+		}
+		Entity entity = fireball.func_234616_v_();
+		if (result.getType() != RayTraceResult.Type.ENTITY || !((EntityRayTraceResult)result).getEntity().isEntityEqual(entity)) {
+			if (!fireball.world.isRemote) {
+				List<LivingEntity> list = fireball.world.getEntitiesWithinAABB(LivingEntity.class, fireball.getBoundingBox().grow(4.0D, 2.0D, 4.0D));
+				AreaEffectCloud3DEntity areaeffectcloudentity = new AreaEffectCloud3DEntity(fireball.world, fireball.getPosX(), fireball.getPosY(), fireball.getPosZ());
+				if (entity instanceof LivingEntity) {
+					areaeffectcloudentity.setOwner((LivingEntity)entity);
+				}
+
+				areaeffectcloudentity.setParticleData(ParticleTypes.DRAGON_BREATH);
+				areaeffectcloudentity.setRadius(3.0F);
+				areaeffectcloudentity.setDuration(600);
+				areaeffectcloudentity.setRadiusPerTick((7.0F - areaeffectcloudentity.getRadius()) / (float)areaeffectcloudentity.getDuration());
+				areaeffectcloudentity.addEffect(new EffectInstance(Effects.INSTANT_DAMAGE, 1, 1));
+				if (!list.isEmpty()) {
+					for(LivingEntity livingentity : list) {
+						double d0 = fireball.getDistanceSq(livingentity);
+						if (d0 < 16.0D) {
+							areaeffectcloudentity.setPosition(livingentity.getPosX(), livingentity.getPosY(), livingentity.getPosZ());
+							break;
+						}
+					}
+				}
+
+				fireball.world.playEvent(2006, fireball.getPosition(), fireball.isSilent() ? -1 : 1);
+				fireball.world.addEntity(areaeffectcloudentity);
+				fireball.remove();
+			}
 		}
 
-		areaeffectcloudentity.setParticleData(ParticleTypes.DRAGON_BREATH);
-		areaeffectcloudentity.setRadius(3.0F);
-		areaeffectcloudentity.setDuration(600);
-		areaeffectcloudentity.setRadiusPerTick((7.0F - areaeffectcloudentity.getRadius()) / (float)areaeffectcloudentity.getDuration());
-		areaeffectcloudentity.addEffect(new EffectInstance(Effects.INSTANT_DAMAGE, 1, 1));
-
-		fireball.world.addEntity(areaeffectcloudentity);
+		return true;
 	}
 
 	@Nullable

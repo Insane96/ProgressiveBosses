@@ -5,12 +5,13 @@ import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.setup.ModEntities;
 import net.minecraft.entity.*;
 import net.minecraft.network.IPacket;
-import net.minecraft.network.play.server.SSpawnObjectPacket;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.potion.EffectInstance;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 import java.util.Iterator;
 import java.util.List;
@@ -24,6 +25,16 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloudEntity {
 	public AreaEffectCloud3DEntity(World worldIn, double x, double y, double z) {
 		this(ModEntities.AREA_EFFECT_CLOUD_3D.get(), worldIn);
 		this.setPosition(x, y, z);
+	}
+
+	@Override
+	public void recalculateSize() {
+		//float height = this.getHeight();
+		super.recalculateSize();
+		//float newHeight = this.getHeight();
+		//this.setPosition(this.getPosX(), this.getPosY() - (newHeight - height), this.getPosZ());
+		double radius = (double)this.getSize(Pose.STANDING).width / 2.0D;
+		this.setBoundingBox(new AxisAlignedBB(this.getPosX() - radius, this.getPosY(), this.getPosZ() - radius, this.getPosX() + radius, this.getPosY() + radius * 2, this.getPosZ() + radius));
 	}
 
 	@Override
@@ -51,7 +62,7 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloudEntity {
 					}
 				}
 			} else {
-				float f5 = (float)Math.PI * f * f;
+				float f5 = (float)Math.PI * f * f * 2;
 
 				for(int k1 = 0; (float)k1 < f5; ++k1) {
 					float f6 = this.rand.nextFloat() * ((float)Math.PI * 2F);
@@ -60,7 +71,7 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloudEntity {
 					float f8 = MathHelper.cos(f6) * f7;
 					float f9 = MathHelper.sin(f6) * f7;*/
 					float x = RandomHelper.getFloat(this.rand, -f, f);
-					float y = RandomHelper.getFloat(this.rand, -f, f);
+					float y = RandomHelper.getFloat(this.rand, 0, f * 2);
 					float z = RandomHelper.getFloat(this.rand, -f, f);
 					if (iparticledata.getType() == ParticleTypes.ENTITY_EFFECT) {
 						int l1 = this.getColor();
@@ -122,39 +133,42 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloudEntity {
 					if (!list1.isEmpty()) {
 						for(LivingEntity livingentity : list1) {
 							if (!this.reapplicationDelayMap.containsKey(livingentity) && livingentity.canBeHitWithPotion()) {
-								double d0 = livingentity.getPosX() - this.getPosX();
-								double d1 = livingentity.getPosZ() - this.getPosZ();
-								double y = livingentity.getPosY() - this.getPosY();
-								double d2 = d0 * d0 + d1 * d1 + y * y;
-								if (d2 <= (double)(f * f)) {
-									this.reapplicationDelayMap.put(livingentity, this.ticksExisted + this.reapplicationDelay);
+								//double x = livingentity.getPosX() - this.getPosX();
+								//double y = livingentity.getPosY() + (livingentity.getSize(livingentity.getPose()).height / 2) - (this.getPosY() + f);
+								//double z = livingentity.getPosZ() - this.getPosZ();
+								//double d2 = x * x + y * y + z * z;
+								//LogHelper.info("%f %f %f %s", d2, f, f*f, this.getBoundingBox().toString());
+								//LogHelper.info("%f %f %f", x, y, z);
+								//LogHelper.info("%f %f", livingentity.getPosY(), this.getPosY());
+								//if (d2 <= (double)(f * f)) {
+								this.reapplicationDelayMap.put(livingentity, this.ticksExisted + this.reapplicationDelay);
 
-									for(EffectInstance effectinstance : list) {
-										if (effectinstance.getPotion().isInstant()) {
-											effectinstance.getPotion().affectEntity(this, this.getOwner(), livingentity, effectinstance.getAmplifier(), 0.5D);
-										} else {
-											livingentity.addPotionEffect(new EffectInstance(effectinstance));
-										}
-									}
-
-									if (this.radiusOnUse != 0.0F) {
-										f += this.radiusOnUse;
-										if (f < 0.5F) {
-											this.remove();
-											return;
-										}
-
-										this.setRadius(f);
-									}
-
-									if (this.durationOnUse != 0) {
-										this.duration += this.durationOnUse;
-										if (this.duration <= 0) {
-											this.remove();
-											return;
-										}
+								for(EffectInstance effectinstance : list) {
+									if (effectinstance.getPotion().isInstant()) {
+										effectinstance.getPotion().affectEntity(this, this.getOwner(), livingentity, effectinstance.getAmplifier(), 0.5D);
+									} else {
+										livingentity.addPotionEffect(new EffectInstance(effectinstance));
 									}
 								}
+
+								if (this.radiusOnUse != 0.0F) {
+									f += this.radiusOnUse;
+									if (f < 0.5F) {
+										this.remove();
+										return;
+									}
+
+									this.setRadius(f);
+								}
+
+								if (this.durationOnUse != 0) {
+									this.duration += this.durationOnUse;
+									if (this.duration <= 0) {
+										this.remove();
+										return;
+									}
+								}
+								//}
 							}
 						}
 					}
@@ -171,6 +185,6 @@ public class AreaEffectCloud3DEntity extends AreaEffectCloudEntity {
 
 	@Override
 	public IPacket<?> createSpawnPacket() {
-		return new SSpawnObjectPacket(this);
+		return NetworkHooks.getEntitySpawningPacket(this);
 	}
 }
