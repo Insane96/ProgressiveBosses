@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.modules.dragon.feature;
+package insane96mcp.progressivebosses.module.dragon.feature;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;

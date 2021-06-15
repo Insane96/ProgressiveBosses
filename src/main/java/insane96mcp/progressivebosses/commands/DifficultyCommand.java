@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import insane96mcp.progressivebosses.base.Strings;
-import insane96mcp.progressivebosses.modules.Modules;
+import insane96mcp.progressivebosses.module.Modules;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
@@ -33,24 +33,24 @@ public class DifficultyCommand {
                     )
                     .then(Commands.literal("set")
                         .then(Commands.literal("wither")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.wither.difficultyFeature.maxDifficulty))
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.wither.difficulty.maxDifficulty))
                                 .executes(context -> setBossDifficulty(context.getSource(),EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
                             )
                         )
                         .then(Commands.literal("dragon")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragon.difficultyFeature.maxDifficulty))
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
                                 .executes(context -> setBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon", IntegerArgumentType.getInteger(context, "amount")))
                             )
                         )
                     )
                     .then(Commands.literal("add")
                         .then(Commands.literal("wither")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.wither.difficultyFeature.maxDifficulty))
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.wither.difficulty.maxDifficulty))
                                 .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
                             )
                         )
                         .then(Commands.literal("dragon")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragon.difficultyFeature.maxDifficulty))
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
                                 .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"),"dragon", IntegerArgumentType.getInteger(context, "amount")))
                             )
                         )
@@ -59,19 +59,19 @@ public class DifficultyCommand {
             )
             .then(Commands.literal("summon")
                 .then(Commands.literal(Strings.Tags.WITHER_MINION)
-                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.wither.difficultyFeature.maxDifficulty))
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.wither.difficulty.maxDifficulty))
                         .executes(context -> summon(context.getSource(), Strings.Tags.WITHER_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
                     .executes(context -> summon(context.getSource(), context.getSource().asPlayer(), Strings.Tags.WITHER_MINION))
                 )
                 .then(Commands.literal(Strings.Tags.DRAGON_MINION)
-                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragon.difficultyFeature.maxDifficulty))
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
                         .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
                     .executes(context -> summon(context.getSource(), context.getSource().asPlayer(), Strings.Tags.DRAGON_MINION))
                 )
                 .then(Commands.literal(Strings.Tags.DRAGON_LARVA)
-                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragon.difficultyFeature.maxDifficulty))
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
                         .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
                     .executes(context -> summon(context.getSource(), context.getSource().asPlayer(), Strings.Tags.DRAGON_LARVA))
@@ -97,13 +97,13 @@ public class DifficultyCommand {
         if (boss.equals("wither")) {
             currDifficulty = targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS);
             difficulty = currDifficulty + amount;
-            difficulty = MathHelper.clamp(difficulty, 0, Modules.wither.difficultyFeature.maxDifficulty);
+            difficulty = MathHelper.clamp(difficulty, 0, Modules.wither.difficulty.maxDifficulty);
             targetNBT.putInt(Strings.Tags.SPAWNED_WITHERS, difficulty);
         }
         else if (boss.equals("dragon")) {
             currDifficulty = targetNBT.getInt(Strings.Tags.KILLED_DRAGONS);
             difficulty = currDifficulty + amount;
-            difficulty = MathHelper.clamp(difficulty, 0, Modules.dragon.difficultyFeature.maxDifficulty);
+            difficulty = MathHelper.clamp(difficulty, 0, Modules.dragon.difficulty.maxDifficulty);
             targetNBT.putInt(Strings.Tags.KILLED_DRAGONS, difficulty);
         }
         source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_ADD_BOSS_DIFFICULTY, amount, boss, targetPlayer.getName(), difficulty), true);
@@ -130,12 +130,12 @@ public class DifficultyCommand {
     private static int summon(CommandSource source, String entity, int difficulty) {
         switch (entity) {
             case Strings.Tags.WITHER_MINION:
-                Modules.wither.minionFeature.summonMinion(source.getWorld(), source.getPos(), difficulty, false);
+                Modules.wither.minion.summonMinion(source.getWorld(), source.getPos(), difficulty, false);
                 source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 
             case Strings.Tags.DRAGON_MINION:
-                Modules.dragon.minionFeature.summonMinion(source.getWorld(), source.getPos(), difficulty);
+                Modules.dragon.minion.summonMinion(source.getWorld(), source.getPos(), difficulty);
                 source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 

@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses.ai.wither;
 
 import insane96mcp.progressivebosses.base.Strings;
-import insane96mcp.progressivebosses.modules.wither.feature.AttackFeature;
+import insane96mcp.progressivebosses.module.wither.feature.AttackFeature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.LivingEntity;

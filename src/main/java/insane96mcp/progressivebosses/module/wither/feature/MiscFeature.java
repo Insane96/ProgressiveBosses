@@ -1,10 +1,10 @@
-package insane96mcp.progressivebosses.modules.wither.feature;
+package insane96mcp.progressivebosses.module.wither.feature;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.base.Strings;
-import insane96mcp.progressivebosses.modules.wither.dispenser.WitherSkullDispenseBehavior;
+import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

@@ -1,7 +1,7 @@
-package insane96mcp.progressivebosses.modules;
+package insane96mcp.progressivebosses.module;
 
-import insane96mcp.progressivebosses.modules.dragon.DragonModule;
-import insane96mcp.progressivebosses.modules.wither.WitherModule;
+import insane96mcp.progressivebosses.module.dragon.DragonModule;
+import insane96mcp.progressivebosses.module.wither.WitherModule;
 
 public class Modules {
 	public static WitherModule wither;

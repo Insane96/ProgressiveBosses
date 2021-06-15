@@ -1,6 +1,6 @@
-package insane96mcp.progressivebosses.modules.wither.dispenser;
+package insane96mcp.progressivebosses.module.wither.dispenser;
 
-import insane96mcp.progressivebosses.modules.wither.feature.MiscFeature;
+import insane96mcp.progressivebosses.module.wither.feature.MiscFeature;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.SkullBlock;

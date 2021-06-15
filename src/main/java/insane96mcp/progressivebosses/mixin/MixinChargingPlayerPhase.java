@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.modules.Modules;
+import insane96mcp.progressivebosses.module.Modules;
 import net.minecraft.entity.boss.dragon.phase.ChargingPlayerPhase;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -12,7 +12,7 @@ public class MixinChargingPlayerPhase {
 
 	@Inject(at = @At("HEAD"), method = "getMaxRiseOrFall()F", cancellable = true)
 	private void getMaxRiseOrFall(CallbackInfoReturnable<Float> callback) {
-		if (Modules.dragon.attackFeature.increaseMaxRiseAndFall)
+		if (Modules.dragon.attack.increaseMaxRiseAndFall)
 			callback.setReturnValue(24f);
 	}
 }
