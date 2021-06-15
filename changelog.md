@@ -13,7 +13,6 @@
         * Can now have custom rewards difficulty based (like the Wither)
     * Vulnerabilities and Resistances
         * +50% melee damage when not in the center podium10% melee damage when in the center podium
-      * -
 * Wither
     * Hugely increased Bonus Experience (+20% per difficulty -> +50% per difficulty)
     * Cleaned up some things

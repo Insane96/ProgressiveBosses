@@ -43,6 +43,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> maxChanceAtDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseMaxRiseAndFallConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> fireball3DEffectCloudConfig;
 
 	//TODO Nerf, at max difficulty is player 1 shot and Unbr III armor 4-shot-break
 	public double increasedDirectDamage = 0.10d;
@@ -53,6 +54,7 @@ public class AttackFeature extends Feature {
 	public double maxChanceAtDifficulty = 16;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
+	public boolean fireball3DEffectCloud = true;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -85,6 +87,9 @@ public class AttackFeature extends Feature {
 		fireballExplosionDamagesConfig = Config.builder
 				.comment("On impact the Acid Fireball will deal magic damage in an area.")
 				.define("Fireball Explosion Magic Damage", fireballExplosionDamages);
+		fireball3DEffectCloudConfig = Config.builder
+				.comment("On impact the Acid Fireball will generate a 3D area of effect cloud instead of a normal flat one.")
+				.define("Fireball 3D Area Effect Cloud", fireball3DEffectCloud);
 		Config.builder.pop();
 	}
 
@@ -98,6 +103,7 @@ public class AttackFeature extends Feature {
 		this.maxChanceAtDifficulty = this.maxChanceAtDifficultyConfig.get();
 		this.increaseMaxRiseAndFall = this.increaseMaxRiseAndFallConfig.get();
 		this.fireballExplosionDamages = this.fireballExplosionDamagesConfig.get();
+		this.fireball3DEffectCloud = this.fireball3DEffectCloudConfig.get();
 	}
 
 	@SubscribeEvent
@@ -233,14 +239,25 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return false;
 
-		if (this.fireballExplosionDamages) {
-			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(result.getHitVec(), result.getHitVec()).grow(4d);
-			List<LivingEntity> livingEntities = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB);
-			for (LivingEntity livingEntity : livingEntities) {
-				if (livingEntity.getDistanceSq(fireball.getPositionVec()) < 20.25d)
-					livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), (float)6);
-			}
+		onImpactExplosion(fireball, shooter, result);
+		return onImpact3DCloud(fireball, shooter, result);
+	}
+
+	private void onImpactExplosion(DragonFireballEntity fireball, @Nullable Entity shooter, RayTraceResult result) {
+		if (!this.fireballExplosionDamages)
+			return;
+
+		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(result.getHitVec(), result.getHitVec()).grow(4d);
+		List<LivingEntity> livingEntities = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB);
+		for (LivingEntity livingEntity : livingEntities) {
+			if (livingEntity.getDistanceSq(fireball.getPositionVec()) < 20.25d)
+				livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), (float)6);
 		}
+	}
+
+	private boolean onImpact3DCloud(DragonFireballEntity fireball, @Nullable Entity shooter, RayTraceResult result) {
+		if (!this.fireball3DEffectCloud)
+			return false;
 
 		RayTraceResult.Type raytraceresult$type = result.getType();
 		if (raytraceresult$type == RayTraceResult.Type.ENTITY) {
