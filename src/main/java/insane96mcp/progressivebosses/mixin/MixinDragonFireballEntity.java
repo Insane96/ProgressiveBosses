@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.base.Modules;
+import insane96mcp.progressivebosses.modules.Modules;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.DamagingProjectileEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
@@ -20,7 +20,7 @@ public class MixinDragonFireballEntity extends DamagingProjectileEntity {
 
 	@Inject(at = @At("HEAD"), method = "onImpact(Lnet/minecraft/util/math/RayTraceResult;)V", cancellable = true)
 	private void onImpact(RayTraceResult result, CallbackInfo callback) {
-		if (Modules.dragonModule.attackFeature.onFireballImpact((DragonFireballEntity) (Object) this, this.func_234616_v_(), result))
+		if (Modules.dragon.attackFeature.onFireballImpact((DragonFireballEntity) (Object) this, this.func_234616_v_(), result))
 			callback.cancel();
 	}
 }

@@ -52,6 +52,14 @@ public class HealthFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
+		/*if (event.getEntity().getType().equals(EntityType.AREA_EFFECT_CLOUD)) {
+			AreaEffectCloudEntity areaEffectCloudEntity = (AreaEffectCloudEntity) event.getEntity();
+			AreaEffectCloud3DEntity areaEffectCloud3DEntity = new AreaEffectCloud3DEntity(areaEffectCloudEntity);
+			areaEffectCloudEntity.remove();
+			areaEffectCloud3DEntity.world.addEntity(areaEffectCloud3DEntity);
+			return;
+		}*/
+
 		if (event.getWorld().isRemote)
 			return;
 

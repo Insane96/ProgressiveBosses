@@ -8,13 +8,11 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 
 public class Reflection {
 	static MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-	static MethodType mt = MethodType.methodType(void.class, float.class);
 	static Method onEntityHitMethod;
 	public static MethodHandle onEntityHitMH;
 	public static void ProjectileEntity_onEntityHit(ProjectileEntity projectileEntity, EntityRayTraceResult p_213868_1_) {

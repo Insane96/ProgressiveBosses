@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses.setup;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.base.Modules;
+import insane96mcp.progressivebosses.modules.Modules;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
