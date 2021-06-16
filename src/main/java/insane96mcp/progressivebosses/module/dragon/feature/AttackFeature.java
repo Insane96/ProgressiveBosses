@@ -8,6 +8,7 @@ import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Reflection;
+import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -222,7 +223,7 @@ public class AttackFeature extends Feature {
 	}
 
 	private void onAcidDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getTrueSource() instanceof EnderDragonEntity))
+		if (!(event.getSource().getTrueSource() instanceof EnderDragonEntity) || !(event.getSource().getImmediateSource() instanceof AreaEffectCloudEntity))
 			return;
 		EnderDragonEntity wither = (EnderDragonEntity) event.getSource().getTrueSource();
 

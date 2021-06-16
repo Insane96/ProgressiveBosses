@@ -104,7 +104,7 @@ dependencies {
     // annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
-    compile "blank:InsaneLib:${lib_version}-mc${mc_version}"
+    compile fg.deobf("blank:InsaneLib:${lib_version}-mc${mc_version}")
     // compile "some.group:artifact:version"
 
     // Real examples

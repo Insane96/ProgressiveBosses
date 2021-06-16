@@ -6,13 +6,15 @@
         * Increased Max Health regeneration (0.5 -> 1.0)
     * Attack
         * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously, to charge the player / land in the middle
-        * Ender Dragon's fireballs now deal magic damage on impact in an area of 4.5 blocks and spawn a 3D Area of Effect Cloud
+        * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn a 3D Area of Effect Cloud
     * Rewards
         * Increased Bonus Experience per difficulty (+10% per difficulty -> +30% per difficulty)
         * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time otherwise 500 + the bonus experience
         * Can now have custom rewards difficulty based (like the Wither)
     * Vulnerabilities and Resistances
-        * +50% melee damage when not in the center podium10% melee damage when in the center podium
+        * +50% melee damage when not in the center podium
+        * -15% melee damage when in the center podium
+        * -70% explosion damage
 * Wither
     * Hugely increased Bonus Experience (+20% per difficulty -> +50% per difficulty)
     * Cleaned up some things

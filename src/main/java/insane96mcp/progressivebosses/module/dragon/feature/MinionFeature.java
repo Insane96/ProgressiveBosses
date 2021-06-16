@@ -5,7 +5,7 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.ai.dragon.DragonMinionAttackGoal;
-import insane96mcp.progressivebosses.ai.dragon.DragonMinionAttackNearestGoal;
+import insane96mcp.progressivebosses.ai.dragon.PBNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.EntityType;
@@ -191,7 +191,7 @@ public class MinionFeature extends Feature {
 		});
 		toRemove.forEach(shulker.targetSelector::removeGoal);
 
-		shulker.targetSelector.addGoal(2, new DragonMinionAttackNearestGoal(shulker));
+		shulker.targetSelector.addGoal(2, new PBNearestAttackableTargetGoal(shulker));
 		shulker.targetSelector.addGoal(1, new HurtByTargetGoal(shulker, ShulkerEntity.class, EnderDragonEntity.class));
 	}
 
