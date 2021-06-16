@@ -13,6 +13,7 @@ public class DragonModule extends Module {
 	public AttackFeature attack;
 	public RewardFeature reward;
 	public MinionFeature minion;
+	public LarvaFeature larva;
 
 	public DragonModule() {
 		super(Config.builder);
@@ -22,6 +23,7 @@ public class DragonModule extends Module {
 		attack = new AttackFeature(this);
 		reward = new RewardFeature(this);
 		minion = new MinionFeature(this);
+		larva = new LarvaFeature(this);
 		Config.builder.pop();
 	}
 
@@ -33,5 +35,6 @@ public class DragonModule extends Module {
 		attack.loadConfig();
 		reward.loadConfig();
 		minion.loadConfig();
+		larva.loadConfig();
 	}
 }
