@@ -167,8 +167,8 @@ public class MinionFeature extends Feature {
 		dragonTags.putInt(Strings.Tags.DRAGON_MINION_COOLDOWN, cooldown - 1);
 
 		float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
-		float x = (float) (Math.cos(angle) * (RandomHelper.getFloat(dragon.getRNG(), 15f, 36f)));
-		float z = (float) (Math.sin(angle) * (RandomHelper.getFloat(dragon.getRNG(), 15f, 36f)));
+		float x = (float) (Math.cos(angle) * (RandomHelper.getFloat(dragon.getRNG(), 16f, 48f)));
+		float z = (float) (Math.sin(angle) * (RandomHelper.getFloat(dragon.getRNG(), 16f, 48f)));
 		float y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
 		ShulkerEntity shulker = summonMinion(world, new Vector3d(x, y, z), difficulty);
 	}

@@ -46,10 +46,8 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireball3DEffectCloudConfig;
 
-	//TODO Nerf, at max difficulty is player 1 shot and Unbr III armor 4-shot-break
-	public double increasedDirectDamage = 0.10d;
-	//TODO Nerf, but not too much
-	public double increasedAcidPoolDamage = 0.10d;
+	public double increasedDirectDamage = 0.5d;
+	public double increasedAcidPoolDamage = 0.5d;
 	public double chargePlayerMaxChance = 0.01d;
 	public double fireballMaxChance = 0.015;
 	public double maxChanceAtDifficulty = 16;
@@ -248,11 +246,19 @@ public class AttackFeature extends Feature {
 		if (!this.fireballExplosionDamages)
 			return;
 
+		float difficulty = 0;
+		if (shooter != null) {
+			CompoundNBT compoundNBT = shooter.getPersistentData();
+			difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+		}
+
+		float damage = 6 * (1f + (float) (this.increasedAcidPoolDamage * difficulty));
+
 		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(result.getHitVec(), result.getHitVec()).grow(4d);
 		List<LivingEntity> livingEntities = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB);
 		for (LivingEntity livingEntity : livingEntities) {
 			if (livingEntity.getDistanceSq(fireball.getPositionVec()) < 20.25d)
-				livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), (float)6);
+				livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), damage);
 		}
 	}
 
