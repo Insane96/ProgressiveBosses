@@ -46,8 +46,8 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireball3DEffectCloudConfig;
 
-	public double increasedDirectDamage = 0.5d;
-	public double increasedAcidPoolDamage = 0.5d;
+	public double increasedDirectDamage = 0.04d;
+	public double increasedAcidPoolDamage = 0.05d;
 	public double chargePlayerMaxChance = 0.01d;
 	public double fireballMaxChance = 0.015;
 	public double maxChanceAtDifficulty = 16;
