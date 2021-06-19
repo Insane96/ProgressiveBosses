@@ -5,16 +5,26 @@
     * Health
         * Increased Max Health regeneration (0.5 -> 1.0)
     * Attack
-        * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously, to charge the player / land in the middle
+        * Reduced Dragon bonus attack damage per difficulty (+10% damage per difficulty -> +4% damage per difficulty)
+        * Reduced Dragon bonus damage from acid (+10% damage per difficulty -> +5% damage per difficulty)
+        * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously. Sadly due to https://bugs.mojang.com/browse/MC-158205 the fight is a lot buggy.
         * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn a 3D Area of Effect Cloud
     * Minions
+        * Will no longer spawn if there are no players in the main island
+        * Changed cooldown reduction (-10 ticks per difficulty -> -0.6% per difficulty)
+        * No longer take damage from the Ender Dragon
         * Can now spawn on towers
+    * Larvae
+        * Cooldown reduced (52.5-60 secs -> 30-50 secs)
+        * Removed Cooldown Reduction
+        * No longer spawn inside blocks
+        * No longer take damage from the Ender Dragon
     * Rewards
         * Increased Bonus Experience per difficulty (+10% per difficulty -> +30% per difficulty)
-        * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time otherwise 500 + the bonus experience
+        * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time, otherwise 500 + the bonus experience
         * Can now have custom rewards difficulty based (like the Wither)
     * Vulnerabilities and Resistances
-        * +80% melee damage when not in the center podium
+        * +90% melee damage when not in the center podium
         * -15% melee damage when in the center podium
         * -50% explosion damage
 * Wither

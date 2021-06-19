@@ -263,6 +263,9 @@ public class AttackFeature extends Feature {
 	}
 
 	private boolean onImpact3DCloud(DragonFireballEntity fireball, @Nullable Entity shooter, RayTraceResult result) {
+		if (!this.isEnabled())
+			return false;
+
 		if (!this.fireball3DEffectCloud)
 			return false;
 

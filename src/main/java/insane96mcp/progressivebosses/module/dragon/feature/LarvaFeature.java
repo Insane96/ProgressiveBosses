@@ -35,7 +35,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-@Label(name = "Minions", description = "Shulkers that will make you float around.")
+@Label(name = "Larva", description = "Mini things that are just annoying.")
 public class LarvaFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Integer> larvaAtDifficultyConfig;
@@ -49,8 +49,8 @@ public class LarvaFeature extends Feature {
 	public int bonusLarvaEveryDifficulty = 2;
 	//TODO Maybe increase the max spawned since the cooldown is not reduced?
 	public int maxSpawned = 6;
-	public int minCooldown = 1000;
-	public int maxCooldown = 600;
+	public int minCooldown = 600;
+	public int maxCooldown = 1000;
 	public boolean dragonImmune = true;
 
 	public LarvaFeature(Module module) {

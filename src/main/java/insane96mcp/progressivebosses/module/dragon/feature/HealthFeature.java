@@ -3,17 +3,26 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonPartEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+
+import java.util.List;
 
 @Label(name = "Health", description = "Bonus Health and Bonus regeneration.")
 //TODO Maybe disable this if crystals respawn is added
@@ -52,14 +61,6 @@ public class HealthFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
-		/*if (event.getEntity().getType().equals(EntityType.AREA_EFFECT_CLOUD)) {
-			AreaEffectCloudEntity areaEffectCloudEntity = (AreaEffectCloudEntity) event.getEntity();
-			AreaEffectCloud3DEntity areaEffectCloud3DEntity = new AreaEffectCloud3DEntity(areaEffectCloudEntity);
-			areaEffectCloudEntity.remove();
-			areaEffectCloud3DEntity.world.addEntity(areaEffectCloud3DEntity);
-			return;
-		}*/
-
 		if (event.getWorld().isRemote)
 			return;
 
@@ -90,6 +91,25 @@ public class HealthFeature extends Feature {
 		if (event.getEntity().world.isRemote)
 			return;
 
+		if (event.getEntity() instanceof EnderDragonEntity) {
+			EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+			List<Entity> list = dragon.world.getEntitiesWithinAABB(PlayerEntity.class, dragon.getBoundingBox());
+			for (Entity entity : list) {
+				PlayerEntity player = (PlayerEntity) entity;
+				LogHelper.info("Colliding");
+				for (EnderDragonPartEntity part : dragon.getDragonParts()) {
+					ServerWorld world = (ServerWorld) dragon.world;
+					world.spawnParticle(ParticleTypes.ANGRY_VILLAGER, part.getPosX(), part.getPosY(), part.getPosZ(), 1, 0, 0, 0, 0);
+					if (part.getBoundingBox().intersects(player.getBoundingBox())) {
+						part.attackEntityFrom(DamageSource.causePlayerDamage(player), 20f);
+						LogHelper.info("Colliding with %s", part.field_213853_c);
+					}
+				}
+			}
+		}
+		//result = {AxisAlignedBB@21366} "AABB[5.838289610550541, 59.455070982207616, -3.6175390750013285] -> [6.838289610550541, 60.455070982207616, -2.6175390750013285]"
+		//result = {AxisAlignedBB@21379} "AABB[5.3581248052303865, 59.495200877005914, -2.5141609254509736] -> [5.958124829072244, 61.2952008293222, -1.9141609016091157]"
+		//result = {AxisAlignedBB@21595} "AABB[-7.863716004406766, 60.26373616009399, -7.691778564177095] -> [8.136283995593235, 68.263736160094, 8.308221435822905]"
 		if (!this.isEnabled())
 			return;
 
