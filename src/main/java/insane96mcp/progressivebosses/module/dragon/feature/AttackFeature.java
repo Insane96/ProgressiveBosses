@@ -49,7 +49,7 @@ public class AttackFeature extends Feature {
 	public double increasedDirectDamage = 0.04d;
 	public double increasedAcidPoolDamage = 0.05d;
 	public double chargePlayerMaxChance = 0.01d;
-	public double fireballMaxChance = 0.015;
+	public double fireballMaxChance = 0.015d;
 	public double maxChanceAtDifficulty = 16;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
@@ -70,7 +70,7 @@ public class AttackFeature extends Feature {
 						"This defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher. The actual formula is\n" +
 						"(this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
 				.defineInRange("Charge Player Max Chance", chargePlayerMaxChance, 0.0, Double.MAX_VALUE);
-		//TODO Change this per hit instead of on update
+		//TODO Change this per hit instead of on update. Also add a multiple fireball attack
 		fireballMaxChanceConfig = Config.builder
 				.comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance each tick (1/20th of second) when roaming around to spit a fireball.\n" +
 						"This defines the chance to spit a fireball each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher. The actual formula is\n" +
