@@ -15,6 +15,7 @@ public class DragonModule extends Module {
 	public MinionFeature minion;
 	public LarvaFeature larva;
 	public ResistancesFeature resistances;
+	public CrystalFeature crystal;
 
 	public DragonModule() {
 		super(Config.builder);
@@ -26,6 +27,7 @@ public class DragonModule extends Module {
 		minion = new MinionFeature(this);
 		larva = new LarvaFeature(this);
 		resistances = new ResistancesFeature(this);
+		crystal = new CrystalFeature(this);
 		Config.builder.pop();
 	}
 
@@ -39,5 +41,6 @@ public class DragonModule extends Module {
 		minion.loadConfig();
 		larva.loadConfig();
 		resistances.loadConfig();
+		crystal.loadConfig();
 	}
 }

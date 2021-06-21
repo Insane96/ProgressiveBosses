@@ -7,7 +7,7 @@
     * Attack
         * Reduced Dragon bonus attack damage per difficulty (+10% damage per difficulty -> +4% damage per difficulty)
         * Reduced Dragon bonus damage from acid (+10% damage per difficulty -> +5% damage per difficulty)
-        * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously. Sadly due to https://bugs.mojang.com/browse/MC-158205 the fight is a lot buggy.
+        * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously.
         * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn a 3D Area of Effect Cloud
     * Minions
         * Will no longer spawn if there are no players in the main island
@@ -28,7 +28,9 @@
         * -15% melee damage when in the center podium
         * -50% explosion damage
     * Crystals
-        * Leaving and reentering The End no longer respawns the cages / more crystals
+        * Below 25% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health to respawn crystals. Higher difficulties mean more crystals respawned and faster respawning. This phase can only happen once per Ender Dragon. 
+        * Crystals are now immune to explosions
+        * Leaving and reentering The End no longer respawns the cages / more crystals again.
 * Wither
     * Hugely increased Bonus Experience (+20% per difficulty -> +50% per difficulty)
     * Cleaned up some things

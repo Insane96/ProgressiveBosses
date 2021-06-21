@@ -6,6 +6,8 @@
 	"mixins": [
 		"MixinChargingPlayerPhase",
 		"MixinDragonFireballEntity",
+		"MixinEnderCrystalEntity",
+		"MixinHoverPhase",
 		"MixinLandingPhase"
 	],
 	"minVersion": "0.8"
