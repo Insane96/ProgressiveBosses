@@ -58,6 +58,7 @@ public class ResistancesFeature extends Feature {
 			return;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+
 		bonusMeleeDamage(event, dragon);
 		meleeDamageReduction(event, dragon);
 		explosionDamageReduction(event, dragon);

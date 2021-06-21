@@ -278,7 +278,7 @@ public class AttackFeature extends Feature {
 		Entity entity = fireball.func_234616_v_();
 		if (result.getType() != RayTraceResult.Type.ENTITY || !((EntityRayTraceResult)result).getEntity().isEntityEqual(entity)) {
 			if (!fireball.world.isRemote) {
-				List<LivingEntity> list = fireball.world.getEntitiesWithinAABB(LivingEntity.class, fireball.getBoundingBox().grow(4.0D, 2.0D, 4.0D));
+				List<LivingEntity> list = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, fireball.getBoundingBox().grow(4.0D, 2.0D, 4.0D));
 				AreaEffectCloud3DEntity areaeffectcloudentity = new AreaEffectCloud3DEntity(fireball.world, fireball.getPosX(), fireball.getPosY(), fireball.getPosZ());
 				if (entity instanceof LivingEntity) {
 					areaeffectcloudentity.setOwner((LivingEntity)entity);
