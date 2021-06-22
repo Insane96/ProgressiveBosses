@@ -8,7 +8,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
 
 ## Wither
 * Difficulty Feature
-    * **It's the base feature of the mod, with this disabled every Wither feature will not work.**
+    * **It's the base feature of the mod, with this disabled almost every Wither feature will not work.**
     * Allows the Wither to get the difficulty on spawn.
     * Also has a new config option to set the starting difficulty.
 * Misc Feature

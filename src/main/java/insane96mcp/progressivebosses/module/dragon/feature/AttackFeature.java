@@ -36,7 +36,7 @@ import java.util.List;
 
 @Label(name = "Attack", description = "Makes the dragon hit harder and more often")
 public class AttackFeature extends Feature {
-
+//TODO first dragon config
 	private final ForgeConfigSpec.ConfigValue<Double> increasedDirectDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> increasedAcidPoolDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargePlayerMaxChanceConfig;
@@ -46,10 +46,12 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireball3DEffectCloudConfig;
 
+	//TODO Add a min chance for charge and fireball
 	public double increasedDirectDamage = 0.04d;
-	public double increasedAcidPoolDamage = 0.05d;
+	public double increasedAcidPoolDamage = 0.0475d;
 	public double chargePlayerMaxChance = 0.01d;
-	public double fireballMaxChance = 0.015d;
+	//TODO Maybe increase chance to 15/20%
+	public double fireballMaxChance = 0.10d;
 	public double maxChanceAtDifficulty = 16;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
@@ -67,14 +69,14 @@ public class AttackFeature extends Feature {
 
 		chargePlayerMaxChanceConfig = Config.builder
 				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance each tick (1/20th of second) when roaming around to attack the player.\n" +
-						"This defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher. The actual formula is\n" +
-						"(this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
+						"This defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
+						"The actual formula is: (this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
 				.defineInRange("Charge Player Max Chance", chargePlayerMaxChance, 0.0, Double.MAX_VALUE);
-		//TODO Change this per hit instead of on update. Also add a multiple fireball attack
+		//TODO add a multiple fireball attack
 		fireballMaxChanceConfig = Config.builder
-				.comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance each tick (1/20th of second) when roaming around to spit a fireball.\n" +
-						"This defines the chance to spit a fireball each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher. The actual formula is\n" +
-						"(this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
+				.comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance everytime she takes damage to spit a fireball.\n" +
+						"This defines the chance to spit a fireball everytime she takes damage when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
+						"The actual formula is: (this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
 				.defineInRange("Fireball Max Chance", fireballMaxChance, 0.0, Double.MAX_VALUE);
 		maxChanceAtDifficultyConfig = Config.builder
 				.comment("Defines at which difficulty the Dragon has max chance to attack or spit fireballs when all crystals are destroyed (see 'Fireball Max Chance' and 'Charge Player Max Chance')")
@@ -117,7 +119,6 @@ public class AttackFeature extends Feature {
 			return;
 
 		chargePlayer((EnderDragonEntity) event.getEntity());
-		fireballPlayer((EnderDragonEntity) event.getEntity());
 	}
 
 	private void chargePlayer(EnderDragonEntity dragon) {
@@ -160,9 +161,14 @@ public class AttackFeature extends Feature {
 		dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(targetPos);
 	}
 
-	private void fireballPlayer(EnderDragonEntity dragon) {
+	private void fireballPlayer(LivingHurtEvent event) {
 		if (this.fireballMaxChance == 0f)
 			return;
+
+		if (!(event.getEntityLiving() instanceof EnderDragonEntity))
+			return;
+
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntityLiving();
 
 		if (dragon.getFightManager() == null)
 			return;
@@ -204,6 +210,8 @@ public class AttackFeature extends Feature {
 
 		onDirectDamage(event);
 		onAcidDamage(event);
+
+		fireballPlayer(event);
 	}
 
 	private void onDirectDamage(LivingHurtEvent event) {
@@ -239,7 +247,7 @@ public class AttackFeature extends Feature {
 			return false;
 
 		onImpactExplosion(fireball, shooter, result);
-		return onImpact3DCloud(fireball, shooter, result);
+		return onImpact3DCloud(fireball, result);
 	}
 
 	private void onImpactExplosion(DragonFireballEntity fireball, @Nullable Entity shooter, RayTraceResult result) {
@@ -262,7 +270,7 @@ public class AttackFeature extends Feature {
 		}
 	}
 
-	private boolean onImpact3DCloud(DragonFireballEntity fireball, @Nullable Entity shooter, RayTraceResult result) {
+	private boolean onImpact3DCloud(DragonFireballEntity fireball, RayTraceResult result) {
 		if (!this.isEnabled())
 			return false;
 

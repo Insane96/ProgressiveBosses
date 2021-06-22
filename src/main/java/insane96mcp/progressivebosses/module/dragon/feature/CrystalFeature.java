@@ -49,6 +49,7 @@ public class CrystalFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
 
+	//TODO Way too many crystals to destroy, halve both max cages and crystals in towers
 	public int moreCagesAtDifficulty = 1;
 	public int moreCrystalsAtDifficulty = 8;
 	public double crystalRespawnChance = 0.05d;

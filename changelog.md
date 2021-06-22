@@ -6,8 +6,9 @@
         * Increased Max Health regeneration (0.5 -> 1.0)
     * Attack
         * Reduced Dragon bonus attack damage per difficulty (+10% damage per difficulty -> +4% damage per difficulty)
-        * Reduced Dragon bonus damage from acid (+10% damage per difficulty -> +5% damage per difficulty)
+        * Reduced Dragon bonus damage from acid (+10% damage per difficulty -> +4.75% damage per difficulty)
         * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously.
+        * Fireballing has a chance to trigger when the Ender Dragon's hit instead of every tick, increasing the max chance (1.5% -> 10%).
         * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn a 3D Area of Effect Cloud
     * Minions
         * Will no longer spawn if there are no players in the main island
@@ -24,8 +25,8 @@
         * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time, otherwise 500 + the bonus experience
         * Can now have custom rewards difficulty based (like the Wither)
     * Vulnerabilities and Resistances
-        * +100% melee damage when not in the center podium
-        * -15% melee damage when in the center podium
+        * +100% melee damage when not in the center podium. So when she charges you, you can hit her hard (while still hers hitting you hard)
+        * -20% melee damage when in the center podium
         * -50% explosion damage
     * Crystals
         * Below 25% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health to respawn crystals. Higher difficulties mean more crystals respawned and faster respawning. This phase can only happen once per Ender Dragon. 
