@@ -38,7 +38,6 @@ import java.util.List;
 
 @Label(name = "Minions", description = "Shulkers that will make you float around.")
 public class MinionFeature extends Feature {
-
 	private final ForgeConfigSpec.ConfigValue<Integer> minionAtDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> minCooldownConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxCooldownConfig;
@@ -49,7 +48,7 @@ public class MinionFeature extends Feature {
 	public int minionAtDifficulty = 1;
 	public int minCooldown = 1200;
 	public int maxCooldown = 1800;
-	public double cooldownReduction = 0.006d;
+	public double cooldownReduction = 0.0055d;
 	public boolean dragonImmune = true;
 
 	public MinionFeature(Module module) {
@@ -180,7 +179,7 @@ public class MinionFeature extends Feature {
 				toRemove.add(goal.getGoal());
 		});
 		toRemove.forEach(shulker.goalSelector::removeGoal);
-		shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 80));
+		shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 100));
 
 		toRemove.clear();
 		shulker.targetSelector.goals.forEach(goal -> {
