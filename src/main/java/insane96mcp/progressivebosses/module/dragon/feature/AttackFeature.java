@@ -27,7 +27,6 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.EndPodiumFeature;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -36,7 +35,6 @@ import java.util.List;
 
 @Label(name = "Attack", description = "Makes the dragon hit harder and more often")
 public class AttackFeature extends Feature {
-//TODO first dragon config
 	private final ForgeConfigSpec.ConfigValue<Double> increasedDirectDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> increasedAcidPoolDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargePlayerMaxChanceConfig;
@@ -49,9 +47,8 @@ public class AttackFeature extends Feature {
 	//TODO Add a min chance for charge and fireball
 	public double increasedDirectDamage = 0.04d;
 	public double increasedAcidPoolDamage = 0.0475d;
-	public double chargePlayerMaxChance = 0.01d;
-	//TODO Maybe increase chance to 15/20%
-	public double fireballMaxChance = 0.10d;
+	public double chargePlayerMaxChance = 0.15d;
+	public double fireballMaxChance = 0.15d;
 	public double maxChanceAtDifficulty = 16;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
@@ -68,7 +65,7 @@ public class AttackFeature extends Feature {
 				.defineInRange("Bonus Acid Pool Damage", increasedAcidPoolDamage, 0.0, Double.MAX_VALUE);
 
 		chargePlayerMaxChanceConfig = Config.builder
-				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance each tick (1/20th of second) when roaming around to attack the player.\n" +
+				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance everytime she takes damage to charge the player.\n" +
 						"This defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
 						"The actual formula is: (this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
 				.defineInRange("Charge Player Max Chance", chargePlayerMaxChance, 0.0, Double.MAX_VALUE);
@@ -107,7 +104,7 @@ public class AttackFeature extends Feature {
 		this.fireball3DEffectCloud = this.fireball3DEffectCloudConfig.get();
 	}
 
-	@SubscribeEvent
+	/*@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
 		if (event.getEntity().getEntityWorld().isRemote)
 			return;
@@ -118,12 +115,60 @@ public class AttackFeature extends Feature {
 		if (!(event.getEntityLiving() instanceof EnderDragonEntity))
 			return;
 
-		chargePlayer((EnderDragonEntity) event.getEntity());
+	}*/
+
+	@SubscribeEvent
+	public void onDamageDealt(LivingHurtEvent event) {
+		if (event.getEntity().getEntityWorld().isRemote)
+			return;
+
+		if (!this.isEnabled())
+			return;
+
+		onDirectDamage(event);
+		onAcidDamage(event);
+
+		fireballPlayer(event);
+		chargePlayer(event);
 	}
 
-	private void chargePlayer(EnderDragonEntity dragon) {
+	private void onDirectDamage(LivingHurtEvent event) {
+		if (!(event.getSource().getImmediateSource() instanceof EnderDragonEntity))
+			return;
+		EnderDragonEntity wither = (EnderDragonEntity) event.getSource().getImmediateSource();
+
+		CompoundNBT compoundNBT = wither.getPersistentData();
+		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+
+		if (difficulty == 0f)
+			return;
+
+		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDirectDamage * difficulty)));
+	}
+
+	private void onAcidDamage(LivingHurtEvent event) {
+		if (!(event.getSource().getTrueSource() instanceof EnderDragonEntity) || !(event.getSource().getImmediateSource() instanceof AreaEffectCloudEntity))
+			return;
+		EnderDragonEntity wither = (EnderDragonEntity) event.getSource().getTrueSource();
+
+		CompoundNBT compoundNBT = wither.getPersistentData();
+		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+
+		if (difficulty == 0f)
+			return;
+
+		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAcidPoolDamage * difficulty)));
+	}
+
+
+	private void chargePlayer(LivingHurtEvent event) {
 		if (this.chargePlayerMaxChance == 0f)
 			return;
+
+		if (!(event.getEntityLiving() instanceof EnderDragonEntity))
+			return;
+
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntityLiving();
 
 		if (dragon.getFightManager() == null)
 			return;
@@ -155,9 +200,9 @@ public class AttackFeature extends Feature {
 		dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
 		Vector3d targetPos = player.getPositionVec();
 		if (targetPos.y < dragon.getPosY())
-			targetPos = targetPos.add(0d, -5d, 0d);
+			targetPos = targetPos.add(0d, -6d, 0d);
 		else
-			targetPos = targetPos.add(0d, 5d, 0d);
+			targetPos = targetPos.add(0d, 6d, 0d);
 		dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(targetPos);
 	}
 
@@ -178,6 +223,9 @@ public class AttackFeature extends Feature {
 
 		CompoundNBT tags = dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
+
+		if (difficulty == 0f)
+			return;
 
 		double chance = this.fireballMaxChance / maxChanceAtDifficulty;
 		chance *= difficulty;
@@ -200,47 +248,6 @@ public class AttackFeature extends Feature {
 		dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
 	}
 
-	@SubscribeEvent
-	public void onDamageDealt(LivingHurtEvent event) {
-		if (event.getEntity().getEntityWorld().isRemote)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		onDirectDamage(event);
-		onAcidDamage(event);
-
-		fireballPlayer(event);
-	}
-
-	private void onDirectDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getImmediateSource() instanceof EnderDragonEntity))
-			return;
-		EnderDragonEntity wither = (EnderDragonEntity) event.getSource().getImmediateSource();
-
-		CompoundNBT compoundNBT = wither.getPersistentData();
-		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
-
-		if (difficulty == 0f)
-			return;
-
-		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDirectDamage * difficulty)));
-	}
-
-	private void onAcidDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getTrueSource() instanceof EnderDragonEntity) || !(event.getSource().getImmediateSource() instanceof AreaEffectCloudEntity))
-			return;
-		EnderDragonEntity wither = (EnderDragonEntity) event.getSource().getTrueSource();
-
-		CompoundNBT compoundNBT = wither.getPersistentData();
-		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
-
-		if (difficulty == 0f)
-			return;
-
-		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAcidPoolDamage * difficulty)));
-	}
 
 	public boolean onFireballImpact(DragonFireballEntity fireball, @Nullable Entity shooter, RayTraceResult result) {
 		if (!this.isEnabled())
