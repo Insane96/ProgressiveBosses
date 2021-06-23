@@ -212,8 +212,12 @@ public class LarvaFeature extends Feature {
 		followRange.applyPersistentModifier(followRangeBonus);
 
 		ModifiableAttributeInstance movementSpeed = endermite.getAttribute(Attributes.MOVEMENT_SPEED);
-		AttributeModifier movementSpeedModifier = new AttributeModifier(Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, 1.0, AttributeModifier.Operation.MULTIPLY_BASE);
+		AttributeModifier movementSpeedModifier = new AttributeModifier(Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, 0.75d, AttributeModifier.Operation.MULTIPLY_BASE);
 		movementSpeed.applyPersistentModifier(movementSpeedModifier);
+
+		ModifiableAttributeInstance maxHealth = endermite.getAttribute(Attributes.MAX_HEALTH);
+		AttributeModifier maxHealthModifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, -0.5, AttributeModifier.Operation.MULTIPLY_BASE);
+		maxHealth.applyPersistentModifier(maxHealthModifier);
 
 		ModifiableAttributeInstance swimSpeed = endermite.getAttribute(ForgeMod.SWIM_SPEED.get());
 		if (swimSpeed != null) {
