@@ -9,7 +9,6 @@ import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PaneBlock;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.HoverPhase;
 import net.minecraft.entity.boss.dragon.phase.IPhase;
@@ -36,7 +35,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -44,14 +43,18 @@ import java.util.stream.Stream;
 public class CrystalFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Integer> moreCagesAtDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Integer> maxBonusCagesConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsAtDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Integer> maxMoreCrystalsConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
 
 	//TODO Way too many crystals to destroy, halve both max cages and crystals in towers
 	public int moreCagesAtDifficulty = 1;
+	public int maxBonusCages = 4;
 	public int moreCrystalsAtDifficulty = 8;
+	public int maxMoreCrystals = 5;
 	public double crystalRespawnChance = 0.05d;
 	public double crystalRespawnMultiplier = 0.15d;
 	public boolean explosionImmune = true;
@@ -60,13 +63,19 @@ public class CrystalFeature extends Feature {
 		super(Config.builder, module);
 		Config.builder.comment(this.getDescription()).push(this.getName());
 		moreCagesAtDifficultyConfig = Config.builder
-				.comment("At this difficulty cages will start to appear around other crystals too, starting from the lowest ones. -1 will disable this feature.")
+				.comment("At this difficulty cages will start to appear around other crystals too. -1 will disable this feature.")
 				.defineInRange("More Cages at Difficulty", moreCagesAtDifficulty, -1, Integer.MAX_VALUE);
+		maxBonusCagesConfig = Config.builder
+				.comment("Max number of bonus cages that can spawn around the crystals.")
+				.defineInRange("Max Bonus Cages", maxBonusCages, 0, 8);
 		moreCrystalsAtDifficultyConfig = Config.builder
-				.comment("At this difficulty more crystals will start to appear inside obsidian towers, starting from the lowest ones. -1 will disable this feature.")
+				.comment("At this difficulty more crystals will start to appear inside obsidian towers. -1 will disable this feature.")
 				.defineInRange("More Crystals at Difficulty", moreCrystalsAtDifficulty, -1, Integer.MAX_VALUE);
+		maxMoreCrystalsConfig = Config.builder
+				.comment("Max number of bonus crystals that can spawn inside the towers.")
+				.defineInRange("Max Bonus Crystals", maxMoreCrystals, 0, 10);
 		crystalRespawnChanceConfig = Config.builder
-				.comment("Chance everytime the dragon is hit (when below 1/4 of health) to trigger a Crystal respawn Phase. The phase can only happen once.")
+				.comment("Chance everytime the dragon is hit (when below 1/4 of health) to trigger a Crystal respawn Phase. The phase can only happen once. 1 means that the dragon will respawn crystals as soon as she's hit when below 25% health.")
 				.defineInRange("Crystal Respawn Chance", crystalRespawnChance, 0, Double.MAX_VALUE);
 		crystalRespawnMultiplierConfig = Config.builder
 				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")
@@ -81,7 +90,9 @@ public class CrystalFeature extends Feature {
 	public void loadConfig() {
 		super.loadConfig();
 		this.moreCagesAtDifficulty = this.moreCagesAtDifficultyConfig.get();
+		this.maxBonusCages = this.maxBonusCagesConfig.get();
 		this.moreCrystalsAtDifficulty = this.moreCrystalsAtDifficultyConfig.get();
+		this.maxMoreCrystals = this.maxMoreCrystalsConfig.get();
 		this.crystalRespawnChance = this.crystalRespawnChanceConfig.get();
 		this.crystalRespawnMultiplier = this.crystalRespawnMultiplierConfig.get();
 		this.explosionImmune = this.explosionImmuneConfig.get();
@@ -221,7 +232,7 @@ public class CrystalFeature extends Feature {
 	}
 
 	private void crystalCages(EnderDragonEntity dragon, float difficulty) {
-		if (this.moreCagesAtDifficulty == -1)
+		if (this.moreCagesAtDifficulty == -1 || this.maxBonusCages == 0)
 			return;
 
 		if (difficulty < moreCagesAtDifficulty)
@@ -244,8 +255,10 @@ public class CrystalFeature extends Feature {
 		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().down()).getBlock() != Blocks.BEDROCK);
 		//Remove all the crystals that already have cages around
 		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().up(2)).getBlock() == Blocks.IRON_BARS);
+		//Shuffle the list
+		Collections.shuffle(crystals);
 		//Order by the lowest crystal
-		crystals.sort(Comparator.comparingDouble(Entity::getPosY));
+		//crystals.sort(Comparator.comparingDouble(Entity::getPosY));
 
 		int crystalsInvolved = Math.round(difficulty - this.moreCagesAtDifficulty + 1);
 		int cagesGenerated = 0;
@@ -254,13 +267,13 @@ public class CrystalFeature extends Feature {
 			generateCage(crystal.world, crystal.getPosition());
 
 			cagesGenerated++;
-			if (cagesGenerated == crystalsInvolved)
+			if (cagesGenerated == crystalsInvolved || cagesGenerated == this.maxBonusCages)
 				break;
 		}
 	}
 
 	private void moreCrystals(EnderDragonEntity dragon, float difficulty) {
-		if (this.moreCrystalsAtDifficulty == -1)
+		if (this.moreCrystalsAtDifficulty == -1 || this.maxMoreCrystals == 0)
 			return;
 
 		if (difficulty < this.moreCrystalsAtDifficulty)
@@ -281,8 +294,10 @@ public class CrystalFeature extends Feature {
 		crystals.removeIf(c -> Math.sqrt(c.getDistanceSq(centerPodium)) <= 10d);
 		//Remove all the crystals that aren't on bedrock (so any player placed crystal or leftovers from previous fight will not be counted)
 		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().down()).getBlock() != Blocks.BEDROCK);
+		//Shuffle the list
+		Collections.shuffle(crystals);
 		//Order by the lowest crystal
-		crystals.sort(Comparator.comparingDouble(Entity::getPosY));
+		//crystals.sort(Comparator.comparingDouble(Entity::getPosY));
 
 		int crystalsInvolved = Math.round(difficulty - this.moreCrystalsAtDifficulty + 1);
 		int crystalSpawned = 0;
@@ -304,7 +319,7 @@ public class CrystalFeature extends Feature {
 			dragon.world.addEntity(newCrystal);
 
 			crystalSpawned++;
-			if (crystalSpawned == crystalsInvolved)
+			if (crystalSpawned == crystalsInvolved || crystalSpawned == this.maxMoreCrystals)
 				break;
 		}
 	}
