@@ -7,8 +7,10 @@
 		"MixinChargingPlayerPhase",
 		"MixinDragonFireballEntity",
 		"MixinEnderCrystalEntity",
+		"MixinHoldingPatternPhase",
 		"MixinHoverPhase",
-		"MixinLandingPhase"
+		"MixinLandingPhase",
+		"MixinStrafePlayerPhase"
 	],
 	"minVersion": "0.8"
 }

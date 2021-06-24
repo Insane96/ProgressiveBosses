@@ -338,6 +338,41 @@ public class AttackFeature extends Feature {
 		return true;
 	}
 
+	public void fireFireball(EnderDragonEntity dragon, LivingEntity attackTarget) {
+		Vector3d vector3d2 = dragon.getLook(1.0F);
+		double d6 = dragon.dragonPartHead.getPosX() - vector3d2.x;
+		double d7 = dragon.dragonPartHead.getPosYHeight(0.5D) + 0.5D;
+		double d8 = dragon.dragonPartHead.getPosZ() - vector3d2.z;
+		double d9 = attackTarget.getPosX() - d6;
+		double d10 = attackTarget.getPosYHeight(0.5D) - d7;
+		double d11 = attackTarget.getPosZ() - d8;
+		if (!dragon.isSilent()) {
+			dragon.world.playEvent((PlayerEntity)null, 1017, dragon.getPosition(), 0);
+		}
+
+		DragonFireballEntity dragonfireballentity = new DragonFireballEntity(dragon.world, dragon, d9, d10, d11);
+		dragonfireballentity.setLocationAndAngles(d6, d7, d8, 0.0F, 0.0F);
+		dragon.world.addEntity(dragonfireballentity);
+
+		if (dragon.getRNG().nextDouble() < 1d) {
+			for (int i = 0; i < 5; i++) {
+				d6 = dragon.dragonPartHead.getPosX() - vector3d2.x;
+				d7 = dragon.dragonPartHead.getPosYHeight(0.5D) + 0.5D;
+				d8 = dragon.dragonPartHead.getPosZ() - vector3d2.z;
+				d9 = attackTarget.getPosX() + RandomHelper.getDouble(dragon.getRNG(), -10d, 10d) - d6;
+				d10 = attackTarget.getPosYHeight(0.5D) + RandomHelper.getDouble(dragon.getRNG(), -7.5, 7.5d) - d7;
+				d11 = attackTarget.getPosZ() + RandomHelper.getDouble(dragon.getRNG(), -10d, 10d) - d8;
+				if (!dragon.isSilent()) {
+					dragon.world.playEvent((PlayerEntity)null, 1017, dragon.getPosition(), 0);
+				}
+
+				dragonfireballentity = new DragonFireballEntity(dragon.world, dragon, d9, d10, d11);
+				dragonfireballentity.setLocationAndAngles(d6, d7, d8, 0.0F, 0.0F);
+				dragon.world.addEntity(dragonfireballentity);
+			}
+		}
+	}
+
 	@Nullable
 	public PlayerEntity getRandomPlayer(World world, AxisAlignedBB boundingBox) {
 		List<PlayerEntity> players = world.getLoadedEntitiesWithinAABB(PlayerEntity.class, boundingBox);
