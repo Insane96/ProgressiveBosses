@@ -86,8 +86,11 @@ public class AttackFeature extends Feature {
 				.comment("On impact the Acid Fireball will deal magic damage in an area.")
 				.define("Fireball Explosion Magic Damage", fireballExplosionDamages);
 		fireball3DEffectCloudConfig = Config.builder
-				.comment("On impact the Acid Fireball will generate a 3D area of effect cloud instead of a normal flat one.")
+				.comment("On impact the Acid Fireball will generate a 3D area of effect cloud instead of a normal flat one. The 3D cloud lasts for half the time")
 				.define("Fireball 3D Area Effect Cloud", fireball3DEffectCloud);
+		fireballVelocityMultiplierConfig = Config.builder
+				.comment("Speed multiplier for the Dragon Fireball.")
+				.defineInRange("Fireball Velocity Multiplier", fireballVelocityMultiplier, 0d, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
 
@@ -102,20 +105,32 @@ public class AttackFeature extends Feature {
 		this.increaseMaxRiseAndFall = this.increaseMaxRiseAndFallConfig.get();
 		this.fireballExplosionDamages = this.fireballExplosionDamagesConfig.get();
 		this.fireball3DEffectCloud = this.fireball3DEffectCloudConfig.get();
+		this.fireballVelocityMultiplier = this.fireballVelocityMultiplierConfig.get();
 	}
 
-	/*@SubscribeEvent
-	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().getEntityWorld().isRemote)
+	@SubscribeEvent
+	public void onSpawn(EntityJoinWorldEvent event) {
+		fireballSpeed(event.getEntity());
+	}
+
+	private void fireballSpeed(Entity entity) {
+		if (!(entity instanceof DragonFireballEntity))
 			return;
 
-		if (!this.isEnabled())
+		if (!this.isEnabled() || this.fireballVelocityMultiplier == 0d)
 			return;
 
-		if (!(event.getEntityLiving() instanceof EnderDragonEntity))
-			return;
+		DragonFireballEntity fireball = (DragonFireballEntity) entity;
 
-	}*/
+		if (Math.abs(fireball.accelerationX) > 10 || Math.abs(fireball.accelerationY) > 10 || Math.abs(fireball.accelerationZ) > 10) {
+			entity.onKillCommand();
+			return;
+		}
+
+		fireball.accelerationX *= this.fireballVelocityMultiplier;
+		fireball.accelerationY *= this.fireballVelocityMultiplier;
+		fireball.accelerationZ *= this.fireballVelocityMultiplier;
+	}
 
 	@SubscribeEvent
 	public void onDamageDealt(LivingHurtEvent event) {
@@ -301,7 +316,7 @@ public class AttackFeature extends Feature {
 
 				areaeffectcloudentity.setParticleData(ParticleTypes.DRAGON_BREATH);
 				areaeffectcloudentity.setRadius(3.0F);
-				areaeffectcloudentity.setDuration(600);
+				areaeffectcloudentity.setDuration(300);
 				areaeffectcloudentity.setRadiusPerTick((7.0F - areaeffectcloudentity.getRadius()) / (float)areaeffectcloudentity.getDuration());
 				areaeffectcloudentity.addEffect(new EffectInstance(Effects.INSTANT_DAMAGE, 1, 1));
 				if (!list.isEmpty()) {
