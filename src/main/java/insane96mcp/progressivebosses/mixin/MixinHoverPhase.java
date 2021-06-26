@@ -13,6 +13,11 @@ public class MixinHoverPhase {
 	@Inject(at = @At("HEAD"), method = "getMaxRiseOrFall()F", cancellable = true)
 	private void getMaxRiseOrFall(CallbackInfoReturnable<Float> callback) {
 		if (Modules.dragon.attack.increaseMaxRiseAndFall)
-			callback.setReturnValue(18f);
+			callback.setReturnValue(32f);
+	}
+
+	@Inject(at = @At("HEAD"), method = "getIsStationary()Z", cancellable = true)
+	private void getIsStationary(CallbackInfoReturnable<Boolean> callback) {
+		callback.setReturnValue(false);
 	}
 }

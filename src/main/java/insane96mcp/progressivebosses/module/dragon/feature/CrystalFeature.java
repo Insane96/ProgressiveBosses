@@ -124,12 +124,11 @@ public class CrystalFeature extends Feature {
 			HoverPhase phase = (HoverPhase) dragon.getPhaseManager().getCurrentPhase();
 			if (spikesToRespawn.isEmpty()) {
 				dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
-				//dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, false);
 				return;
 			}
 			if (!engaged) {
 				double d0 = phase.targetLocation == null ? 0.0D : phase.targetLocation.squareDistanceTo(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ());
-				if (d0 < 12d) {
+				if (d0 < 16d) {
 					dragon.setMotion(Vector3d.ZERO);
 					engaged = true;
 				}
@@ -154,12 +153,11 @@ public class CrystalFeature extends Feature {
 					spikesToRespawn.remove(0);
 					if (spikesToRespawn.isEmpty()) {
 						dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
-						//dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, false);
 						return;
 					}
 					tick = 0;
 					engaged = false;
-					phase.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 6, spikesToRespawn.get(0).getCenterZ() + 0.5);
+					phase.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5.5, spikesToRespawn.get(0).getCenterZ() + 0.5);
 				}
 			}
 		}
@@ -205,7 +203,7 @@ public class CrystalFeature extends Feature {
 		}
 		dragon.getPhaseManager().setPhase(PhaseType.HOVER);
 		HoverPhase hover = (HoverPhase) dragon.getPhaseManager().getCurrentPhase();
-		hover.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 6, spikesToRespawn.get(0).getCenterZ() + 0.5);
+		hover.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5.5, spikesToRespawn.get(0).getCenterZ() + 0.5);
 		dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, true);
 		tick = 0;
 		engaged = false;
