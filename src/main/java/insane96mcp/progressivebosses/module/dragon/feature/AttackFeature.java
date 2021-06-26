@@ -4,7 +4,6 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
-import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
@@ -48,7 +47,6 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireball3DEffectCloudConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
 
-	//TODO Add a min chance for charge and fireball
 	public double increasedDirectDamage = 0.04d;
 	public double increasedAcidPoolDamage = 0.045d;
 	public double chargePlayerMaxChance = 0.45d;
@@ -177,18 +175,43 @@ public class AttackFeature extends Feature {
 	}
 
 	public boolean onHoldingPatternFindNewTarget(HoldingPatternPhase phase) {
-		boolean cancelTick = chargePlayer(phase);
-
-		if (!cancelTick)
-			cancelTick = fireballPlayer(phase);
-
-		return cancelTick;
-	}
-
-	public boolean chargePlayer(HoldingPatternPhase phase) {
 		if (phase.currentPath == null || !phase.currentPath.isFinished())
 			return false;
 
+		boolean chargePlayer = shouldChargePlayer(phase);
+		boolean fireballPlayer = shouldFireballPlayer(phase);
+
+		if (chargePlayer && fireballPlayer)
+			if (phase.dragon.getRNG().nextFloat() < 0.5f)
+				chargePlayer(phase);
+			else
+				fireballPlayer(phase);
+		else if (chargePlayer)
+			chargePlayer(phase);
+		else if (fireballPlayer)
+			fireballPlayer(phase);
+
+		return chargePlayer || fireballPlayer;
+	}
+
+	private void chargePlayer(HoldingPatternPhase phase) {
+		BlockPos centerPodium = phase.dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
+		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(phase.dragon.world, bb);
+
+		if (player == null)
+			return;
+
+		phase.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
+		Vector3d targetPos = player.getPositionVec();
+		if (targetPos.y < phase.dragon.getPosY())
+			targetPos = targetPos.add(0d, -6d, 0d);
+		else
+			targetPos = targetPos.add(0d, 6d, 0d);
+		phase.dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(targetPos);
+	}
+
+	private boolean shouldChargePlayer(HoldingPatternPhase phase) {
 		if (this.chargePlayerMaxChance == 0f)
 			return false;
 
@@ -204,37 +227,24 @@ public class AttackFeature extends Feature {
 		chance *= (1f / crystalsAlive);
 		chance = Math.min(this.chargePlayerMaxChance, chance);
 
-		double rng = RandomHelper.getDouble(phase.dragon.getRNG(), 0d, 1d);
+		double rng = phase.dragon.getRNG().nextDouble();
 
-		if (rng >= chance)
-			return false;
+		return rng < chance;
+	}
 
-		LogHelper.info("charge");
-
+	private void fireballPlayer(HoldingPatternPhase phase) {
 		BlockPos centerPodium = phase.dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
 		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(phase.dragon.world, bb);
 
 		if (player == null)
-			return false;
+			return;
 
-		LogHelper.info("charge2");
-
-		phase.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-		Vector3d targetPos = player.getPositionVec();
-		if (targetPos.y < phase.dragon.getPosY())
-			targetPos = targetPos.add(0d, -6d, 0d);
-		else
-			targetPos = targetPos.add(0d, 6d, 0d);
-		phase.dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(targetPos);
-
-		return true;
+		phase.dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
+		phase.dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
 	}
 
-	private boolean fireballPlayer(HoldingPatternPhase phase) {
-		if (phase.currentPath == null || !phase.currentPath.isFinished())
-			return false;
-
+	private boolean shouldFireballPlayer(HoldingPatternPhase phase) {
 		if (this.fireballMaxChance == 0f)
 			return false;
 
@@ -252,26 +262,9 @@ public class AttackFeature extends Feature {
 		int crystalsAlive = Math.max(phase.dragon.getFightManager().getNumAliveCrystals(), 1);
 		chance *= (1f / crystalsAlive);
 		chance = Math.min(this.fireballMaxChance, chance);
-		double rng = RandomHelper.getDouble(phase.dragon.getRNG(), 0d, 1d);
+		double rng = phase.dragon.getRNG().nextDouble();
 
-		if (rng >= chance)
-			return false;
-
-		LogHelper.info("fireball");
-
-		BlockPos centerPodium = phase.dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
-		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(phase.dragon.world, bb);
-
-		if (player == null)
-			return false;
-
-		LogHelper.info("fireball2");
-
-		phase.dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
-		phase.dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
-
-		return true;
+		return rng < chance;
 	}
 
 
