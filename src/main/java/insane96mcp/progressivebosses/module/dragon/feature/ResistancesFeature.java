@@ -59,18 +59,18 @@ public class ResistancesFeature extends Feature {
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 
-		bonusMeleeDamage(event, dragon);
+		bonusDamageNotInCenter(event, dragon);
 		meleeDamageReduction(event, dragon);
 		explosionDamageReduction(event, dragon);
 	}
 
 	private static final List<PhaseType<? extends IPhase>> sittingPhases = Arrays.asList(PhaseType.SITTING_SCANNING, PhaseType.SITTING_ATTACKING, PhaseType.SITTING_FLAMING, PhaseType.TAKEOFF);
 
-	private void bonusMeleeDamage(LivingDamageEvent event, EnderDragonEntity dragon) {
+	private void bonusDamageNotInCenter(LivingDamageEvent event, EnderDragonEntity dragon) {
 		if (this.bonusMeleeDamageWhenNotSitting == 0d)
 			return;
 
-		if (!sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()) && event.getSource().getImmediateSource() instanceof PlayerEntity) {
+		if (!sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()) && event.getSource().getTrueSource() instanceof PlayerEntity) {
 			event.setAmount((event.getAmount() * (float) (this.bonusMeleeDamageWhenNotSitting + 1)));
 		}
 	}
