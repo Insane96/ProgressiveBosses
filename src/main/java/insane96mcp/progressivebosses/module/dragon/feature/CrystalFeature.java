@@ -176,7 +176,7 @@ public class CrystalFeature extends Feature {
 			return;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		if (dragon.getHealth() > dragon.getMaxHealth() * 0.25d)
+		if (dragon.getHealth() > dragon.getMaxHealth() * 0.15d)
 			return;
 
 		CompoundNBT dragonTags = dragon.getPersistentData();
