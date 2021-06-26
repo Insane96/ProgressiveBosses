@@ -179,7 +179,7 @@ public class MinionFeature extends Feature {
 				toRemove.add(goal.getGoal());
 		});
 		toRemove.forEach(shulker.goalSelector::removeGoal);
-		shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 120));
+		shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 100));
 
 		toRemove.clear();
 		shulker.targetSelector.goals.forEach(goal -> {

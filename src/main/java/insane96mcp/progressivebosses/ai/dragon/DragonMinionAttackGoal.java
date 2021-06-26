@@ -32,7 +32,7 @@ public class DragonMinionAttackGoal extends Goal {
     }
 
     public void startExecuting() {
-        this.attackTime = this.baseAttackInterval + shulker.world.rand.nextInt(this.baseAttackInterval / 2);
+        this.attackTime = this.baseAttackInterval;
         shulker.updateArmorModifier(100);
     }
 
@@ -52,7 +52,7 @@ public class DragonMinionAttackGoal extends Goal {
         double d0 = shulker.getDistanceSq(livingentity.getPositionVec());
         if (d0 < 9216d) { //96 blocks
             if (this.attackTime <= 0) {
-                this.attackTime = this.baseAttackInterval + shulker.world.rand.nextInt(this.baseAttackInterval);
+                this.attackTime = this.baseAttackInterval + shulker.getRNG().nextInt(10) * this.baseAttackInterval / 2;
                 ShulkerBulletEntity bullet = new ShulkerBulletEntity(shulker.world, shulker, livingentity, shulker.getAttachmentFacing().getAxis());
                 //CompoundNBT nbt = bullet.getPersistentData();
                 //nbt.putBoolean(Strings.Tags.BLINDNESS_BULLET, true);
