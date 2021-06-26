@@ -50,9 +50,9 @@ public class AttackFeature extends Feature {
 
 	//TODO Add a min chance for charge and fireball
 	public double increasedDirectDamage = 0.04d;
-	public double increasedAcidPoolDamage = 0.0475d;
-	public double chargePlayerMaxChance = 0.33d;
-	public double fireballMaxChance = 0.33d;
+	public double increasedAcidPoolDamage = 0.045d;
+	public double chargePlayerMaxChance = 0.45d;
+	public double fireballMaxChance = 0.45d;
 	public double maxChanceAtDifficulty = 16;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
