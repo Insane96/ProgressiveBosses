@@ -4,6 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
@@ -48,7 +49,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
 
 	public double increasedDirectDamage = 0.04d;
-	public double increasedAcidPoolDamage = 0.045d;
+	public double increasedAcidPoolDamage = 0.033d;
 	public double chargePlayerMaxChance = 0.45d;
 	public double fireballMaxChance = 0.45d;
 	public double maxChanceAtDifficulty = 16;
@@ -202,6 +203,8 @@ public class AttackFeature extends Feature {
 		if (player == null)
 			return;
 
+		LogHelper.info("charging");
+
 		phase.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
 		Vector3d targetPos = player.getPositionVec();
 		if (targetPos.y < phase.dragon.getPosY())
@@ -239,6 +242,8 @@ public class AttackFeature extends Feature {
 
 		if (player == null)
 			return;
+
+		LogHelper.info("fireballing");
 
 		phase.dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
 		phase.dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
@@ -321,6 +326,7 @@ public class AttackFeature extends Feature {
 				areaeffectcloudentity.setParticleData(ParticleTypes.DRAGON_BREATH);
 				areaeffectcloudentity.setRadius(3.0F);
 				areaeffectcloudentity.setDuration(300);
+				areaeffectcloudentity.setWaitTime(10);
 				areaeffectcloudentity.setRadiusPerTick((7.0F - areaeffectcloudentity.getRadius()) / (float)areaeffectcloudentity.getDuration());
 				areaeffectcloudentity.addEffect(new EffectInstance(Effects.INSTANT_DAMAGE, 1, 1));
 				if (!list.isEmpty()) {
