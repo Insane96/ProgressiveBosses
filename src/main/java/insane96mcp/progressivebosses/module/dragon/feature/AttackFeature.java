@@ -4,6 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
@@ -12,6 +13,7 @@ import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.boss.dragon.phase.HoldingPatternPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -27,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.EndPodiumFeature;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -43,16 +46,18 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseMaxRiseAndFallConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireball3DEffectCloudConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
 
 	//TODO Add a min chance for charge and fireball
 	public double increasedDirectDamage = 0.04d;
 	public double increasedAcidPoolDamage = 0.0475d;
-	public double chargePlayerMaxChance = 0.15d;
-	public double fireballMaxChance = 0.15d;
+	public double chargePlayerMaxChance = 0.33d;
+	public double fireballMaxChance = 0.33d;
 	public double maxChanceAtDifficulty = 16;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
 	public boolean fireball3DEffectCloud = true;
+	public double fireballVelocityMultiplier = 2.5d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -65,11 +70,10 @@ public class AttackFeature extends Feature {
 				.defineInRange("Bonus Acid Pool Damage", increasedAcidPoolDamage, 0.0, Double.MAX_VALUE);
 
 		chargePlayerMaxChanceConfig = Config.builder
-				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance everytime she takes damage to charge the player.\n" +
-						"This defines the chance to attack the player each tick when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
+				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance before checking if she can land to charge the player.\n" +
+						"This defines the chance to attack the player when she has finished reaching a point while roaming when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
 						"The actual formula is: (this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
 				.defineInRange("Charge Player Max Chance", chargePlayerMaxChance, 0.0, Double.MAX_VALUE);
-		//TODO add a multiple fireball attack
 		fireballMaxChanceConfig = Config.builder
 				.comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance everytime she takes damage to spit a fireball.\n" +
 						"This defines the chance to spit a fireball everytime she takes damage when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
@@ -142,13 +146,10 @@ public class AttackFeature extends Feature {
 
 		onDirectDamage(event);
 		onAcidDamage(event);
-
-		fireballPlayer(event);
-		chargePlayer(event);
 	}
 
 	private void onDirectDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getImmediateSource() instanceof EnderDragonEntity))
+		if (!(event.getSource().getImmediateSource() instanceof EnderDragonEntity) || event.getEntityLiving() instanceof EnderDragonEntity)
 			return;
 		EnderDragonEntity wither = (EnderDragonEntity) event.getSource().getImmediateSource();
 
@@ -164,9 +165,9 @@ public class AttackFeature extends Feature {
 	private void onAcidDamage(LivingHurtEvent event) {
 		if (!(event.getSource().getTrueSource() instanceof EnderDragonEntity) || !(event.getSource().getImmediateSource() instanceof AreaEffectCloudEntity))
 			return;
-		EnderDragonEntity wither = (EnderDragonEntity) event.getSource().getTrueSource();
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getSource().getTrueSource();
 
-		CompoundNBT compoundNBT = wither.getPersistentData();
+		CompoundNBT compoundNBT = dragon.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (difficulty == 0f)
@@ -175,92 +176,102 @@ public class AttackFeature extends Feature {
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAcidPoolDamage * difficulty)));
 	}
 
+	public boolean onHoldingPatternFindNewTarget(HoldingPatternPhase phase) {
+		boolean cancelTick = chargePlayer(phase);
 
-	private void chargePlayer(LivingHurtEvent event) {
+		if (!cancelTick)
+			cancelTick = fireballPlayer(phase);
+
+		return cancelTick;
+	}
+
+	public boolean chargePlayer(HoldingPatternPhase phase) {
+		if (phase.currentPath == null || !phase.currentPath.isFinished())
+			return false;
+
 		if (this.chargePlayerMaxChance == 0f)
-			return;
+			return false;
 
-		if (!(event.getEntityLiving() instanceof EnderDragonEntity))
-			return;
+		if (phase.dragon.getFightManager() == null)
+			return false;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntityLiving();
-
-		if (dragon.getFightManager() == null)
-			return;
-
-		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
-			return;
-
-		CompoundNBT tags = dragon.getPersistentData();
+		CompoundNBT tags = phase.dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
 		double chance = this.chargePlayerMaxChance / maxChanceAtDifficulty;
 		chance *= difficulty;
-		int crystalsAlive = Math.max(dragon.getFightManager().getNumAliveCrystals(), 1);
+		int crystalsAlive = Math.max(phase.dragon.getFightManager().getNumAliveCrystals(), 1);
 		chance *= (1f / crystalsAlive);
 		chance = Math.min(this.chargePlayerMaxChance, chance);
 
-		double rng = RandomHelper.getDouble(dragon.getRNG(), 0d, 1d);
+		double rng = RandomHelper.getDouble(phase.dragon.getRNG(), 0d, 1d);
 
 		if (rng >= chance)
-			return;
+			return false;
 
-		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		LogHelper.info("charge");
+
+		BlockPos centerPodium = phase.dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
-		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(dragon.world, bb);
+		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(phase.dragon.world, bb);
 
 		if (player == null)
-			return;
+			return false;
 
-		dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
+		LogHelper.info("charge2");
+
+		phase.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
 		Vector3d targetPos = player.getPositionVec();
-		if (targetPos.y < dragon.getPosY())
+		if (targetPos.y < phase.dragon.getPosY())
 			targetPos = targetPos.add(0d, -6d, 0d);
 		else
 			targetPos = targetPos.add(0d, 6d, 0d);
-		dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(targetPos);
+		phase.dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(targetPos);
+
+		return true;
 	}
 
-	private void fireballPlayer(LivingHurtEvent event) {
+	private boolean fireballPlayer(HoldingPatternPhase phase) {
+		if (phase.currentPath == null || !phase.currentPath.isFinished())
+			return false;
+
 		if (this.fireballMaxChance == 0f)
-			return;
+			return false;
 
-		if (!(event.getEntityLiving() instanceof EnderDragonEntity))
-			return;
+		if (phase.dragon.getFightManager() == null)
+			return false;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntityLiving();
-
-		if (dragon.getFightManager() == null)
-			return;
-
-		if (dragon.getPhaseManager().getCurrentPhase().getType() != PhaseType.HOLDING_PATTERN)
-			return;
-
-		CompoundNBT tags = dragon.getPersistentData();
+		CompoundNBT tags = phase.dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (difficulty == 0f)
-			return;
+			return false;
 
 		double chance = this.fireballMaxChance / maxChanceAtDifficulty;
 		chance *= difficulty;
-		int crystalsAlive = Math.max(dragon.getFightManager().getNumAliveCrystals(), 1);
+		int crystalsAlive = Math.max(phase.dragon.getFightManager().getNumAliveCrystals(), 1);
 		chance *= (1f / crystalsAlive);
 		chance = Math.min(this.fireballMaxChance, chance);
-		double rng = RandomHelper.getDouble(dragon.getRNG(), 0d, 1d);
+		double rng = RandomHelper.getDouble(phase.dragon.getRNG(), 0d, 1d);
 
 		if (rng >= chance)
-			return;
+			return false;
 
-		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		LogHelper.info("fireball");
+
+		BlockPos centerPodium = phase.dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
-		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(dragon.world, bb);
+		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(phase.dragon.world, bb);
 
 		if (player == null)
-			return;
+			return false;
 
-		dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
-		dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
+		LogHelper.info("fireball2");
+
+		phase.dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
+		phase.dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
+
+		return true;
 	}
 
 
