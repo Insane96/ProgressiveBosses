@@ -13,7 +13,7 @@
         * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn a 3D Area of Effect Cloud
     * Minions
         * Will no longer spawn if there are no players in the main island
-        * Changed cooldown reduction (-10 ticks per difficulty -> -0.55% per difficulty)
+        * Changed cooldown reduction (-10 ticks per difficulty -> -0.5% per difficulty)
         * Shot slower (1 projectile every 4 to 2 seconds -> 1 projectile every 10 to 5 seconds)
         * No longer take damage from the Ender Dragon
         * Can now spawn on towers
@@ -27,7 +27,7 @@
         * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time, otherwise 500 + the bonus experience
         * Can now have custom rewards difficulty based (like the Wither)
     * Vulnerabilities and Resistances
-        * +100% melee damage when not in the center podium. So when she charges you, you can hit her hard (while still hers hitting you hard)
+        * +80% damage from players when not in the center podium. This is done to let the player deal significant damage to the Dragon when she charges him, and to be able to deal some damage with arrows since its almost impossible to hit her head and deal good damage while she's flying.
         * -20% melee damage when in the center podium
         * -50% explosion damage
     * Crystals

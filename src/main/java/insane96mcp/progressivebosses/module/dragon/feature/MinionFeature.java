@@ -48,7 +48,7 @@ public class MinionFeature extends Feature {
 	public int minionAtDifficulty = 1;
 	public int minCooldown = 1200;
 	public int maxCooldown = 1800;
-	public double cooldownReduction = 0.0055d;
+	public double cooldownReduction = 0.005d;
 	public boolean dragonImmune = true;
 
 	public MinionFeature(Module module) {
