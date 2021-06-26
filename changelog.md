@@ -6,11 +6,11 @@
         * Increased Max Health regeneration (0.5 -> 1.0)
     * Attack
         * Reduced Dragon bonus attack damage per difficulty (+10% damage per difficulty -> +4% damage per difficulty)
-        * Reduced Dragon bonus damage from acid (+10% damage per difficulty -> +4.75% damage per difficulty)
+        * Reduced Dragon bonus damage from acid (+10% damage per difficulty -> +3.3% damage per difficulty)
         * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously
         * Fireballing has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased (1.5% -> 45%)
         * Charging a player has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased (1.5% -> 45%)
-        * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn a 3D Area of Effect Cloud, but have halved duration. Fireballs are also much faster
+        * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn (faster than vanilla) a 3D Area of Effect Cloud. The cloud has halved duration. Fireballs are also much faster
     * Minions
         * Will no longer spawn if there are no players in the main island
         * Changed cooldown reduction (-10 ticks per difficulty -> -0.5% per difficulty)

@@ -47,6 +47,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireball3DEffectCloudConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> maxBonusFireballConfig;
 
 	public double increasedDirectDamage = 0.04d;
 	public double increasedAcidPoolDamage = 0.033d;
@@ -57,6 +58,7 @@ public class AttackFeature extends Feature {
 	public boolean fireballExplosionDamages = true;
 	public boolean fireball3DEffectCloud = true;
 	public double fireballVelocityMultiplier = 2.5d;
+	public double maxBonusFireball = 0.2d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -94,6 +96,9 @@ public class AttackFeature extends Feature {
 		fireballVelocityMultiplierConfig = Config.builder
 				.comment("Speed multiplier for the Dragon Fireball.")
 				.defineInRange("Fireball Velocity Multiplier", fireballVelocityMultiplier, 0d, Double.MAX_VALUE);
+		maxBonusFireballConfig = Config.builder
+				.comment("The dragon will fire (up to) this more fireballs per difficulty. A decimal number dictates the chance to shot 1 more fireball, e.g. at difficulty 2 the dragon can fire up to 1.4 fireballs, meaning that the dragon will shot 1 fireball and has 40% chance to shot one more. The first fireball is always shot at the player while the bonus ones have slightly random angles.")
+				.defineInRange("Bonus Fireballs", maxBonusFireball, 0d, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
 
@@ -364,22 +369,30 @@ public class AttackFeature extends Feature {
 		dragonfireballentity.setLocationAndAngles(d6, d7, d8, 0.0F, 0.0F);
 		dragon.world.addEntity(dragonfireballentity);
 
-		if (dragon.getRNG().nextDouble() < 1d) {
-			for (int i = 0; i < 5; i++) {
-				d6 = dragon.dragonPartHead.getPosX() - vector3d2.x;
-				d7 = dragon.dragonPartHead.getPosYHeight(0.5D) + 0.5D;
-				d8 = dragon.dragonPartHead.getPosZ() - vector3d2.z;
-				d9 = attackTarget.getPosX() + RandomHelper.getDouble(dragon.getRNG(), -10d, 10d) - d6;
-				d10 = attackTarget.getPosYHeight(0.5D) + RandomHelper.getDouble(dragon.getRNG(), -7.5, 7.5d) - d7;
-				d11 = attackTarget.getPosZ() + RandomHelper.getDouble(dragon.getRNG(), -10d, 10d) - d8;
-				if (!dragon.isSilent()) {
-					dragon.world.playEvent((PlayerEntity)null, 1017, dragon.getPosition(), 0);
-				}
+		CompoundNBT compoundNBT = dragon.getPersistentData();
+		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+		double fireballs = RandomHelper.getDouble(dragon.getRNG(), 1f, maxBonusFireball * difficulty);
+		double mod = fireballs - (int)fireballs;
+		fireballs -= mod;
+		if (dragon.getRNG().nextDouble() < mod)
+			fireballs++;
 
-				dragonfireballentity = new DragonFireballEntity(dragon.world, dragon, d9, d10, d11);
-				dragonfireballentity.setLocationAndAngles(d6, d7, d8, 0.0F, 0.0F);
-				dragon.world.addEntity(dragonfireballentity);
+		LogHelper.info("fireballs: %f", fireballs);
+
+		for (int i = 0; i < fireballs; i++) {
+			d6 = dragon.dragonPartHead.getPosX() - vector3d2.x;
+			d7 = dragon.dragonPartHead.getPosYHeight(0.5D) + 0.5D;
+			d8 = dragon.dragonPartHead.getPosZ() - vector3d2.z;
+			d9 = attackTarget.getPosX() + RandomHelper.getDouble(dragon.getRNG(), -(fireballs), fireballs) - d6;
+			d10 = attackTarget.getPosYHeight(0.5D) + RandomHelper.getDouble(dragon.getRNG(), -(fireballs), fireballs) - d7;
+			d11 = attackTarget.getPosZ() + RandomHelper.getDouble(dragon.getRNG(), -(fireballs), fireballs) - d8;
+			if (!dragon.isSilent()) {
+				dragon.world.playEvent((PlayerEntity)null, 1017, dragon.getPosition(), 0);
 			}
+
+			dragonfireballentity = new DragonFireballEntity(dragon.world, dragon, d9, d10, d11);
+			dragonfireballentity.setLocationAndAngles(d6, d7, d8, 0.0F, 0.0F);
+			dragon.world.addEntity(dragonfireballentity);
 		}
 	}
 
