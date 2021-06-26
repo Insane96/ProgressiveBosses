@@ -120,7 +120,7 @@ public class CrystalFeature extends Feature {
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (dragon.getPhaseManager().getCurrentPhase().getType().equals(PhaseType.HOVER)) {
-			int tickSpawnCystal = (int) (100 - (difficulty / 2));
+			int tickSpawnCystal = (int) (50 - (difficulty / 4));
 			HoverPhase phase = (HoverPhase) dragon.getPhaseManager().getCurrentPhase();
 			if (spikesToRespawn.isEmpty()) {
 				dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
@@ -137,7 +137,7 @@ public class CrystalFeature extends Feature {
 			else {
 				tick++;
 				dragon.setMotion(Vector3d.ZERO);
-				if (tick <= 30)
+				if (tick <= 25)
 					dragon.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 4F, 1.0F);
 				if (tick >= tickSpawnCystal) {
 					if (dragon.getHealth() < 10f) {
