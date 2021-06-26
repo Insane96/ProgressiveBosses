@@ -50,7 +50,6 @@ public class CrystalFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
 
-	//TODO Way too many crystals to destroy, halve both max cages and crystals in towers
 	public int moreCagesAtDifficulty = 1;
 	public int maxBonusCages = 4;
 	public int moreCrystalsAtDifficulty = 8;
@@ -150,7 +149,7 @@ public class CrystalFeature extends Feature {
 					crystal.setShowBottom(true);
 					crystal.world.createExplosion(dragon, crystal.getPosX() + 0.5, crystal.getPosY() + 0.5, crystal.getPosZ() + 0.5, 5f, Explosion.Mode.NONE);
 					dragon.world.addEntity(crystal);
-					dragon.attackEntityPartFrom(dragon.dragonPartHead, DamageSource.causeExplosionDamage(dragon), 20f);
+					dragon.attackEntityPartFrom(dragon.dragonPartHead, DamageSource.causeExplosionDamage(dragon), 10f);
 					generateCage(crystal.world, crystal.getPosition());
 					spikesToRespawn.remove(0);
 					if (spikesToRespawn.isEmpty()) {
@@ -160,7 +159,7 @@ public class CrystalFeature extends Feature {
 					}
 					tick = 0;
 					engaged = false;
-					phase.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5, spikesToRespawn.get(0).getCenterZ() + 0.5);
+					phase.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 6, spikesToRespawn.get(0).getCenterZ() + 0.5);
 				}
 			}
 		}
@@ -206,7 +205,7 @@ public class CrystalFeature extends Feature {
 		}
 		dragon.getPhaseManager().setPhase(PhaseType.HOVER);
 		HoverPhase hover = (HoverPhase) dragon.getPhaseManager().getCurrentPhase();
-		hover.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5, spikesToRespawn.get(0).getCenterZ() + 0.5);
+		hover.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 6, spikesToRespawn.get(0).getCenterZ() + 0.5);
 		dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, true);
 		tick = 0;
 		engaged = false;
