@@ -18,20 +18,20 @@ import java.util.List;
 @Label(name = "Resistances & Vulnerabilities", description = "Handles the Damage Resistances and Vulnerabilities")
 public class ResistancesFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Double> bonusMeleeDamageWhenNotSittingConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> bonusDamageWhenNotSittingConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> damageRedutionWhenSittingConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
 
-	public double bonusMeleeDamageWhenNotSitting = 0.80d;
+	public double bonusDamageWhenNotSitting = 0.80d;
 	public double damageRedutionWhenSitting = 0.20d;
 	public double explosionDamageReduction = 0.50d;
 
 	public ResistancesFeature(Module module) {
 		super(Config.builder, module);
 		Config.builder.comment(this.getDescription()).push(this.getName());
-		bonusMeleeDamageWhenNotSittingConfig = Config.builder
-				.comment("Percentage Bonus Melee damage while the Ender Dragon is not at the center.")
-				.defineInRange("Bonus Melee damage when not sitting", bonusMeleeDamageWhenNotSitting, 0d, Double.MAX_VALUE);
+		bonusDamageWhenNotSittingConfig = Config.builder
+				.comment("Percentage Bonus damage while the Ender Dragon is not at the center.")
+				.defineInRange("Bonus damage when not sitting", bonusDamageWhenNotSitting, 0d, Double.MAX_VALUE);
 		damageRedutionWhenSittingConfig = Config.builder
 				.comment("Melee Damage reduction while the Ender Dragon is at the center.")
 				.defineInRange("Melee Damage reduction while at the center", damageRedutionWhenSitting, 0d, Double.MAX_VALUE);
@@ -44,7 +44,7 @@ public class ResistancesFeature extends Feature {
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.bonusMeleeDamageWhenNotSitting = this.bonusMeleeDamageWhenNotSittingConfig.get();
+		this.bonusDamageWhenNotSitting = this.bonusDamageWhenNotSittingConfig.get();
 		this.damageRedutionWhenSitting = this.damageRedutionWhenSittingConfig.get();
 		this.explosionDamageReduction = this.explosionDamageReductionConfig.get();
 	}
@@ -67,11 +67,11 @@ public class ResistancesFeature extends Feature {
 	private static final List<PhaseType<? extends IPhase>> sittingPhases = Arrays.asList(PhaseType.SITTING_SCANNING, PhaseType.SITTING_ATTACKING, PhaseType.SITTING_FLAMING, PhaseType.TAKEOFF);
 
 	private void bonusDamageNotInCenter(LivingDamageEvent event, EnderDragonEntity dragon) {
-		if (this.bonusMeleeDamageWhenNotSitting == 0d)
+		if (this.bonusDamageWhenNotSitting == 0d)
 			return;
 
 		if (!sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()) && event.getSource().getTrueSource() instanceof PlayerEntity) {
-			event.setAmount((event.getAmount() * (float) (this.bonusMeleeDamageWhenNotSitting + 1)));
+			event.setAmount((event.getAmount() * (float) (this.bonusDamageWhenNotSitting + 1)));
 		}
 	}
 
