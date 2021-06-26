@@ -3,11 +3,13 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.IPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -23,7 +25,7 @@ public class ResistancesFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
 
 	public double bonusDamageWhenNotSitting = 0.80d;
-	public double damageRedutionWhenSitting = 0.20d;
+	public double damageRedutionWhenSitting = 0.003d;
 	public double explosionDamageReduction = 0.50d;
 
 	public ResistancesFeature(Module module) {
@@ -33,7 +35,7 @@ public class ResistancesFeature extends Feature {
 				.comment("Percentage Bonus damage while the Ender Dragon is not at the center.")
 				.defineInRange("Bonus damage when not sitting", bonusDamageWhenNotSitting, 0d, Double.MAX_VALUE);
 		damageRedutionWhenSittingConfig = Config.builder
-				.comment("Melee Damage reduction while the Ender Dragon is at the center.")
+				.comment("Melee Damage reduction per difficulty while the Ender Dragon is at the center.")
 				.defineInRange("Melee Damage reduction while at the center", damageRedutionWhenSitting, 0d, Double.MAX_VALUE);
 		explosionDamageReductionConfig = Config.builder
 				.comment("Damage reduction when hit by explosions.")
@@ -79,8 +81,11 @@ public class ResistancesFeature extends Feature {
 		if (this.damageRedutionWhenSitting == 0d)
 			return;
 
+		CompoundNBT compoundNBT = dragon.getPersistentData();
+		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+
 		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()) && event.getSource().getImmediateSource() instanceof PlayerEntity) {
-			event.setAmount((event.getAmount() - (float) (event.getAmount() * this.damageRedutionWhenSitting)));
+			event.setAmount((event.getAmount() - (float) (event.getAmount() * (this.damageRedutionWhenSitting * difficulty))));
 		}
 	}
 
