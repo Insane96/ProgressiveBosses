@@ -74,7 +74,7 @@ public class CrystalFeature extends Feature {
 				.comment("Max number of bonus crystals that can spawn inside the towers.")
 				.defineInRange("Max Bonus Crystals", maxMoreCrystals, 0, 10);
 		crystalRespawnChanceConfig = Config.builder
-				.comment("Chance everytime the dragon is hit (when below 1/4 of health) to trigger a Crystal respawn Phase. The phase can only happen once. 1 means that the dragon will respawn crystals as soon as she's hit when below 25% health.")
+				.comment("Chance everytime the dragon is hit (when below 15% of health) to trigger a Crystal respawn Phase. The phase can only happen once. 1 means that the dragon will respawn crystals as soon as she's hit when below 15% health.")
 				.defineInRange("Crystal Respawn Chance", crystalRespawnChance, 0, Double.MAX_VALUE);
 		crystalRespawnMultiplierConfig = Config.builder
 				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")

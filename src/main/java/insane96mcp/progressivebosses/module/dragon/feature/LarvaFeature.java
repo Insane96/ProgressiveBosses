@@ -47,10 +47,9 @@ public class LarvaFeature extends Feature {
 
 	public int larvaAtDifficulty = 1;
 	public int bonusLarvaEveryDifficulty = 2;
-	//TODO Maybe increase the max spawned since the cooldown is not reduced?
-	public int maxSpawned = 6;
+	public int maxSpawned = 8;
 	public int minCooldown = 600;
-	public int maxCooldown = 1000;
+	public int maxCooldown = 1200;
 	public boolean dragonImmune = true;
 
 	public LarvaFeature(Module module) {

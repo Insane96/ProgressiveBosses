@@ -16,7 +16,6 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Health", description = "Bonus Health and Bonus regeneration.")
-//TODO Maybe disable this if crystals respawn is added
 public class HealthFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Double> bonusPerDifficultyConfig;
