@@ -1,9 +1,12 @@
 package insane96mcp.progressivebosses.ai.dragon;
 
+import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.utils.DragonMinionHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.monster.ShulkerEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.world.Difficulty;
 
@@ -54,8 +57,10 @@ public class DragonMinionAttackGoal extends Goal {
             if (this.attackTime <= 0) {
                 this.attackTime = this.baseAttackInterval + shulker.getRNG().nextInt(10) * this.baseAttackInterval / 2;
                 ShulkerBulletEntity bullet = new ShulkerBulletEntity(shulker.world, shulker, livingentity, shulker.getAttachmentFacing().getAxis());
-                //CompoundNBT nbt = bullet.getPersistentData();
-                //nbt.putBoolean(Strings.Tags.BLINDNESS_BULLET, true);
+                if (DragonMinionHelper.isBlindingMinion(this.shulker)) {
+                    CompoundNBT nbt = bullet.getPersistentData();
+                    nbt.putBoolean(Strings.Tags.BLINDNESS_BULLET, true);
+                }
                 shulker.world.addEntity(bullet);
                 shulker.playSound(SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (shulker.world.rand.nextFloat() - shulker.world.rand.nextFloat()) * 0.2F + 1.0F);
             }

@@ -9,6 +9,7 @@
         * Reduced Dragon bonus damage from acid (+10% damage per difficulty -> +3.3% damage per difficulty)
         * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously
         * Fireballing has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased (1.5% -> 45%)
+        * Dragon can also fire up to 1 more fireball every 5 difficulty
         * Charging a player has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased (1.5% -> 45%)
         * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn (faster than vanilla) a 3D Area of Effect Cloud. The cloud has halved duration. Fireballs are also much faster
     * Minions
@@ -16,6 +17,7 @@
         * Changed cooldown reduction (-10 ticks per difficulty -> -0.5% per difficulty)
         * Shot slower (1 projectile every 4 to 2 seconds -> 1 projectile every 10 to 5 seconds)
         * No longer take damage from the Ender Dragon
+        * 0.3% chance per difficulty to spawn as a Bliding Minion. Blinding Minions's bullets will give blindness in addition to levitation
         * Can now spawn on towers
     * Larvae
         * Cooldown reduced (52.5-60 secs -> 30-50 secs)
@@ -34,7 +36,7 @@
         * Below 25% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health (5 due to Vulnerabilities and Resistances module) to respawn crystals. Higher difficulties mean more crystals respawned and faster respawning. This phase can only happen once per Ender Dragon
         * Maximum 4 bonus cages can now generate and maximum 5 bonus crystals
         * Crystals are now immune to explosions
-        * Leaving and reentering The End no longer respawns the cages / more crystals again
+        * Leaving and reentering The End no longer respawns the cages / more crystals again  
 * Wither
     * Hugely increased Bonus Experience (+20% per difficulty -> +50% per difficulty)
     * Cleaned up some things

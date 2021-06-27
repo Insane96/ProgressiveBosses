@@ -10,6 +10,7 @@
 		"MixinHoldingPatternPhase",
 		"MixinHoverPhase",
 		"MixinLandingPhase",
+		"MixinShulkerBulletEntity",
 		"MixinStrafePlayerPhase"
 	],
 	"minVersion": "0.8"

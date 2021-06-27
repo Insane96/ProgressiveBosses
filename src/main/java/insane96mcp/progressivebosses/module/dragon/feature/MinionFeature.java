@@ -8,7 +8,10 @@ import insane96mcp.progressivebosses.ai.dragon.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.ai.dragon.PBNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
+import insane96mcp.progressivebosses.utils.DragonMinionHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
@@ -18,15 +21,22 @@ import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.monster.ShulkerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.particles.ParticleTypes;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.Heightmap;
 import net.minecraft.world.gen.feature.EndPodiumFeature;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -42,13 +52,15 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> minCooldownConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxCooldownConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> cooldownReductionConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> blindingChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> dragonImmuneConfig;
-	//TODO Chance for black shulkers that spawn Blindness bullets
+	//TODO Chance for black shulkers that spawn Blindness bullets. Use mixin on ShulkerBulletEntity#onEntityHit
 
 	public int minionAtDifficulty = 1;
 	public int minCooldown = 1200;
 	public int maxCooldown = 1800;
 	public double cooldownReduction = 0.005d;
+	public double blindingChance = 0.003d;
 	public boolean dragonImmune = true;
 
 	public MinionFeature(Module module) {
@@ -66,6 +78,9 @@ public class MinionFeature extends Feature {
 		cooldownReductionConfig = Config.builder
 				.comment("Percentage cooldown reduction per difficulty for the cooldown of Minion spawning.")
 				.defineInRange("Cooldown Reduction", cooldownReduction, 0d, 1d);
+		blindingChanceConfig = Config.builder
+				.comment("Percentage chance per difficulty for a Minion to spawn as a Blinding Minion.")
+				.defineInRange("Blinding Chance", blindingChance, 0d, 1d);
 		dragonImmuneConfig = Config.builder
 				.comment("Dragon Minions are immune to any damage from the Ender Dragon, either direct or Acid.")
 				.define("Dragon Immune", dragonImmune);
@@ -79,6 +94,7 @@ public class MinionFeature extends Feature {
 		this.minCooldown = this.minCooldownConfig.get();
 		this.maxCooldown = this.maxCooldownConfig.get();
 		this.cooldownReduction = this.cooldownReductionConfig.get();
+		this.blindingChance = this.blindingChanceConfig.get();
 		this.dragonImmune = this.dragonImmuneConfig.get();
 	}
 
@@ -202,13 +218,13 @@ public class MinionFeature extends Feature {
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 		//TODO Scaling health
 
+		boolean isBlindingMinion = world.getRandom().nextDouble() < this.blindingChance * difficulty;
+
 		shulker.setPosition(pos.x, pos.y, pos.z);
 		shulker.setCustomName(new TranslationTextComponent(Strings.Translatable.DRAGON_MINION));
 		shulker.deathLootTable = LootTables.EMPTY;
 		shulker.enablePersistence();
-		CompoundNBT compound = shulker.serializeNBT();
-		compound.putByte("Color", (byte) 10);
-		shulker.deserializeNBT(compound);
+		DragonMinionHelper.setMinionColor(shulker, isBlindingMinion);
 
 		ModifiableAttributeInstance followRange = shulker.getAttribute(Attributes.FOLLOW_RANGE);
 		AttributeModifier followRangeBonus = new AttributeModifier(Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 64, AttributeModifier.Operation.ADDITION);
@@ -236,5 +252,26 @@ public class MinionFeature extends Feature {
 
 		if (event.getSource().getTrueSource() instanceof EnderDragonEntity || event.getSource().getImmediateSource() instanceof EnderDragonEntity)
 			event.setCanceled(true);
+	}
+
+	public void onBulletTick(ShulkerBulletEntity shulkerBulletEntity) {
+		if (!shulkerBulletEntity.world.isRemote && shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET)) {
+			((ServerWorld)shulkerBulletEntity.world).spawnParticle(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getPosX(), shulkerBulletEntity.getPosY(), shulkerBulletEntity.getPosZ(), 1, 0d, 0d, 0d, 0d);
+		}
+	}
+
+	public void onBulletEntityHit(ShulkerBulletEntity shulkerBulletEntity, EntityRayTraceResult rayTraceResult) {
+		Entity entityHit = rayTraceResult.getEntity();
+		Entity entityOwner = shulkerBulletEntity.func_234616_v_();
+		LivingEntity livingEntityOwner = entityOwner instanceof LivingEntity ? (LivingEntity)entityOwner : null;
+		boolean flag = entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(shulkerBulletEntity, livingEntityOwner).setProjectile(), 4.0F);
+		if (flag) {
+			shulkerBulletEntity.applyEnchantments(livingEntityOwner, entityHit);
+			if (entityHit instanceof LivingEntity) {
+				((LivingEntity)entityHit).addPotionEffect(new EffectInstance(Effects.LEVITATION, 200));
+				if (shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
+					((LivingEntity)entityHit).addPotionEffect(new EffectInstance(Effects.BLINDNESS, 100));
+			}
+		}
 	}
 }
