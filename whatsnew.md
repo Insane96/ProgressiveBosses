@@ -40,10 +40,59 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Increased the max number of minions that can be near a Wither before he stops spawning them (16 -> 20). Also, the range to check for max minions around has been halved. (32 blocks -> 16 blocks)
     * Reduced the max amount of Minions spawned at once. (8 -> 6)
 * Brand NEW Attack Feature
-    * **Overhauls the attacks of the wither**
+    * **Overhauls the attacks of the Wither**
     * Wither will no longer follow the player unless it's not in range (so the Wither will no longer try to stand on the head of the player ...).
     * Wither's middle head will now fire skulls up to 75% faster when the target is near him.
     * Brand new Charge Attack: When the Wither takes damage there's 1.5% chance (doubled when the Wither's below half health) to start the charge attack. The Wither will enter an invincible status where after 3 seconds will target the nearest player and charges to him dealing massive damage and knocking back everyone in its path. During the whole charge phase the Wither regens 1% of missing health per second.
     * New Barrage attack: when the Wither takes damage there's a 0.2% chance (max 5%, both doubled when the Wither's below half health) per difficulty to trigger the barrage attack. The Wither will start shoting skulls to random targets nearby at the rate of 10 per second for 2.5 seconds (duration doubled when below half health).
     * Wither Skulls now deal 2% more damage per difficulty and travel 2.5 times as fast.
     * There's a 10% chance when attacking to shot 3 low precision skulls instead of 1.
+  
+## Dragon
+* Difficulty Feature
+    * **It's the base feature of the mod, with this disabled almost every Dragon feature will not work.**
+    * Allows the Dragon to get the difficulty on spawn.
+    * Also has a new config option to set the starting difficulty.
+* Health Feature
+    * **Takes care of the Dragon's health**
+    * Increased Max Health regeneration (0.5 -> 1.0)
+* Brand NEW Attack Feature
+    * **Overhauls the attacks of the Dragon**
+    * Reduced Dragon bonus attack damage per difficulty (+10% damage per difficulty -> +4% damage per difficulty)
+    * Reduced Dragon bonus damage from acid (+10% damage per difficulty -> +3.3% damage per difficulty)
+    * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously
+    * Fireballing has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased (1.5% -> 45%)
+    * Dragon can also fire up to 1 more fireball every 5 difficulty
+    * Charging a player has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased (1.5% -> 45%)
+    * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn (faster than vanilla) a 3D Area of Effect Cloud. The cloud has halved duration. Fireballs are also much faster
+* Minions Feature
+    * **Let the Dragon get some help**
+    * Will no longer spawn if there are no players in the main island
+    * Changed cooldown reduction (-10 ticks per difficulty -> -0.5% per difficulty)
+    * Shot slower (1 projectile every 4 to 2 seconds -> 1 projectile every 10 to 5 seconds)
+    * No longer take damage from the Ender Dragon
+    * 0.3% chance per difficulty to spawn as a Bliding Minion. Blinding Minions's bullets will give blindness in addition to levitation
+    * Can now spawn on towers
+* Larvae Feature
+    * **Small annoying pests**
+    * Cooldown reduced (52.5-60 secs -> 30-50 secs)
+    * Removed Cooldown Reduction
+    * No longer spawn inside blocks
+    * No longer take damage from the Ender Dragon
+* Rewards Feature
+    * **Makes the Dragon drop more experience.**
+    * Increased Bonus Experience (+10% per difficulty -> +30% per difficulty)
+    * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time, otherwise 500 + the bonus experience
+    * Can now have custom rewards difficulty based (like the Wither)
+* Vulnerabilities and Resistances Feature
+    * **Repalces the Armor feature and adds a new way to deal more damage to the Dragon.**
+    * +75% damage from players when not in the center podium. This is done to let the player deal significant damage to the Dragon when she charges him, and to be able to deal some damage with arrows since its almost impossible to hit her head while she's flying
+    * -0.3% melee damage per difficulty when in the center podium
+    * -50% explosion damage
+* Crystals Feature
+    * **More Cages, More Crystals and respawning Crystals**
+    * Below 15% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health (5 due to Vulnerabilities and Resistances module) to respawn crystals. Higher difficulties mean more crystals respawned and faster respawning. This phase can only happen once per Ender Dragon
+    * Maximum 4 bonus cages can now generate and maximum 5 bonus crystals instead of all crystals with cages and all towers with crystals inside.
+    * Crystals no longer always spawn 16 blocks below the top of the tower, instead between 12 and 24 blocks below
+    * Crystals are now immune to explosions
+    * Leaving and reentering The End no longer respawns the cages / more crystals again  
