@@ -29,7 +29,7 @@
         * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time, otherwise 500 + the bonus experience
         * Can now have custom rewards difficulty based (like the Wither)
     * Vulnerabilities and Resistances
-        * +80% damage from players when not in the center podium. This is done to let the player deal significant damage to the Dragon when she charges him, and to be able to deal some damage with arrows since its almost impossible to hit her head and deal good damage while she's flying
+        * +75% damage from players when not in the center podium. This is done to let the player deal significant damage to the Dragon when she charges him, and to be able to deal some damage with arrows since its almost impossible to hit her head while she's flying
         * -0.3% melee damage per difficulty when in the center podium
         * -50% explosion damage
     * Crystals
