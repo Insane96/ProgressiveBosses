@@ -48,6 +48,7 @@ public class CrystalFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> maxMoreCrystalsConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnMultiplierConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnInsideTowerChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
 
 	public int moreCagesAtDifficulty = 1;
@@ -56,6 +57,7 @@ public class CrystalFeature extends Feature {
 	public int maxMoreCrystals = 5;
 	public double crystalRespawnChance = 0.05d;
 	public double crystalRespawnMultiplier = 0.15d;
+	public double crystalRespawnInsideTowerChance = 0.005d;
 	public boolean explosionImmune = true;
 
 	public CrystalFeature(Module module) {
@@ -75,10 +77,13 @@ public class CrystalFeature extends Feature {
 				.defineInRange("Max Bonus Crystals", maxMoreCrystals, 0, 10);
 		crystalRespawnChanceConfig = Config.builder
 				.comment("Chance everytime the dragon is hit (when below 15% of health) to trigger a Crystal respawn Phase. The phase can only happen once. 1 means that the dragon will respawn crystals as soon as she's hit when below 15% health.")
-				.defineInRange("Crystal Respawn Chance", crystalRespawnChance, 0, Double.MAX_VALUE);
+				.defineInRange("Crystal Respawn Chance", crystalRespawnChance, 0d, 1d);
 		crystalRespawnMultiplierConfig = Config.builder
 				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")
-				.defineInRange("Crystal Respawn Multiplier", crystalRespawnMultiplier, 0, Double.MAX_VALUE);
+				.defineInRange("Crystal Respawn Multiplier", crystalRespawnMultiplier, 0d, 1d);
+		crystalRespawnInsideTowerChanceConfig = Config.builder
+				.comment("When respawning Crystals, chance for the crystal to be spawned inside a Tower instead of on top")
+				.defineInRange("Crystal Respawn Inside Tower Chance", crystalRespawnInsideTowerChance, 0d, 1d);
 		explosionImmuneConfig = Config.builder
 				.comment("Crystals can no longer be destroyed by other explosions.")
 				.define("Explosion Immune", explosionImmune);
@@ -94,6 +99,7 @@ public class CrystalFeature extends Feature {
 		this.maxMoreCrystals = this.maxMoreCrystalsConfig.get();
 		this.crystalRespawnChance = this.crystalRespawnChanceConfig.get();
 		this.crystalRespawnMultiplier = this.crystalRespawnMultiplierConfig.get();
+		this.crystalRespawnInsideTowerChance = this.crystalRespawnInsideTowerChanceConfig.get();
 		this.explosionImmune = this.explosionImmuneConfig.get();
 	}
 
@@ -141,15 +147,22 @@ public class CrystalFeature extends Feature {
 				if (tick >= tickSpawnCystal) {
 					if (dragon.getHealth() < 10f) {
 						dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
-						//dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, false);
 						return;
 					}
-					EnderCrystalEntity crystal = new EnderCrystalEntity(dragon.world, spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 1, spikesToRespawn.get(0).getCenterZ() + 0.5);
-					crystal.setShowBottom(true);
-					crystal.world.createExplosion(dragon, crystal.getPosX() + 0.5, crystal.getPosY() + 0.5, crystal.getPosZ() + 0.5, 5f, Explosion.Mode.NONE);
-					dragon.world.addEntity(crystal);
+					EnderCrystalEntity crystal;
+					double x = spikesToRespawn.get(0).getCenterX();
+					double y = spikesToRespawn.get(0).getHeight();
+					double z = spikesToRespawn.get(0).getCenterZ();
+					if (dragon.getRNG().nextDouble() < this.crystalRespawnInsideTowerChance * difficulty)
+						crystal = generateCrystalInTower(dragon.world, x + 0.5, y + 1, z + 0.5);
+					else {
+						crystal = new EnderCrystalEntity(dragon.world, x + 0.5, y + 1, z + 0.5);
+						crystal.setShowBottom(true);
+						crystal.world.createExplosion(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Explosion.Mode.NONE);
+						dragon.world.addEntity(crystal);
+						generateCage(crystal.world, crystal.getPosition());
+					}
 					dragon.attackEntityPartFrom(dragon.dragonPartHead, DamageSource.causeExplosionDamage(dragon), 10f);
-					generateCage(crystal.world, crystal.getPosition());
 					spikesToRespawn.remove(0);
 					if (spikesToRespawn.isEmpty()) {
 						dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
@@ -157,7 +170,10 @@ public class CrystalFeature extends Feature {
 					}
 					tick = 0;
 					engaged = false;
-					phase.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5.5, spikesToRespawn.get(0).getCenterZ() + 0.5);
+					x = spikesToRespawn.get(0).getCenterX();
+					y = spikesToRespawn.get(0).getHeight();
+					z = spikesToRespawn.get(0).getCenterZ();
+					phase.targetLocation = new Vector3d(x + 0.5, y + 5.5, z + 0.5);
 				}
 			}
 		}
@@ -203,7 +219,7 @@ public class CrystalFeature extends Feature {
 		}
 		dragon.getPhaseManager().setPhase(PhaseType.HOVER);
 		HoverPhase hover = (HoverPhase) dragon.getPhaseManager().getCurrentPhase();
-		hover.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5.5, spikesToRespawn.get(0).getCenterZ() + 0.5);
+		hover.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5, spikesToRespawn.get(0).getCenterZ() + 0.5);
 		dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, true);
 		tick = 0;
 		engaged = false;
@@ -300,20 +316,7 @@ public class CrystalFeature extends Feature {
 		int crystalSpawned = 0;
 
 		for (EnderCrystalEntity crystal : crystals) {
-			int y = (int) (crystal.getPosY() - RandomHelper.getInt(dragon.getRNG(), 12, 24));
-			if (y < centerPodium.getY())
-				y = (int) centerPodium.getY();
-			BlockPos crystalPos = new BlockPos(crystal.getPosX(), y, crystal.getPosZ());
-
-			Stream<BlockPos> blocks = BlockPos.getAllInBox(crystalPos.add(-1, -1, -1), crystalPos.add(1, 1, 1));
-
-			blocks.forEach(pos -> dragon.world.setBlockState(pos, Blocks.AIR.getDefaultState()));
-			dragon.world.setBlockState(crystalPos.add(0, -1, 0), Blocks.BEDROCK.getDefaultState());
-
-			dragon.world.createExplosion(dragon, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.Mode.DESTROY);
-
-			EnderCrystalEntity newCrystal = new EnderCrystalEntity(dragon.world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
-			dragon.world.addEntity(newCrystal);
+			generateCrystalInTower(dragon.world, crystal.getPosX(), crystal.getPosY(), crystal.getPosZ());
 
 			crystalSpawned++;
 			if (crystalSpawned == crystalsInvolved || crystalSpawned == this.maxMoreCrystals)
@@ -329,6 +332,27 @@ public class CrystalFeature extends Feature {
 			return false;
 
 		return source.isExplosion();
+	}
+
+	private static EnderCrystalEntity generateCrystalInTower(World world, double x, double y, double z) {
+		Vector3d centerPodium = Vector3d.copyCenteredHorizontally(world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
+
+		int spawnY = (int) (y - RandomHelper.getInt(world.getRandom(), 12, 24));
+		if (spawnY < centerPodium.getY())
+			spawnY = (int) centerPodium.getY();
+		BlockPos crystalPos = new BlockPos(x, spawnY, z);
+
+		Stream<BlockPos> blocks = BlockPos.getAllInBox(crystalPos.add(-1, -1, -1), crystalPos.add(1, 1, 1));
+
+		blocks.forEach(pos -> world.setBlockState(pos, Blocks.AIR.getDefaultState()));
+		world.setBlockState(crystalPos.add(0, -1, 0), Blocks.BEDROCK.getDefaultState());
+
+		world.createExplosion(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.Mode.DESTROY);
+
+		EnderCrystalEntity crystal = new EnderCrystalEntity(world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
+		world.addEntity(crystal);
+
+		return crystal;
 	}
 
 	private static void generateCage(World world, BlockPos pos) {

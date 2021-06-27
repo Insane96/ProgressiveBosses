@@ -5,6 +5,10 @@
     * Larva
         * Increased Cooldown (30-50 secs -> 30-60 seconds)
         * Increased max Larva Spawned (6 -> 8)
+    * Attack
+        * Changed Bonus Damage (+75% damage -> +80% direct damage & +55% indirect damage)
+    * Crystals
+        * Now have 0.5% chance per difficulty to be respawned inside the tower instead of on top
 
 ## Alpha 3.1.0
 * Dragon port!
