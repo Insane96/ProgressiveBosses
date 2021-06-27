@@ -300,9 +300,10 @@ public class CrystalFeature extends Feature {
 		int crystalSpawned = 0;
 
 		for (EnderCrystalEntity crystal : crystals) {
-			BlockPos crystalPos = new BlockPos(crystal.getPosX(), crystal.getPosY() - 16, crystal.getPosZ());
-			if (crystalPos.getY() < centerPodium.getY())
-				crystalPos = new BlockPos(crystalPos.getX(), centerPodium.getY(), crystalPos.getZ());
+			int y = (int) (crystal.getPosY() - RandomHelper.getInt(dragon.getRNG(), 12, 24));
+			if (y < centerPodium.getY())
+				y = (int) centerPodium.getY();
+			BlockPos crystalPos = new BlockPos(crystal.getPosX(), y, crystal.getPosZ());
 
 			Stream<BlockPos> blocks = BlockPos.getAllInBox(crystalPos.add(-1, -1, -1), crystalPos.add(1, 1, 1));
 
@@ -312,7 +313,6 @@ public class CrystalFeature extends Feature {
 			dragon.world.createExplosion(dragon, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.Mode.DESTROY);
 
 			EnderCrystalEntity newCrystal = new EnderCrystalEntity(dragon.world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
-			//newCrystal.setShowBottom(false);
 			dragon.world.addEntity(newCrystal);
 
 			crystalSpawned++;

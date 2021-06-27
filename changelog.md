@@ -33,8 +33,9 @@
         * -0.3% melee damage per difficulty when in the center podium
         * -50% explosion damage
     * Crystals
-        * Below 25% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health (5 due to Vulnerabilities and Resistances module) to respawn crystals. Higher difficulties mean more crystals respawned and faster respawning. This phase can only happen once per Ender Dragon
-        * Maximum 4 bonus cages can now generate and maximum 5 bonus crystals
+        * Below 15% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health (5 due to Vulnerabilities and Resistances module) to respawn crystals. Higher difficulties mean more crystals respawned and faster respawning. This phase can only happen once per Ender Dragon
+        * Maximum 4 bonus cages can now generate and maximum 5 bonus crystals instead of all crystals with cages and all towers with crystals inside.
+        * Crystals no longer always spawn 16 blocks below the top of the tower, instead between 12 and 24 blocks below
         * Crystals are now immune to explosions
         * Leaving and reentering The End no longer respawns the cages / more crystals again  
 * Wither
