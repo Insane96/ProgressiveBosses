@@ -1,5 +1,11 @@
 # Changelog
 
+## Beta 3.1.1
+* Dragon
+    * Larva
+        * Increased Cooldown (30-50 secs -> 30-60 seconds)
+        * Increased max Larva Spawned (6 -> 8)
+
 ## Alpha 3.1.0
 * Dragon port!
     * Health

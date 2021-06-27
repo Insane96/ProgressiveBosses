@@ -54,7 +54,6 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> cooldownReductionConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> blindingChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> dragonImmuneConfig;
-	//TODO Chance for black shulkers that spawn Blindness bullets. Use mixin on ShulkerBulletEntity#onEntityHit
 
 	public int minionAtDifficulty = 1;
 	public int minCooldown = 1200;
