@@ -13,7 +13,6 @@ import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.phase.HoldingPatternPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -180,88 +179,71 @@ public class AttackFeature extends Feature {
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAcidPoolDamage * difficulty)));
 	}
 
-	public boolean onHoldingPatternFindNewTarget(HoldingPatternPhase phase) {
-		if (phase.currentPath == null || !phase.currentPath.isFinished())
-			return false;
-
-		boolean chargePlayer = shouldChargePlayer(phase);
-		boolean fireballPlayer = shouldFireballPlayer(phase);
+	public boolean onPhaseEnd(EnderDragonEntity dragon) {
+		boolean chargePlayer = shouldChargePlayer(dragon);
+		boolean fireballPlayer = shouldFireballPlayer(dragon);
 
 		if (chargePlayer && fireballPlayer)
-			if (phase.dragon.getRNG().nextFloat() < 0.5f)
-				chargePlayer(phase);
+			if (dragon.getRNG().nextFloat() < 0.5f)
+				chargePlayer(dragon);
 			else
-				fireballPlayer(phase);
+				fireballPlayer(dragon);
 		else if (chargePlayer)
-			chargePlayer(phase);
+			chargePlayer(dragon);
 		else if (fireballPlayer)
-			fireballPlayer(phase);
+			fireballPlayer(dragon);
 
 		return chargePlayer || fireballPlayer;
 	}
 
-	private void chargePlayer(HoldingPatternPhase phase) {
-		BlockPos centerPodium = phase.dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+	private boolean shouldChargePlayer(EnderDragonEntity dragon) {
+		if (this.chargePlayerMaxChance == 0f)
+			return false;
+
+		if (dragon.getFightManager() == null)
+			return false;
+
+		CompoundNBT tags = dragon.getPersistentData();
+		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
+
+		double chance = this.chargePlayerMaxChance / maxChanceAtDifficulty;
+		chance *= difficulty;
+		int crystalsAlive = Math.max(dragon.getFightManager().getNumAliveCrystals(), 1);
+		chance *= (1f / crystalsAlive);
+		chance = Math.min(this.chargePlayerMaxChance, chance);
+
+		double rng = dragon.getRNG().nextDouble();
+
+		return rng < chance;
+	}
+
+	private void chargePlayer(EnderDragonEntity dragon) {
+		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
-		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(phase.dragon.world, bb);
+		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(dragon.world, bb);
 
 		if (player == null)
 			return;
 
 		LogHelper.info("charging");
 
-		phase.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
+		dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
 		Vector3d targetPos = player.getPositionVec();
-		if (targetPos.y < phase.dragon.getPosY())
+		if (targetPos.y < dragon.getPosY())
 			targetPos = targetPos.add(0d, -6d, 0d);
 		else
 			targetPos = targetPos.add(0d, 6d, 0d);
-		phase.dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(targetPos);
+		dragon.getPhaseManager().getPhase(PhaseType.CHARGING_PLAYER).setTarget(targetPos);
 	}
 
-	private boolean shouldChargePlayer(HoldingPatternPhase phase) {
-		if (this.chargePlayerMaxChance == 0f)
-			return false;
-
-		if (phase.dragon.getFightManager() == null)
-			return false;
-
-		CompoundNBT tags = phase.dragon.getPersistentData();
-		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
-
-		double chance = this.chargePlayerMaxChance / maxChanceAtDifficulty;
-		chance *= difficulty;
-		int crystalsAlive = Math.max(phase.dragon.getFightManager().getNumAliveCrystals(), 1);
-		chance *= (1f / crystalsAlive);
-		chance = Math.min(this.chargePlayerMaxChance, chance);
-
-		double rng = phase.dragon.getRNG().nextDouble();
-
-		return rng < chance;
-	}
-
-	private void fireballPlayer(HoldingPatternPhase phase) {
-		BlockPos centerPodium = phase.dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
-		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(phase.dragon.world, bb);
-
-		if (player == null)
-			return;
-
-		LogHelper.info("fireballing");
-
-		phase.dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
-		phase.dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
-	}
-
-	private boolean shouldFireballPlayer(HoldingPatternPhase phase) {
+	private boolean shouldFireballPlayer(EnderDragonEntity dragon) {
 		if (this.fireballMaxChance == 0f)
 			return false;
 
-		if (phase.dragon.getFightManager() == null)
+		if (dragon.getFightManager() == null)
 			return false;
 
-		CompoundNBT tags = phase.dragon.getPersistentData();
+		CompoundNBT tags = dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (difficulty == 0f)
@@ -269,12 +251,26 @@ public class AttackFeature extends Feature {
 
 		double chance = this.fireballMaxChance / maxChanceAtDifficulty;
 		chance *= difficulty;
-		int crystalsAlive = Math.max(phase.dragon.getFightManager().getNumAliveCrystals(), 1);
+		int crystalsAlive = Math.max(dragon.getFightManager().getNumAliveCrystals(), 1);
 		chance *= (1f / crystalsAlive);
 		chance = Math.min(this.fireballMaxChance, chance);
-		double rng = phase.dragon.getRNG().nextDouble();
+		double rng = dragon.getRNG().nextDouble();
 
 		return rng < chance;
+	}
+
+	private void fireballPlayer(EnderDragonEntity dragon) {
+		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
+		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(dragon.world, bb);
+
+		if (player == null)
+			return;
+
+		LogHelper.info("fireballing");
+
+		dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
+		dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
 	}
 
 

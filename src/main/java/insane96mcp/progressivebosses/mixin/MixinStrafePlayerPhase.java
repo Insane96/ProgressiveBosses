@@ -40,7 +40,7 @@ public class MixinStrafePlayerPhase extends Phase {
 				double d1 = this.attackTarget.getPosZ();
 				double d2 = d0 - this.dragon.getPosX();
 				double d3 = d1 - this.dragon.getPosZ();
-				double d4 = (double)MathHelper.sqrt(d2 * d2 + d3 * d3);
+				double d4 = MathHelper.sqrt(d2 * d2 + d3 * d3);
 				double d5 = Math.min((double)0.4F + d4 / 80.0D - 1.0D, 10.0D);
 				this.targetLocation = new Vector3d(d0, this.attackTarget.getPosY() + d5, d1);
 			}
@@ -68,7 +68,8 @@ public class MixinStrafePlayerPhase extends Phase {
 							}
 						}
 
-						this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+						if (!Modules.dragon.attack.onPhaseEnd(this.dragon))
+							this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 					}
 				} else if (this.fireballCharge > 0) {
 					--this.fireballCharge;
