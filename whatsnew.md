@@ -55,44 +55,45 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Also has a new config option to set the starting difficulty.
 * Health Feature
     * **Takes care of the Dragon's health**
-    * Increased Max Health regeneration (0.5 -> 1.0)
+    * Increased Max Health regeneration. (0.5 -> 1.0)
 * Brand NEW Attack Feature
     * **Overhauls the attacks of the Dragon**
-    * Reduced Dragon bonus attack damage per difficulty (+10% damage per difficulty -> +4% damage per difficulty)
-    * Reduced Dragon bonus damage from acid (+10% damage per difficulty -> +3.3% damage per difficulty)
-    * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously
-    * Fireballing has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased (1.5% -> 45%)
-    * Dragon can also fire up to 1 more fireball every 5 difficulty
-    * Charging a player has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased (1.5% -> 45%)
-    * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn (faster than vanilla) a 3D Area of Effect Cloud. The cloud has halved duration. Fireballs are also much faster
+    * Reduced Dragon bonus attack damage per difficulty. (+10% damage per difficulty -> +4% damage per difficulty)
+    * Reduced Dragon bonus damage from acid. (+10% damage per difficulty -> +3.3% damage per difficulty)
+    * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously.
+    * Fireballing has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased. (1.5% -> 45%)
+    * Dragon can also fire up to 1 more fireball every 5 difficulty.
+    * Charging a player has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased. (1.5% -> 45%)
+    * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn (faster than vanilla) a 3D Area of Effect Cloud. The cloud has halved duration. Fireballs are also much faster.
 * Minions Feature
     * **Let the Dragon get some help**
-    * Will no longer spawn if there are no players in the main island
-    * Changed cooldown reduction (-10 ticks per difficulty -> -0.5% per difficulty)
-    * Shot slower (1 projectile every 4 to 2 seconds -> 1 projectile every 10 to 5 seconds)
-    * No longer take damage from the Ender Dragon
-    * 0.3% chance per difficulty to spawn as a Bliding Minion. Blinding Minions's bullets will give blindness in addition to levitation
-    * Can now spawn on towers
+    * Will no longer spawn if there are no players on the main island.
+    * Changed cooldown reduction. (-10 ticks per difficulty -> -0.5% per difficulty)
+    * Shoot slower. (1 bullet every 2-11 seconds -> 1 bullet every 5-27.5 seconds)
+    * No longer take damage from the Ender Dragon.
+    * 0.3% chance per difficulty to spawn as a Bliding Minion. Blinding Minions's bullets will give blindness in addition to levitation.
+    * Can now spawn on towers.
 * Larvae Feature
     * **Small annoying pests**
-    * Cooldown reduced (52.5-60 secs -> 30-50 secs)
-    * Removed Cooldown Reduction
-    * No longer spawn inside blocks
-    * No longer take damage from the Ender Dragon
+    * Cooldown reduced. (52.5-60 secs -> 30-60 secs)
+    * Increased Max Larva spawned. (6 -> 8)
+    * Removed Cooldown Reduction.
+    * No longer spawn inside blocks.
+    * No longer take damage from the Ender Dragon.
 * Rewards Feature
     * **Makes the Dragon drop more experience.**
-    * Increased Bonus Experience (+10% per difficulty -> +30% per difficulty)
-    * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time, otherwise 500 + the bonus experience
-    * Can now have custom rewards difficulty based (like the Wither)
+    * Increased Bonus Experience. (+10% per difficulty -> +30% per difficulty)
+    * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time, otherwise 500 + the bonus experience.
+    * Can now have custom rewards difficulty based (like the Wither).
 * Vulnerabilities and Resistances Feature
     * **Repalces the Armor feature and adds a new way to deal more damage to the Dragon.**
-    * +75% damage from players when not in the center podium. This is done to let the player deal significant damage to the Dragon when she charges him, and to be able to deal some damage with arrows since its almost impossible to hit her head while she's flying
-    * -0.3% melee damage per difficulty when in the center podium
-    * -50% explosion damage
+    * +80% melee damage and +55% indirect damage from players when not in the center podium. This is done to let the player deal significant damage to the Dragon when she charges him, and to be able to deal some damage with arrows since its almost impossible to hit her head while she's flying.
+    * -0.3% melee damage per difficulty when in the center podium.
+    * -50% explosion damage.
 * Crystals Feature
     * **More Cages, More Crystals and respawning Crystals**
-    * Below 15% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health (5 due to Vulnerabilities and Resistances module) to respawn crystals. Higher difficulties mean more crystals respawned and faster respawning. This phase can only happen once per Ender Dragon
+    * Below 15% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health (5 due to Vulnerabilities and Resistances module) to respawn crystals. Higher difficulties mean more crystals respawned, higher chance for the crystals to be spawned inside towers and faster respawning. This phase can only happen once per Ender Dragon.
     * Maximum 4 bonus cages can now generate and maximum 5 bonus crystals instead of all crystals with cages and all towers with crystals inside.
-    * Crystals no longer always spawn 16 blocks below the top of the tower, instead between 12 and 24 blocks below
-    * Crystals are now immune to explosions
-    * Leaving and reentering The End no longer respawns the cages / more crystals again  
+    * Crystals no longer always spawn 16 blocks below the top of the tower, instead between 12 and 24 blocks below.
+    * Crystals are now immune to explosions.
+    * Leaving and reentering The End no longer respawns the cages / more crystals again.

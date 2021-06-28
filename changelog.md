@@ -5,7 +5,7 @@
     * Larva
         * Increased Cooldown (30-50 secs -> 30-60 seconds)
         * Increased max Larva Spawned (6 -> 8)
-    * Attack
+    * Resistances & Vulnerabilities
         * Changed Bonus Damage (+75% damage -> +80% direct damage & +55% indirect damage)
     * Crystals
         * Now have 0.5% chance per difficulty to be respawned inside the tower instead of on top
@@ -25,7 +25,7 @@
     * Minions
         * Will no longer spawn if there are no players in the main island
         * Changed cooldown reduction (-10 ticks per difficulty -> -0.5% per difficulty)
-        * Shot slower (1 projectile every 4 to 2 seconds -> 1 projectile every 10 to 5 seconds)
+        * Shoot slower (1 bullet every 2-11 seconds -> 1 bullet every 5-27.5 seconds)
         * No longer take damage from the Ender Dragon
         * 0.3% chance per difficulty to spawn as a Bliding Minion. Blinding Minions's bullets will give blindness in addition to levitation
         * Can now spawn on towers
