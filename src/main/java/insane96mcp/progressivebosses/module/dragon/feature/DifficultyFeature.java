@@ -100,7 +100,7 @@ public class DifficultyFeature extends Feature {
 			boolean firstDragon = playerTags.getBoolean(Strings.Tags.FIRST_DRAGON);
 			if (firstDragon) {
 				playersFirstDragon++;
-				playerTags.remove(Strings.Tags.FIRST_DRAGON);
+				playerTags.putBoolean(Strings.Tags.FIRST_DRAGON, false);
 			}
 		}
 
