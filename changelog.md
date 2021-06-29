@@ -1,6 +1,7 @@
 # Changelog
 
 ## Beta 3.1.1
+* Moved Player Data to Capabilities. This means that you'll need to transfer player's difficulty to the new system with `/progressivebosses difficulty @p set <wither/dragon> <amount>`. You can get your old difficulty with `/progressivebosses legacy_difficulty @p get`.
 * Dragon
     * Attack
         * The dragon can now charge / fireball the player again when she's just finished charging / fireballing. COMBO BREAKER
@@ -9,7 +10,7 @@
         * Increased max Larva Spawned (6 -> 8)
     * Minion
         * Increased Blindness duration (5 secs -> 7.5 secs)
-        * Increased Attack Speed (5-27.5 secs -> 4-22 secs)
+        * Increased Attack Speed (1 bullet every 5-27.5 secs -> 1 bullet every 4-22 secs)
     * Resistances & Vulnerabilities
         * Changed Bonus Damage (+75% damage -> +80% direct damage & +55% indirect damage)
     * Crystals

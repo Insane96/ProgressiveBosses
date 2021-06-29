@@ -61,15 +61,14 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * Reduced Dragon bonus attack damage per difficulty. (+10% damage per difficulty -> +4% damage per difficulty)
     * Reduced Dragon bonus damage from acid. (+10% damage per difficulty -> +3.3% damage per difficulty)
     * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously.
-    * Fireballing has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased. (1.5% -> 45%)
-    * Dragon can also fire up to 1 more fireball every 5 difficulty.
-    * Charging a player has a chance to trigger when the Ender Dragon's ending her Holding Pattern instead of every tick. Chance increased. (1.5% -> 45%)
-    * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn (faster than vanilla) a 3D Area of Effect Cloud. The cloud has halved duration. Fireballs are also much faster.
+    * Fireballing and charging now have a chance to trigger when the Ender Dragon's ending her Holding Pattern, Charging Phase or Fireballing Phase instead of every tick. Chance increased. (1.5% -> 45%)
+    * Dragon can also fire up to 1 more fireball every 5 difficulty. SHOTGUN
+    * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn a 3D Area of Effect Cloud. The cloud has halved duration. Fireballs are also much faster.
 * Minions Feature
     * **Let the Dragon get some help**
     * Will no longer spawn if there are no players on the main island.
     * Changed cooldown reduction. (-10 ticks per difficulty -> -0.5% per difficulty)
-    * Shoot slower. (1 bullet every 2-11 seconds -> 1 bullet every 5-27.5 seconds)
+    * Shoot slower. (1 bullet every 2-11 seconds -> 1 bullet every 4-22 seconds)
     * No longer take damage from the Ender Dragon.
     * 0.3% chance per difficulty to spawn as a Bliding Minion. Blinding Minions's bullets will give blindness in addition to levitation.
     * Can now spawn on towers.
@@ -92,7 +91,7 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
     * -50% explosion damage.
 * Crystals Feature
     * **More Cages, More Crystals and respawning Crystals**
-    * Below 15% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health (5 due to Vulnerabilities and Resistances module) to respawn crystals. Higher difficulties mean more crystals respawned, higher chance for the crystals to be spawned inside towers and faster respawning. This phase can only happen once per Ender Dragon.
+    * Below 20% health the Ender Dragon has a small chance each time she's hit to trigger a crystal respawning phase. During this phase the Ender Dragon will fly over towers and sacrifice 10 health (5 due to Vulnerabilities and Resistances module) to respawn crystals. Higher difficulties mean more crystals respawned, higher chance for the crystals to be spawned inside towers and faster respawning. This phase can only happen once per Ender Dragon.
     * Maximum 4 bonus cages can now generate and maximum 5 bonus crystals instead of all crystals with cages and all towers with crystals inside.
     * Crystals no longer always spawn 16 blocks below the top of the tower, instead between 12 and 24 blocks below.
     * Crystals are now immune to explosions.
