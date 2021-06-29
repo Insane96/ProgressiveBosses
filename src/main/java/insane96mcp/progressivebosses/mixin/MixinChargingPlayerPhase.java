@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChargingPlayerPhase.class)
-public class MixinChargingPlayerPhase extends Phase {
+public abstract class MixinChargingPlayerPhase extends Phase {
 
 	@Shadow
 	@Final
@@ -37,8 +37,12 @@ public class MixinChargingPlayerPhase extends Phase {
 			LOGGER.warn("Aborting charge player as no target was set.");
 			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 		} else if (this.timeSinceCharge > 0 && this.timeSinceCharge++ >= 10) {
+			//If must not charge or fireball then go back to holding pattern
 			if (!Modules.dragon.attack.onPhaseEnd(this.dragon))
 				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+			//Otherwise reset the phase, in case she charges again
+			else
+				this.initPhase();
 		} else {
 			double d0 = this.targetLocation.squareDistanceTo(this.dragon.getPosX(), this.dragon.getPosY(), this.dragon.getPosZ());
 			if (d0 < 100.0D || d0 > 22500.0D || this.dragon.collidedHorizontally || this.dragon.collidedVertically) {
@@ -54,8 +58,8 @@ public class MixinChargingPlayerPhase extends Phase {
 			callback.setReturnValue(24f);
 	}
 
+	@Shadow public abstract void initPhase();
+
 	@Override
-	public PhaseType<? extends IPhase> getType() {
-		return PhaseType.CHARGING_PLAYER;
-	}
+	public abstract PhaseType<? extends IPhase> getType();
 }

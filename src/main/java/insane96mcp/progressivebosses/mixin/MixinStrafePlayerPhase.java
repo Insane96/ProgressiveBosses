@@ -68,8 +68,10 @@ public abstract class MixinStrafePlayerPhase extends Phase {
 							}
 						}
 
+						//If must not charge or fireball then go back to holding pattern
 						if (!Modules.dragon.attack.onPhaseEnd(this.dragon))
 							this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+						//Otherwise reset the phase, in case she fireballs again
 						else
 							this.initPhase();
 					}

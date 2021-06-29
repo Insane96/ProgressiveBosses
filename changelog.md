@@ -2,13 +2,19 @@
 
 ## Beta 3.1.1
 * Dragon
+    * Attack
+        * The dragon can now charge / fireball the player again when she's just finished charging / fireballing. COMBO BREAKER
     * Larva
         * Increased Cooldown (30-50 secs -> 30-60 seconds)
         * Increased max Larva Spawned (6 -> 8)
+    * Minion
+        * Increased Blindness duration (5 secs -> 7.5 secs)
+        * Increased Attack Speed (5-27.5 secs -> 4-22 secs)
     * Resistances & Vulnerabilities
         * Changed Bonus Damage (+75% damage -> +80% direct damage & +55% indirect damage)
     * Crystals
         * Now have 0.5% chance per difficulty to be respawned inside the tower instead of on top
+        * Respawn can now trigger when Dragon's health below 20% instead of 15%
 
 ## Alpha 3.1.0
 * Dragon port!
