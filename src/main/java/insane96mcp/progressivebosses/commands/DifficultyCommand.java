@@ -3,14 +3,15 @@ package insane96mcp.progressivebosses.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.capability.DifficultyCapability;
 import insane96mcp.progressivebosses.module.Modules;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TranslationTextComponent;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class DifficultyCommand {
 
@@ -81,48 +82,49 @@ public class DifficultyCommand {
     }
 
     private static int setBossDifficulty(CommandSource source, ServerPlayerEntity targetPlayer, String boss, int amount) {
-		CompoundNBT targetNBT = targetPlayer.getPersistentData();
         if (boss.equals("wither"))
-            targetNBT.putInt(Strings.Tags.SPAWNED_WITHERS, amount);
+            targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficulty -> difficulty.setSpawnedWithers(amount));
         if (boss.equals("dragon"))
-            targetNBT.putInt(Strings.Tags.KILLED_DRAGONS, amount);
+            targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficulty -> difficulty.setKilledDragons(amount));
         source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_SET_BOSS_DIFFICULTY, targetPlayer.getName(), boss, amount), true);
         return amount;
     }
 
     private static int addBossDifficulty(CommandSource source, ServerPlayerEntity targetPlayer, String boss, int amount) {
-        CompoundNBT targetNBT = targetPlayer.getPersistentData();
-        int currDifficulty;
-        int difficulty = 0;
+        AtomicInteger difficulty = new AtomicInteger(0);
         if (boss.equals("wither")) {
-            currDifficulty = targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS);
-            difficulty = currDifficulty + amount;
-            difficulty = MathHelper.clamp(difficulty, 0, Modules.wither.difficulty.maxDifficulty);
-            targetNBT.putInt(Strings.Tags.SPAWNED_WITHERS, difficulty);
+            targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficultyCap -> {
+                difficultyCap.addSpawnedWithers(amount);
+                difficulty.set(difficultyCap.getSpawnedWithers());
+            });
+
         }
         else if (boss.equals("dragon")) {
-            currDifficulty = targetNBT.getInt(Strings.Tags.KILLED_DRAGONS);
-            difficulty = currDifficulty + amount;
-            difficulty = MathHelper.clamp(difficulty, 0, Modules.dragon.difficulty.maxDifficulty);
-            targetNBT.putInt(Strings.Tags.KILLED_DRAGONS, difficulty);
+            targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficultyCap -> {
+                difficultyCap.addKilledDragons(amount);
+                difficulty.set(difficultyCap.getKilledDragons());
+            });
         }
-        source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_ADD_BOSS_DIFFICULTY, amount, boss, targetPlayer.getName(), difficulty), true);
-        return difficulty;
+        source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_ADD_BOSS_DIFFICULTY, amount, boss, targetPlayer.getName(), difficulty.get()), true);
+        return difficulty.get();
     }
 
     private static int getBossDifficulty(CommandSource source, ServerPlayerEntity targetPlayer, String boss) {
-		CompoundNBT targetNBT = targetPlayer.getPersistentData();
+        AtomicInteger witherDifficulty = new AtomicInteger(0);
+        targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficultyCap -> witherDifficulty.set(difficultyCap.getSpawnedWithers()));
+        AtomicInteger dragonDifficulty = new AtomicInteger(0);
+        targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficultyCap -> dragonDifficulty.set(difficultyCap.getKilledDragons()));
         if (boss.equals("wither")) {
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS)), true);
-            return targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS);
+            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
+            return witherDifficulty.get();
         }
         else if (boss.equals("dragon")) {
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.KILLED_DRAGONS)), true);
-            return targetNBT.getInt(Strings.Tags.KILLED_DRAGONS);
+            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
+            return dragonDifficulty.get();
         }
         else {
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS)), true);
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.KILLED_DRAGONS)), true);
+            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
+            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
             return 1;
         }
     }
@@ -151,12 +153,14 @@ public class DifficultyCommand {
     }
 
     private static int summon(CommandSource source, ServerPlayerEntity targetPlayer, String entity) {
-        int spawnedWithers = targetPlayer.getPersistentData().getInt(Strings.Tags.SPAWNED_WITHERS);
-        int killedDragons = targetPlayer.getPersistentData().getInt(Strings.Tags.KILLED_DRAGONS);
+        AtomicInteger witherDifficulty = new AtomicInteger(0);
+        targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficultyCap -> witherDifficulty.set(difficultyCap.getSpawnedWithers()));
+        AtomicInteger dragonDifficulty = new AtomicInteger(0);
+        targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficultyCap -> dragonDifficulty.set(difficultyCap.getKilledDragons()));
         if (entity.contains("wither"))
-            return summon(source, entity, spawnedWithers);
+            return summon(source, entity, witherDifficulty.get());
         else if (entity.contains("dragon"))
-            return summon(source, entity, killedDragons);
+            return summon(source, entity, dragonDifficulty.get());
         return 0;
     }
 }

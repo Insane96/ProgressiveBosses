@@ -75,10 +75,12 @@ public abstract class MixinStrafePlayerPhase extends Phase {
 						else
 							this.initPhase();
 					}
-				} else if (this.fireballCharge > 0) {
+				}
+				else if (this.fireballCharge > 0) {
 					--this.fireballCharge;
 				}
-			} else if (this.fireballCharge > 0) {
+			}
+			else if (this.fireballCharge > 0) {
 				--this.fireballCharge;
 			}
 

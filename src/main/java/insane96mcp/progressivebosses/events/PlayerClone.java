@@ -1,9 +1,8 @@
 package insane96mcp.progressivebosses.events;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.capability.DifficultyCapability;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -17,9 +16,12 @@ public class PlayerClone {
         PlayerEntity oldPlayer = event.getOriginal();
         PlayerEntity newPlayer = event.getPlayer();
 
-        CompoundNBT oldPlayerData = oldPlayer.getPersistentData();
-        newPlayer.getPersistentData().putInt(Strings.Tags.SPAWNED_WITHERS, oldPlayerData.getInt(Strings.Tags.SPAWNED_WITHERS));
-        newPlayer.getPersistentData().putInt(Strings.Tags.KILLED_DRAGONS, oldPlayerData.getInt(Strings.Tags.KILLED_DRAGONS));
-        newPlayer.getPersistentData().putInt(Strings.Tags.FIRST_DRAGON, oldPlayerData.getInt(Strings.Tags.FIRST_DRAGON));
+        oldPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(oldDifficulty -> {
+            newPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(newDifficulty -> {
+               newDifficulty.setSpawnedWithers(oldDifficulty.getSpawnedWithers());
+               newDifficulty.setKilledDragons(oldDifficulty.getKilledDragons());
+               newDifficulty.setFirstDragon(oldDifficulty.isFirstDragon());
+            });
+        });
     }
 }

@@ -1,10 +1,16 @@
 package insane96mcp.progressivebosses;
 
+import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.capability.DifficultyCapability;
 import insane96mcp.progressivebosses.commands.DifficultyCommand;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.ModItems;
 import insane96mcp.progressivebosses.setup.Reflection;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -26,12 +32,24 @@ public class ProgressiveBosses {
 	public ProgressiveBosses() {
 		ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
 		MinecraftForge.EVENT_BUS.register(this);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		ModItems.ITEMS.register(modEventBus);
 		Reflection.init();
 	}
 
+	@SubscribeEvent
+	public void attachCapabilitiesEntity(final AttachCapabilitiesEvent<Entity> event)
+	{
+		if(event.getObject() instanceof PlayerEntity) {
+			DifficultyCapability difficultyCapability = new DifficultyCapability();
+			event.addCapability(new ResourceLocation(Strings.Tags.DIFFICULTY), difficultyCapability);
+			event.addListener(difficultyCapability::invalidate);
+		}
+	}
+
 	private void setup(final FMLCommonSetupEvent event) {
+		DifficultyCapability.register();
 	}
 
 	@SubscribeEvent
