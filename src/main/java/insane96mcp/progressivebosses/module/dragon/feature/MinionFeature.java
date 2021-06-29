@@ -194,7 +194,7 @@ public class MinionFeature extends Feature {
 				toRemove.add(goal.getGoal());
 		});
 		toRemove.forEach(shulker.goalSelector::removeGoal);
-		shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 100));
+		shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 80));
 
 		toRemove.clear();
 		shulker.targetSelector.goals.forEach(goal -> {
@@ -269,7 +269,7 @@ public class MinionFeature extends Feature {
 			if (entityHit instanceof LivingEntity) {
 				((LivingEntity)entityHit).addPotionEffect(new EffectInstance(Effects.LEVITATION, 200));
 				if (shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-					((LivingEntity)entityHit).addPotionEffect(new EffectInstance(Effects.BLINDNESS, 100));
+					((LivingEntity)entityHit).addPotionEffect(new EffectInstance(Effects.BLINDNESS, 150));
 			}
 		}
 	}
