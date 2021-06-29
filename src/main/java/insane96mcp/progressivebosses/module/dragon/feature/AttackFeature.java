@@ -70,12 +70,12 @@ public class AttackFeature extends Feature {
 				.defineInRange("Bonus Acid Pool Damage", increasedAcidPoolDamage, 0.0, Double.MAX_VALUE);
 
 		chargePlayerMaxChanceConfig = Config.builder
-				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance before checking if she can land to charge the player.\n" +
+				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to charge the player.\n" +
 						"This defines the chance to attack the player when she has finished reaching a point while roaming when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
 						"The actual formula is: (this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
 				.defineInRange("Charge Player Max Chance", chargePlayerMaxChance, 0.0, Double.MAX_VALUE);
 		fireballMaxChanceConfig = Config.builder
-				.comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance everytime she takes damage to spit a fireball.\n" +
+				.comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to spit a fireball.\n" +
 						"This defines the chance to spit a fireball everytime she takes damage when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
 						"The actual formula is: (this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
 				.defineInRange("Fireball Max Chance", fireballMaxChance, 0.0, Double.MAX_VALUE);

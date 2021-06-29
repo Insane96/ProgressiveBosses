@@ -76,7 +76,7 @@ public class CrystalFeature extends Feature {
 				.comment("Max number of bonus crystals that can spawn inside the towers.")
 				.defineInRange("Max Bonus Crystals", maxMoreCrystals, 0, 10);
 		crystalRespawnChanceConfig = Config.builder
-				.comment("Chance everytime the dragon is hit (when below 15% of health) to trigger a Crystal respawn Phase. The phase can only happen once. 1 means that the dragon will respawn crystals as soon as she's hit when below 15% health.")
+				.comment("Chance everytime the dragon is hit (when below 20% of health) to trigger a Crystal respawn Phase. The phase can only happen once. 1 means that the dragon will respawn crystals as soon as she's hit when below 20% health.")
 				.defineInRange("Crystal Respawn Chance", crystalRespawnChance, 0d, 1d);
 		crystalRespawnMultiplierConfig = Config.builder
 				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")
@@ -190,7 +190,7 @@ public class CrystalFeature extends Feature {
 			return;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		if (dragon.getHealth() > dragon.getMaxHealth() * 0.15d)
+		if (dragon.getHealth() > dragon.getMaxHealth() * 0.20d)
 			return;
 
 		CompoundNBT dragonTags = dragon.getPersistentData();
