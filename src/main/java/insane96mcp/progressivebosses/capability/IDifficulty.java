@@ -5,8 +5,8 @@ public interface IDifficulty {
 	void setSpawnedWithers(int spawnedWithers);
 	int getKilledDragons();
 	void setKilledDragons(int killedDragons);
-	boolean isFirstDragon();
-	void setFirstDragon(boolean firstDragon);
+	byte getFirstDragon();
+	void setFirstDragon(byte firstDragon);
 
 	void addSpawnedWithers(int amount);
 	void addKilledDragons(int amount);

@@ -3,10 +3,12 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.capability.DifficultyCapability;
+import insane96mcp.progressivebosses.capability.IDifficulty;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -83,31 +85,16 @@ public class DifficultyFeature extends Feature {
 		float spawnedTotal = 0;
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0) {
-			PlayerEntity nearestPlayer = event.getWorld().getClosestPlayer(wither.getPosX(), wither.getPosY(), wither.getPosZ(), Double.MAX_VALUE, true);
-			if (nearestPlayer instanceof ServerPlayerEntity) {
-				ServerPlayerEntity player = (ServerPlayerEntity) nearestPlayer;
-				CompoundNBT playerTags = player.getPersistentData();
-				int spawnedWithers = playerTags.getInt(Strings.Tags.SPAWNED_WITHERS);
-				spawnedTotal += spawnedWithers;
-				if (spawnedWithers < this.maxDifficulty)
-					playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, spawnedWithers + 1);
-			}
+			ServerPlayerEntity nearestPlayer = (ServerPlayerEntity) event.getWorld().getClosestPlayer(wither.getPosX(), wither.getPosY(), wither.getPosZ(), Double.MAX_VALUE, true);
+			players.add(nearestPlayer);
 		}
-		//Otherwise sum the players' difficulties
-		else {
-			for (ServerPlayerEntity player : players) {
-				CompoundNBT playerTags = player.getPersistentData();
-				int spawnedWithers = playerTags.getInt(Strings.Tags.SPAWNED_WITHERS);
-				spawnedTotal += spawnedWithers;
-				if (spawnedWithers >= this.maxDifficulty)
-					continue;
-				playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, spawnedWithers + 1);
-			}
+		for (ServerPlayerEntity player : players) {
+			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+			spawnedTotal += difficulty.getSpawnedWithers();
+			if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
+				continue;
+			difficulty.addSpawnedWithers(1);
 		}
-
-		//If still no players are found then surrender
-		//if (spawnedTotal == 0)
-		//return;
 
 		if (!this.sumSpawnedWitherDifficulty)
 			spawnedTotal /= players.size();
@@ -128,8 +115,11 @@ public class DifficultyFeature extends Feature {
 
 		ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
 
-		CompoundNBT playerTags = player.getPersistentData();
-		if (!playerTags.contains(Strings.Tags.SPAWNED_WITHERS))
-			playerTags.putInt(Strings.Tags.SPAWNED_WITHERS, this.startingDifficulty);
+		IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+
+		if (difficulty.getSpawnedWithers() < this.startingDifficulty) {
+			difficulty.setSpawnedWithers(this.startingDifficulty);
+			LogHelper.info("[Progressive Bosses] %s spawned withers counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
+		}
 	}
 }

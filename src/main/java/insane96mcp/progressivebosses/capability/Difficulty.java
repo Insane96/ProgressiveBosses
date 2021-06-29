@@ -6,7 +6,8 @@ public class Difficulty implements IDifficulty {
 
 	private int spawnedWithers;
 	private int killedDragons;
-	private boolean	firstDragon;
+	// 0 = just spawned, 1 = first dragon, 2 = first dragon spawned
+	private byte firstDragon;
 
 	@Override
 	public int getSpawnedWithers() {
@@ -29,12 +30,12 @@ public class Difficulty implements IDifficulty {
 	}
 
 	@Override
-	public boolean isFirstDragon() {
+	public byte getFirstDragon() {
 		return this.firstDragon;
 	}
 
 	@Override
-	public void setFirstDragon(boolean firstDragon) {
+	public void setFirstDragon(byte firstDragon) {
 		this.firstDragon = firstDragon;
 	}
 

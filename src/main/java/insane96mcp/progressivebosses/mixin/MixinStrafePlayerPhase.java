@@ -93,5 +93,5 @@ public abstract class MixinStrafePlayerPhase extends Phase {
 	@Shadow public abstract void initPhase();
 
 	@Override
-	public abstract PhaseType<? extends IPhase> getType();
+	public PhaseType<? extends IPhase> getType() { return PhaseType.STRAFE_PLAYER; }
 }

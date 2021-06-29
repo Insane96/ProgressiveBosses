@@ -3,10 +3,12 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.capability.DifficultyCapability;
+import insane96mcp.progressivebosses.capability.IDifficulty;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -94,13 +96,11 @@ public class DifficultyFeature extends Feature {
 		}
 
 		for (ServerPlayerEntity player : players) {
-			CompoundNBT playerTags = player.getPersistentData();
-			int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
-			killedTotal += killedDragons;
-			boolean firstDragon = playerTags.getBoolean(Strings.Tags.FIRST_DRAGON);
-			if (firstDragon) {
+			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+			killedTotal += difficulty.getKilledDragons();
+			if (difficulty.getFirstDragon() == (byte) 1) {
 				playersFirstDragon++;
-				playerTags.putBoolean(Strings.Tags.FIRST_DRAGON, false);
+				difficulty.setFirstDragon((byte) 2);
 			}
 		}
 
@@ -134,23 +134,14 @@ public class DifficultyFeature extends Feature {
 		List<ServerPlayerEntity> players = dragon.world.getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0) {
-			PlayerEntity nearestPlayer = dragon.world.getClosestPlayer(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ(), Double.MAX_VALUE, true);
-			if (nearestPlayer instanceof ServerPlayerEntity) {
-				ServerPlayerEntity player = (ServerPlayerEntity) nearestPlayer;
-				CompoundNBT playerTags = player.getPersistentData();
-				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
-				if (killedDragons < this.maxDifficulty)
-					playerTags.putInt(Strings.Tags.KILLED_DRAGONS, killedDragons + 1);
-			}
+			ServerPlayerEntity nearestPlayer = (ServerPlayerEntity) dragon.world.getClosestPlayer(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ(), Double.MAX_VALUE, true);
+			players.add(nearestPlayer);
 		}
-		//Otherwise sum the players' difficulties
-		else {
-			for (ServerPlayerEntity player : players) {
-				CompoundNBT playerTags = player.getPersistentData();
-				int killedDragons = playerTags.getInt(Strings.Tags.KILLED_DRAGONS);
-				if (killedDragons < this.maxDifficulty)
-					playerTags.putInt(Strings.Tags.KILLED_DRAGONS, killedDragons + 1);
-			}
+
+		for (ServerPlayerEntity player : players) {
+			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+			if (difficulty.getKilledDragons() < this.maxDifficulty)
+				difficulty.addKilledDragons(1);
 		}
 	}
 
@@ -167,11 +158,16 @@ public class DifficultyFeature extends Feature {
 
 		ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
 
-		CompoundNBT playerTags = player.getPersistentData();
-		if (!playerTags.contains(Strings.Tags.KILLED_DRAGONS))
-			playerTags.putInt(Strings.Tags.KILLED_DRAGONS, this.startingDifficulty);
+		IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
 
-		if (!playerTags.contains(Strings.Tags.FIRST_DRAGON))
-			playerTags.putBoolean(Strings.Tags.FIRST_DRAGON, true);
+		if (difficulty.getKilledDragons() < this.startingDifficulty) {
+			difficulty.setKilledDragons(this.startingDifficulty);
+			LogHelper.info("[Progressive Bosses] %s killed dragons counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
+		}
+
+		if (difficulty.getFirstDragon() == 0) {
+			difficulty.setFirstDragon((byte) 1);
+			LogHelper.info("[Progressive Bosses] %s first spawned. Set First Dragon to 1", player.getName().getString());
+		}
 	}
 }

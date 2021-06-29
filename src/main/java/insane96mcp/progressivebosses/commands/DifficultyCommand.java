@@ -9,6 +9,8 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -55,6 +57,19 @@ public class DifficultyCommand {
                                 .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"),"dragon", IntegerArgumentType.getInteger(context, "amount")))
                             )
                         )
+                    )
+                )
+            )
+            .then(Commands.literal("legacy_difficulty")
+                .then(Commands.argument("targetPlayer", EntityArgument.player())
+                    .then(Commands.literal("get")
+                        .then(Commands.literal("wither")
+                            .executes(context -> getBossDifficultyLegacy(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither"))
+                        )
+                        .then(Commands.literal("dragon")
+                            .executes(context -> getBossDifficultyLegacy(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon"))
+                        )
+                        .executes(context -> getBossDifficultyLegacy(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), ""))
                     )
                 )
             )
@@ -125,6 +140,24 @@ public class DifficultyCommand {
         else {
             source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
             source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
+            return 1;
+        }
+    }
+
+    private static int getBossDifficultyLegacy(CommandSource source, ServerPlayerEntity targetPlayer, String boss) {
+        source.sendFeedback(new StringTextComponent("This difficulty is no longer used by the mod. The command is here to let you see your old difficulty and trasnfer it to the new system with /progressivebosses difficulty <player> set <wither/dragon> <amount>."), true);
+        CompoundNBT targetNBT = targetPlayer.getPersistentData();
+        if (boss.equals("wither")) {
+            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS)), true);
+            return targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS);
+        }
+        else if (boss.equals("dragon")) {
+            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.KILLED_DRAGONS)), true);
+            return targetNBT.getInt(Strings.Tags.KILLED_DRAGONS);
+        }
+        else {
+            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS)), true);
+            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.KILLED_DRAGONS)), true);
             return 1;
         }
     }

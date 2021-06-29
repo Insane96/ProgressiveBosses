@@ -16,7 +16,7 @@ public class DifficultyStorage implements Capability.IStorage<IDifficulty> {
 		CompoundNBT nbt = new CompoundNBT();
 		nbt.putInt(Strings.Tags.SPAWNED_WITHERS, instance.getSpawnedWithers());
 		nbt.putInt(Strings.Tags.KILLED_DRAGONS, instance.getKilledDragons());
-		nbt.putBoolean(Strings.Tags.FIRST_DRAGON, instance.isFirstDragon());
+		nbt.putByte(Strings.Tags.FIRST_DRAGON, instance.getFirstDragon());
 		return nbt;
 	}
 
@@ -28,6 +28,6 @@ public class DifficultyStorage implements Capability.IStorage<IDifficulty> {
 		CompoundNBT compoundNBT = (CompoundNBT) nbt;
 		instance.setSpawnedWithers(compoundNBT.getInt(Strings.Tags.SPAWNED_WITHERS));
 		instance.setKilledDragons(compoundNBT.getInt(Strings.Tags.KILLED_DRAGONS));
-		instance.setFirstDragon(compoundNBT.getBoolean(Strings.Tags.FIRST_DRAGON));
+		instance.setFirstDragon(compoundNBT.getByte(Strings.Tags.FIRST_DRAGON));
 	}
 }

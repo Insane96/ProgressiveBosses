@@ -61,5 +61,5 @@ public abstract class MixinChargingPlayerPhase extends Phase {
 	@Shadow public abstract void initPhase();
 
 	@Override
-	public abstract PhaseType<? extends IPhase> getType();
+	public PhaseType<? extends IPhase> getType() { return PhaseType.CHARGING_PLAYER; }
 }

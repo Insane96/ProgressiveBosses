@@ -10,7 +10,6 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = ProgressiveBosses.MOD_ID)
 public class PlayerClone {
 
-    //This might not be needed, but better safe than sorry
     @SubscribeEvent
     public static void eventPlayerClone(PlayerEvent.Clone event) {
         PlayerEntity oldPlayer = event.getOriginal();
@@ -20,7 +19,7 @@ public class PlayerClone {
             newPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(newDifficulty -> {
                newDifficulty.setSpawnedWithers(oldDifficulty.getSpawnedWithers());
                newDifficulty.setKilledDragons(oldDifficulty.getKilledDragons());
-               newDifficulty.setFirstDragon(oldDifficulty.isFirstDragon());
+               newDifficulty.setFirstDragon(oldDifficulty.getFirstDragon());
             });
         });
     }
