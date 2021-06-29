@@ -179,7 +179,7 @@ public class CrystalFeature extends Feature {
 		}
 	}
 
-	private static final List<PhaseType<? extends IPhase>> validPhases = Arrays.asList(PhaseType.SITTING_SCANNING, PhaseType.HOLDING_PATTERN, PhaseType.TAKEOFF);
+	private static final List<PhaseType<? extends IPhase>> validPhases = Arrays.asList(PhaseType.SITTING_SCANNING, PhaseType.SITTING_ATTACKING, PhaseType.SITTING_FLAMING, PhaseType.HOLDING_PATTERN, PhaseType.TAKEOFF);
 
 	@SubscribeEvent
 	public void onDragonDamage(LivingDamageEvent event) {

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(StrafePlayerPhase.class)
-public class MixinStrafePlayerPhase extends Phase {
+public abstract class MixinStrafePlayerPhase extends Phase {
 	@Shadow
 	private int fireballCharge;
 	@Shadow
@@ -70,6 +70,8 @@ public class MixinStrafePlayerPhase extends Phase {
 
 						if (!Modules.dragon.attack.onPhaseEnd(this.dragon))
 							this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+						else
+							this.initPhase();
 					}
 				} else if (this.fireballCharge > 0) {
 					--this.fireballCharge;
@@ -84,8 +86,8 @@ public class MixinStrafePlayerPhase extends Phase {
 	@Shadow
 	private void findNewTarget() {}
 
+	@Shadow public abstract void initPhase();
+
 	@Override
-	public PhaseType<? extends IPhase> getType() {
-		return PhaseType.STRAFE_PLAYER;
-	}
+	public abstract PhaseType<? extends IPhase> getType();
 }
