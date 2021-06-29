@@ -122,8 +122,13 @@ public class WitherChargeAttackGoal extends Goal {
 
 			axisAlignedBB = axisAlignedBB.grow(1d);
 			this.wither.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB).forEach(entity -> {
+				if (entity == this.wither)
+					return;
 				entity.attackEntityFrom(new EntityDamageSource(Strings.Translatable.WITHER_CHARGE_ATTACK, this.wither), 10f);
-				entity.applyKnockback(1f, this.wither.getPosX() - entity.getPosX(), this.wither.getPosZ() - entity.getPosZ());
+				double d2 = entity.getPosX() - this.wither.getPosX();
+				double d3 = entity.getPosZ() - this.wither.getPosZ();
+				double d4 = Math.max(d2 * d2 + d3 * d3, 0.1D);
+				entity.addVelocity(d2 / d4 * 25.0D, 1.4d, d3 / d4 * 25.0D);
 			});
 		}
 		//If the wither's charging and is 2 blocks from the target point OR is about to finish the invulnerability time then prevent the explosion and stop the attack

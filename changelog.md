@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.2
+* Wither
+    * Charge attack now deals proper knockback (about like the ender dragon)
+
 ## Beta 3.1.1
 * Moved Player Data to Capabilities. This means that you'll need to transfer player's difficulty to the new system with `/progressivebosses difficulty @p set <wither/dragon> <amount>`. You can get your old difficulty with `/progressivebosses legacy_difficulty @p get`.
 * Dragon
