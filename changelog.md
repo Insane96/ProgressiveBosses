@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.1.2
+## Beta 3.1.2
 * The mod should now work on Arclight (Bukkit/Forge server)
 * Wither
     * Charge attack now deals proper knockback (about like the ender dragon)
