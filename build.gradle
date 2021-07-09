@@ -2,7 +2,6 @@ buildscript {
     repositories {
         maven { url = 'https://files.minecraftforge.net/maven' }
         maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
-        maven { url "https://www.cursemaven.com" }
         jcenter()
         mavenCentral()
     }
@@ -49,6 +48,9 @@ minecraft {
             // Add mixin config to runtime
             args '-mixin.config=progressivebosses.mixins.json'
 
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
+
             mods {
                 progressivebosses {
                     source sourceSets.main
@@ -67,6 +69,9 @@ minecraft {
 
             // Add mixin config to runtime
             args '-mixin.config=progressivebosses.mixins.json'
+
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
 
             mods {
                 progressivebosses {
@@ -109,6 +114,7 @@ dependencies {
     // compile "some.group:artifact:version"
 
     implementation fg.deobf("curse.maven:endergetic-291509:3154938")
+    implementation fg.deobf("curse.maven:abnormals_core-382216:3147409")
 
     // Real examples
     // compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
@@ -130,6 +136,7 @@ repositories {
     flatDir {
         dirs "libs"
     }
+    maven { url "https://www.cursemaven.com" }
 }
 
 mixin {

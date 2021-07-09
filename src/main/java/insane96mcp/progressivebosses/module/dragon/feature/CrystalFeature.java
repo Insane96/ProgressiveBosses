@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
@@ -16,8 +17,8 @@ import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -32,6 +33,8 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -240,6 +243,7 @@ public class CrystalFeature extends Feature {
 		CompoundNBT dragonTags = dragon.getPersistentData();
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 
+		//TODO Crystals not spawning Cages or inside towers with Endergetic Expansion
 		crystalCages(dragon, difficulty);
 		moreCrystals(dragon, difficulty);
 	}
@@ -257,21 +261,16 @@ public class CrystalFeature extends Feature {
 
 		dragonTags.putBoolean(Strings.Tags.CRYSTAL_CAGES, true);
 
-		Vector3d centerPodium = Vector3d.copyCenteredHorizontally(dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
+		List<EnderCrystalEntity> crystals = new ArrayList<>();
 
-		AxisAlignedBB bbCrystals = new AxisAlignedBB(centerPodium.add(-64, -16, -64), centerPodium.add(64, 64, 64));
+		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.func_236356_a_((ServerWorld) dragon.world)) {
+			crystals.addAll(dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
+		}
 
-		List<EnderCrystalEntity> crystals = dragon.world.getLoadedEntitiesWithinAABB(EnderCrystalEntity.class, bbCrystals);
-		//Remove the 4 crystals at the center
-		crystals.removeIf(c -> Math.sqrt(c.getDistanceSq(centerPodium)) <= 10d);
-		//Remove all the crystals that aren't on bedrock (so any player placed crystal or leftovers from previous fight will not be counted)
-		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().down()).getBlock() != Blocks.BEDROCK);
 		//Remove all the crystals that already have cages around
 		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().up(2)).getBlock() == Blocks.IRON_BARS);
 		//Shuffle the list
 		Collections.shuffle(crystals);
-		//Order by the lowest crystal
-		//crystals.sort(Comparator.comparingDouble(Entity::getPosY));
 
 		int crystalsInvolved = Math.round(difficulty - this.moreCagesAtDifficulty + 1);
 		int cagesGenerated = 0;
@@ -298,19 +297,16 @@ public class CrystalFeature extends Feature {
 
 		dragonTags.putBoolean(Strings.Tags.MORE_CRYSTALS, true);
 
-		Vector3d centerPodium = Vector3d.copyCenteredHorizontally(dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
+		List<EnderCrystalEntity> crystals = new ArrayList<>();
 
-		AxisAlignedBB bbCrystals = new AxisAlignedBB(centerPodium.add(-64, -16, -64), centerPodium.add(64, 64, 64));
+		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.func_236356_a_((ServerWorld) dragon.world)) {
+			crystals.addAll(dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
+		}
 
-		List<EnderCrystalEntity> crystals = dragon.world.getLoadedEntitiesWithinAABB(EnderCrystalEntity.class, bbCrystals);
-		//Remove the 4 crystals at the center
-		crystals.removeIf(c -> Math.sqrt(c.getDistanceSq(centerPodium)) <= 10d);
-		//Remove all the crystals that aren't on bedrock (so any player placed crystal or leftovers from previous fight will not be counted)
-		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().down()).getBlock() != Blocks.BEDROCK);
+		//Remove all the crystals that already have cages around
+		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().up(2)).getBlock() == Blocks.IRON_BARS);
 		//Shuffle the list
 		Collections.shuffle(crystals);
-		//Order by the lowest crystal
-		//crystals.sort(Comparator.comparingDouble(Entity::getPosY));
 
 		int crystalsInvolved = Math.round(difficulty - this.moreCrystalsAtDifficulty + 1);
 		int crystalSpawned = 0;
@@ -334,6 +330,8 @@ public class CrystalFeature extends Feature {
 		return source.isExplosion();
 	}
 
+	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER_RL = new ResourceLocation("endergetic:crystal_holder");
+
 	private static EnderCrystalEntity generateCrystalInTower(World world, double x, double y, double z) {
 		Vector3d centerPodium = Vector3d.copyCenteredHorizontally(world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
 
@@ -345,7 +343,14 @@ public class CrystalFeature extends Feature {
 		Stream<BlockPos> blocks = BlockPos.getAllInBox(crystalPos.add(-1, -1, -1), crystalPos.add(1, 1, 1));
 
 		blocks.forEach(pos -> world.setBlockState(pos, Blocks.AIR.getDefaultState()));
-		world.setBlockState(crystalPos.add(0, -1, 0), Blocks.BEDROCK.getDefaultState());
+
+		BlockState baseBlockState = Blocks.BEDROCK.getDefaultState();
+		if (ModList.get().isLoaded("endergetic"))
+			if (ForgeRegistries.BLOCKS.containsKey(ENDERGETIC_CRYSTAL_HOLDER_RL))
+				baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_HOLDER_RL).getDefaultState();
+			else
+				LogHelper.warn("The Endergetic Expansion is loaded but the %s block was not registered", ENDERGETIC_CRYSTAL_HOLDER_RL);
+		world.setBlockState(crystalPos.add(0, -1, 0), baseBlockState);
 
 		world.createExplosion(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.Mode.DESTROY);
 
