@@ -6,13 +6,13 @@
     * Attack
         * Decreased max Fireball chance (45% -> 40%)
         * Increased max Charge chance (45% -> 50%)
-        * Fixed multiple charges in a row not working properly
+        * Fixed multiple charges or strafes in a row not working properly
     * Minion
         * Increased Cooldown (70-90 seconds -> 80-100 seconds)
         * Slightly reduced spawning radius (should no longer spawn behind towers)
 
 ## Beta 3.1.2
-* The mod should now work on Arclight (Bukkit/Forge server)
+* The mod should now work on Arclight (Bukkit/Forge server) (seems not tho :c)
 * Wither
     * Charge attack now deals proper knockback (about like the ender dragon)
 

@@ -25,7 +25,7 @@ public class ResistancesFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> damageRedutionWhenSittingConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
 
-	//TODO Change this to not be just annoying when low health
+	//TODO Change this to a percentage of current health
 	public double bonusDirectDamageWhenNotSitting = 0.80d;
 	public double bonusIndirectDamageWhenNotSitting = 0.55d;
 	public double damageRedutionWhenSitting = 0.003d;
