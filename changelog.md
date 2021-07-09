@@ -1,5 +1,12 @@
 # Changelog
 
+## 3.1.3
+* The mod now works properly with Endergetic Expansion
+* Attack
+    * Decreased Fireball chance (45% -> 35%)
+* Minion
+    * Increased Cooldown (70-90 seconds -> 80-100 seconds)
+
 ## Beta 3.1.2
 * The mod should now work on Arclight (Bukkit/Forge server)
 * Wither

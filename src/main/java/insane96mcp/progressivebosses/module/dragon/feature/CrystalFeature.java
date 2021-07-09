@@ -243,7 +243,6 @@ public class CrystalFeature extends Feature {
 		CompoundNBT dragonTags = dragon.getPersistentData();
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 
-		//TODO Crystals not spawning Cages or inside towers with Endergetic Expansion
 		crystalCages(dragon, difficulty);
 		moreCrystals(dragon, difficulty);
 	}
@@ -303,8 +302,6 @@ public class CrystalFeature extends Feature {
 			crystals.addAll(dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
 		}
 
-		//Remove all the crystals that already have cages around
-		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().up(2)).getBlock() == Blocks.IRON_BARS);
 		//Shuffle the list
 		Collections.shuffle(crystals);
 
