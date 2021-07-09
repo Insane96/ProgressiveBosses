@@ -4,7 +4,6 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
-import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
@@ -51,7 +50,7 @@ public class AttackFeature extends Feature {
 	public double increasedDirectDamage = 0.04d;
 	public double increasedAcidPoolDamage = 0.033d;
 	public double chargePlayerMaxChance = 0.45d;
-	public double fireballMaxChance = 0.45d;
+	public double fireballMaxChance = 0.35d;
 	public double maxChanceAtDifficulty = 16;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
@@ -225,7 +224,7 @@ public class AttackFeature extends Feature {
 		if (player == null)
 			return;
 
-		LogHelper.info("charging");
+		//LogHelper.info("charging");
 
 		dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
 		Vector3d targetPos = player.getPositionVec();
@@ -267,7 +266,7 @@ public class AttackFeature extends Feature {
 		if (player == null)
 			return;
 
-		LogHelper.info("fireballing");
+		//LogHelper.info("fireballing");
 
 		dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
 		dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
@@ -373,7 +372,7 @@ public class AttackFeature extends Feature {
 		if (dragon.getRNG().nextDouble() < mod)
 			fireballs++;
 
-		LogHelper.info("fireballs: %f", fireballs);
+		//LogHelper.info("fireballs: %f", fireballs);
 
 		for (int i = 0; i < fireballs; i++) {
 			d6 = dragon.dragonPartHead.getPosX() - vector3d2.x;

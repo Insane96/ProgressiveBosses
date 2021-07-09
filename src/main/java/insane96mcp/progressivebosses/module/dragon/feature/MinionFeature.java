@@ -56,8 +56,8 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> dragonImmuneConfig;
 
 	public int minionAtDifficulty = 1;
-	public int minCooldown = 1200;
-	public int maxCooldown = 1800;
+	public int minCooldown = 1400;
+	public int maxCooldown = 2000;
 	public double cooldownReduction = 0.005d;
 	public double blindingChance = 0.003d;
 	public boolean dragonImmune = true;
