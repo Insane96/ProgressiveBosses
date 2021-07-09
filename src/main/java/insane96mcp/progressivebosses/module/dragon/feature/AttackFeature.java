@@ -49,8 +49,8 @@ public class AttackFeature extends Feature {
 
 	public double increasedDirectDamage = 0.04d;
 	public double increasedAcidPoolDamage = 0.033d;
-	public double chargePlayerMaxChance = 0.45d;
-	public double fireballMaxChance = 0.35d;
+	public double chargePlayerMaxChance = 0.50d;
+	public double fireballMaxChance = 0.40d;
 	public double maxChanceAtDifficulty = 16;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
