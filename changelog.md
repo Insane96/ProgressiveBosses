@@ -3,13 +3,26 @@
 ## 3.1.3
 * The mod now works properly with Endergetic Expansion
 * Dragon
+    * Dragon now reaches max difficulty (and also max health, chances, etc.) at 24 dragons killed instead of 82. (check [here](https://github.com/Insane96/ProgressiveBosses/commit/c102cb4e9316ae40b41aefb9b510c7a2430da913) to see the full changes)
+    * Health
+        * Increased bonus health regeneration per difficulty (0.025 -> 0.05 hp/s) (max bonus regen reached at 40 -> 20 difficulty)
     * Attack
         * Decreased max Fireball chance (45% -> 40%)
         * Increased max Charge chance (45% -> 50%)
+        * The max chance for the Dragon to charge/fireball the player is now reached at a higher difficulty (16 -> 20)
         * Fixed multiple charges or strafes in a row not working properly
     * Minion
         * Increased Cooldown (70-90 seconds -> 80-100 seconds)
+        * Increased Blinding Minion Chance (0.3% -> 1.7% chance per difficulty) (at max difficulty: 24.6% -> 40.8% chance)
         * Slightly reduced spawning radius (should no longer spawn behind towers)
+    * Larva
+        * Increased Larva Cooldown (30-60 -> 40-70 secs)
+    * Resistances and Vulnerabilities
+        * Changed bonus direct and indirect damage to bonus current health damage.  
+          (+80% direct damage dealt -> +2% of current health direct damage)  
+          (+55% indirect damage dealt -> +0.8% of current health indirect damage)
+    * Crystals
+        * More cages around the crystals will now spawn at difficulty 2 instead of 1
 
 ## Beta 3.1.2
 * The mod should now work on Arclight (Bukkit/Forge server) (seems not tho :c)

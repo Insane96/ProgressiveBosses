@@ -1,9 +1,12 @@
 # What's New in Progressive Bosses 3
 
+###### (Basically what's new since 2.2.0)
+
 If you're new to the mod, I recommend getting a look at this: https://www.insane96.eu/projects/mods/progressivebosses/ before reading this page.
 
 ## Base mod
 * Mod now requires InsaneLib. This means that the mod is now split in Modules (Wither and Dragon) and Features that can be disabled separately.
+* Now works with The Endergetic Expansion!
 * Reworked the command `/progressivebosses`, you can now summon "mod's entities".
 
 ## Wither
@@ -51,42 +54,46 @@ If you're new to the mod, I recommend getting a look at this: https://www.insane
 ## Dragon
 * Difficulty Feature
     * **It's the base feature of the mod, with this disabled almost every Dragon feature will not work.**
+    * Dragon now reaches the max difficulty at 24 instead of 82
     * Allows the Dragon to get the difficulty on spawn.
     * Also has a new config option to set the starting difficulty.
 * Health Feature
     * **Takes care of the Dragon's health**
-    * Increased Max Health regeneration. (0.5 -> 1.0)
+    * Increased Bonus Health per difficulty (+10 -> +34.4 hp)
+    * Increased bonus health regeneration per difficulty (0.025 -> 0.05 hp/s)
+    * Increased Max Health regeneration. (0.5 -> 1.0 hp/s)
 * Brand NEW Attack Feature
     * **Overhauls the attacks of the Dragon**
-    * Reduced Dragon bonus attack damage per difficulty. (+10% damage per difficulty -> +4% damage per difficulty)
-    * Reduced Dragon bonus damage from acid. (+10% damage per difficulty -> +3.3% damage per difficulty)
+    * Increased Dragon bonus attack damage per difficulty. (+10% -> +13.5% damage per difficulty)
+    * Increased Dragon bonus damage from acid. (+10% -> +11% damage per difficulty)
     * The Ender Dragon should no longer miss the player when charging. Also dives faster, instead of turning continuously.
-    * Fireballing and charging now have a chance to trigger when the Ender Dragon's ending her Holding Pattern, Charging Phase or Fireballing Phase instead of every tick. Chance increased. (1.5% -> 45%)
-    * Dragon can also fire up to 1 more fireball every 5 difficulty. SHOTGUN
+    * Fireballing and charging now have a chance to trigger when the Ender Dragon's ending her Holding Pattern, Charging Phase or Fireballing Phase instead of every tick. Chance increased. (1.5% -> 50% chance to charge) (1.5% -> 40% chance to fireball)
+    * Dragon can also fire up to 0.7 more fireballs every difficulty. SHOTGUN
     * Ender Dragon's fireballs now deal magic damage on impact in a spherical area of 4.5 blocks and spawn a 3D Area of Effect Cloud. The cloud has halved duration. Fireballs are also much faster.
 * Minions Feature
     * **Let the Dragon get some help**
     * Will no longer spawn if there are no players on the main island.
-    * Changed cooldown reduction. (-10 ticks per difficulty -> -0.5% per difficulty)
+    * Cooldown increased. (70-90 -> 80-100 seconds)
+    * Changed cooldown reduction. (-0.5 secs per difficulty -> -1.7% per difficulty)
     * Shoot slower. (1 bullet every 2-11 seconds -> 1 bullet every 4-22 seconds)
     * No longer take damage from the Ender Dragon.
-    * 0.3% chance per difficulty to spawn as a Bliding Minion. Blinding Minions's bullets will give blindness in addition to levitation.
+    * 1.7% chance per difficulty to spawn as a Bliding Minion. Blinding Minions's bullets will give blindness in addition to levitation.
     * Can now spawn on towers.
 * Larvae Feature
     * **Small annoying pests**
-    * Cooldown reduced. (52.5-60 secs -> 30-60 secs)
+    * Cooldown reduced. (52.5-60 secs -> 40-70 secs)
     * Increased Max Larva spawned. (6 -> 8)
     * Removed Cooldown Reduction.
     * No longer spawn inside blocks.
     * No longer take damage from the Ender Dragon.
 * Rewards Feature
     * **Makes the Dragon drop more experience.**
-    * Increased Bonus Experience. (+10% per difficulty -> +30% per difficulty)
+    * Increased Bonus Experience. (+10% per difficulty -> +100% per difficulty)
     * Removed experience per player, the ender dragon will now drop, like vanilla, 12k the first time, otherwise 500 + the bonus experience.
     * Can now have custom rewards difficulty based (like the Wither).
 * Vulnerabilities and Resistances Feature
     * **Repalces the Armor feature and adds a new way to deal more damage to the Dragon.**
-    * +80% melee damage and +55% indirect damage from players when not in the center podium. This is done to let the player deal significant damage to the Dragon when she charges him, and to be able to deal some damage with arrows since its almost impossible to hit her head while she's flying.
+    * +2% of current health damage when taking direct damage and +0.8% of current health damage when taking indirect damage from players when not in the center podium.
     * -0.3% melee damage per difficulty when in the center podium.
     * -50% explosion damage.
 * Crystals Feature
