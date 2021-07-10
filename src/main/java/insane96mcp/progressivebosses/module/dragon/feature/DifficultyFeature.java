@@ -40,7 +40,7 @@ public class DifficultyFeature extends Feature {
 				.comment("If true and there are more players around the Dragon, she will have his stats based on the sum of both players' difficulty. If false, the Dragon stats will be based on the average of the difficulty of the players around.")
 				.define("Sum Killed Dragons Difficulty", sumKilledDragonDifficulty);
 		maxDifficultyConfig = Config.builder
-				.comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 82 because the Ender Dragon reaches the maximum amount of health (1024, handled by Minecraft. Some mods can increase this) after 82 Dragons killed.")
+				.comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 24 because it's the last spawning end gate.")
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
 		startingDifficultyConfig = Config.builder
 				.comment("How much difficulty will players start with when joining a world? Note that this will apply when the player joins the world if the current player difficulty is below this value.")

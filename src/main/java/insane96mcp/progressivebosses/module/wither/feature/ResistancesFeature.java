@@ -30,13 +30,13 @@ public class ResistancesFeature extends Feature {
 		super(Config.builder, module);
 		Config.builder.comment(this.getDescription()).push(this.getName());
 		damageReductionBeforeHalfHealthConfig = Config.builder
-				.comment("Percentage Damage Reduction while the Wither is above half health.")
+				.comment("Percentage Damage Reduction (per difficulty) while the Wither is above half health.")
 				.defineInRange("Damage reduction per Difficulty above half health", damageReductionBeforeHalfHealth, 0d, 1d);
 		maxDamageReductionBeforeHalfHealthConfig = Config.builder
 				.comment("Cap for 'Damage reduction per Difficulty above half health'")
 				.defineInRange("Max Damage reduction per Difficulty before half health", maxDamageReductionBeforeHalfHealth, 0d, 1d);
 		damageReductionOnHalfHealthConfig = Config.builder
-				.comment("Percentage Damage Reduction as the Wither drops below half health.")
+				.comment("Percentage Damage Reduction (per difficulty) as the Wither drops below half health.")
 				.defineInRange("Damage reduction per Difficulty below half health", damageReductionOnHalfHealth, 0d, 1d);
 		maxDamageReductionOnHalfHealthConfig = Config.builder
 				.comment("Cap for 'Damage Reduction per Difficulty below half health'")

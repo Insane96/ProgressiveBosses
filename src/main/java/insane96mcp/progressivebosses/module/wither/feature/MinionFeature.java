@@ -73,13 +73,13 @@ public class MinionFeature extends Feature {
 	public int minCooldown = 240;
 	public int maxCooldown = 480;
 	public double cooldownMultiplierBelowHalfHealth = 0.6d;
-	public double bonusSpeedPerDifficulty = 0.004d;
+	public double bonusSpeedPerDifficulty = 0.012d;
 	public boolean killMinionOnWitherDeath = true;
 	//Equipment
 	public boolean hasSword = true;
 	public double preHalfHealthBowChance = 0.6d;
 	public double halfHealthBowChance = 0.08d;
-	public double powerSharpnessChance = 0.0625d;
+	public double powerSharpnessChance = 0.2d;
 	public double punchKnockbackChance = 0.04d;
 
 	public MinionFeature(Module module) {
@@ -124,10 +124,10 @@ public class MinionFeature extends Feature {
 				.comment("Chance for the Wither Minion to spawn with a bow when Wither's below Half Health")
 				.defineInRange("Bow Chance Below Half Health", halfHealthBowChance, 0d, 1d);
 		powerSharpnessChanceConfig = Config.builder
-				.comment("Chance for the Wither Minion Sword / Bow to be enchanted with Sharpness / Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
+				.comment("Chance (per difficulty) for the Wither Minion Sword / Bow to be enchanted with Sharpness / Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
 				.defineInRange("Power / Sharpness Chance", powerSharpnessChance, 0d, Double.MAX_VALUE);
 		punchKnockbackChanceConfig = Config.builder
-				.comment("Chance for the Wither Minion Sword / Bow to be enchanted with Knockback / Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
+				.comment("Chance (per difficulty) for the Wither Minion Sword / Bow to be enchanted with Knockback / Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
 				.defineInRange("Punch / Knockback Chance", punchKnockbackChance, 0d, Double.MAX_VALUE);
 		Config.builder.pop();
 

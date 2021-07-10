@@ -41,9 +41,9 @@ public class AttackFeature extends Feature {
 	public double chargeAttackChance = 0.015;
 	public double barrageAttackChance = 0.002d;
 	public double maxBarrageAttackChance = 0.05d;
-	public double increasedDamage = 0.02d;
+	public double increasedDamage = 0.06d;
 	//Skulls
-	public double skullVelocityMultiplier = 2.5d;
+	public double skullVelocityMultiplier = 2.75d;
 	//Attack Speed
 	public int attackInterval = 40;
 	public boolean increaseAttackSpeedWhenNear = true;
@@ -64,7 +64,7 @@ public class AttackFeature extends Feature {
 				.comment("Max Chance for the barrage attack. The max chance is doubled when the Wither is below half health")
 				.defineInRange("Max Barrage Attack Chance", maxBarrageAttackChance, 0d, 1d);
 		increasedDamageConfig = Config.builder
-				.comment("Percentage bonus damage dealt by the Wither.")
+				.comment("Percentage bonus damage dealt by the Wither per difficulty.")
 				.defineInRange("Increased Damage", increasedDamage, 0d, Double.MAX_VALUE);
 		//Skulls
 		Config.builder.comment("Wither Skull Changes").push("Skulls");

@@ -27,9 +27,9 @@ public class RewardFeature extends Feature {
 			"progressivebosses:nether_star_shard,2,4,6,MINIMUM,SCALING",
 			"progressivebosses:nether_star_shard,3,6,4,MINIMUM,SCALING",
 			"progressivebosses:nether_star_shard,4,8,2,MINIMUM,SCALING");*/
-	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,1,0.16,PER_DIFFICULTY,FLAT");
+	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,1,0.5,PER_DIFFICULTY,FLAT");
 
-	public double bonusExperience = 0.5d;
+	public double bonusExperience = 2d;
 	public ArrayList<Drop> dropsList;
 
 	public RewardFeature(Module module) {

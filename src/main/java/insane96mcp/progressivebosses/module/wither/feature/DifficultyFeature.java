@@ -30,7 +30,7 @@ public class DifficultyFeature extends Feature {
 
 	public int spawnRadiusPlayerCheck = 128;
 	public boolean sumSpawnedWitherDifficulty = false;
-	public int maxDifficulty = 72;
+	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
 
 	public DifficultyFeature(Module module) {
@@ -43,7 +43,7 @@ public class DifficultyFeature extends Feature {
 				.comment("If true and there are more players around the Wither, the Wither will have his stats based on the sum of both players difficulty. If false, the Wither stats will be based on the average of the difficulty of the players around")
 				.define("Sum Spawned Wither Difficulty", sumSpawnedWitherDifficulty);
 		maxDifficultyConfig = Config.builder
-				.comment("The Maximum difficulty (times spawned) reachable by Wither. By default is set to 72 because the Wither reaches the maximum amount of health (1024, capped by Minecraft. Some mods can increase this) after 72 withers spawned.")
+				.comment("The Maximum difficulty (times spawned) reachable by Wither.")
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
 		startingDifficultyConfig = Config.builder
 				.comment("How much difficulty will players start with when joining a world? Note that this will apply when the first Wither is spawned so if the player has already spawned one this will not apply.")

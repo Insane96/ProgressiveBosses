@@ -23,6 +23,8 @@
           (+55% indirect damage dealt -> +0.8% of current health indirect damage)
     * Crystals
         * More cages around the crystals will now spawn at difficulty 2 instead of 1
+* Wither
+    * Wither now reaches max difficulty (and also max health, chances, etc.) at 24 wither spawned instead of 72. (check [here]() to see the full changes)
 
 ## Beta 3.1.2
 * The mod should now work on Arclight (Bukkit/Forge server) (seems not tho :c)
