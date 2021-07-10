@@ -30,7 +30,7 @@ public class DifficultyFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> startingDifficultyConfig;
 
 	public boolean sumKilledDragonDifficulty = false;
-	public int maxDifficulty = 82;
+	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
 
 	public DifficultyFeature(Module module) {
@@ -56,7 +56,6 @@ public class DifficultyFeature extends Feature {
 		startingDifficulty = startingDifficultyConfig.get();
 	}
 
-	//Set dragon difficulty
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onSpawn(EntityJoinWorldEvent event) {
 		if (event.getWorld().isRemote)
@@ -163,6 +162,10 @@ public class DifficultyFeature extends Feature {
 		if (difficulty.getKilledDragons() < this.startingDifficulty) {
 			difficulty.setKilledDragons(this.startingDifficulty);
 			LogHelper.info("[Progressive Bosses] %s killed dragons counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
+		}
+		if (difficulty.getKilledDragons() > this.maxDifficulty) {
+			difficulty.setKilledDragons(this.maxDifficulty);
+			LogHelper.info("[Progressive Bosses] %s killed dragons counter was above the 'Max Difficulty', Has been decreased to match 'Max Difficulty'", player.getName().getString());
 		}
 
 		if (difficulty.getFirstDragon() == 0) {

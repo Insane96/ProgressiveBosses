@@ -48,8 +48,8 @@ public class LarvaFeature extends Feature {
 	public int larvaAtDifficulty = 1;
 	public int bonusLarvaEveryDifficulty = 2;
 	public int maxSpawned = 8;
-	public int minCooldown = 600;
-	public int maxCooldown = 1200;
+	public int minCooldown = 800;
+	public int maxCooldown = 1400;
 	public boolean dragonImmune = true;
 
 	public LarvaFeature(Module module) {

@@ -26,7 +26,7 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> dragonEggPerPlayerConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> dropsListConfig;
 
-	public double bonusExperience = 0.3d;
+	public double bonusExperience = 1.0d;
 	public boolean dragonEggPerPlayer = true;
 	public ArrayList<Drop> dropsList;
 
@@ -34,7 +34,7 @@ public class RewardFeature extends Feature {
 		super(Config.builder, module);
 		Config.builder.comment(this.getDescription()).push(this.getName());
 		bonusExperienceConfig = Config.builder
-				.comment("How much more experience (percentage) will Wither drop per Difficulty. The percentage is additive (e.g. with this set to 10%, 7 withers spawned = 70% more experience)")
+				.comment("How much more experience (percentage) will Dragon drop per Difficulty. The percentage is additive (e.g. with this set to 100%, 7 dragons killed = 700% more experience)")
 				.defineInRange("Bonus Experience per Difficulty", bonusExperience, 0.0, Double.MAX_VALUE);
 		dragonEggPerPlayerConfig = Config.builder
 				.comment("If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg ìì will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")

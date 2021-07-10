@@ -54,12 +54,12 @@ public class CrystalFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnInsideTowerChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
 
-	public int moreCagesAtDifficulty = 1;
+	public int moreCagesAtDifficulty = 2;
 	public int maxBonusCages = 4;
 	public int moreCrystalsAtDifficulty = 8;
 	public int maxMoreCrystals = 5;
 	public double crystalRespawnChance = 0.05d;
-	public double crystalRespawnMultiplier = 0.15d;
+	public double crystalRespawnMultiplier = 0.5d;
 	public double crystalRespawnInsideTowerChance = 0.005d;
 	public boolean explosionImmune = true;
 

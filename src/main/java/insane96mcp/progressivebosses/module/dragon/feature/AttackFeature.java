@@ -34,7 +34,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import javax.annotation.Nullable;
 import java.util.List;
 
-@Label(name = "Attack", description = "Makes the dragon hit harder and more often")
+@Label(name = "Attack", description = "Makes the dragon hit harder in various different ways")
 public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> increasedDirectDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> increasedAcidPoolDamageConfig;
@@ -47,16 +47,16 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBonusFireballConfig;
 
-	public double increasedDirectDamage = 0.04d;
-	public double increasedAcidPoolDamage = 0.033d;
+	public double increasedDirectDamage = 0.135d;
+	public double increasedAcidPoolDamage = 0.113d;
 	public double chargePlayerMaxChance = 0.50d;
 	public double fireballMaxChance = 0.40d;
-	public double maxChanceAtDifficulty = 16;
+	public double maxChanceAtDifficulty = 20;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
 	public boolean fireball3DEffectCloud = true;
 	public double fireballVelocityMultiplier = 2.5d;
-	public double maxBonusFireball = 0.2d;
+	public double maxBonusFireball = 0.7d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);

@@ -27,7 +27,7 @@ public class ResistancesFeature extends Feature {
 
 	public double bonusCurHealthDirectDamage = 0.02d;
 	public double bonusCurHealthIndirectDamage = 0.008d;
-	public double damageRedutionWhenSitting = 0.003d;
+	public double damageRedutionWhenSitting = 0.0125d;
 	public double explosionDamageReduction = 0.50d;
 
 	public ResistancesFeature(Module module) {
