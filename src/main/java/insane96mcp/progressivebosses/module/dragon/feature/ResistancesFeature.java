@@ -20,26 +20,25 @@ import java.util.List;
 @Label(name = "Resistances & Vulnerabilities", description = "Handles the Damage Resistances and Vulnerabilities")
 public class ResistancesFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Double> bonusDirectDamageWhenNotSittingConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> bonusIndirectDamageWhenNotSittingConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> bonusCurHealthDirectDamageConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> bonusCurHealthIndirectDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> damageRedutionWhenSittingConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
 
-	//TODO Change this to a percentage of current health
-	public double bonusDirectDamageWhenNotSitting = 0.80d;
-	public double bonusIndirectDamageWhenNotSitting = 0.55d;
+	public double bonusCurHealthDirectDamage = 0.02d;
+	public double bonusCurHealthIndirectDamage = 0.008d;
 	public double damageRedutionWhenSitting = 0.003d;
 	public double explosionDamageReduction = 0.50d;
 
 	public ResistancesFeature(Module module) {
 		super(Config.builder, module);
 		Config.builder.comment(this.getDescription()).push(this.getName());
-		bonusDirectDamageWhenNotSittingConfig = Config.builder
-				.comment("Percentage Bonus Direct damage dealt to the Ender Dragon when she's not at the center.")
-				.defineInRange("Bonus direct damage when not sitting", bonusDirectDamageWhenNotSitting, 0d, Double.MAX_VALUE);
-		bonusIndirectDamageWhenNotSittingConfig = Config.builder
-				.comment("Percentage Bonus Indirect damage dealt to the Ender Dragon when she's not at the center.")
-				.defineInRange("Bonus indirect damage when not sitting", bonusIndirectDamageWhenNotSitting, 0d, Double.MAX_VALUE);
+		bonusCurHealthDirectDamageConfig = Config.builder
+				.comment("Percentage of Dragon's current health dealth as Bonus damage when attacked directly (melee) and she's not at the center.")
+				.defineInRange("Bonus Current Health Direct Damage", bonusCurHealthDirectDamage, 0d, Double.MAX_VALUE);
+		bonusCurHealthIndirectDamageConfig = Config.builder
+				.comment("Percentage of Dragon's current health dealth as Bonus damage when attacked indirectly (e.g. arrows) and she's not at the center.")
+				.defineInRange("Bonus Current Health Indirect Damage", bonusCurHealthIndirectDamage, 0d, Double.MAX_VALUE);
 		damageRedutionWhenSittingConfig = Config.builder
 				.comment("Melee Damage reduction per difficulty while the Ender Dragon is at the center.")
 				.defineInRange("Melee Damage reduction while at the center", damageRedutionWhenSitting, 0d, Double.MAX_VALUE);
@@ -52,8 +51,8 @@ public class ResistancesFeature extends Feature {
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.bonusDirectDamageWhenNotSitting = this.bonusDirectDamageWhenNotSittingConfig.get();
-		this.bonusIndirectDamageWhenNotSitting = this.bonusIndirectDamageWhenNotSittingConfig.get();
+		this.bonusCurHealthDirectDamage = this.bonusCurHealthDirectDamageConfig.get();
+		this.bonusCurHealthIndirectDamage = this.bonusCurHealthIndirectDamageConfig.get();
 		this.damageRedutionWhenSitting = this.damageRedutionWhenSittingConfig.get();
 		this.explosionDamageReduction = this.explosionDamageReductionConfig.get();
 	}
@@ -76,17 +75,18 @@ public class ResistancesFeature extends Feature {
 	private static final List<PhaseType<? extends IPhase>> sittingPhases = Arrays.asList(PhaseType.SITTING_SCANNING, PhaseType.SITTING_ATTACKING, PhaseType.SITTING_FLAMING, PhaseType.TAKEOFF);
 
 	private void bonusDamageNotInCenter(LivingDamageEvent event, EnderDragonEntity dragon) {
-		if (this.bonusDirectDamageWhenNotSitting == 0d && this.bonusIndirectDamageWhenNotSitting == 0d)
+		if (this.bonusCurHealthDirectDamage == 0d && this.bonusCurHealthIndirectDamage == 0d)
 			return;
 
 		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()))
 			return;
 
+		float curHealth = dragon.getHealth();
 		if (event.getSource().getImmediateSource() instanceof PlayerEntity) {
-			event.setAmount((event.getAmount() * (float) (this.bonusDirectDamageWhenNotSitting + 1)));
+			event.setAmount(event.getAmount() + (float) (curHealth * this.bonusCurHealthDirectDamage));
 		}
 		else if (event.getSource().getTrueSource() instanceof PlayerEntity) {
-			event.setAmount((event.getAmount() * (float) (this.bonusIndirectDamageWhenNotSitting + 1)));
+			event.setAmount(event.getAmount() + (float) (curHealth * this.bonusCurHealthIndirectDamage));
 		}
 	}
 
