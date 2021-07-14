@@ -24,7 +24,19 @@
     * Crystals
         * More cages around the crystals will now spawn at difficulty 2 instead of 1
 * Wither
-    * Wither now reaches max difficulty (and also max health, chances, etc.) at 24 wither spawned instead of 72. (check [here]() to see the full changes)
+    * Wither now reaches max difficulty (and also max health, chances, etc.) at 24 wither spawned instead of 72.
+    * Health
+        * Increased bonus health regeneration per difficulty (0.05 -> 0.1 hp/s) (max bonus regen reached at 40 -> 20 difficulty)
+    * Attack
+        * Increased Skull velocity multiplier (wither skulls 2.5 -> 2.75 times faster)
+    * Minions
+        * Increased power/sharpness chance (6.25% -> 20% chance per difficulty) (chance at max difficulty: 450% -> 480%)
+        * Increased punch/knockback chance (4% -> 15% chance per difficulty) (chance at max difficulty: 288% -> 360%, so increased max punch/knockback level II-III -> III-IV)
+    * Misc
+        * Increased explosion power bonus (0.3 -> 0.5) (capped explosion (13 power) at difficulty: 20 -> 12)
+    * Reward
+        * Increased bonus experience per difficulty (+50% -> +200% bonus experience per difficulty)
+        * Increased nether star shard drop chance (16% -> 50% chance to drop a shard, trying as many times as the difficulty)
 
 ## Beta 3.1.2
 * The mod should now work on Arclight (Bukkit/Forge server) (seems not tho :c)
