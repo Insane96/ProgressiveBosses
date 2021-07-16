@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.1.4
+* Wither 
+    * Increased Fire Explosion at Difficulty (8 -> 16)
+    * Fixed Botania's Pink wither spawning minions
+
 ## 3.1.3
 * The mod now works properly with Endergetic Expansion
 * Dragon
