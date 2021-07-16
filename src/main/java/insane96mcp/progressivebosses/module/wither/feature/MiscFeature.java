@@ -34,7 +34,7 @@ public class MiscFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> witherNetherOnlyConfig;
 
 	public double explosionPowerBonus = 0.5d;
-	public int explosionCausesFireAtDifficulty = 8;
+	public int explosionCausesFireAtDifficulty = 16;
 	public boolean fasterBlockBreaking = true;
 	public boolean biggerBlockBreaking = true;
 	public boolean witherNetherOnly = false;
