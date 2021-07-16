@@ -71,6 +71,10 @@ public class DifficultyFeature extends Feature {
 		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
+		//TODO Add a blacklist
+		if (event.getEntity().getType().getRegistryName().toString().equals("botania:pink_wither"))
+			return;
+
 		WitherEntity wither = (WitherEntity) event.getEntity();
 
 		CompoundNBT witherTags = wither.getPersistentData();
