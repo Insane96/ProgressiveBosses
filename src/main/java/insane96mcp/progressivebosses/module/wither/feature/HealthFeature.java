@@ -28,7 +28,7 @@ public class HealthFeature extends Feature {
 
 	public HealthFeature(Module module) {
 		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		bonusPerDifficultyConfig = Config.builder
 				.comment("Increase Wither's Health by this value per difficulty")
 				.defineInRange("Health Bonus per Difficulty", bonusPerDifficulty, 0.0, Double.MAX_VALUE);

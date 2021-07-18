@@ -35,7 +35,7 @@ public class DifficultyFeature extends Feature {
 
 	public DifficultyFeature(Module module) {
 		super(Config.builder, module, true, false);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		sumKilledDragonDifficultyConfig = Config.builder
 				.comment("If true and there are more players around the Dragon, she will have his stats based on the sum of both players' difficulty. If false, the Dragon stats will be based on the average of the difficulty of the players around.")
 				.define("Sum Killed Dragons Difficulty", sumKilledDragonDifficulty);

@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.1.5
+* Updated InsaneLib
+* Difficulty features can no longer be disabled
+
 ## 3.1.4
 * Wither 
     * Increased Fire Explosion at Difficulty (8 -> 16)

@@ -23,10 +23,6 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> dropsListConfig;
 
-	/*private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,2,8,MINIMUM,SCALING",
-			"progressivebosses:nether_star_shard,2,4,6,MINIMUM,SCALING",
-			"progressivebosses:nether_star_shard,3,6,4,MINIMUM,SCALING",
-			"progressivebosses:nether_star_shard,4,8,2,MINIMUM,SCALING");*/
 	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,1,0.5,PER_DIFFICULTY,FLAT");
 
 	public double bonusExperience = 2d;
@@ -34,7 +30,7 @@ public class RewardFeature extends Feature {
 
 	public RewardFeature(Module module) {
 		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		bonusExperienceConfig = Config.builder
 				.comment("How much more experience (percentage) will Wither drop per Difficulty. The percentage is additive (e.g. with this set to 10%, 7 withers spawned = 70% more experience)")
 				.defineInRange("Bonus Experience per Difficulty", bonusExperience, 0.0, Double.MAX_VALUE);

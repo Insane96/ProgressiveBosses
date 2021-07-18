@@ -28,7 +28,7 @@ public class ResistancesFeature extends Feature {
 
 	public ResistancesFeature(Module module) {
 		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		damageReductionBeforeHalfHealthConfig = Config.builder
 				.comment("Percentage Damage Reduction (per difficulty) while the Wither is above half health.")
 				.defineInRange("Damage reduction per Difficulty above half health", damageReductionBeforeHalfHealth, 0d, 1d);

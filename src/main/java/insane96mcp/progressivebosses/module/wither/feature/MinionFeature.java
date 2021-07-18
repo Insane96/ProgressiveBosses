@@ -84,7 +84,7 @@ public class MinionFeature extends Feature {
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		minionAtDifficultyConfig = Config.builder
 				.comment("At which difficulty the Wither starts spawning Minions")
 				.defineInRange("Minion at Difficulty", minionAtDifficulty, 0, Integer.MAX_VALUE);

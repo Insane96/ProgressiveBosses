@@ -54,7 +54,7 @@ public class LarvaFeature extends Feature {
 
 	public LarvaFeature(Module module) {
 		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		larvaAtDifficultyConfig = Config.builder
 				.comment("At which difficulty the Ender Dragon starts spawning Larvae")
 				.defineInRange("Larva at Difficulty", larvaAtDifficulty, 0, Integer.MAX_VALUE);

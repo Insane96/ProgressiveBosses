@@ -60,7 +60,7 @@ public class AttackFeature extends Feature {
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		increasedDirectDamageConfig = Config.builder
 				.comment("How much more damage per difficulty (percentage) does the Ender Dragon (directly) deal per difficulty?")
 				.defineInRange("Bonus Direct Damage", increasedDirectDamage, 0.0, Double.MAX_VALUE);
@@ -112,6 +112,7 @@ public class AttackFeature extends Feature {
 		this.fireballExplosionDamages = this.fireballExplosionDamagesConfig.get();
 		this.fireball3DEffectCloud = this.fireball3DEffectCloudConfig.get();
 		this.fireballVelocityMultiplier = this.fireballVelocityMultiplierConfig.get();
+		this.maxBonusFireball = this.maxBonusFireballConfig.get();
 	}
 
 	@SubscribeEvent

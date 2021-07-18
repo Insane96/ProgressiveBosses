@@ -65,7 +65,7 @@ public class CrystalFeature extends Feature {
 
 	public CrystalFeature(Module module) {
 		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		moreCagesAtDifficultyConfig = Config.builder
 				.comment("At this difficulty cages will start to appear around other crystals too. -1 will disable this feature.")
 				.defineInRange("More Cages at Difficulty", moreCagesAtDifficulty, -1, Integer.MAX_VALUE);

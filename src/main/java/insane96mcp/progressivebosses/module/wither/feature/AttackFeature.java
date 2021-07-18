@@ -50,7 +50,7 @@ public class AttackFeature extends Feature {
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		applyToVanillaWitherConfig = Config.builder
 				.comment("If the AI changes should be applied to the first wither spawned too.")
 				.define("Apply to Vanilla Wither", applyToVanillaWither);

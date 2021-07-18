@@ -32,7 +32,7 @@ public class ResistancesFeature extends Feature {
 
 	public ResistancesFeature(Module module) {
 		super(Config.builder, module);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		bonusCurHealthDirectDamageConfig = Config.builder
 				.comment("Percentage of Dragon's current health dealth as Bonus damage when attacked directly (melee) and she's not at the center.")
 				.defineInRange("Bonus Current Health Direct Damage", bonusCurHealthDirectDamage, 0d, Double.MAX_VALUE);

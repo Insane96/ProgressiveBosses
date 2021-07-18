@@ -35,7 +35,7 @@ public class DifficultyFeature extends Feature {
 
 	public DifficultyFeature(Module module) {
 		super(Config.builder, module, true, false);
-		Config.builder.comment(this.getDescription()).push(this.getName());
+		this.pushConfig(Config.builder);
 		spawnRadiusPlayerCheckConfig = Config.builder
 				.comment("How much blocks from wither will be scanned for players to check for difficulty")
 				.defineInRange("Spawn Radius Player Check", spawnRadiusPlayerCheck, 16, Integer.MAX_VALUE);
