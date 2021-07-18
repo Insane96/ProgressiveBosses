@@ -5,5 +5,3 @@
 /data modify entity @e[type=wither,limit=1] ForgeData.progressivebosses:charge_attack set value 1b
 /data modify entity @e[type=wither,limit=1] ForgeData.progressivebosses:barrage_attack set value 100
 /data modify entity @e[type=wither,limit=1] Invul set value 90
-
-/summon minecraft:dragon_fireball ~-4 ~10 ~-4 {Motion:[0.0,-1.0,0.0]}

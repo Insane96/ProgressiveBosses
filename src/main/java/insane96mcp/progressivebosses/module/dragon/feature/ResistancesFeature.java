@@ -78,6 +78,9 @@ public class ResistancesFeature extends Feature {
 		if (this.bonusCurHealthDirectDamage == 0d && this.bonusCurHealthIndirectDamage == 0d)
 			return;
 
+		if (event.getSource().isExplosion())
+			return;
+
 		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()))
 			return;
 
