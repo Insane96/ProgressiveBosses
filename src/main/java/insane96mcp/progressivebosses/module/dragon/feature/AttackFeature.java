@@ -4,8 +4,10 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Reflection;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -13,6 +15,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
+import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.DragonFireballEntity;
@@ -32,6 +35,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Label(name = "Attack", description = "Makes the dragon hit harder in various different ways")
@@ -40,7 +44,6 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> increasedAcidPoolDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargePlayerMaxChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> fireballMaxChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> maxChanceAtDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseMaxRiseAndFallConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fireball3DEffectCloudConfig;
@@ -49,9 +52,8 @@ public class AttackFeature extends Feature {
 
 	public double increasedDirectDamage = 0.135d;
 	public double increasedAcidPoolDamage = 0.113d;
-	public double chargePlayerMaxChance = 0.50d;
-	public double fireballMaxChance = 0.40d;
-	public double maxChanceAtDifficulty = 20;
+	public double chargePlayerMaxChance = 0.50d; //Chance at max difficulty
+	public double fireballMaxChance = 0.40d; //Chance at max difficulty
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
 	public boolean fireball3DEffectCloud = true;
@@ -70,17 +72,14 @@ public class AttackFeature extends Feature {
 
 		chargePlayerMaxChanceConfig = Config.builder
 				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to charge the player.\n" +
-						"This defines the chance to attack the player when she has finished reaching a point while roaming when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
-						"The actual formula is: (this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
+						"This is the chance to start a charge attack when the difficulty is at max (24 by default). Otherwise it scales accordingly.\n" +
+						"The actual chance is: (this_value * (difficulty / max difficulty)).")
 				.defineInRange("Charge Player Max Chance", chargePlayerMaxChance, 0.0, Double.MAX_VALUE);
 		fireballMaxChanceConfig = Config.builder
 				.comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to spit a fireball.\n" +
-						"This defines the chance to spit a fireball everytime she takes damage when all the crystals were destoyed and the difficulty is 'Max Chance at Difficulty' or higher.\n" +
-						"The actual formula is: (this_value / 'Max Chance at Difficulty') * difficulty * (1 / MAX(remaining_crystals, 1)).")
+						"This is the chance to start a fireball attack when the difficulty is at max (24 by default). Otherwise it scales accordingly.\n" +
+						"The actual chance is: (this_value * (difficulty / max difficulty)).")
 				.defineInRange("Fireball Max Chance", fireballMaxChance, 0.0, Double.MAX_VALUE);
-		maxChanceAtDifficultyConfig = Config.builder
-				.comment("Defines at which difficulty the Dragon has max chance to attack or spit fireballs when all crystals are destroyed (see 'Fireball Max Chance' and 'Charge Player Max Chance')")
-				.defineInRange("Max Chance at Difficulty", maxChanceAtDifficulty, 0.0, Double.MAX_VALUE);
 		increaseMaxRiseAndFallConfig = Config.builder
 				.comment("Since around 1.13/1.14 the Ender Dragon can no longer dive for more than about 3 blocks so she takes a lot to rise / fall. With this active the dragon will be able to rise and fall many more blocks, making easier to hit the player and approach the center.")
 				.define("Increase Max Rise and Fall", increaseMaxRiseAndFall);
@@ -95,7 +94,7 @@ public class AttackFeature extends Feature {
 				.comment("Speed multiplier for the Dragon Fireball.")
 				.defineInRange("Fireball Velocity Multiplier", fireballVelocityMultiplier, 0d, Double.MAX_VALUE);
 		maxBonusFireballConfig = Config.builder
-				.comment("The dragon will fire (up to) this more fireballs per difficulty. A decimal number dictates the chance to shot 1 more fireball, e.g. at difficulty 2 the dragon can fire up to 1.4 fireballs, meaning that the dragon will shot 1 fireball and has 40% chance to shot one more. The first fireball is always shot at the player while the bonus ones have slightly random angles.")
+				.comment("The dragon will fire (up to) this more fireballs per difficulty. A decimal number dictates the chance to shot 1 more fireball, e.g. at difficulty 2 this value is 1.4, meaning that the dragon will can shot up to 2 fireballs and has 40% chance to shot up to 3. The bonus fireballs aren't directly aimed at the player but have.")
 				.defineInRange("Bonus Fireballs", maxBonusFireball, 0d, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
@@ -107,7 +106,6 @@ public class AttackFeature extends Feature {
 		this.increasedAcidPoolDamage = this.increasedAcidPoolDamageConfig.get();
 		this.chargePlayerMaxChance = this.chargePlayerMaxChanceConfig.get();
 		this.fireballMaxChance = this.fireballMaxChanceConfig.get();
-		this.maxChanceAtDifficulty = this.maxChanceAtDifficultyConfig.get();
 		this.increaseMaxRiseAndFall = this.increaseMaxRiseAndFallConfig.get();
 		this.fireballExplosionDamages = this.fireballExplosionDamagesConfig.get();
 		this.fireball3DEffectCloud = this.fireball3DEffectCloudConfig.get();
@@ -206,13 +204,22 @@ public class AttackFeature extends Feature {
 		CompoundNBT tags = dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
-		double chance = this.chargePlayerMaxChance / maxChanceAtDifficulty;
-		chance *= difficulty;
-		int crystalsAlive = Math.max(dragon.getFightManager().getNumAliveCrystals(), 1);
-		chance *= (1f / crystalsAlive);
-		chance = Math.min(this.chargePlayerMaxChance, chance);
+		double chance = this.chargePlayerMaxChance * (difficulty / Modules.dragon.difficulty.maxDifficulty);
+
+		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		AxisAlignedBB boundingBox = new AxisAlignedBB(centerPodium).grow(128d);
+		List<PlayerEntity> players = dragon.world.getLoadedEntitiesWithinAABB(PlayerEntity.class, boundingBox);
+
+		for (PlayerEntity player : players) {
+			List<EnderCrystalEntity> endCrystals = player.world.getLoadedEntitiesWithinAABB(EnderCrystalEntity.class, player.getBoundingBox().grow(10d));
+			if (endCrystals.size() > 0) {
+				chance *= 2d;
+				break;
+			}
+		}
 
 		double rng = dragon.getRNG().nextDouble();
+		LogHelper.info("charge chance: %s, %s", chance, rng < chance);
 
 		return rng < chance;
 	}
@@ -220,12 +227,12 @@ public class AttackFeature extends Feature {
 	private void chargePlayer(EnderDragonEntity dragon) {
 		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(128d);
-		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayer(dragon.world, bb);
+		ServerPlayerEntity player = (ServerPlayerEntity) getRandomPlayerNearCrystal(dragon.world, bb);
 
 		if (player == null)
 			return;
 
-		//LogHelper.info("charging");
+		LogHelper.info("charging");
 
 		dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
 		Vector3d targetPos = player.getPositionVec();
@@ -249,12 +256,11 @@ public class AttackFeature extends Feature {
 		if (difficulty == 0f)
 			return false;
 
-		double chance = this.fireballMaxChance / maxChanceAtDifficulty;
-		chance *= difficulty;
-		int crystalsAlive = Math.max(dragon.getFightManager().getNumAliveCrystals(), 1);
-		chance *= (1f / crystalsAlive);
-		chance = Math.min(this.fireballMaxChance, chance);
+		double chance = this.fireballMaxChance * (difficulty / Modules.dragon.difficulty.maxDifficulty);
+
 		double rng = dragon.getRNG().nextDouble();
+
+		LogHelper.info("fireball chance: %s, %s", chance, rng < chance);
 
 		return rng < chance;
 	}
@@ -267,7 +273,7 @@ public class AttackFeature extends Feature {
 		if (player == null)
 			return;
 
-		//LogHelper.info("fireballing");
+		LogHelper.info("fireballing");
 
 		dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
 		dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
@@ -400,5 +406,30 @@ public class AttackFeature extends Feature {
 
 		int r = RandomHelper.getInt(world.rand, 0, players.size());
 		return players.get(r);
+	}
+
+	//Returns a random player that is at least 10 blocks near a Crystal or a random player if no players are near crystals
+	@Nullable
+	public PlayerEntity getRandomPlayerNearCrystal(World world, AxisAlignedBB boundingBox) {
+		List<PlayerEntity> players = world.getLoadedEntitiesWithinAABB(PlayerEntity.class, boundingBox);
+		if (players.isEmpty())
+			return null;
+
+		List<PlayerEntity> playersNearCrystals = new ArrayList<>();
+
+ 		for (PlayerEntity player : players) {
+			List<EnderCrystalEntity> endCrystals = player.world.getLoadedEntitiesWithinAABB(EnderCrystalEntity.class, player.getBoundingBox().grow(10d));
+			if (endCrystals.size() > 0)
+				playersNearCrystals.add(player);
+		}
+
+ 		int r;
+ 		if (playersNearCrystals.isEmpty()) {
+			r = RandomHelper.getInt(world.rand, 0, players.size());
+			return players.get(r);
+		}
+
+		r = RandomHelper.getInt(world.rand, 0, playersNearCrystals.size());
+		return playersNearCrystals.get(r);
 	}
 }

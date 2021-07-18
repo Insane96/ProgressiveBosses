@@ -50,8 +50,8 @@ public abstract class MixinStrafePlayerPhase extends Phase {
 				this.findNewTarget();
 			}
 
-			double d13 = 64.0D;
-			if (this.attackTarget.getDistanceSq(this.dragon) < 4096.0D) {
+			double d13 = 96.0d;
+			if (this.attackTarget.getDistanceSq(this.dragon) < 9216d) {
 				if (this.dragon.canEntityBeSeen(this.attackTarget)) {
 					++this.fireballCharge;
 					Vector3d vector3d1 = (new Vector3d(this.attackTarget.getPosX() - this.dragon.getPosX(), 0.0D, this.attackTarget.getPosZ() - this.dragon.getPosZ())).normalize();
@@ -73,8 +73,8 @@ public abstract class MixinStrafePlayerPhase extends Phase {
 							this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 						//Otherwise reset the phase, in case she fireballs again
 						else
-							//Can't use initPhase() otherwise the target is reset
-							this.fireballCharge = 0;
+							//Can't use initPhase() otherwise the target is reset. Also making the dragon fire slower when chaining fireballs
+							this.fireballCharge = -5;
 					}
 				}
 				else if (this.fireballCharge > 0) {

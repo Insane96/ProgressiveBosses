@@ -42,8 +42,8 @@ public abstract class MixinChargingPlayerPhase extends Phase {
 				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
 			//Otherwise reset the phase, in case she charges again
 			else
-				//Can't use initPhase() otherwise the target is reset
-				this.timeSinceCharge = 0;
+				//Can't use initPhase() otherwise the target is reset. Also making the dragon take more time to restart the charging
+				this.timeSinceCharge = -10;
 		} else {
 			double d0 = this.targetLocation.squareDistanceTo(this.dragon.getPosX(), this.dragon.getPosY(), this.dragon.getPosZ());
 			if (d0 < 100.0D || d0 > 22500.0D || this.dragon.collidedHorizontally || this.dragon.collidedVertically) {

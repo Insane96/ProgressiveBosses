@@ -3,7 +3,17 @@
 ## 3.1.5
 * Updated InsaneLib
 * Difficulty features can no longer be disabled
-
+* Dragon
+    * Resistances & Weaknesses
+        * Ender dragon no longer takes bonus damage from crystal explosions
+    * Attack 
+        * Fireball and Charge chance are now calculated based of difficulty and max difficulty and no longer accounts for end crystals.  
+          Basically higher difficulty = higher chance, capped at max difficulty.
+        * When searching for a player to charge the Ender Dragon now checks for players near crystals, prioritizing them.  
+          Also if a player is near a crystal the chance to charge is doubled.
+        * Dragon can now fireball the player from farther away (64 -> 96 blocks)
+        * Chaining Fireballing and Charging is now slightly slower.
+    
 ## 3.1.4
 * Wither 
     * Increased Fire Explosion at Difficulty (8 -> 16)
