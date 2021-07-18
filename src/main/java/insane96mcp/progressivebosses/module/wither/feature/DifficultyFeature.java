@@ -20,7 +20,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
 
-@Label(name = "Difficulty Settings", description = "How difficulty is handled for the Wither. Disabling this \"Feature\" will disable all the Dragon changes.")
+@Label(name = "Difficulty Settings", description = "How difficulty is handled for the Wither.")
 public class DifficultyFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Integer> spawnRadiusPlayerCheckConfig;
@@ -34,7 +34,7 @@ public class DifficultyFeature extends Feature {
 	public int startingDifficulty = 0;
 
 	public DifficultyFeature(Module module) {
-		super(Config.builder, module);
+		super(Config.builder, module, true, false);
 		Config.builder.comment(this.getDescription()).push(this.getName());
 		spawnRadiusPlayerCheckConfig = Config.builder
 				.comment("How much blocks from wither will be scanned for players to check for difficulty")

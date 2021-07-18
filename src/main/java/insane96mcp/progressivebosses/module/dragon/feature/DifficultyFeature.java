@@ -22,7 +22,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
 
-@Label(name = "Difficulty Settings", description = "How difficulty is handled for the Dragon. Disabling this \"Feature\" will disable all the Dragon changes.")
+@Label(name = "Difficulty Settings", description = "How difficulty is handled for the Dragon.")
 public class DifficultyFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> sumKilledDragonDifficultyConfig;
@@ -34,7 +34,7 @@ public class DifficultyFeature extends Feature {
 	public int startingDifficulty = 0;
 
 	public DifficultyFeature(Module module) {
-		super(Config.builder, module);
+		super(Config.builder, module, true, false);
 		Config.builder.comment(this.getDescription()).push(this.getName());
 		sumKilledDragonDifficultyConfig = Config.builder
 				.comment("If true and there are more players around the Dragon, she will have his stats based on the sum of both players' difficulty. If false, the Dragon stats will be based on the average of the difficulty of the players around.")
