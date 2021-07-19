@@ -3,9 +3,7 @@ package insane96mcp.progressivebosses;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.capability.DifficultyCapability;
 import insane96mcp.progressivebosses.commands.DifficultyCommand;
-import insane96mcp.progressivebosses.setup.Config;
-import insane96mcp.progressivebosses.setup.ModItems;
-import insane96mcp.progressivebosses.setup.Reflection;
+import insane96mcp.progressivebosses.setup.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -33,8 +31,10 @@ public class ProgressiveBosses {
 		ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-		ModItems.ITEMS.register(modEventBus);
+		PBItems.ITEMS.register(modEventBus);
+		PBEntities.ENTITIES.register(modEventBus);
 		Reflection.init();
 	}
 
