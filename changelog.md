@@ -15,6 +15,10 @@
         * Chaining Fireballing and Charging is now slightly slower.
 * Wither
     * Minion
+        * Completely revamped! Now are an actual entity instead of using Wither skeletons!
+          They are small (1.5 blocks high) blueish Skeletons, no longer generate Wither Roses and no longer shoot arrows on fire (instead shot Withered Arrows).
+          Drop nothing but 6-8 experience.
+        * Now take greatly reduced damage from Withers (-80% damage)
         * Fix punch/knockback chance still begin 4% instead of 15%
     
 ## 3.1.4

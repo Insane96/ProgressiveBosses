@@ -52,6 +52,13 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 	}
 
 	/**
+	 * Gets the pitch of living sounds in living entities.
+	 */
+	protected float getSoundPitch() {
+		return (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.33F;
+	}
+
+	/**
 	 * Gives armor or weapon for entity based on given DifficultyInstance
 	 */
 	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
@@ -76,6 +83,12 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 
 			return true;
 		}
+	}
+
+	public boolean attackEntityFrom(DamageSource source, float amount) {
+		if (source.getTrueSource() instanceof WitherMinionEntity)
+			amount *= 0.2f;
+		return !this.isInvulnerableTo(source) && super.attackEntityFrom(source, amount);
 	}
 
 	public boolean isPotionApplicable(EffectInstance potioneffectIn) {
