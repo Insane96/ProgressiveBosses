@@ -13,7 +13,7 @@ public class PBEntities {
 	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, ProgressiveBosses.MOD_ID);
 
 	public static final RegistryObject<EntityType<WitherMinionEntity>> WITHER_MINION = ENTITIES.register("wither_minion", () -> EntityType.Builder.create(WitherMinionEntity::new, EntityClassification.MONSTER)
-			.size(0.6f, 1.5f)
+			.size(0.55f, 1.5f)
 			.immuneToFire()
 			.func_233607_a_(Blocks.WITHER_ROSE)
 			.trackingRange(8)

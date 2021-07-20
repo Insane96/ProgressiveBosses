@@ -4,11 +4,16 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.monster.AbstractSkeletonEntity;
+import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.potion.PotionUtils;
+import net.minecraft.potion.Potions;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -49,7 +54,7 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 	 * Gives armor or weapon for entity based on given DifficultyInstance
 	 */
 	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-		this.setItemStackToSlot(EquipmentSlotType.MAINHAND, ItemStack.EMPTY);
+		this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
 	}
 
 	@Nullable
@@ -74,6 +79,19 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 
 	public boolean isPotionApplicable(EffectInstance potioneffectIn) {
 		return potioneffectIn.getPotion() != Effects.WITHER && super.isPotionApplicable(potioneffectIn);
+	}
+
+	/**
+	 * Fires an arrow
+	 */
+	protected AbstractArrowEntity fireArrow(ItemStack arrowStack, float distanceFactor) {
+		AbstractArrowEntity abstractarrowentity = super.fireArrow(arrowStack, distanceFactor);
+		if (abstractarrowentity instanceof ArrowEntity) {
+			ItemStack slownessArrow = new ItemStack(Items.TIPPED_ARROW, 1);
+			PotionUtils.addPotionToItemStack(slownessArrow, Potions.SLOWNESS);
+			((ArrowEntity)abstractarrowentity).setPotionEffect(slownessArrow);
+		}
+		return abstractarrowentity;
 	}
 
 	public static AttributeModifierMap.MutableAttribute prepareAttributes() {
