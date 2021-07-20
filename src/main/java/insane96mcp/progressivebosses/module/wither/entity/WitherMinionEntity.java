@@ -13,7 +13,6 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.potion.PotionUtils;
-import net.minecraft.potion.Potions;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
@@ -22,6 +21,8 @@ import net.minecraft.world.IServerWorld;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.List;
 
 public class WitherMinionEntity extends AbstractSkeletonEntity {
 
@@ -81,17 +82,23 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 		return potioneffectIn.getPotion() != Effects.WITHER && super.isPotionApplicable(potioneffectIn);
 	}
 
+	private static final List<EffectInstance> ARROW_EFFECTS = Arrays.asList(new EffectInstance(Effects.WITHER, 200));
+
 	/**
 	 * Fires an arrow
 	 */
 	protected AbstractArrowEntity fireArrow(ItemStack arrowStack, float distanceFactor) {
 		AbstractArrowEntity abstractarrowentity = super.fireArrow(arrowStack, distanceFactor);
 		if (abstractarrowentity instanceof ArrowEntity) {
-			ItemStack slownessArrow = new ItemStack(Items.TIPPED_ARROW, 1);
-			PotionUtils.addPotionToItemStack(slownessArrow, Potions.SLOWNESS);
-			((ArrowEntity)abstractarrowentity).setPotionEffect(slownessArrow);
+			ItemStack witherArrow = new ItemStack(Items.TIPPED_ARROW, 1);
+			PotionUtils.appendEffects(witherArrow, ARROW_EFFECTS);
+			((ArrowEntity)abstractarrowentity).setPotionEffect(witherArrow);
 		}
 		return abstractarrowentity;
+	}
+
+	//Do not generate Wither Roses
+	protected void createWitherRose(@Nullable LivingEntity entitySource) {
 	}
 
 	public static AttributeModifierMap.MutableAttribute prepareAttributes() {

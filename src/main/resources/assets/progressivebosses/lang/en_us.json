@@ -1,7 +1,7 @@
 {
   "item.progressivebosses.nether_star_shard": "Nether Star Shard",
 
-  "progressivebosses:wither_minion": "Wither Minion",
+  "entity.progressivebosses.wither_minion": "Wither Minion",
   "death.attack.progressivebosses:wither_charge_attack": "%1$s was charged by %2$s",
 
   "progressivebosses:dragon_larva": "Dragon Larva",
