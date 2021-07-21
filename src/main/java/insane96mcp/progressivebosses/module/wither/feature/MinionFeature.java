@@ -78,7 +78,7 @@ public class MinionFeature extends Feature {
 	public double preHalfHealthBowChance = 0.6d;
 	public double halfHealthBowChance = 0.08d;
 	public double powerSharpnessChance = 0.2d;
-	public double punchKnockbackChance = 0.15d;
+	public double punchKnockbackChance = 0.1d;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);

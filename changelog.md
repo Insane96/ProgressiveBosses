@@ -19,11 +19,12 @@
           They are small (1.5 blocks high) blueish Skeletons, no longer generate Wither Roses and no longer shoot arrows on fire (instead shot Withered Arrows).
           Drop nothing but 6-8 experience.
         * Now take greatly reduced damage from Withers (-80% damage)
-        * Fix punch/knockback chance still begin 4% instead of 15%
+        * Fix punch/knockback chance still begin 4% instead of 15%, but actually reduce (15% -> 10% per difficulty) so reduced max enchant level (III-60% to be IV -> II-40% to be III).
     * Resistances and Weaknesses
+        * Removed damage reduction before half health (1% -> no damage reduction per difficulty)
         * Increased max Damage Reduction when below half health (36% -> 44%)
     * Attack
-        * Increased charge attack chance (1.5% -> 3%)
+        * Increased charge attack chance (1.5% -> 2%)
         * Decreased Barrage attack chance and max barrage attack chance (0.2% -> 0.175% per difficulty, up to 5% -> 4%)
     
 ## 3.1.4

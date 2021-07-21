@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.boss.WitherEntity;
@@ -21,8 +20,8 @@ public class ResistancesFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> maxDamageReductionOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> magicDamageBonusConfig;
 
-	public double damageReductionBeforeHalfHealth = 0.01d;
-	public double maxDamageReductionBeforeHalfHealth = 0.15d;
+	public double damageReductionBeforeHalfHealth = 0d;
+	public double maxDamageReductionBeforeHalfHealth = 0d;
 	public double damageReductionOnHalfHealth = 0.02d;
 	public double maxDamageReductionOnHalfHealth = 0.44d;
 	public double magicDamageBonus = 200d;
@@ -78,7 +77,6 @@ public class ResistancesFeature extends Feature {
 
 		CompoundNBT tags = wither.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
-		LogHelper.info("damage before: %s", event.getAmount());
 		//Handle Damage Reduction
 		float damageReduction;
 		if (!wither.isCharged())
@@ -86,7 +84,9 @@ public class ResistancesFeature extends Feature {
 		else
 			damageReduction = (float) Math.min(this.maxDamageReductionOnHalfHealth, difficulty * this.damageReductionOnHalfHealth);
 
+		if (damageReduction == 0d)
+			return;
+
 		event.setAmount(event.getAmount() * (1f - damageReduction));
-		LogHelper.info("damage after: %s", event.getAmount());
 	}
 }
