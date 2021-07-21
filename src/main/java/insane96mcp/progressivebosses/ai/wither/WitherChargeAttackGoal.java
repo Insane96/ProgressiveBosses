@@ -107,9 +107,7 @@ public class WitherChargeAttackGoal extends Goal {
 					LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerWorld)this.wither.world)).withRandom(this.wither.world.rand).withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(blockPos)).withParameter(LootParameters.TOOL, ItemStack.EMPTY).withNullableParameter(LootParameters.BLOCK_ENTITY, tileentity);
 					state.getDrops(lootcontext$builder).forEach(itemStack -> {
 						ItemEntity itemEntity = new ItemEntity(this.wither.world, blockPos.getX() + .5d, blockPos.getY() + .5d, blockPos.getZ() + .5d, itemStack);
-						CompoundNBT compound = new CompoundNBT();
-						compound.putShort("Age", (short)(6000 - 1200));
-						itemEntity.readAdditional(compound);
+						itemEntity.lifespan = 1200;
 						this.wither.world.addEntity(itemEntity);
 					});
 					wither.world.setBlockState(blockPos, Blocks.AIR.getDefaultState());
@@ -124,7 +122,7 @@ public class WitherChargeAttackGoal extends Goal {
 			this.wither.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB).forEach(entity -> {
 				if (entity == this.wither)
 					return;
-				entity.attackEntityFrom(new EntityDamageSource(Strings.Translatable.WITHER_CHARGE_ATTACK, this.wither), 10f);
+				entity.attackEntityFrom(new EntityDamageSource(Strings.Translatable.WITHER_CHARGE_ATTACK, this.wither), 16f);
 				double d2 = entity.getPosX() - this.wither.getPosX();
 				double d3 = entity.getPosZ() - this.wither.getPosZ();
 				double d4 = Math.max(d2 * d2 + d3 * d3, 0.1D);
@@ -132,7 +130,7 @@ public class WitherChargeAttackGoal extends Goal {
 			});
 		}
 		//If the wither's charging and is 2 blocks from the target point OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-		if ((this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulTime() > 0 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 3d) || this.wither.getInvulTime() == 1) {
+		if ((this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulTime() > 0 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d) || this.wither.getInvulTime() == 1) {
 			this.wither.setInvulTime(0);
 		}
 	}

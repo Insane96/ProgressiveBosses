@@ -68,8 +68,8 @@ public class MinionFeature extends Feature {
 	public int bonusMinionEveryDifficulty = 2;
 	public int maxSpawned = 6;
 	public int maxAround = 20;
-	public int minCooldown = 240;
-	public int maxCooldown = 480;
+	public int minCooldown = 300;
+	public int maxCooldown = 600;
 	public double cooldownMultiplierBelowHalfHealth = 0.6d;
 	public double bonusSpeedPerDifficulty = 0.012d;
 	public boolean killMinionOnWitherDeath = true;

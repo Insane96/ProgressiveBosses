@@ -10,7 +10,7 @@
         * Fireball and Charge chance are now calculated based of difficulty and max difficulty and no longer accounts for end crystals.  
           Basically higher difficulty = higher chance, capped at max difficulty. Max chance still 50% for charging and 40% for fireballing
         * When searching for a player to charge the Ender Dragon now checks for players near crystals, prioritizing them.  
-          Also if a player is near a crystal the chance to charge is doubled.
+          Also if a player is near a crystal the chance to charge is doubled (ignoring max chance).
         * Dragon can now fireball the player from farther away (64 -> 96 blocks)
         * Chaining Fireballing and Charging is now slightly slower.
 * Wither
@@ -19,13 +19,18 @@
           They are small (1.5 blocks high) blueish Skeletons, no longer generate Wither Roses and no longer shoot arrows on fire (instead shot Withered Arrows).
           Drop nothing but 6-8 experience.
         * Now take greatly reduced damage from Withers (-80% damage)
+        * Increased Minion Cooldown (12-24 -> 15-30 secs)
         * Fix punch/knockback chance still begin 4% instead of 15%, but actually reduce (15% -> 10% per difficulty) so reduced max enchant level (III-60% to be IV -> II-40% to be III).
     * Resistances and Weaknesses
         * Removed damage reduction before half health (1% -> no damage reduction per difficulty)
         * Increased max Damage Reduction when below half health (36% -> 44%)
     * Attack
+        * Reduced bonus damage per difficulty (+6% -> +5% damage per difficulty)
         * Increased charge attack chance (1.5% -> 2%)
         * Decreased Barrage attack chance and max barrage attack chance (0.2% -> 0.175% per difficulty, up to 5% -> 4%)
+        * Slowed down barrage attack (10 -> 6.66 skulls per second)
+        * Increased Charge Damage (10 -> 16)
+        * Items now correctly spawn on charge attack and no longer spam the logs
     
 ## 3.1.4
 * Wither 

@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.ai.wither.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.ai.wither.WitherDoNothingGoal;
@@ -41,7 +42,7 @@ public class AttackFeature extends Feature {
 	public double chargeAttackChance = 0.02;
 	public double barrageAttackChance = 0.00175d;
 	public double maxBarrageAttackChance = 0.04d;
-	public double increasedDamage = 0.06d;
+	public double increasedDamage = 0.05d;
 	//Skulls
 	public double skullVelocityMultiplier = 2.75d;
 	//Attack Speed
@@ -177,6 +178,8 @@ public class AttackFeature extends Feature {
 		if (this.increasedDamage == 0d)
 			return;
 
+		LogHelper.info("Damage before: %s", event.getAmount());
+
 		WitherEntity wither;
 		if (event.getSource().getImmediateSource() instanceof WitherEntity)
 			wither = (WitherEntity) event.getSource().getImmediateSource();
@@ -189,6 +192,8 @@ public class AttackFeature extends Feature {
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDamage * difficulty)));
+
+		LogHelper.info("Damage after: %s", event.getAmount());
 	}
 
 	@SubscribeEvent

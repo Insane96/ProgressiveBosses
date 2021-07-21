@@ -99,7 +99,7 @@ public class WitherRangedAttackGoal extends Goal {
 			if (!canSee)
 				return;
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
-			if (barrageAttackTick % 2 == 0) {
+			if (barrageAttackTick % 3 == 0) {
 				this.wither.launchWitherSkullToCoords(RandomHelper.getInt(this.wither.getRNG(), 0, 3), this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), this.target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), false);
 			}
 		}
