@@ -5,7 +5,7 @@
     * With this, difficulty features can no longer be disabled
 * Dragon
     * Resistances & Weaknesses
-        * Ender dragon no longer takes bonus damage from crystal explosions
+        * Fixed Ender dragon taking bonus damage from crystal explosions
     * Attack 
         * Fireball and Charge chance are now calculated based of difficulty and max difficulty and no longer accounts for end crystals.  
           Basically higher difficulty = higher chance, capped at max difficulty. Max chance still 50% for charging and 40% for fireballing
@@ -20,6 +20,11 @@
           Drop nothing but 6-8 experience.
         * Now take greatly reduced damage from Withers (-80% damage)
         * Fix punch/knockback chance still begin 4% instead of 15%
+    * Resistances and Weaknesses
+        * Increased max Damage Reduction when below half health (36% -> 44%)
+    * Attack
+        * Increased charge attack chance (1.5% -> 3%)
+        * Decreased Barrage attack chance and max barrage attack chance (0.2% -> 0.175% per difficulty, up to 5% -> 4%)
     
 ## 3.1.4
 * Wither 

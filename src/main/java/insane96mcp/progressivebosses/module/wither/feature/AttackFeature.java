@@ -38,9 +38,9 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 
 	public boolean applyToVanillaWither = true;
-	public double chargeAttackChance = 0.015;
-	public double barrageAttackChance = 0.002d;
-	public double maxBarrageAttackChance = 0.05d;
+	public double chargeAttackChance = 0.02;
+	public double barrageAttackChance = 0.00175d;
+	public double maxBarrageAttackChance = 0.04d;
 	public double increasedDamage = 0.06d;
 	//Skulls
 	public double skullVelocityMultiplier = 2.75d;
