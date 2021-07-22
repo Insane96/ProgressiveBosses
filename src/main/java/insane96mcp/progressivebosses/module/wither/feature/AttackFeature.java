@@ -227,7 +227,7 @@ public class AttackFeature extends Feature {
 			chance *= 2d;
 		if (RandomHelper.getDouble(wither.getRNG(), 0d, 1d) < chance) {
 			int barrage = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
-			int duration = 50;
+			int duration = 60;
 			if (wither.isCharged())
 				duration *= 2;
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrage + duration);
