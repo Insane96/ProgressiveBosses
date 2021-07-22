@@ -29,7 +29,7 @@
         * Reduced bonus damage per difficulty (+6% -> +5% damage per difficulty)
         * Increased charge attack chance (1.5% -> 2%)
         * Decreased Barrage attack chance and max barrage attack chance (0.2% -> 0.175% per difficulty, up to 5% -> 4%)
-        * Slowed down barrage attack (10 -> 6.66 skulls per second)
+        * Slowed down barrage attack (10 -> 6.66 skulls per second) but increased duration (2.5 -> 3 secs)
         * Increased Charge Damage (10 -> 16)
         * Items now correctly spawn on charge attack and no longer spam the logs
     
