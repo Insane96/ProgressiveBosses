@@ -19,11 +19,12 @@
           They are small (1.5 blocks high) blueish Skeletons, no longer generate Wither Roses and no longer shoot arrows on fire (instead shot Withered Arrows).
           Drop nothing but 6-8 experience.
         * Now take greatly reduced damage from Withers (-80% damage)
+        * Now take 3 times more magic damage
         * Increased Minion Cooldown (12-24 -> 15-30 secs)
         * Fix punch/knockback chance still begin 4% instead of 15%, but actually reduce (15% -> 10% per difficulty) so reduced max enchant level (III-60% to be IV -> II-40% to be III).
     * Resistances and Weaknesses
-        * Removed damage reduction before half health (1% -> no damage reduction per difficulty)
-        * Increased max Damage Reduction when below half health (36% -> 44%)
+        * Damage reduction now only applies to melee damage. Incrased Max Damage reduction (15% -> 24% damage reduction when above half health, 36% -> 48% damage reduction when below half health)
+        * Decreased bonus magic damage (+100% magic damage every 200 -> 250 missing health)
     * Attack
         * Reduced bonus damage per difficulty (+6% -> +5% damage per difficulty)
         * Increased charge attack chance (1.5% -> 2%)

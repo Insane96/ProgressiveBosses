@@ -36,6 +36,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,6 +57,7 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> maxCooldownConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> cooldownMultiplierBelowHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> bonusSpeedPerDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> magicDamageMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> killMinionOnWitherDeathConfig;
 	//Equipment
 	private final ForgeConfigSpec.ConfigValue<Boolean> hasSwordConfig;
@@ -72,6 +74,7 @@ public class MinionFeature extends Feature {
 	public int maxCooldown = 600;
 	public double cooldownMultiplierBelowHalfHealth = 0.6d;
 	public double bonusSpeedPerDifficulty = 0.012d;
+	public double magicDamageMultiplier = 3.0d;
 	public boolean killMinionOnWitherDeath = true;
 	//Equipment
 	public boolean hasSword = true;
@@ -107,6 +110,9 @@ public class MinionFeature extends Feature {
 		bonusSpeedPerDifficultyConfig = Config.builder
 				.comment("Percentage bonus speed per difficulty. (0.01 means 1%)")
 				.defineInRange("Bonus Movement Speed Per Difficulty", bonusSpeedPerDifficulty, 0d, Double.MAX_VALUE);
+		magicDamageMultiplierConfig = Config.builder
+				.comment("Wither Minions will take magic damage multiplied by this value.")
+				.defineInRange("Magic Damage Multiplier", magicDamageMultiplier, 0, Double.MAX_VALUE);
 		killMinionOnWitherDeathConfig = Config.builder
 				.comment("Wither Minions will die when the Wither that spawned them dies.")
 				.define("Kill Minions on Wither Death", killMinionOnWitherDeath);
@@ -282,6 +288,23 @@ public class MinionFeature extends Feature {
 			minionsCountInAABB++;
 			if (minionsCountInAABB >= this.maxAround)
 				break;
+		}
+	}
+
+	@SubscribeEvent
+	public void onMinionDamage(LivingDamageEvent event) {
+		if (!this.isEnabled())
+			return;
+
+		if (this.magicDamageMultiplier == 0d)
+			return;
+
+		if (!(event.getEntity() instanceof WitherMinionEntity))
+			return;
+
+		//Handle Magic Damage
+		if (event.getSource().isMagicDamage()) {
+			event.setAmount((float) (event.getAmount() * this.magicDamageMultiplier));
 		}
 	}
 
