@@ -4,14 +4,14 @@
 	"compatibilityLevel": "JAVA_8",
 	"refmap": "progressivebosses.refmap.json",
 	"mixins": [
-		"MixinChargingPlayerPhase",
-		"MixinDragonFireballEntity",
-		"MixinEnderCrystalEntity",
-		"MixinHoldingPatternPhase",
-		"MixinHoverPhase",
-		"MixinLandingPhase",
-		"MixinShulkerBulletEntity",
-		"MixinStrafePlayerPhase"
+		"ChargingPlayerPhaseMixin",
+		"DragonFireballEntityMixin",
+		"EnderCrystalEntityMixin",
+		"HoldingPatternPhaseMixin",
+		"HoverPhaseMixin",
+		"LandingPhaseMixin",
+		"ShulkerBulletEntityMixin",
+		"StrafePlayerPhaseMixin"
 	],
 	"minVersion": "0.8"
 }

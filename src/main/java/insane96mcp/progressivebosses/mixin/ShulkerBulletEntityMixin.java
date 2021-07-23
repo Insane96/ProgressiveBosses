@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ShulkerBulletEntity.class)
-public abstract class MixinShulkerBulletEntity extends ProjectileEntity {
+public abstract class ShulkerBulletEntityMixin extends ProjectileEntity {
 
-	public MixinShulkerBulletEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
+	public ShulkerBulletEntityMixin(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
 		this.noClip = true;
 	}

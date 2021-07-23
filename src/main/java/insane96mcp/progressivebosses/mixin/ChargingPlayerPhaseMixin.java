@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ChargingPlayerPhase.class)
-public abstract class MixinChargingPlayerPhase extends Phase {
+public abstract class ChargingPlayerPhaseMixin extends Phase {
 
 	@Shadow
 	@Final
@@ -27,7 +27,7 @@ public abstract class MixinChargingPlayerPhase extends Phase {
 	@Shadow
 	private Vector3d targetLocation;
 
-	public MixinChargingPlayerPhase(EnderDragonEntity dragonIn) {
+	public ChargingPlayerPhaseMixin(EnderDragonEntity dragonIn) {
 		super(dragonIn);
 	}
 

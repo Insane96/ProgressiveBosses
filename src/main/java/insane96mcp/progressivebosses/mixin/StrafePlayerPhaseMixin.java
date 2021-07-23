@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(StrafePlayerPhase.class)
-public abstract class MixinStrafePlayerPhase extends Phase {
+public abstract class StrafePlayerPhaseMixin extends Phase {
 	@Shadow
 	private int fireballCharge;
 	@Shadow
@@ -25,7 +25,7 @@ public abstract class MixinStrafePlayerPhase extends Phase {
 	@Shadow
 	private LivingEntity attackTarget;
 
-	public MixinStrafePlayerPhase(EnderDragonEntity dragonIn) {
+	public StrafePlayerPhaseMixin(EnderDragonEntity dragonIn) {
 		super(dragonIn);
 	}
 
