@@ -1,8 +1,9 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Got a problem? Use this template. But I recommend joining Discord and talking
+  there before fileing an issue.
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
@@ -10,12 +11,16 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Versions:**
+ - Minecraft: 
+ - Forge: 
+ - Progressive Bosses: 
+ - InsaneLib: 
+
+**Steps to reproduce**
+1. 
+2. 
+3. 
 
 **Expected behavior**
 A clear and concise description of what you expected to happen.
@@ -23,16 +28,8 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Logs**
+Use a paste site (pastebin, gist) to send the game logs (both logs and crash if applicable)
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
+**Can the issue be reproduced with a mininal set of mods? (E.g. Progressive Bosses + InsaneLib + Tinkers' Construct)**
+Yes/No
