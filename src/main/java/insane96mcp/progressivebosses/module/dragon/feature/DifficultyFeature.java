@@ -86,11 +86,11 @@ public class DifficultyFeature extends Feature {
 
 		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
 
-		int playersFirstDragon = 0;
-		float killedTotal = 0;
-		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0)
 			return;
+
+		int playersFirstDragon = 0;
+		float killedTotal = 0;
 
 		for (ServerPlayerEntity player : players) {
 			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);

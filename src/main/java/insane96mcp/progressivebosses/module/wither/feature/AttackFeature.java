@@ -41,7 +41,7 @@ public class AttackFeature extends Feature {
 	public double chargeAttackChance = 0.02;
 	public double barrageAttackChance = 0.00175d;
 	public double maxBarrageAttackChance = 0.04d;
-	public double increasedDamage = 0.05d;
+	public double increasedDamage = 0.04d;
 	//Skulls
 	public double skullVelocityMultiplier = 2.75d;
 	//Attack Speed

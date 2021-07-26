@@ -86,10 +86,10 @@ public class DifficultyFeature extends Feature {
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
 		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
-		float spawnedTotal = 0;
-		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0)
 			return;
+
+		float spawnedTotal = 0;
 
 		for (ServerPlayerEntity player : players) {
 			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
