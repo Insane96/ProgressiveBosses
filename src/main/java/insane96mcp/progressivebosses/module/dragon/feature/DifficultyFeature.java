@@ -89,10 +89,8 @@ public class DifficultyFeature extends Feature {
 		int playersFirstDragon = 0;
 		float killedTotal = 0;
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
-		if (players.size() == 0) {
-			ServerPlayerEntity nearestPlayer = (ServerPlayerEntity) event.getWorld().getClosestPlayer(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ(), Double.MAX_VALUE, true);
-			players.add(nearestPlayer);
-		}
+		if (players.size() == 0)
+			return;
 
 		for (ServerPlayerEntity player : players) {
 			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
