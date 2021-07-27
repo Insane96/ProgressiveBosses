@@ -9,16 +9,11 @@ import insane96mcp.progressivebosses.module.wither.entity.WitherMinionEntity;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
@@ -41,10 +36,8 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Predicate;
 
 @Label(name = "Minions", description = "Wither will spawn deadly (and tall) Minions")
 public class MinionFeature extends Feature {
@@ -177,7 +170,7 @@ public class MinionFeature extends Feature {
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown);
 	}
 
-	@SubscribeEvent
+	/*@SubscribeEvent
 	public void onSkellySpawn(EntityJoinWorldEvent event) {
 		if (event.getWorld().isRemote)
 			return;
@@ -190,12 +183,8 @@ public class MinionFeature extends Feature {
 
 		WitherMinionEntity witherMinion = (WitherMinionEntity) event.getEntity();
 
-		CompoundNBT tags = witherMinion.getPersistentData();
-		if (!tags.contains(Strings.Tags.WITHER_MINION))
-			return;
-
 		setMinionAI(witherMinion);
-	}
+	}*/
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingUpdateEvent event) {
@@ -402,49 +391,9 @@ public class MinionFeature extends Feature {
 		return fittingYPos;
 	}
 
-	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getCreatureAttribute() != CreatureAttribute.UNDEAD && livingEntity.attackable();
-
-	private static void setMinionAI(WitherMinionEntity witherMinionEntity) {
-		ArrayList<Goal> toRemove = new ArrayList<>();
-		witherMinionEntity.goalSelector.goals.forEach(goal -> {
-			if (goal.getGoal() instanceof FleeSunGoal)
-				toRemove.add(goal.getGoal());
-
-			if (goal.getGoal() instanceof RestrictSunGoal)
-				toRemove.add(goal.getGoal());
-
-			if (goal.getGoal() instanceof AvoidEntityGoal)
-				toRemove.add(goal.getGoal());
-		});
-
-		for (Goal goal : toRemove) {
-			witherMinionEntity.goalSelector.removeGoal(goal);
-		}
-		toRemove.clear();
-
-		witherMinionEntity.goalSelector.addGoal(1, new SwimGoal(witherMinionEntity));
-
-		witherMinionEntity.targetSelector.goals.forEach(goal -> {
-			if (goal.getGoal() instanceof NearestAttackableTargetGoal)
-				toRemove.add(goal.getGoal());
-			if (goal.getGoal() instanceof HurtByTargetGoal)
-				toRemove.add(goal.getGoal());
-		});
-
-		for (Goal goal : toRemove) {
-			witherMinionEntity.targetSelector.removeGoal(goal);
-		}
-		toRemove.clear();
-
-		witherMinionEntity.targetSelector.addGoal(1, new HurtByTargetGoal(witherMinionEntity, WitherEntity.class, WitherMinionEntity.class));
-		witherMinionEntity.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(witherMinionEntity, PlayerEntity.class, true));
-		witherMinionEntity.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(witherMinionEntity, MobEntity.class, 0, false, false, NOT_UNDEAD));
-	}
-
 	public WitherMinionEntity summonMinion(World world, Vector3d pos, float difficulty, boolean isCharged) {
 		WitherMinionEntity witherMinion = new WitherMinionEntity(PBEntities.WITHER_MINION.get(), world);
 		CompoundNBT minionTags = witherMinion.getPersistentData();
-		minionTags.putBoolean(Strings.Tags.WITHER_MINION, true);
 
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 		//TODO Scaling health

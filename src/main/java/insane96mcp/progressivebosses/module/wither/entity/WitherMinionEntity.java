@@ -3,7 +3,10 @@ package insane96mcp.progressivebosses.module.wither.entity;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.monster.AbstractSkeletonEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.inventory.EquipmentSlotType;
@@ -23,8 +26,11 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class WitherMinionEntity extends AbstractSkeletonEntity {
+
+	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getCreatureAttribute() != CreatureAttribute.UNDEAD && livingEntity.attackable();
 
 	public WitherMinionEntity(EntityType<? extends AbstractSkeletonEntity> type, World worldIn) {
 		super(type, worldIn);
@@ -33,6 +39,19 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 	@Override
 	protected SoundEvent getStepSound() {
 		return SoundEvents.ENTITY_WITHER_SKELETON_STEP;
+	}
+
+	@Override
+	protected void registerGoals() {
+		this.goalSelector.addGoal(1, new SwimGoal(this));
+		this.goalSelector.addGoal(5, new WaterAvoidingRandomWalkingGoal(this, 1.0D));
+		this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 8.0F));
+		this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
+
+		//TODO Give them xray
+		this.targetSelector.addGoal(1, new HurtByTargetGoal(this, WitherEntity.class, WitherMinionEntity.class));
+		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, MobEntity.class, 0, false, false, NOT_UNDEAD));
 	}
 
 	protected SoundEvent getAmbientSound() {

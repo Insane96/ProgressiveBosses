@@ -1,5 +1,18 @@
 # Changelog
 
+## 3.2.1
+* Fixed possible crash on chunk load
+* Wither
+    * Attack
+        * Reduced Wither bonus damage (+5% -> +4% damage per difficulty). This should reduce the disintegration of armor.
+        * Charged attack chance is now based off Wither's health. Less health = higher chance to charge. Also increased max chance (2% (4% when below half health) -> up to 5% (based off Wither's health) chance to charge the player)
+        * Barrage attack duration is now based off Wither's health. Less health = higher barrage duration. (3 (6 if below half health) -> 1 to 7.5 (based off Wither's health) seconds duration)
+        * Barrage attack chance is now based off Wither's health. Less health = higher chance to activate barrage. (0.175%, up to 4% (doubled when below half health) -> up to 0.35% (based off Wither's health) chance per difficulty to start a barrage attack)
+    * Minion
+        * Cooldown reduction on half health increased (-40% -> -50% cooldown)
+    * Misc
+        * Wither no longer breaks block below him when below half health
+
 ## 3.2.0
 * Updated InsaneLib
     * With this, difficulty features can no longer be disabled
