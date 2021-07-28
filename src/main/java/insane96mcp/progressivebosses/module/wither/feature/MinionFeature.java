@@ -170,22 +170,6 @@ public class MinionFeature extends Feature {
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown);
 	}
 
-	/*@SubscribeEvent
-	public void onSkellySpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof WitherMinionEntity))
-			return;
-
-		WitherMinionEntity witherMinion = (WitherMinionEntity) event.getEntity();
-
-		setMinionAI(witherMinion);
-	}*/
-
 	@SubscribeEvent
 	public void update(LivingEvent.LivingUpdateEvent event) {
 		if (event.getEntity().world.isRemote)

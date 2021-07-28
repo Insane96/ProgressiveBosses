@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
+import insane96mcp.progressivebosses.ai.wither.minion.MinionNearestAttackableTargetGoal;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -48,9 +49,8 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 		this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 8.0F));
 		this.goalSelector.addGoal(6, new LookRandomlyGoal(this));
 
-		//TODO Give them xray
 		this.targetSelector.addGoal(1, new HurtByTargetGoal(this, WitherEntity.class, WitherMinionEntity.class));
-		this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, true));
+		this.targetSelector.addGoal(2, new MinionNearestAttackableTargetGoal(this, PlayerEntity.class, 0, false, false, null));
 		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, MobEntity.class, 0, false, false, NOT_UNDEAD));
 	}
 

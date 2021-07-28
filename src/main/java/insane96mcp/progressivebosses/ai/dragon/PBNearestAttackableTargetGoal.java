@@ -12,7 +12,7 @@ public class PBNearestAttackableTargetGoal extends NearestAttackableTargetGoal<P
     public PBNearestAttackableTargetGoal(MobEntity shulkerEntity) {
         super(shulkerEntity, PlayerEntity.class, 0, false, false, null);
         //allowUnseeable
-        this.targetEntitySelector.setLineOfSiteRequired();
+        this.targetEntitySelector.setIgnoresLineOfSight();
     }
 
     public boolean shouldExecute() {

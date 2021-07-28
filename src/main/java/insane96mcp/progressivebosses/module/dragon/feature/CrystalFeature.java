@@ -212,7 +212,7 @@ public class CrystalFeature extends Feature {
 			return;
 
 		spikesToRespawn.clear();
-		ArrayList<EndSpikeFeature.EndSpike> spikes = new ArrayList<>(EndSpikeFeature.func_236356_a_((ServerWorld)dragon.world));
+		ArrayList<EndSpikeFeature.EndSpike> spikes = new ArrayList<>(EndSpikeFeature.getSpikes((ServerWorld)dragon.world));
 		int maxTries = (int) MathHelper.clamp(difficulty * this.crystalRespawnMultiplier, 1, 100);
 		for (int i = 0; i < maxTries; i++) {
 			EndSpikeFeature.EndSpike targetSpike = spikes.get(RandomHelper.getInt(dragon.getRNG(), 0, spikes.size()));
@@ -262,7 +262,7 @@ public class CrystalFeature extends Feature {
 
 		List<EnderCrystalEntity> crystals = new ArrayList<>();
 
-		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.func_236356_a_((ServerWorld) dragon.world)) {
+		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.getSpikes((ServerWorld) dragon.world)) {
 			crystals.addAll(dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
 		}
 
@@ -298,7 +298,7 @@ public class CrystalFeature extends Feature {
 
 		List<EnderCrystalEntity> crystals = new ArrayList<>();
 
-		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.func_236356_a_((ServerWorld) dragon.world)) {
+		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.getSpikes((ServerWorld) dragon.world)) {
 			crystals.addAll(dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
 		}
 

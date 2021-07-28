@@ -321,7 +321,7 @@ public class AttackFeature extends Feature {
 		} else if (raytraceresult$type == RayTraceResult.Type.BLOCK) {
 			Reflection.ProjectileEntity_onBlockHit(fireball, (BlockRayTraceResult)result);
 		}
-		Entity entity = fireball.func_234616_v_();
+		Entity entity = fireball.getShooter();
 		if (result.getType() != RayTraceResult.Type.ENTITY || !((EntityRayTraceResult)result).getEntity().isEntityEqual(entity)) {
 			if (!fireball.world.isRemote) {
 				List<LivingEntity> list = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, fireball.getBoundingBox().grow(4.0D, 2.0D, 4.0D));

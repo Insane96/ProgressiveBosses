@@ -20,7 +20,7 @@ public class DragonFireballEntityMixin extends DamagingProjectileEntity {
 
 	@Inject(at = @At("HEAD"), method = "onImpact(Lnet/minecraft/util/math/RayTraceResult;)V", cancellable = true)
 	private void onImpact(RayTraceResult result, CallbackInfo callback) {
-		if (Modules.dragon.attack.onFireballImpact((DragonFireballEntity) (Object) this, this.func_234616_v_(), result))
+		if (Modules.dragon.attack.onFireballImpact((DragonFireballEntity) (Object) this, this.getShooter(), result))
 			callback.cancel();
 	}
 }

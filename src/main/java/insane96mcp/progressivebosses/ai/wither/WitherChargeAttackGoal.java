@@ -104,7 +104,7 @@ public class WitherChargeAttackGoal extends Goal {
 				BlockState state = wither.world.getBlockState(blockPos);
 				if (state.canEntityDestroy(wither.world, blockPos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
 					TileEntity tileentity = state.hasTileEntity() ? this.wither.world.getTileEntity(blockPos) : null;
-					LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerWorld)this.wither.world)).withRandom(this.wither.world.rand).withParameter(LootParameters.field_237457_g_, Vector3d.copyCentered(blockPos)).withParameter(LootParameters.TOOL, ItemStack.EMPTY).withNullableParameter(LootParameters.BLOCK_ENTITY, tileentity);
+					LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerWorld)this.wither.world)).withRandom(this.wither.world.rand).withParameter(LootParameters.ORIGIN, Vector3d.copyCentered(blockPos)).withParameter(LootParameters.TOOL, ItemStack.EMPTY).withNullableParameter(LootParameters.BLOCK_ENTITY, tileentity);
 					state.getDrops(lootcontext$builder).forEach(itemStack -> {
 						ItemEntity itemEntity = new ItemEntity(this.wither.world, blockPos.getX() + .5d, blockPos.getY() + .5d, blockPos.getZ() + .5d, itemStack);
 						itemEntity.lifespan = 1200;

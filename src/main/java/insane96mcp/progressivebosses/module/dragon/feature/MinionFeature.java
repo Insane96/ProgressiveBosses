@@ -261,7 +261,7 @@ public class MinionFeature extends Feature {
 
 	public void onBulletEntityHit(ShulkerBulletEntity shulkerBulletEntity, EntityRayTraceResult rayTraceResult) {
 		Entity entityHit = rayTraceResult.getEntity();
-		Entity entityOwner = shulkerBulletEntity.func_234616_v_();
+		Entity entityOwner = shulkerBulletEntity.getShooter();
 		LivingEntity livingEntityOwner = entityOwner instanceof LivingEntity ? (LivingEntity)entityOwner : null;
 		boolean flag = entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(shulkerBulletEntity, livingEntityOwner).setProjectile(), 4.0F);
 		if (flag) {

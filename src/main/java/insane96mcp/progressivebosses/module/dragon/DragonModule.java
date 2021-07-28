@@ -8,7 +8,6 @@ import insane96mcp.progressivebosses.setup.Config;
 @Label(name = "Dragon")
 public class DragonModule extends Module {
 
-	//TODO Maybe change values so the max level dragon is the 24th instead of 82th
 	public DifficultyFeature difficulty;
 	public HealthFeature health;
 	public AttackFeature attack;

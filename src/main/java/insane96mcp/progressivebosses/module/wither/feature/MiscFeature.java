@@ -103,9 +103,13 @@ public class MiscFeature extends Feature {
 				int i2 = MathHelper.floor(wither.getPosZ());
 				boolean flag = false;
 
+				int yOffsetLow = -1;
+				if (wither.isCharged())
+					yOffsetLow = 0;
+
 				for(int k2 = -1; k2 <= 1; ++k2) {
 					for(int l2 = -1; l2 <= 1; ++l2) {
-						for(int j = -1; j <= 4; ++j) {
+						for(int j = yOffsetLow; j <= 4; ++j) {
 							int i3 = l1 + k2;
 							int k = i1 + j;
 							int l = i2 + l2;
