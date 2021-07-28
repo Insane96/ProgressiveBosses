@@ -39,6 +39,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 
+	//TODO Change and barrage chance based off damage taken
 	public boolean applyToVanillaWither = true;
 	public double maxChargeAttackChance = 0.05;
 	public double increasedDamage = 0.04d;
