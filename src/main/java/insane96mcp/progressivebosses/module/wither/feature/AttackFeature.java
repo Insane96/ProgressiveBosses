@@ -4,10 +4,10 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.LogHelper;
-import insane96mcp.progressivebosses.ai.wither.WitherChargeAttackGoal;
-import insane96mcp.progressivebosses.ai.wither.WitherDoNothingGoal;
-import insane96mcp.progressivebosses.ai.wither.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.module.wither.ai.wither.WitherChargeAttackGoal;
+import insane96mcp.progressivebosses.module.wither.ai.wither.WitherDoNothingGoal;
+import insane96mcp.progressivebosses.module.wither.ai.wither.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -21,6 +21,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 
-	//TODO Change and barrage chance based off damage taken
+	//TODO Charge and barrage chance based off damage taken
 	public boolean applyToVanillaWither = true;
 	public double maxChargeAttackChance = 0.05;
 	public double increasedDamage = 0.04d;
@@ -195,7 +196,6 @@ public class AttackFeature extends Feature {
 		if (this.increasedDamage == 0d)
 			return;
 
-		//LogHelper.info("Damage before: %s", event.getAmount());
 
 		WitherEntity wither;
 		if (event.getSource().getImmediateSource() instanceof WitherEntity)
@@ -209,11 +209,10 @@ public class AttackFeature extends Feature {
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDamage * difficulty)));
-
-		//LogHelper.info("Damage after: %s", event.getAmount());
 	}
 
-	@SubscribeEvent
+	//High priority so runs before the damage reduction
+	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onDamaged(LivingHurtEvent event) {
 		if (event.getEntity().getEntityWorld().isRemote)
 			return;
@@ -228,6 +227,7 @@ public class AttackFeature extends Feature {
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getEntityLiving();
+		LogHelper.info("Damage taken: %s", event.getAmount());
 
 		doBarrage(wither);
 		doCharge(wither);

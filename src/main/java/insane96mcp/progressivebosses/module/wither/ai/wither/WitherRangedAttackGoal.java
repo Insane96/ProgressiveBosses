@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.ai.wither;
+package insane96mcp.progressivebosses.module.wither.ai.wither;
 
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;

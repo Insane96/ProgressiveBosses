@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
-import insane96mcp.progressivebosses.ai.wither.minion.MinionNearestAttackableTargetGoal;
+import insane96mcp.progressivebosses.module.wither.ai.wither.minion.MinionNearestAttackableTargetGoal;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
