@@ -1,7 +1,9 @@
 # Changelog
 
 ## 3.3.1
-* Added Blacklist for Wither's Difficulty Feature. Defaults to Botania's Pink Wither
+* Wither
+    * Added Blacklist for Wither's Difficulty Feature. Defaults to Botania's Pink Wither
+    * Charge and Barrage attack chances are now based off damage taken and wither health. Also increased max Charge chance (5% -> 6%)
 
 ## Alpha 3.3.0
 * Fixed possible crash on chunk load
@@ -11,6 +13,7 @@
         * Charged attack chance is now based off Wither's health. Less health = higher chance to charge. Also increased max chance (2% (4% when below half health) -> up to 5% (based off Wither's health) chance to charge the player)
         * Barrage attack chance is now based off Wither's health. Less health = higher chance to activate barrage. (0.175% chance per difficulty, up to 4% (doubled when below half health) -> up to 0.35% (based off Wither's health) chance per difficulty to start a barrage attack)
         * Barrage attack duration is now based off Wither's health. Less health = higher barrage duration. (3 (6 if below half health) -> 1 to 7.5 (based off Wither's health) seconds duration)
+          Also no longer stacks.
     * Minion
         * Cooldown reduction on half health increased (-40% -> -50% cooldown)
         * Can now sense the player through blocks

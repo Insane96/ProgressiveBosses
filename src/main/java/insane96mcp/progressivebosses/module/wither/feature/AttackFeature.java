@@ -40,9 +40,8 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 
-	//TODO Charge and barrage chance based off damage taken
 	public boolean applyToVanillaWither = true;
-	public double maxChargeAttackChance = 0.05;
+	public double maxChargeAttackChance = 0.06;
 	public double increasedDamage = 0.04d;
 	//Barrage Attack
 	public double maxBarrageChancePerDiff = 0.0035d;
@@ -70,13 +69,13 @@ public class AttackFeature extends Feature {
 		//Barrage
 		Config.builder.push("Barrage Attack");
 		maxBarrageChancePerDiffConfig = Config.builder
-				.comment("Chance (per difficulty) every time the Wither takes damage to start a barrage attack. The actual chance is inversely proportional to Wither's health (100% health = 0% chance, 50% health = 0.09% chance, ...).")
+				.comment("Chance (per difficulty) every time the Wither takes damage to start a barrage attack. The actual chance is inversely proportional to Wither's health and damage taken (more damage and less health = higher chance).")
 				.defineInRange("Max Barrage Attack Chance Per Difficulty", maxBarrageChancePerDiff, 0d, 1d);
 		/*maxBarrageAttackChanceConfig = Config.builder
 				.comment("Max Chance for the barrage attack. The max chance is doubled when the Wither is below half health")
 				.defineInRange("Max Barrage Attack Chance", maxBarrageAttackChance, 0d, 1d);*/
 		minBarrageDurationConfig = Config.builder
-				.comment("Min time (in ticks) for the duration of the barrage attack. The actual duration is inversely proportional to Wither's health (100% health = min duration, 0% health = max duration)")
+				.comment("Min time (in ticks) for the duration of the barrage attack. The actual duration is inversely proportional to Wither's health and damage taken (more damage and less health = higher chance)")
 				.defineInRange("Min Barrage Duration", minBarrageDuration, 0, Integer.MAX_VALUE);
 		maxBarrageDurationConfig = Config.builder
 				.comment("Max time (in ticks) for the duration of the barrage attack. The actual duration is inversely proportional to Wither's health (100% health = min duration, 0% health = max duration)")
@@ -229,11 +228,11 @@ public class AttackFeature extends Feature {
 		WitherEntity wither = (WitherEntity) event.getEntityLiving();
 		LogHelper.info("Damage taken: %s", event.getAmount());
 
-		doBarrage(wither);
-		doCharge(wither);
+		doBarrage(wither, event.getAmount());
+		doCharge(wither, event.getAmount());
 	}
 
-	private void doBarrage(WitherEntity wither) {
+	private void doBarrage(WitherEntity wither, float damageTaken) {
 		if (this.maxBarrageChancePerDiff == 0d/* || this.maxBarrageAttackChance == 0d*/)
 			return;
 
@@ -243,15 +242,16 @@ public class AttackFeature extends Feature {
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
 
 		double chance = (this.maxBarrageChancePerDiff * difficulty) * missingHealthPerc;
-		LogHelper.info("barrage chance: %s", chance);
-		if (wither.getRNG().nextDouble() < chance) {
+		chance *= (damageTaken / 10f);
+		double r = wither.getRNG().nextDouble();
+		if (r < chance) {
 			//int barrage = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
 			int duration = (int) (((this.maxBarrageDuration - this.minBarrageDuration) * missingHealthPerc) + this.minBarrageDuration);
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, duration);
 		}
 	}
 
-	private void doCharge(WitherEntity wither) {
+	private void doCharge(WitherEntity wither, float damageTaken) {
 		if (this.maxChargeAttackChance == 0d)
 			return;
 
@@ -259,8 +259,9 @@ public class AttackFeature extends Feature {
 
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
 		double chance = this.maxChargeAttackChance * missingHealthPerc;
-		LogHelper.info("charge chance: %s", chance);
-		if (wither.getRNG().nextDouble() < chance) {
+		chance *= (damageTaken / 10f);
+		double r = wither.getRNG().nextDouble();
+		if (r < chance) {
 			wither.setInvulTime(Consts.CHARGE_ATTACK_TICK_START);
 			witherTags.putBoolean(Strings.Tags.CHARGE_ATTACK, true);
 		}
