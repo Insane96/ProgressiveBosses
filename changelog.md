@@ -1,6 +1,9 @@
 # Changelog
 
-## 3.2.1
+## 3.3.1
+* Added Blacklist for Wither's Difficulty Feature. Defaults to Botania's Pink Wither
+
+## Alpha 3.3.0
 * Fixed possible crash on chunk load
 * Wither
     * Attack
