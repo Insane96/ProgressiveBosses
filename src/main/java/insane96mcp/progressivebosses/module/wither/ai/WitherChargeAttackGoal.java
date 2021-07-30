@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.module.wither.ai.wither;
+package insane96mcp.progressivebosses.module.wither.ai;
 
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.wither.feature.AttackFeature;

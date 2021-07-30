@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.module.wither.ai.wither.minion;
+package insane96mcp.progressivebosses.module.wither.ai.minion;
 
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
