@@ -8,7 +8,6 @@
 		"DragonFireballEntityMixin",
 		"EnderCrystalEntityMixin",
 		"HoldingPatternPhaseMixin",
-		"HoverPhaseMixin",
 		"LandingPhaseMixin",
 		"ShulkerBulletEntityMixin",
 		"StrafePlayerPhaseMixin"

@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.module.dragon.ai.dragon;
+package insane96mcp.progressivebosses.module.dragon.ai;
 
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;

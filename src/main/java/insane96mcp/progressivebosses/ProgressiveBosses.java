@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.capability.DifficultyCapability;
 import insane96mcp.progressivebosses.commands.DifficultyCommand;
+import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -36,6 +37,8 @@ public class ProgressiveBosses {
 		PBItems.ITEMS.register(modEventBus);
 		PBEntities.ENTITIES.register(modEventBus);
 		Reflection.init();
+
+		CrystalRespawnPhase.init();
 	}
 
 	@SubscribeEvent

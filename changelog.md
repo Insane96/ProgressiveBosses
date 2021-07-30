@@ -3,7 +3,9 @@
 ## 3.3.1
 * Wither
     * Added Blacklist for Wither's Difficulty Feature. Defaults to Botania's Pink Wither
-    * Charge and Barrage attack chances are now based off damage taken and wither health. Also increased max Charge chance (5% -> 6%)
+    * Charge and Barrage attack chances are now based off damage taken and wither health, 10 damage is 100% (of max chance), increasing / decreasing accordingly (5 damage = 50%, 15 damage = 150%). Also increased max Charge chance (5% -> 6%)
+* Dragon
+    * The respawn phase is now an actual phase! This means that the Hover Phase works again like vanilla, the code is slightly cleaner
 
 ## Alpha 3.3.0
 * Fixed possible crash on chunk load

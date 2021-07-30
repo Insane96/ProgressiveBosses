@@ -6,19 +6,18 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PaneBlock;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.phase.HoverPhase;
 import net.minecraft.entity.boss.dragon.phase.IPhase;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.entity.item.EnderCrystalEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
@@ -31,7 +30,6 @@ import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -106,83 +104,7 @@ public class CrystalFeature extends Feature {
 		this.explosionImmune = this.explosionImmuneConfig.get();
 	}
 
-	private final ArrayList<EndSpikeFeature.EndSpike> spikesToRespawn = new ArrayList<>();
-	private boolean engaged = false;
-	private int tick = 0;
-
-	@SubscribeEvent
-	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntityLiving().world.isRemote)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragonEntity))
-			return;
-
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		CompoundNBT dragonTags = dragon.getPersistentData();
-		if (!dragonTags.getBoolean(Strings.Tags.CRYSTAL_RESPAWN))
-			return;
-
-		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
-
-		if (dragon.getPhaseManager().getCurrentPhase().getType().equals(PhaseType.HOVER)) {
-			int tickSpawnCystal = (int) (50 - (difficulty / 4));
-			HoverPhase phase = (HoverPhase) dragon.getPhaseManager().getCurrentPhase();
-			if (spikesToRespawn.isEmpty()) {
-				dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
-				return;
-			}
-			if (!engaged) {
-				double d0 = phase.targetLocation == null ? 0.0D : phase.targetLocation.squareDistanceTo(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ());
-				if (d0 < 16d) {
-					dragon.setMotion(Vector3d.ZERO);
-					engaged = true;
-				}
-			}
-			else {
-				tick++;
-				dragon.setMotion(Vector3d.ZERO);
-				if (tick <= 25)
-					dragon.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 4F, 1.0F);
-				if (tick >= tickSpawnCystal) {
-					if (dragon.getHealth() < 10f) {
-						dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
-						return;
-					}
-					EnderCrystalEntity crystal;
-					double x = spikesToRespawn.get(0).getCenterX();
-					double y = spikesToRespawn.get(0).getHeight();
-					double z = spikesToRespawn.get(0).getCenterZ();
-					if (dragon.getRNG().nextDouble() < this.crystalRespawnInsideTowerChance * difficulty)
-						crystal = generateCrystalInTower(dragon.world, x + 0.5, y + 1, z + 0.5);
-					else {
-						crystal = new EnderCrystalEntity(dragon.world, x + 0.5, y + 1, z + 0.5);
-						crystal.setShowBottom(true);
-						crystal.world.createExplosion(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Explosion.Mode.NONE);
-						dragon.world.addEntity(crystal);
-						generateCage(crystal.world, crystal.getPosition());
-					}
-					dragon.attackEntityPartFrom(dragon.dragonPartHead, DamageSource.causeExplosionDamage(dragon), 10f);
-					spikesToRespawn.remove(0);
-					if (spikesToRespawn.isEmpty()) {
-						dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
-						return;
-					}
-					tick = 0;
-					engaged = false;
-					x = spikesToRespawn.get(0).getCenterX();
-					y = spikesToRespawn.get(0).getHeight();
-					z = spikesToRespawn.get(0).getCenterZ();
-					phase.targetLocation = new Vector3d(x + 0.5, y + 5.5, z + 0.5);
-				}
-			}
-		}
-	}
-
-	private static final List<PhaseType<? extends IPhase>> validPhases = Arrays.asList(PhaseType.SITTING_SCANNING, PhaseType.SITTING_ATTACKING, PhaseType.SITTING_FLAMING, PhaseType.HOLDING_PATTERN, PhaseType.TAKEOFF);
+	private static final List<PhaseType<? extends IPhase>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(PhaseType.SITTING_SCANNING, PhaseType.SITTING_ATTACKING, PhaseType.SITTING_FLAMING, PhaseType.HOLDING_PATTERN, PhaseType.TAKEOFF);
 
 	@SubscribeEvent
 	public void onDragonDamage(LivingDamageEvent event) {
@@ -202,30 +124,22 @@ public class CrystalFeature extends Feature {
 		if (dragonTags.getBoolean(Strings.Tags.CRYSTAL_RESPAWN))
 			return;
 
-		if (dragon.getFightManager() != null && dragon.getFightManager().getNumAliveCrystals() != 0)
-			return;
-
-		if (!validPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()))
+		if (!VALID_CRYSTAL_RESPAWN_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getType()))
 			return;
 
 		if (dragon.getRNG().nextFloat() < this.crystalRespawnChance)
 			return;
 
-		spikesToRespawn.clear();
+		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
+		CrystalRespawnPhase phase = (CrystalRespawnPhase) dragon.getPhaseManager().getCurrentPhase();
+
 		ArrayList<EndSpikeFeature.EndSpike> spikes = new ArrayList<>(EndSpikeFeature.getSpikes((ServerWorld)dragon.world));
 		int maxTries = (int) MathHelper.clamp(difficulty * this.crystalRespawnMultiplier, 1, 100);
 		for (int i = 0; i < maxTries; i++) {
 			EndSpikeFeature.EndSpike targetSpike = spikes.get(RandomHelper.getInt(dragon.getRNG(), 0, spikes.size()));
-			if (spikesToRespawn.contains(targetSpike))
-				continue;
-			spikesToRespawn.add(targetSpike);
+			phase.addCrystalRespawn(targetSpike);
 		}
-		dragon.getPhaseManager().setPhase(PhaseType.HOVER);
-		HoverPhase hover = (HoverPhase) dragon.getPhaseManager().getCurrentPhase();
-		hover.targetLocation = new Vector3d(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5, spikesToRespawn.get(0).getCenterZ() + 0.5);
 		dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, true);
-		tick = 0;
-		engaged = false;
 	}
 
 	@SubscribeEvent
@@ -329,7 +243,7 @@ public class CrystalFeature extends Feature {
 
 	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER_RL = new ResourceLocation("endergetic:crystal_holder");
 
-	private static EnderCrystalEntity generateCrystalInTower(World world, double x, double y, double z) {
+	public static EnderCrystalEntity generateCrystalInTower(World world, double x, double y, double z) {
 		Vector3d centerPodium = Vector3d.copyCenteredHorizontally(world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
 
 		int spawnY = (int) (y - RandomHelper.getInt(world.getRandom(), 12, 24));
@@ -357,7 +271,7 @@ public class CrystalFeature extends Feature {
 		return crystal;
 	}
 
-	private static void generateCage(World world, BlockPos pos) {
+	public static void generateCage(World world, BlockPos pos) {
 		//Shamelessly copied from Vanilla Code
 		BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
 		for(int k = -2; k <= 2; ++k) {

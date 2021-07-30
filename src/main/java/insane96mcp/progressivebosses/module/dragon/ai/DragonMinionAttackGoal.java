@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.module.dragon.ai.dragon;
+package insane96mcp.progressivebosses.module.dragon.ai;
 
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.utils.DragonMinionHelper;
