@@ -37,6 +37,8 @@ public class Strings {
 		public static final String FOLLOW_RANGE_BONUS = ProgressiveBosses.RESOURCE_PREFIX + "follow_range_bonus";
 		public static final UUID SWIM_SPEED_BONUS_UUID = UUID.fromString("d7007c0f-4533-4911-870b-63cce20328f0");
 		public static final String SWIM_SPEED_BONUS = ProgressiveBosses.RESOURCE_PREFIX + "swim_speed_bonus";
+		public static final UUID ATTACK_DAMAGE_BONUS_UUID = UUID.fromString("6970dece-d8f3-4233-85c5-24de8852f32b");
+		public static final String ATTACK_DAMAGE_BONUS = ProgressiveBosses.RESOURCE_PREFIX + "attack_damage_bonus";
 	}
 
 	public static class Translatable {

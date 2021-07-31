@@ -4,7 +4,6 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
-import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.Modules;
@@ -50,8 +49,8 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBonusFireballConfig;
 
-	public double increasedDirectDamage = 0.135d;
-	public double increasedAcidPoolDamage = 0.113d;
+	public double increasedDirectDamage = 0.125d;
+	public double increasedAcidPoolDamage = 0.11d;
 	public double chargePlayerMaxChance = 0.50d; //Chance at max difficulty
 	public double fireballMaxChance = 0.40d; //Chance at max difficulty
 	public boolean increaseMaxRiseAndFall = true;
@@ -219,7 +218,7 @@ public class AttackFeature extends Feature {
 		}
 
 		double rng = dragon.getRNG().nextDouble();
-		LogHelper.info("charge chance: %s, %s", chance, rng < chance);
+		//LogHelper.info("charge chance: %s, %s", chance, rng < chance);
 
 		return rng < chance;
 	}
@@ -232,7 +231,7 @@ public class AttackFeature extends Feature {
 		if (player == null)
 			return;
 
-		LogHelper.info("charging");
+		//LogHelper.info("charging");
 
 		dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
 		Vector3d targetPos = player.getPositionVec();
@@ -260,7 +259,7 @@ public class AttackFeature extends Feature {
 
 		double rng = dragon.getRNG().nextDouble();
 
-		LogHelper.info("fireball chance: %s, %s", chance, rng < chance);
+		//LogHelper.info("fireball chance: %s, %s", chance, rng < chance);
 
 		return rng < chance;
 	}
@@ -273,7 +272,7 @@ public class AttackFeature extends Feature {
 		if (player == null)
 			return;
 
-		LogHelper.info("fireballing");
+		//LogHelper.info("fireballing");
 
 		dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
 		dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);

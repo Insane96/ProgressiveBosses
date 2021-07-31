@@ -59,7 +59,7 @@ public class MinionFeature extends Feature {
 	public int minCooldown = 1400;
 	public int maxCooldown = 2000;
 	public double cooldownReduction = 0.017d;
-	public double blindingChance = 0.017d;
+	public double blindingChance = 0.015d;
 	public boolean dragonImmune = true;
 
 	public MinionFeature(Module module) {
@@ -194,7 +194,7 @@ public class MinionFeature extends Feature {
 				toRemove.add(goal.getGoal());
 		});
 		toRemove.forEach(shulker.goalSelector::removeGoal);
-		shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 80));
+		shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 70));
 
 		toRemove.clear();
 		shulker.targetSelector.goals.forEach(goal -> {

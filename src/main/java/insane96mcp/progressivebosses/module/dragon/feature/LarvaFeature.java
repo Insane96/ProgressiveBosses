@@ -47,7 +47,7 @@ public class LarvaFeature extends Feature {
 
 	public int larvaAtDifficulty = 1;
 	public int bonusLarvaEveryDifficulty = 2;
-	public int maxSpawned = 8;
+	public int maxSpawned = 7;
 	public int minCooldown = 800;
 	public int maxCooldown = 1400;
 	public boolean dragonImmune = true;
@@ -217,6 +217,10 @@ public class LarvaFeature extends Feature {
 		ModifiableAttributeInstance maxHealth = endermite.getAttribute(Attributes.MAX_HEALTH);
 		AttributeModifier maxHealthModifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, -0.5, AttributeModifier.Operation.MULTIPLY_BASE);
 		maxHealth.applyPersistentModifier(maxHealthModifier);
+
+		ModifiableAttributeInstance attackDamage = endermite.getAttribute(Attributes.ATTACK_DAMAGE);
+		AttributeModifier attackDamageModifier = new AttributeModifier(Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS_UUID, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS, 0.4 * difficulty, AttributeModifier.Operation.ADDITION);
+		attackDamage.applyPersistentModifier(attackDamageModifier);
 
 		ModifiableAttributeInstance swimSpeed = endermite.getAttribute(ForgeMod.SWIM_SPEED.get());
 		if (swimSpeed != null) {

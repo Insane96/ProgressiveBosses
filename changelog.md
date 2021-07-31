@@ -3,9 +3,14 @@
 ## 3.3.1
 * Wither
     * Added Blacklist for Wither's Difficulty Feature. Defaults to Botania's Pink Wither
-    * Charge and Barrage attack chances are now based off damage taken and wither health, 10 damage is 100% (of max chance), increasing / decreasing accordingly (5 damage = 50%, 15 damage = 150%). Also increased max Charge chance (5% -> 6%)
+    * Charge and Barrage attack chances are now based off damage taken and wither health, 10 damage is 100% (of chance), increasing / decreasing accordingly (5 damage = 50%, 15 damage = 150%). Also increased max Charge chance (5% -> 6%)
 * Dragon
-    * The respawn phase is now an actual phase! This means that the Hover Phase works again like vanilla, the code is slightly cleaner
+    * Larvae Attack Damage now scales with dragon difficulty (+0.4 damage per difficulty) (+9.6 at max difficulty)
+    * Decreased Direct bonus damage (13.5% -> 12.5% more direct damage per difficulty) and Acid bonus damage (11.3% -> 11% more acid damage per difficulty)
+    * Increased Crystal Respawn Multiplier (0.5 -> 0.6 tries per difficulty, 12 -> 14 tries at max difficulty)
+    * Increased Minion Attack Speed (1 bullet every 4-22 secs -> 1 bullet every 3.5-19.25 secs)
+    * Decreased Blinding Minion chance (1.7% -> 1.5% chance per difficulty) (at max difficulty: 40.8% -> 36% chance)
+    * The respawn phase is now an actual phase! This means that the Hover Phase works again like vanilla and the code is slightly cleaner.
 
 ## Alpha 3.3.0
 * Fixed possible crash on chunk load

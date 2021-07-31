@@ -57,7 +57,7 @@ public class CrystalFeature extends Feature {
 	public int moreCrystalsAtDifficulty = 8;
 	public int maxMoreCrystals = 5;
 	public double crystalRespawnChance = 0.05d;
-	public double crystalRespawnMultiplier = 0.5d;
+	public double crystalRespawnMultiplier = 0.6d;
 	public double crystalRespawnInsideTowerChance = 0.005d;
 	public boolean explosionImmune = true;
 
@@ -81,7 +81,7 @@ public class CrystalFeature extends Feature {
 				.defineInRange("Crystal Respawn Chance", crystalRespawnChance, 0d, 1d);
 		crystalRespawnMultiplierConfig = Config.builder
 				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")
-				.defineInRange("Crystal Respawn Multiplier", crystalRespawnMultiplier, 0d, 1d);
+				.defineInRange("Crystal Respawn Multiplier", crystalRespawnMultiplier, 0d, 100d);
 		crystalRespawnInsideTowerChanceConfig = Config.builder
 				.comment("When respawning Crystals, chance for the crystal to be spawned inside a Tower instead of on top")
 				.defineInRange("Crystal Respawn Inside Tower Chance", crystalRespawnInsideTowerChance, 0d, 1d);
