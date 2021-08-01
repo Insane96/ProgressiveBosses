@@ -303,7 +303,7 @@ public class AttackFeature extends Feature {
 		List<LivingEntity> livingEntities = fireball.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB);
 		for (LivingEntity livingEntity : livingEntities) {
 			if (livingEntity.getDistanceSq(fireball.getPositionVec()) < 20.25d)
-				livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setMagicDamage(), damage);
+				livingEntity.attackEntityFrom((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).setDamageBypassesArmor().setProjectile().setMagicDamage(), damage);
 		}
 	}
 
