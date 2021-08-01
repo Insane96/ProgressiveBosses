@@ -219,7 +219,7 @@ public class LarvaFeature extends Feature {
 		maxHealth.applyPersistentModifier(maxHealthModifier);
 
 		ModifiableAttributeInstance attackDamage = endermite.getAttribute(Attributes.ATTACK_DAMAGE);
-		AttributeModifier attackDamageModifier = new AttributeModifier(Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS_UUID, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS, 0.4 * difficulty, AttributeModifier.Operation.ADDITION);
+		AttributeModifier attackDamageModifier = new AttributeModifier(Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS_UUID, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS, 0.35 * difficulty, AttributeModifier.Operation.ADDITION);
 		attackDamage.applyPersistentModifier(attackDamageModifier);
 
 		ModifiableAttributeInstance swimSpeed = endermite.getAttribute(ForgeMod.SWIM_SPEED.get());
