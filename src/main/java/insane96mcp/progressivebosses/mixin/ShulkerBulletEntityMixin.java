@@ -19,9 +19,8 @@ public abstract class ShulkerBulletEntityMixin extends ProjectileEntity {
 		this.noClip = true;
 	}
 
-	@Override
-	protected void onEntityHit(EntityRayTraceResult rayTraceResult) {
-		super.onEntityHit(rayTraceResult);
+	@Inject(at = @At("HEAD"), method = "onEntityHit")
+	public void onEntityHit(EntityRayTraceResult rayTraceResult, CallbackInfo ci) {
 		Modules.dragon.minion.onBulletEntityHit((ShulkerBulletEntity) (Object) this, rayTraceResult);
 	}
 
