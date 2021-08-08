@@ -1,9 +1,13 @@
 package insane96mcp.progressivebosses.mixin;
 
+import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.Modules;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
@@ -19,10 +23,17 @@ public abstract class ShulkerBulletEntityMixin extends ProjectileEntity {
 		this.noClip = true;
 	}
 
-	@Override
+	/*@Override
 	protected void onEntityHit(EntityRayTraceResult rayTraceResult) {
 		super.onEntityHit(rayTraceResult);
 		Modules.dragon.minion.onBulletEntityHit((ShulkerBulletEntity) (Object) this, rayTraceResult);
+	}*/
+
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;addPotionEffect(Lnet/minecraft/potion/EffectInstance;)Z"), method = "onEntityHit(Lnet/minecraft/util/math/EntityRayTraceResult;)V")
+	protected void onEntityHit(EntityRayTraceResult rayTraceResult, CallbackInfo callbackInfo) {
+		ShulkerBulletEntity $this = (ShulkerBulletEntity) (Object) this;
+		if ($this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
+			((LivingEntity)rayTraceResult.getEntity()).addPotionEffect(new EffectInstance(Effects.BLINDNESS, 150));
 	}
 
 	@Inject(at = @At("HEAD"), method = "tick()V", cancellable = true)

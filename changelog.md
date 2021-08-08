@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.3.2
+* Dragon fireball impact damage now counts as both Magic and projectile damage (so Projectile protection works against it)
+* Reduced Larva bonus attack damage (+0.4 -> +0.35 per difficulty)
+* Hopefully fixed (again) compatilibty with ArcLight
+
 ## 3.3.1
 * Wither
     * Added Blacklist for Wither's Difficulty Feature. Defaults to Botania's Pink Wither
