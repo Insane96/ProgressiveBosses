@@ -176,10 +176,11 @@ public class AttackFeature extends Feature {
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
 		CompoundNBT witherTags = wither.getPersistentData();
+		// When in charge attack remove the vanilla health regeneration when he's invulnerable and add 1% health regeneration of the missing health per second
 		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.ticksExisted % 10 == 0){
 			float missingHealth = wither.getMaxHealth() - wither.getHealth();
-			//Remove the vanilla health regeneration when he's invulnerable and adds 1% health regeneration of the missing health per second
-			wither.setHealth(wither.getHealth() - 10f + (missingHealth * 0.005f));
+			if (wither.getHealth() > 10f)
+				wither.setHealth(wither.getHealth() - 10f + (missingHealth * 0.005f));
 		}
 	}
 
