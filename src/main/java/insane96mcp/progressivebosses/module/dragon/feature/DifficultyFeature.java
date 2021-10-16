@@ -11,8 +11,10 @@ import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.DimensionType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -137,6 +139,8 @@ public class DifficultyFeature extends Feature {
 
 		for (ServerPlayerEntity player : players) {
 			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+			if (difficulty.getKilledDragons() <= this.startingDifficulty)
+				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_DRAGON_KILL), Util.DUMMY_UUID);
 			if (difficulty.getKilledDragons() < this.maxDifficulty)
 				difficulty.addKilledDragons(1);
 		}

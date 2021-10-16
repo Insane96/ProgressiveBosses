@@ -12,8 +12,10 @@ import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.Util;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -114,6 +116,8 @@ public class DifficultyFeature extends Feature {
 			spawnedTotal += difficulty.getSpawnedWithers();
 			if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
 				continue;
+			if (difficulty.getKilledDragons() <= this.startingDifficulty)
+				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.DUMMY_UUID);
 			difficulty.addSpawnedWithers(1);
 		}
 

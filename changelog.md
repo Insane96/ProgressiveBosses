@@ -1,7 +1,8 @@
 # Changelog
 
 ## Upcoming
-* Added a config option to Ignore Witherproof Blocks  
+* Added a message when the first dragon is killed or the first wither is spawned mentioning that the next ones will be harder to fight
+* Added a config option to Ignore Witherproof Blocks (disabled by default)  
   When enabled the wither will destroy wither proof blocks too (still will not destroy unbreakable blocks)
 * Fixed crash when min cooldown was higher than max cooldown
 

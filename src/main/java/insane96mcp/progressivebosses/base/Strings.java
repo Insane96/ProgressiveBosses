@@ -58,6 +58,9 @@ public class Strings {
 		public static final String DRAGON_LARVA = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva";
 
 		public static final String DRAGON_FIREBALL = ProgressiveBosses.RESOURCE_PREFIX + "dragon_fireball";
+
+		public static final String FIRST_DRAGON_KILL = "dragon.first_killed";
+		public static final String FIRST_WITHER_SUMMON = "wither.first_summon";
 	}
 	public static class Items {
 		public static final String NETHER_STAR_SHARD = "nether_star_shard";
