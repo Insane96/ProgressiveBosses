@@ -67,7 +67,7 @@ public class WitherChargeAttackGoal extends Goal {
 		this.target = null;
 		CompoundNBT witherTags = wither.getPersistentData();
 		witherTags.remove(Strings.Tags.CHARGE_ATTACK);
-		this.wither.setMotion(this.wither.getMotion().mul(0.1d, 0.1d, 0.1d));
+		this.wither.setMotion(this.wither.getMotion().mul(0.02d, 0.02d, 0.02d));
 	}
 
 	/**

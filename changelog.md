@@ -1,6 +1,7 @@
 # Changelog
 
 ## Upcoming
+* Wither will now try to charge the target when hidden for too long
 * Added a message when the first dragon is killed or the first wither is spawned mentioning that the next ones will be harder to fight
 * Added a config option to Ignore Witherproof Blocks (disabled by default)  
   When enabled the wither will destroy wither proof blocks too (still will not destroy unbreakable blocks)

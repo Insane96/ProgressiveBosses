@@ -35,9 +35,9 @@ public class WitherRangedAttackGoal extends Goal {
 	 * method as well.
 	 */
 	public boolean shouldExecute() {
-		if (this.wither.getInvulTime() > 0) {
+		if (this.wither.getInvulTime() > 0)
 			return false;
-		}
+
 		int targetId = this.wither.getWatchedTargetId(0);
 		Entity entity = this.wither.world.getEntityByID(targetId);
 		if (entity == null)
@@ -46,12 +46,11 @@ public class WitherRangedAttackGoal extends Goal {
 			return false;
 
 		LivingEntity livingEntity = (LivingEntity) entity;
-		if (livingEntity.isAlive()) {
-			this.target = livingEntity;
-			return true;
-		} else {
+		if (!livingEntity.isAlive())
 			return false;
-		}
+
+		this.target = livingEntity;
+		return true;
 	}
 
 	/**
@@ -74,13 +73,19 @@ public class WitherRangedAttackGoal extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
+		CompoundNBT witherTags = wither.getPersistentData();
+
 		double distanceSq = this.wither.getDistanceSq(this.target.getPosX(), this.target.getPosY(), this.target.getPosZ());
 		boolean canSee = this.wither.getEntitySenses().canSee(this.target);
+		int unseenPlayerTicks = witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS);
 		if (canSee) {
 			++this.seeTime;
+			if (unseenPlayerTicks > 0)
+				witherTags.putInt(Strings.Tags.UNSEEN_PLAYER_TICKS, unseenPlayerTicks - 1);
 		}
 		else {
 			this.seeTime = 0;
+			witherTags.putInt(Strings.Tags.UNSEEN_PLAYER_TICKS, unseenPlayerTicks + 2);
 		}
 
 		if (distanceSq <= (double)this.attackRadiusSqr && this.seeTime > 0) {
@@ -93,7 +98,6 @@ public class WitherRangedAttackGoal extends Goal {
 
 		this.wither.getLookController().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
 
-		CompoundNBT witherTags = wither.getPersistentData();
 		int barrageAttackTick = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
 		if (barrageAttackTick > 0) {
 			if (!canSee)

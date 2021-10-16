@@ -182,6 +182,10 @@ public class AttackFeature extends Feature {
 			if (wither.getHealth() > 10f)
 				wither.setHealth(wither.getHealth() - 10f + (missingHealth * 0.005f));
 		}
+
+		if (wither.ticksExisted % 20 == 0) {
+			doCharge(wither, witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS) / 20f);
+		}
 	}
 
 	@SubscribeEvent
@@ -244,7 +248,6 @@ public class AttackFeature extends Feature {
 		chance *= (damageTaken / 10f);
 		double r = wither.getRNG().nextDouble();
 		if (r < chance) {
-			//int barrage = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
 			int duration = (int) (((this.maxBarrageDuration - this.minBarrageDuration) * missingHealthPerc) + this.minBarrageDuration);
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, duration);
 		}
