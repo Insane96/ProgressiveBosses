@@ -140,6 +140,8 @@ public class MinionFeature extends Feature {
 		this.maxAround = this.maxAroundConfig.get();
 		this.minCooldown = this.minCooldownConfig.get();
 		this.maxCooldown = this.maxCooldownConfig.get();
+		if (this.minCooldown > this.maxCooldown)
+			this.minCooldown = this.maxCooldown;
 		this.cooldownMultiplierBelowHalfHealth = this.cooldownMultiplierBelowHalfHealthConfig.get();
 		this.bonusSpeedPerDifficulty = this.bonusSpeedPerDifficultyConfig.get();
 		this.killMinionOnWitherDeath = this.killMinionOnWitherDeathConfig.get();

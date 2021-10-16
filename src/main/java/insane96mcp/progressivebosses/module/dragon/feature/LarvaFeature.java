@@ -84,6 +84,8 @@ public class LarvaFeature extends Feature {
 		this.maxSpawned = this.maxSpawnedConfig.get();
 		this.minCooldown = this.minCooldownConfig.get();
 		this.maxCooldown = this.maxCooldownConfig.get();
+		if (this.minCooldown > this.maxCooldown)
+			this.minCooldown = this.maxCooldown;
 		this.dragonImmune = this.dragonImmuneConfig.get();
 	}
 

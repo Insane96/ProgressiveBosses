@@ -46,7 +46,7 @@ public class Drop {
 		//Item
 		ResourceLocation item = ResourceLocation.tryCreate(split[0]);
 		if (item == null) {
-			LogHelper.warn("%s item for Hoe Cooldown is not a valid Resource Location", split[0]);
+			LogHelper.warn("%s item for Drop is not a valid Resource Location", split[0]);
 			return null;
 		}
 		if (!ForgeRegistries.ITEMS.containsKey(item)) {

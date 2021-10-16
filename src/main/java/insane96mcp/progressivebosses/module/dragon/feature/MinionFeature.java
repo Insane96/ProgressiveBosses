@@ -92,6 +92,8 @@ public class MinionFeature extends Feature {
 		this.minionAtDifficulty = this.minionAtDifficultyConfig.get();
 		this.minCooldown = this.minCooldownConfig.get();
 		this.maxCooldown = this.maxCooldownConfig.get();
+		if (this.minCooldown > this.maxCooldown)
+			this.minCooldown = this.maxCooldown;
 		this.cooldownReduction = this.cooldownReductionConfig.get();
 		this.blindingChance = this.blindingChanceConfig.get();
 		this.dragonImmune = this.dragonImmuneConfig.get();
