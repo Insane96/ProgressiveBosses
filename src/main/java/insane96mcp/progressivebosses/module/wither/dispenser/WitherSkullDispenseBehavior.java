@@ -22,7 +22,7 @@ public class WitherSkullDispenseBehavior extends OptionalDispenseBehavior {
 		Direction direction = source.getBlockState().get(DispenserBlock.FACING);
 		BlockPos blockpos = source.getBlockPos().offset(direction);
 		if (world.isAirBlock(blockpos) && WitherSkeletonSkullBlock.canSpawnMob(world, blockpos, stack) && MiscFeature.canPlaceSkull(world, blockpos)) {
-			world.setBlockState(blockpos, Blocks.WITHER_SKELETON_SKULL.getDefaultState().with(SkullBlock.ROTATION, Integer.valueOf(direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontalIndex() * 4)), 3);
+			world.setBlockState(blockpos, Blocks.WITHER_SKELETON_SKULL.getDefaultState().with(SkullBlock.ROTATION, direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontalIndex() * 4), 3);
 			TileEntity tileentity = world.getTileEntity(blockpos);
 			if (tileentity instanceof SkullTileEntity) {
 				WitherSkeletonSkullBlock.checkWitherSpawn(world, blockpos, (SkullTileEntity)tileentity);

@@ -31,12 +31,14 @@ public class MiscFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> explosionCausesFireAtDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> fasterBlockBreakingConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> biggerBlockBreakingConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> ignoreWitherProofBlocksConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> witherNetherOnlyConfig;
 
 	public double explosionPowerBonus = 0.5d;
 	public int explosionCausesFireAtDifficulty = 16;
 	public boolean fasterBlockBreaking = true;
 	public boolean biggerBlockBreaking = true;
+	public boolean ignoreWitherProofBlocks = false;
 	public boolean witherNetherOnly = false;
 
 	public MiscFeature(Module module) {
@@ -54,6 +56,9 @@ public class MiscFeature extends Feature {
 		biggerBlockBreakingConfig = Config.builder
 				.comment("The Wither will break even blocks below him when hit.")
 				.define("Bigger Breaking Blocks", biggerBlockBreaking);
+		ignoreWitherProofBlocksConfig = Config.builder
+				.comment("If true the Wither will break even blocks that are witherproof.")
+				.define("Ignore Witherproof Blocks", ignoreWitherProofBlocks);
 		witherNetherOnlyConfig = Config.builder
 				.comment("The wither can only be spawned in the Nether.\n" +
 						"Note that this feature completely disables Wither Skulls from begin placed nearby Soul Sand when not in the Nether or when on the Nether Roof.\n" +
@@ -115,7 +120,7 @@ public class MiscFeature extends Feature {
 							int l = i2 + l2;
 							BlockPos blockpos = new BlockPos(i3, k, l);
 							BlockState blockstate = wither.world.getBlockState(blockpos);
-							if (blockstate.canEntityDestroy(wither.world, blockpos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockpos, blockstate)) {
+							if (canWitherDestroy(wither, blockpos, blockstate) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockpos, blockstate)) {
 								flag = wither.world.destroyBlock(blockpos, true, wither) || flag;
 							}
 						}
@@ -127,6 +132,13 @@ public class MiscFeature extends Feature {
 				}
 			}
 		}
+	}
+
+	private boolean canWitherDestroy(WitherEntity wither, BlockPos pos, BlockState state) {
+		if (this.ignoreWitherProofBlocks)
+			return !state.isAir() && state.getBlockHardness(wither.world, pos) >= 0f;
+		else
+			return state.canEntityDestroy(wither.world, pos, wither);
 	}
 
 	@SubscribeEvent

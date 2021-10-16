@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Added a config option to Ignore Witherproof Blocks  
+  When enabled the wither will destroy wither proof blocks too (still will not destroy unbreakable blocks)
+* Fixed crash when min cooldown was higher than max cooldown
+
 ## 3.3.2
 * Dragon fireball impact damage now counts as both Magic and projectile damage (so Projectile protection works against it)
 * Reduced Larva bonus attack damage (+0.4 -> +0.35 per difficulty)
