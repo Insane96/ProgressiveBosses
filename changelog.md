@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Added a config option to disable the message for the first Wither Summoned / Dragon killed.
+
 ## 3.3.3
 * Wither will now try to charge the target when hidden for too long
 * Added a message when the first dragon is killed or the first wither is summoned mentioning that the next ones will be harder to fight

@@ -33,6 +33,7 @@ public class DifficultyFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> sumSpawnedWitherDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> startingDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> showFirstSummonedWitherMessageConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> entityBlacklistConfig;
 
 	private static final List<String> defaultEntityBlacklist = Arrays.asList("botania:pink_wither");
@@ -41,6 +42,7 @@ public class DifficultyFeature extends Feature {
 	public boolean sumSpawnedWitherDifficulty = false;
 	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
+	public boolean showFirstSummonedWitherMessage = true;
 	public List<String> entityBlacklist = defaultEntityBlacklist;
 
 	public DifficultyFeature(Module module) {
@@ -50,7 +52,7 @@ public class DifficultyFeature extends Feature {
 				.comment("How much blocks from wither will be scanned for players to check for difficulty")
 				.defineInRange("Spawn Radius Player Check", spawnRadiusPlayerCheck, 16, Integer.MAX_VALUE);
 		sumSpawnedWitherDifficultyConfig = Config.builder
-				.comment("If true and there are more players around the Wither, the Wither will have his stats based on the sum of both players difficulty. If false, the Wither stats will be based on the average of the difficulty of the players around")
+				.comment("If true and there's more than 1 player around the Wither, difficulty will be summed up from all the players difficulty instead of averaging them.")
 				.define("Sum Spawned Wither Difficulty", sumSpawnedWitherDifficulty);
 		maxDifficultyConfig = Config.builder
 				.comment("The Maximum difficulty (times spawned) reachable by Wither.")
@@ -58,6 +60,9 @@ public class DifficultyFeature extends Feature {
 		startingDifficultyConfig = Config.builder
 				.comment("How much difficulty will players start with when joining a world? Note that this will apply when the first Wither is spawned so if the player has already spawned one this will not apply.")
 				.defineInRange("Starting Difficulty", startingDifficulty, 0, Integer.MAX_VALUE);
+		this.showFirstSummonedWitherMessageConfig = Config.builder
+				.comment("Set to false to disable the first Wither summoned message.")
+				.define("Show First Summoned Wither Message", this.showFirstSummonedWitherMessage);
 		entityBlacklistConfig = Config.builder
 				.comment("Entities that extend the vanilla Wither but shouldn't be taken into account by the mod (e.g. Botania's Pink Wither).")
 				.defineList("Entity Blacklist", entityBlacklist, o -> o instanceof String);
@@ -71,6 +76,7 @@ public class DifficultyFeature extends Feature {
 		this.sumSpawnedWitherDifficulty = this.sumSpawnedWitherDifficultyConfig.get();
 		this.maxDifficulty = this.maxDifficultyConfig.get();
 		this.startingDifficulty = this.startingDifficultyConfig.get();
+		this.showFirstSummonedWitherMessage = this.showFirstSummonedWitherMessageConfig.get();
 
 		//entityBlacklist
 		this.entityBlacklist = new ArrayList<>();
@@ -116,7 +122,7 @@ public class DifficultyFeature extends Feature {
 			spawnedTotal += difficulty.getSpawnedWithers();
 			if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
 				continue;
-			if (difficulty.getKilledDragons() <= this.startingDifficulty)
+			if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
 				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.DUMMY_UUID);
 			difficulty.addSpawnedWithers(1);
 		}

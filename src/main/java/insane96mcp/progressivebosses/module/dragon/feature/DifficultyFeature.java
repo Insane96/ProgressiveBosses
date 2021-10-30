@@ -30,16 +30,18 @@ public class DifficultyFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> sumKilledDragonDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> startingDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> showFirstKilledDragonMessageConfig;
 
 	public boolean sumKilledDragonDifficulty = false;
 	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
+	public boolean showFirstKilledDragonMessage = true;
 
 	public DifficultyFeature(Module module) {
 		super(Config.builder, module, true, false);
 		this.pushConfig(Config.builder);
 		sumKilledDragonDifficultyConfig = Config.builder
-				.comment("If true and there are more players around the Dragon, she will have his stats based on the sum of both players' difficulty. If false, the Dragon stats will be based on the average of the difficulty of the players around.")
+				.comment("If true and there's more than 1 player around the Dragon, difficulty will be summed up from all the players difficulty instead of averaging them.")
 				.define("Sum Killed Dragons Difficulty", sumKilledDragonDifficulty);
 		maxDifficultyConfig = Config.builder
 				.comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 24 because it's the last spawning end gate.")
@@ -47,6 +49,9 @@ public class DifficultyFeature extends Feature {
 		startingDifficultyConfig = Config.builder
 				.comment("How much difficulty will players start with when joining a world? Note that this will apply when the player joins the world if the current player difficulty is below this value.")
 				.defineInRange("Starting Difficulty", startingDifficulty, 0, Integer.MAX_VALUE);
+		this.showFirstKilledDragonMessageConfig = Config.builder
+				.comment("Set to false to disable the first Dragon killed message.")
+				.define("Show First Killed Dragon Message", this.showFirstKilledDragonMessage);
 		Config.builder.pop();
 	}
 
@@ -139,7 +144,7 @@ public class DifficultyFeature extends Feature {
 
 		for (ServerPlayerEntity player : players) {
 			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
-			if (difficulty.getKilledDragons() <= this.startingDifficulty)
+			if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstKilledDragonMessage)
 				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_DRAGON_KILL), Util.DUMMY_UUID);
 			if (difficulty.getKilledDragons() < this.maxDifficulty)
 				difficulty.addKilledDragons(1);
