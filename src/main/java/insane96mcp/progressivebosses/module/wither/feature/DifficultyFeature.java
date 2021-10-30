@@ -39,7 +39,7 @@ public class DifficultyFeature extends Feature {
 	private static final List<String> defaultEntityBlacklist = Arrays.asList("botania:pink_wither");
 
 	public int spawnRadiusPlayerCheck = 128;
-	public boolean sumSpawnedWitherDifficulty = false;
+	public boolean sumSpawnedWitherDifficulty = true;
 	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
 	public boolean showFirstSummonedWitherMessage = true;
@@ -52,7 +52,7 @@ public class DifficultyFeature extends Feature {
 				.comment("How much blocks from wither will be scanned for players to check for difficulty")
 				.defineInRange("Spawn Radius Player Check", spawnRadiusPlayerCheck, 16, Integer.MAX_VALUE);
 		sumSpawnedWitherDifficultyConfig = Config.builder
-				.comment("If true and there's more than 1 player around the Wither, difficulty will be summed up from all the players difficulty instead of averaging them.")
+				.comment("If false and there's more than 1 player around the Wither, difficulty will be the average of all the players' difficulty instead of summing them.")
 				.define("Sum Spawned Wither Difficulty", sumSpawnedWitherDifficulty);
 		maxDifficultyConfig = Config.builder
 				.comment("The Maximum difficulty (times spawned) reachable by Wither.")

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Upcoming
+* Difficulty for multiple players summoning the wither / killing the ender dragon is now summed instead of averaged by default.
 * Added a config option to disable the message for the first Wither Summoned / Dragon killed.
 
 ## 3.3.3

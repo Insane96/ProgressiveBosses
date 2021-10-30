@@ -32,7 +32,7 @@ public class DifficultyFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> startingDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> showFirstKilledDragonMessageConfig;
 
-	public boolean sumKilledDragonDifficulty = false;
+	public boolean sumKilledDragonDifficulty = true;
 	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
 	public boolean showFirstKilledDragonMessage = true;
@@ -41,7 +41,7 @@ public class DifficultyFeature extends Feature {
 		super(Config.builder, module, true, false);
 		this.pushConfig(Config.builder);
 		sumKilledDragonDifficultyConfig = Config.builder
-				.comment("If true and there's more than 1 player around the Dragon, difficulty will be summed up from all the players difficulty instead of averaging them.")
+				.comment("If false and there's more than 1 player around the Dragon, difficulty will be the average of all the players' difficulty instead of summing them.")
 				.define("Sum Killed Dragons Difficulty", sumKilledDragonDifficulty);
 		maxDifficultyConfig = Config.builder
 				.comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 24 because it's the last spawning end gate.")
