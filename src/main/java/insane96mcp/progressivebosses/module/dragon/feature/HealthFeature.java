@@ -3,12 +3,15 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.LogHelper;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -21,10 +24,12 @@ public class HealthFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusPerDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maximumBonusRegenConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> bonusRegenPerDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> bonusCrystalRegenConfig;
 
 	public double bonusPerDifficulty = 34.4d;
 	public double maxBonusRegen = 1.0d;
 	public double bonusRegenPerDifficulty = 0.05d;
+	public double bonusCrystalRegen = 0.05d;
 
 	public HealthFeature(Module module) {
 		super(Config.builder, module);
@@ -36,17 +41,21 @@ public class HealthFeature extends Feature {
 				.comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the crystal regeneration of the Ender Dragon.")
 				.defineInRange("Maximum Bonus Regeneration", maxBonusRegen, 0.0, Double.MAX_VALUE);
 		bonusRegenPerDifficultyConfig = Config.builder
-				.comment("How much health will the Ender Dragon regen per difficulty. This doesn't affect the crystal regeneration of the Ender Dragon.")
+				.comment("How much health will the Ender Dragon regen per difficulty. This is added to the noaml Crystal regeneration.")
 				.defineInRange("Bonus Regeneration per Difficulty", bonusRegenPerDifficulty, 0.0, Double.MAX_VALUE);
+		this.bonusCrystalRegenConfig = Config.builder
+				.comment("How much health will the Ender Dragon regen per difficulty each second whenever she's attached to a Crystal. This is added to the normal Crystal regen.")
+				.defineInRange("Bonus Crystal Regeneration", this.bonusCrystalRegen, 0.0, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
 
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		bonusPerDifficulty = bonusPerDifficultyConfig.get();
-		maxBonusRegen = maximumBonusRegenConfig.get();
-		bonusRegenPerDifficulty = bonusRegenPerDifficultyConfig.get();
+		this.bonusPerDifficulty = this.bonusPerDifficultyConfig.get();
+		this.maxBonusRegen = this.maximumBonusRegenConfig.get();
+		this.bonusRegenPerDifficulty = this.bonusRegenPerDifficultyConfig.get();
+		this.bonusCrystalRegen = this.bonusCrystalRegenConfig.get();
 	}
 
 	@SubscribeEvent
@@ -97,19 +106,16 @@ public class HealthFeature extends Feature {
 				}
 			}
 		}*/
-		//result = {AxisAlignedBB@21366} "AABB[5.838289610550541, 59.455070982207616, -3.6175390750013285] -> [6.838289610550541, 60.455070982207616, -2.6175390750013285]"
-		//result = {AxisAlignedBB@21379} "AABB[5.3581248052303865, 59.495200877005914, -2.5141609254509736] -> [5.958124829072244, 61.2952008293222, -1.9141609016091157]"
-		//result = {AxisAlignedBB@21595} "AABB[-7.863716004406766, 60.26373616009399, -7.691778564177095] -> [8.136283995593235, 68.263736160094, 8.308221435822905]"
 		if (!this.isEnabled())
 			return;
 
 		if (!(event.getEntity() instanceof EnderDragonEntity))
 			return;
 
-		if (this.bonusRegenPerDifficulty == 0d || this.maxBonusRegen == 0d)
-			return;
-
 		EnderDragonEntity enderDragon = (EnderDragonEntity) event.getEntity();
+
+		if (!enderDragon.isAlive() || enderDragon.getPhaseManager().getCurrentPhase().getType() == PhaseType.DYING)
+			return;
 
 		CompoundNBT tags = enderDragon.getPersistentData();
 
@@ -118,13 +124,34 @@ public class HealthFeature extends Feature {
 		if (difficulty <= 0)
 			return;
 
-		if (enderDragon.getHealth() <= 0f)
+		float flatBonusHeal = getFlatBonusHeal(difficulty);
+		float crystalBonusHeal = getCrystalBonusHeal(enderDragon, difficulty);
+
+		float heal = flatBonusHeal + crystalBonusHeal;
+		if (heal == 0f)
 			return;
 
-		float heal = (float) Math.min(difficulty * this.bonusRegenPerDifficulty, this.maxBonusRegen);
+		if (enderDragon.ticksExisted % 20 == 0)
+			LogHelper.info(ProgressiveBosses.LOGGER, "heal: %s, health: %s", heal, enderDragon.getHealth());
 
 		heal /= 20f;
 
 		enderDragon.heal(heal);
+	}
+
+	private float getFlatBonusHeal(float difficulty) {
+		if (this.bonusRegenPerDifficulty == 0d || this.maxBonusRegen == 0d)
+			return 0f;
+		return (float) Math.min(difficulty * this.bonusRegenPerDifficulty, this.maxBonusRegen);
+	}
+
+	private float getCrystalBonusHeal(EnderDragonEntity enderDragon, float difficulty) {
+		if (this.bonusCrystalRegen == 0d)
+			return 0f;
+
+		if (enderDragon.closestEnderCrystal == null || !enderDragon.closestEnderCrystal.isAlive())
+			return 0f;
+
+		return (float) (this.bonusCrystalRegen * difficulty);
 	}
 }

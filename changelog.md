@@ -1,8 +1,10 @@
 # Changelog
 
 ## Upcoming
-* Difficulty for multiple players summoning the wither / killing the ender dragon is now summed instead of averaged by default.
-* Added a config option to disable the message for the first Wither Summoned / Dragon killed.
+* Dragon
+  * Added bonus crystal health regen. 0.05 health/sec per difficulty when the Ender Dragon is attached to a Crystal
+* Difficulty for multiple players summoning the wither / killing the ender dragon is now summed instead of averaged by default
+* Added a config option to disable the message for the first Wither Summoned / Dragon killed
 
 ## 3.3.3
 * Wither will now try to charge the target when hidden for too long
