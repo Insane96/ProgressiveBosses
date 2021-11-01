@@ -100,7 +100,7 @@ public class CrystalRespawnPhase extends Phase {
 	 * Returns the maximum amount dragon may rise or fall during this phase
 	 */
 	public float getMaxRiseOrFall() {
-		return 32F;
+		return 24F;
 	}
 
 	/**
