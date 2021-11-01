@@ -1,6 +1,9 @@
 # Changelog
 
 ## Upcoming
+* Added Elder Guardian Module!
+  * Health Feature 
+    * 0.5 health regen per second and 40 absorption hearts
 * Dragon
   * Added bonus crystal health regen. 0.05 health/sec per difficulty when the Ender Dragon is attached to a Crystal
 * Difficulty for multiple players summoning the wither / killing the ender dragon is now summed instead of averaged by default
