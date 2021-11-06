@@ -165,7 +165,7 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (this.maxChargeAttackChance == 0d /*|| this.maxChargeAttackChance == 0d*/)
+		if (this.maxChargeAttackChance == 0d)
 			return;
 
 		if (!event.getEntity().isAlive())
@@ -183,7 +183,7 @@ public class AttackFeature extends Feature {
 				wither.setHealth(wither.getHealth() - 10f + (missingHealth * 0.005f));
 		}
 
-		if (wither.ticksExisted % 20 == 0) {
+		if (!witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.ticksExisted % 20 == 0) {
 			doCharge(wither, witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS) / 20f);
 		}
 	}

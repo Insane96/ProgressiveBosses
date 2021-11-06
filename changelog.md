@@ -6,6 +6,11 @@
     * 0.5 health regen per second and 40 absorption hearts
 * Dragon
   * Added bonus crystal health regen. 0.05 health/sec per difficulty when the Ender Dragon is attached to a Crystal
+* Wither
+  * Attack
+    * Wither now stops charging when moving too far away for the targeting position 
+    * Wither will no longer charge if he can't see a target that's not a player 
+    * Wither no longer starts a charging attack while already performing one
 * Difficulty for multiple players summoning the wither / killing the ender dragon is now summed instead of averaged by default
 * Added a config option to disable the message for the first Wither Summoned / Dragon killed
 

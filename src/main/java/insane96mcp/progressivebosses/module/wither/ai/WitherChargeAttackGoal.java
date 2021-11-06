@@ -30,6 +30,7 @@ public class WitherChargeAttackGoal extends Goal {
 	private final WitherEntity wither;
 	private LivingEntity target;
 	private Vector3d targetPos;
+	private double lastDistanceFromTarget = 0d;
 
 	public WitherChargeAttackGoal(WitherEntity wither) {
 		this.wither = wither;
@@ -68,6 +69,8 @@ public class WitherChargeAttackGoal extends Goal {
 		CompoundNBT witherTags = wither.getPersistentData();
 		witherTags.remove(Strings.Tags.CHARGE_ATTACK);
 		this.wither.setMotion(this.wither.getMotion().mul(0.02d, 0.02d, 0.02d));
+		this.lastDistanceFromTarget = 0d;
+		this.targetPos = null;
 	}
 
 	/**
@@ -85,6 +88,7 @@ public class WitherChargeAttackGoal extends Goal {
 				this.targetPos = this.target.getPositionVec();
 				Vector3d forward = this.targetPos.subtract(this.wither.getPositionVec()).normalize();
 				this.targetPos = this.targetPos.add(forward.mul(4d, 4d, 4d));
+				this.lastDistanceFromTarget = this.targetPos.squareDistanceTo(this.wither.getPositionVec());
 				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 4.0f, 2.0f);
 			}
 			else {
@@ -93,6 +97,7 @@ public class WitherChargeAttackGoal extends Goal {
 			}
 		}
 		else if (this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
+			//Done so it goes faster and faster
 			double mult = 60d / this.wither.getInvulTime();
 			Vector3d diff = this.targetPos.subtract(this.wither.getPositionVec()).normalize().mul(mult, mult, mult);
 			this.wither.setMotion(diff.x, diff.y * 0.5, diff.z);
@@ -129,9 +134,11 @@ public class WitherChargeAttackGoal extends Goal {
 				entity.addVelocity(d2 / d4 * 25.0D, 1.4d, d3 / d4 * 25.0D);
 			});
 		}
-		//If the wither's charging and is 2 blocks from the target point OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-		if ((this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulTime() > 0 && this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d) || this.wither.getInvulTime() == 1) {
+		//If the wither's charging and is farther from the target point than the last tick OR is about to finish the invulnerability time then prevent the explosion and stop the attack
+		if ((this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulTime() > 0 && (this.targetPos.squareDistanceTo(this.wither.getPositionVec()) - this.lastDistanceFromTarget > 16d || this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d)) || this.wither.getInvulTime() == 1) {
 			this.wither.setInvulTime(0);
 		}
+		if (this.targetPos != null)
+			this.lastDistanceFromTarget = this.targetPos.squareDistanceTo(this.wither.getPositionVec());
 	}
 }

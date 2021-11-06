@@ -6,6 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 
 import java.util.EnumSet;
@@ -85,7 +86,8 @@ public class WitherRangedAttackGoal extends Goal {
 		}
 		else {
 			this.seeTime = 0;
-			witherTags.putInt(Strings.Tags.UNSEEN_PLAYER_TICKS, unseenPlayerTicks + 2);
+			if (this.target instanceof PlayerEntity)
+				witherTags.putInt(Strings.Tags.UNSEEN_PLAYER_TICKS, unseenPlayerTicks + 2);
 		}
 
 		if (distanceSq <= (double)this.attackRadiusSqr && this.seeTime > 0) {
