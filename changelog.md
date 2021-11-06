@@ -8,6 +8,7 @@
 * Dragon
   * Added bonus crystal health regen. 0.05 health/sec per difficulty when the Ender Dragon is attached to a Crystal
   * Chance for the Ender Dragon to trigger a Crystal respawn phase is now given by health left (5% chance when below 20% health -> 0% chance when health >= 20% up to 100% chance when health <= 5%)
+  * Can now take damage from more sources (e.g. fireworks)
 * Wither
   * Attack
     * Wither now stops charging when moving too far away for the targeting position 

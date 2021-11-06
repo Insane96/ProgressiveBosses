@@ -78,7 +78,7 @@ public class ResistancesFeature extends Feature {
 		if (this.bonusCurHealthDirectDamage == 0d && this.bonusCurHealthIndirectDamage == 0d)
 			return;
 
-		if (event.getSource().isExplosion())
+		if (event.getSource().isExplosion() && !event.getSource().getDamageType().equals("fireworks"))
 			return;
 
 		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()))
@@ -109,7 +109,7 @@ public class ResistancesFeature extends Feature {
 		if (this.explosionDamageReduction == 0d)
 			return;
 
-		if (event.getSource().isExplosion()) {
+		if (event.getSource().isExplosion() && !event.getSource().getDamageType().equals("fireworks")) {
 			event.setAmount((event.getAmount() - (float) (event.getAmount() * this.explosionDamageReduction)));
 		}
 	}
