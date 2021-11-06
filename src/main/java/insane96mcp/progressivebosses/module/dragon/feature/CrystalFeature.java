@@ -47,7 +47,7 @@ public class CrystalFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> maxBonusCagesConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsAtDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxMoreCrystalsConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnChanceConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> enableCrystalRespawnConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnInsideTowerChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
@@ -56,7 +56,7 @@ public class CrystalFeature extends Feature {
 	public int maxBonusCages = 4;
 	public int moreCrystalsAtDifficulty = 8;
 	public int maxMoreCrystals = 5;
-	public double crystalRespawnChance = 0.05d;
+	public boolean enableCrystalRespawn = true;
 	public double crystalRespawnMultiplier = 0.6d;
 	public double crystalRespawnInsideTowerChance = 0.005d;
 	public boolean explosionImmune = true;
@@ -76,9 +76,9 @@ public class CrystalFeature extends Feature {
 		maxMoreCrystalsConfig = Config.builder
 				.comment("Max number of bonus crystals that can spawn inside the towers.")
 				.defineInRange("Max Bonus Crystals", maxMoreCrystals, 0, 10);
-		crystalRespawnChanceConfig = Config.builder
-				.comment("Chance everytime the dragon is hit (when below 20% of health) to trigger a Crystal respawn Phase. The phase can only happen once. 1 means that the dragon will respawn crystals as soon as she's hit when below 20% health.")
-				.defineInRange("Crystal Respawn Chance", crystalRespawnChance, 0d, 1d);
+		enableCrystalRespawnConfig = Config.builder
+				.comment("Everytime the dragon is hit (when below 20% of health) there's a chance to to trigger a Crystal respawn Phase. The phase can only happen once. The chance is 0% when health >= 20% and 100% when health <= 5%.")
+				.define("Enable crystal respawn", enableCrystalRespawn);
 		crystalRespawnMultiplierConfig = Config.builder
 				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")
 				.defineInRange("Crystal Respawn Multiplier", crystalRespawnMultiplier, 0d, 100d);
@@ -98,7 +98,7 @@ public class CrystalFeature extends Feature {
 		this.maxBonusCages = this.maxBonusCagesConfig.get();
 		this.moreCrystalsAtDifficulty = this.moreCrystalsAtDifficultyConfig.get();
 		this.maxMoreCrystals = this.maxMoreCrystalsConfig.get();
-		this.crystalRespawnChance = this.crystalRespawnChanceConfig.get();
+		this.enableCrystalRespawn = this.enableCrystalRespawnConfig.get();
 		this.crystalRespawnMultiplier = this.crystalRespawnMultiplierConfig.get();
 		this.crystalRespawnInsideTowerChance = this.crystalRespawnInsideTowerChanceConfig.get();
 		this.explosionImmune = this.explosionImmuneConfig.get();
@@ -114,9 +114,10 @@ public class CrystalFeature extends Feature {
 		if (!(event.getEntity() instanceof EnderDragonEntity))
 			return;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		if (dragon.getHealth() > dragon.getMaxHealth() * 0.20d)
+		if (!this.enableCrystalRespawn)
 			return;
+
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 
 		CompoundNBT dragonTags = dragon.getPersistentData();
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
@@ -127,7 +128,16 @@ public class CrystalFeature extends Feature {
 		if (!VALID_CRYSTAL_RESPAWN_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getType()))
 			return;
 
-		if (dragon.getRNG().nextFloat() < this.crystalRespawnChance)
+		double healthRatio = dragon.getHealth() / dragon.getMaxHealth();
+		if (healthRatio >= 0.2d)
+			return;
+		//Chance is 0% at >= 20% health and 100% at <= 5% health
+		//0.15 - (0.20 - 0.05) = 0.00 / 0.15 =	0%
+		//0.15 - (0.13 - 0.05) = 0.08 / 0.15 =~	46.7%
+		//0.15 - (0.05 - 0.05) = 0.15 / 0.15 =	100%
+		double chance = (0.15d - (healthRatio - 0.05d)) / 0.15d;
+
+		if (dragon.getRNG().nextFloat() < chance)
 			return;
 
 		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
