@@ -31,6 +31,7 @@ public class DifficultyFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Integer> spawnRadiusPlayerCheckConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> sumSpawnedWitherDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> bonusDifficultyPerPlayerConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> startingDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> showFirstSummonedWitherMessageConfig;
@@ -40,6 +41,7 @@ public class DifficultyFeature extends Feature {
 
 	public int spawnRadiusPlayerCheck = 128;
 	public boolean sumSpawnedWitherDifficulty = false;
+	public double bonusDifficultyPerPlayer = 0.25d;
 	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
 	public boolean showFirstSummonedWitherMessage = true;
@@ -54,6 +56,9 @@ public class DifficultyFeature extends Feature {
 		sumSpawnedWitherDifficultyConfig = Config.builder
 				.comment("If false and there's more than 1 player around the Wither, difficulty will be the average of all the players' difficulty instead of summing them.")
 				.define("Sum Spawned Wither Difficulty", sumSpawnedWitherDifficulty);
+		bonusDifficultyPerPlayerConfig = Config.builder
+				.comment("Percentage bonus difficulty added to the Wither when more than one player is present. Each player past the first one will add this percentage to the difficulty.")
+				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, 24d);
 		maxDifficultyConfig = Config.builder
 				.comment("The Maximum difficulty (times spawned) reachable by Wither.")
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
@@ -74,6 +79,7 @@ public class DifficultyFeature extends Feature {
 		super.loadConfig();
 		this.spawnRadiusPlayerCheck = this.spawnRadiusPlayerCheckConfig.get();
 		this.sumSpawnedWitherDifficulty = this.sumSpawnedWitherDifficultyConfig.get();
+		this.bonusDifficultyPerPlayer = this.bonusDifficultyPerPlayerConfig.get();
 		this.maxDifficulty = this.maxDifficultyConfig.get();
 		this.startingDifficulty = this.startingDifficultyConfig.get();
 		this.showFirstSummonedWitherMessage = this.showFirstSummonedWitherMessageConfig.get();
@@ -115,11 +121,11 @@ public class DifficultyFeature extends Feature {
 		if (players.size() == 0)
 			return;
 
-		float spawnedTotal = 0;
+		float witherDifficulty = 0;
 
 		for (ServerPlayerEntity player : players) {
 			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
-			spawnedTotal += difficulty.getSpawnedWithers();
+			witherDifficulty += difficulty.getSpawnedWithers();
 			if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
 				continue;
 			if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
@@ -128,9 +134,12 @@ public class DifficultyFeature extends Feature {
 		}
 
 		if (!this.sumSpawnedWitherDifficulty)
-			spawnedTotal /= players.size();
+			witherDifficulty /= players.size();
 
-		witherTags.putFloat(Strings.Tags.DIFFICULTY, spawnedTotal);
+		if (players.size() > 1)
+			witherDifficulty *= 1d + ((players.size() - 1) * this.bonusDifficultyPerPlayer);
+
+		witherTags.putFloat(Strings.Tags.DIFFICULTY, witherDifficulty);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)

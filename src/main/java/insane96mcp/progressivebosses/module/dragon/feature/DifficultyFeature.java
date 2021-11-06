@@ -28,11 +28,13 @@ import java.util.List;
 public class DifficultyFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> sumKilledDragonDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> bonusDifficultyPerPlayerConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> startingDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> showFirstKilledDragonMessageConfig;
 
 	public boolean sumKilledDragonDifficulty = false;
+	public double bonusDifficultyPerPlayer = 0.25d;
 	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
 	public boolean showFirstKilledDragonMessage = true;
@@ -43,6 +45,9 @@ public class DifficultyFeature extends Feature {
 		sumKilledDragonDifficultyConfig = Config.builder
 				.comment("If false and there's more than 1 player around the Dragon, difficulty will be the average of all the players' difficulty instead of summing them.")
 				.define("Sum Killed Dragons Difficulty", sumKilledDragonDifficulty);
+		bonusDifficultyPerPlayerConfig = Config.builder
+				.comment("Percentage bonus difficulty added to the Dragon when more than one player is present. Each player past the first one will add this percentage to the difficulty.")
+				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, 24d);
 		maxDifficultyConfig = Config.builder
 				.comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 24 because it's the last spawning end gate.")
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
@@ -58,9 +63,11 @@ public class DifficultyFeature extends Feature {
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		sumKilledDragonDifficulty = sumKilledDragonDifficultyConfig.get();
-		maxDifficulty = maxDifficultyConfig.get();
-		startingDifficulty = startingDifficultyConfig.get();
+		this.sumKilledDragonDifficulty = this.sumKilledDragonDifficultyConfig.get();
+		this.bonusDifficultyPerPlayer = this.bonusDifficultyPerPlayerConfig.get();
+		this.maxDifficulty = this.maxDifficultyConfig.get();
+		this.startingDifficulty = this.startingDifficultyConfig.get();
+		this.showFirstKilledDragonMessage = this.showFirstKilledDragonMessageConfig.get();
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
@@ -97,11 +104,11 @@ public class DifficultyFeature extends Feature {
 			return;
 
 		int playersFirstDragon = 0;
-		float killedTotal = 0;
+		float dragonDifficulty = 0;
 
 		for (ServerPlayerEntity player : players) {
 			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
-			killedTotal += difficulty.getKilledDragons();
+			dragonDifficulty += difficulty.getKilledDragons();
 			if (difficulty.getFirstDragon() == (byte) 1) {
 				playersFirstDragon++;
 				difficulty.setFirstDragon((byte) 2);
@@ -111,9 +118,12 @@ public class DifficultyFeature extends Feature {
 		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, playersFirstDragon);
 
 		if (!this.sumKilledDragonDifficulty)
-			killedTotal /= players.size();
+			dragonDifficulty /= players.size();
 
-		dragonTags.putFloat(Strings.Tags.DIFFICULTY, killedTotal);
+		if (players.size() > 1)
+			dragonDifficulty *= 1d + ((players.size() - 1) * this.bonusDifficultyPerPlayer);
+
+		dragonTags.putFloat(Strings.Tags.DIFFICULTY, dragonDifficulty);
 	}
 
 	//Increase Player Difficulty

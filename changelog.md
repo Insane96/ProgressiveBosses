@@ -4,6 +4,7 @@
 * Added Elder Guardian Module!
   * Health Feature 
     * 0.5 health regen per second and 40 absorption hearts
+* Wither and Dragon Difficulty now increases by 25% per player past the first one (e.g. with 2 players at 4 difficulty you would get a Dragon / Wither with difficulty 5)
 * Dragon
   * Added bonus crystal health regen. 0.05 health/sec per difficulty when the Ender Dragon is attached to a Crystal
   * Chance for the Ender Dragon to trigger a Crystal respawn phase is now given by health left (5% chance when below 20% health -> 0% chance when health >= 20% up to 100% chance when health <= 5%)
