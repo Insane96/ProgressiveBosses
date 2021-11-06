@@ -39,7 +39,7 @@ public class DifficultyFeature extends Feature {
 	private static final List<String> defaultEntityBlacklist = Arrays.asList("botania:pink_wither");
 
 	public int spawnRadiusPlayerCheck = 128;
-	public boolean sumSpawnedWitherDifficulty = true;
+	public boolean sumSpawnedWitherDifficulty = false;
 	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
 	public boolean showFirstSummonedWitherMessage = true;

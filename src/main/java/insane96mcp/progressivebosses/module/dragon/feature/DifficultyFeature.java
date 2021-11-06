@@ -32,7 +32,7 @@ public class DifficultyFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> startingDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> showFirstKilledDragonMessageConfig;
 
-	public boolean sumKilledDragonDifficulty = true;
+	public boolean sumKilledDragonDifficulty = false;
 	public int maxDifficulty = 24;
 	public int startingDifficulty = 0;
 	public boolean showFirstKilledDragonMessage = true;
