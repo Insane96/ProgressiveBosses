@@ -9,17 +9,10 @@ import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.monster.ElderGuardianEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.play.server.SChangeGameStatePacket;
-import net.minecraft.world.GameType;
-import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Health", description = "Bonus Health and Health regeneration.")
@@ -29,7 +22,7 @@ public class HealthFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> absorptionHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> healthRegenConfig;
 
-	public double bonusHealth = 0d;
+	public double bonusHealth = 0.5d;
 	public double absorptionHealth = 40d;
 	public double healthRegen = 0.5d;
 
@@ -71,6 +64,11 @@ public class HealthFeature extends Feature {
 			return;
 
 		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getEntity();
+		CompoundNBT nbt = elderGuardian.getPersistentData();
+		if (nbt.getBoolean(Strings.Tags.DIFFICULTY))
+			return;
+
+		nbt.putBoolean(Strings.Tags.DIFFICULTY, true);
 
 		if (this.bonusHealth != 0d) {
 			if (elderGuardian.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
@@ -108,74 +106,5 @@ public class HealthFeature extends Feature {
 		// divided by 20 because is the health regen per second and here I need per tick
 		float heal = (float) this.healthRegen / 20f;
 		elderGuardian.heal(heal);
-	}
-
-	@SubscribeEvent
-	public void onUpdate(TickEvent.PlayerTickEvent event) {
-		if (event.player.world.isRemote)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (event.player.ticksExisted % 20 != 0)
-			return;
-
-		if (!event.player.isAlive())
-			return;
-
-		ServerPlayerEntity serverPlayer = (ServerPlayerEntity) event.player;
-		ServerWorld world = (ServerWorld) serverPlayer.world;
-
-		CompoundNBT nbt = serverPlayer.getPersistentData();
-		boolean previouslyNearElderGuardian = nbt.getBoolean("previously_near_elder_guardian");
-
-		boolean nearElderGuardian = !world.getEntitiesWithinAABB(ElderGuardianEntity.class, serverPlayer.getBoundingBox().grow(32d), null).isEmpty();
-		nbt.putBoolean("previously_near_elder_guardian", nearElderGuardian);
-
-		if (serverPlayer.interactionManager.getGameType() == GameType.SURVIVAL && nearElderGuardian) {
-			serverPlayer.interactionManager.setGameType(GameType.ADVENTURE);
-			serverPlayer.connection.sendPacket(new SChangeGameStatePacket(SChangeGameStatePacket.CHANGE_GAMETYPE, (float)GameType.ADVENTURE.getID()));
-			//serverPlayer.sendMessage(new StringTextComponent("Adventure"), Util.DUMMY_UUID);
-		}
-		else if (serverPlayer.interactionManager.getGameType() == GameType.ADVENTURE && !nearElderGuardian && previouslyNearElderGuardian) {
-			serverPlayer.interactionManager.setGameType(GameType.SURVIVAL);
-			serverPlayer.connection.sendPacket(new SChangeGameStatePacket(SChangeGameStatePacket.CHANGE_GAMETYPE, (float)GameType.SURVIVAL.getID()));
-			//serverPlayer.sendMessage(new StringTextComponent("Survival"), Util.DUMMY_UUID);
-		}
-	}
-
-	@SubscribeEvent
-	public void onUpdate(LivingDeathEvent event) {
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof ServerPlayerEntity))
-			return;
-
-		ServerPlayerEntity serverPlayer = (ServerPlayerEntity) event.getEntity();
-
-		CompoundNBT nbt = serverPlayer.getPersistentData();
-		boolean previouslyNearElderGuardian = nbt.getBoolean("previously_near_elder_guardian");
-
-		if (previouslyNearElderGuardian && serverPlayer.interactionManager.getGameType() == GameType.ADVENTURE) {
-			serverPlayer.interactionManager.setGameType(GameType.SURVIVAL);
-			serverPlayer.connection.sendPacket(new SChangeGameStatePacket(SChangeGameStatePacket.CHANGE_GAMETYPE, (float)GameType.SURVIVAL.getID()));
-			//serverPlayer.sendMessage(new StringTextComponent("Survival"), Util.DUMMY_UUID);
-		}
-		//nbt.putBoolean("previously_near_elder_guardian", false);
-	}
-
-	@SubscribeEvent
-	public void onExplosionDetonate(ExplosionEvent.Start event) {
-		if (!this.isEnabled())
-			return;
-
-		if (event.getExplosion().getExploder() == null)
-			return;
-
-		boolean nearElderGuardian = !event.getWorld().getEntitiesWithinAABB(ElderGuardianEntity.class, event.getExplosion().getExploder().getBoundingBox().grow(32d)).isEmpty();
-		if (nearElderGuardian)
-			event.setCanceled(true);
 	}
 }

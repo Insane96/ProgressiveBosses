@@ -6,6 +6,7 @@
 	"mixins": [
 		"ChargingPlayerPhaseMixin",
 		"DragonFireballEntityMixin",
+		"ElderGuardianEntityMixin",
 		"EnderCrystalEntityMixin",
 		"EnderDragonEntityMixin",
 		"HoldingPatternPhaseMixin",

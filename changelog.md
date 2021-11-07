@@ -3,7 +3,15 @@
 ## Upcoming
 * Added Elder Guardian Module!
   * Health Feature 
-    * 0.5 health regen per second and 40 absorption hearts
+    * 0.5 health regen per second, 50% more health and 40 absorption hearts
+  * Adventure Feature
+    * Players approaching Elder Guardians (and thus a Monument) will be set to adventure mode unless they leave the Monument or until they defeat all the Guardians
+    * When a Guardian is killed a sound is played to alert the players that the other Elder Guardians will be harder
+  * Resistance Feature
+    * Elder Guardians of a Monument gain 30% damage reduction per Elder Guardian defeated
+  * Attack feature
+    * Elder Guardians deal 20% more damage per Elder Guardian Defeated
+    * They're time to charge an attack is reduced by 1.25 seconds per Elder Guardian defeated. In vanilla and the First elder guardian will take 3 seconds to charge the attack and deal damage, followed by 1.75s the second Elder Guardian and 0.5s the last one.
 * Wither and Dragon Difficulty now increases by 25% per player past the first one (e.g. with 2 players at 4 difficulty you would get a Dragon / Wither with difficulty 5)
 * Dragon
   * Added bonus crystal health regen. 0.05 health/sec per difficulty when the Ender Dragon is attached to a Crystal

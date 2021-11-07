@@ -27,6 +27,9 @@ public class Strings {
 		public static final String DRAGON_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion_cooldown";
 		public static final String DRAGON_LARVA_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva_cooldown";
 		public static final String BLINDNESS_BULLET = ProgressiveBosses.RESOURCE_PREFIX + "blindness_bullet";
+
+		public static final String PREVIOUSLY_NEAR_ELDER_GUARDIAN = ProgressiveBosses.RESOURCE_PREFIX + "previously_near_elder_guardian";
+		public static final String ADVENTURE_MESSAGE = ProgressiveBosses.RESOURCE_PREFIX + "adventure_message";
 	}
 
 	public static class AttributeModifiers {
@@ -62,6 +65,7 @@ public class Strings {
 
 		public static final String FIRST_DRAGON_KILL = "dragon.first_killed";
 		public static final String FIRST_WITHER_SUMMON = "wither.first_summon";
+		public static final String APPROACHING_ELDER_GUARDIAN = "elder_guardian.approach";
 	}
 	public static class Items {
 		public static final String NETHER_STAR_SHARD = "nether_star_shard";
