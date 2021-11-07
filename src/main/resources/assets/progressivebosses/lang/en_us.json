@@ -17,5 +17,5 @@
 
   "dragon.first_killed": "Congrats on killing your first Dragon. Be aware that every Dragon you kill will make the next one harder to fight.",
   "wither.first_summon": "You spawned your first Wither. Be aware that every Wither you spawn will make the next one harder to fight.",
-  "elder_guardian.approach": "Seems like you're approaching an Ocean Monument, you'll not be able to break blocks until all the Elder Guardians are defeated ... or you flee."
+  "elder_guardian.approach": "Seems like you're approaching an Ocean Monument, until you defeat all the Elder guardians ... or unless you flee ... you'll not be able to break blocks."
 }
