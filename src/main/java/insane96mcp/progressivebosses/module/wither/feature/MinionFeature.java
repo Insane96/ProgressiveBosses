@@ -39,7 +39,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.List;
 import java.util.UUID;
 
-@Label(name = "Minions", description = "Wither will spawn deadly (and tall) Minions")
+@Label(name = "Minions", description = "Wither will spawn deadly Minions")
 public class MinionFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Integer> minionAtDifficultyConfig;
@@ -238,7 +238,7 @@ public class MinionFeature extends Feature {
 				y = (int) (wither.getPosY() + 3);
 				z = (int) (wither.getPositionVec().getZ() + (RandomHelper.getInt(world.rand, -3, 3)));
 
-				y = getYSpawn(EntityType.WITHER_SKELETON, new BlockPos(x, y, z), world, 8);
+				y = getYSpawn(PBEntities.WITHER_MINION.get(), new BlockPos(x, y, z), world, 8);
 				if (y != -1)
 					break;
 			}
