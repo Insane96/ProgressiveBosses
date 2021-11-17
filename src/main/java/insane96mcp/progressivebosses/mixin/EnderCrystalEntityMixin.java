@@ -11,8 +11,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EnderCrystalEntity.class)
 public class EnderCrystalEntityMixin {
 
-	@Inject(at = @At("HEAD"), method = "attackEntityFrom(Lnet/minecraft/util/DamageSource;F)Z", cancellable = true)
-	private void attackEntityFrom(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {
+	@Inject(at = @At("HEAD"), method = "hurt(Lnet/minecraft/util/DamageSource;F)Z", cancellable = true)
+	private void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {
 		if (Modules.dragon.crystal.onDamageFromExplosion((EnderCrystalEntity) (Object) this, source))
 			callback.setReturnValue(false);
 	}

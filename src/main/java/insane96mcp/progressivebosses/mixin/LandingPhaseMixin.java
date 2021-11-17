@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LandingPhase.class)
 public class LandingPhaseMixin {
 
-	@Inject(at = @At("HEAD"), method = "getMaxRiseOrFall()F", cancellable = true)
-	private void getMaxRiseOrFall(CallbackInfoReturnable<Float> callback) {
+	@Inject(at = @At("HEAD"), method = "getFlySpeed()F", cancellable = true)
+	private void getFlySpeed(CallbackInfoReturnable<Float> callback) {
 		if (Modules.dragon.attack.increaseMaxRiseAndFall)
 			callback.setReturnValue(12f);
 	}

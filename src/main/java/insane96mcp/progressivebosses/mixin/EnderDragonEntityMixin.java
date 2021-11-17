@@ -17,11 +17,11 @@ public class EnderDragonEntityMixin extends MobEntity {
 		super(type, worldIn);
 	}
 
-	@Inject(at = @At("HEAD"), method = "attackEntityFrom(Lnet/minecraft/util/DamageSource;F)Z", cancellable = true)
-	private void onImpact(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {
+	@Inject(at = @At("HEAD"), method = "hurt(Lnet/minecraft/util/DamageSource;F)Z", cancellable = true)
+	private void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {
 		EnderDragonEntity $this = (EnderDragonEntity) (Object) this;
-		if (source instanceof EntityDamageSource && !((EntityDamageSource)source).getIsThornsDamage()) {
-			$this.attackEntityPartFrom($this.getDragonParts()[2], source, amount);
+		if (source instanceof EntityDamageSource && !((EntityDamageSource)source).isThorns()) {
+			$this.hurt($this.getSubEntities()[2], source, amount);
 		}
 	}
 }

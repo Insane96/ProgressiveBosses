@@ -20,7 +20,7 @@ public abstract class ShulkerBulletEntityMixin extends ProjectileEntity {
 
 	public ShulkerBulletEntityMixin(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
-		this.noClip = true;
+		this.noPhysics = true;
 	}
 
 	/*@Override
@@ -29,11 +29,11 @@ public abstract class ShulkerBulletEntityMixin extends ProjectileEntity {
 		Modules.dragon.minion.onBulletEntityHit((ShulkerBulletEntity) (Object) this, rayTraceResult);
 	}*/
 
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;addPotionEffect(Lnet/minecraft/potion/EffectInstance;)Z"), method = "onEntityHit(Lnet/minecraft/util/math/EntityRayTraceResult;)V")
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;addEffect(Lnet/minecraft/potion/EffectInstance;)Z"), method = "onHitEntity(Lnet/minecraft/util/math/EntityRayTraceResult;)V")
 	protected void onEntityHit(EntityRayTraceResult rayTraceResult, CallbackInfo callbackInfo) {
 		ShulkerBulletEntity $this = (ShulkerBulletEntity) (Object) this;
 		if ($this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-			((LivingEntity)rayTraceResult.getEntity()).addPotionEffect(new EffectInstance(Effects.BLINDNESS, 150));
+			((LivingEntity)rayTraceResult.getEntity()).addEffect(new EffectInstance(Effects.BLINDNESS, 150));
 	}
 
 	@Inject(at = @At("HEAD"), method = "tick()V", cancellable = true)

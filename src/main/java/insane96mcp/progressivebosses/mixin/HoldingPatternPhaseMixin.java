@@ -17,7 +17,7 @@ public class HoldingPatternPhaseMixin {
 
 	@Inject(at = @At("HEAD"), method = "findNewTarget()V", cancellable = true)
 	private void findNewTarget(CallbackInfo callback) {
-		if (this.currentPath == null || !this.currentPath.isFinished())
+		if (this.currentPath == null || !this.currentPath.isDone())
 			return;
 
 		if (Modules.dragon.attack.onPhaseEnd(((HoldingPatternPhase)(Object)this).dragon))

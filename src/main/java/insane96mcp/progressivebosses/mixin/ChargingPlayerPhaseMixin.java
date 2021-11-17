@@ -32,7 +32,7 @@ public abstract class ChargingPlayerPhaseMixin extends Phase {
 	}
 
 	@Override
-	public void serverTick() {
+	public void doServerTick() {
 		if (this.targetLocation == null) {
 			LOGGER.warn("Aborting charge player as no target was set.");
 			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
@@ -45,22 +45,22 @@ public abstract class ChargingPlayerPhaseMixin extends Phase {
 				//Can't use initPhase() otherwise the target is reset. Also making the dragon take more time to restart the charging
 				this.timeSinceCharge = -10;
 		} else {
-			double d0 = this.targetLocation.squareDistanceTo(this.dragon.getPosX(), this.dragon.getPosY(), this.dragon.getPosZ());
-			if (d0 < 100.0D || d0 > 22500.0D || this.dragon.collidedHorizontally || this.dragon.collidedVertically) {
+			double d0 = this.targetLocation.distanceToSqr(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+			if (d0 < 100.0D || d0 > 22500.0D || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
 				++this.timeSinceCharge;
 			}
 
 		}
 	}
 
-	@Inject(at = @At("HEAD"), method = "getMaxRiseOrFall()F", cancellable = true)
-	private void getMaxRiseOrFall(CallbackInfoReturnable<Float> callback) {
+	@Inject(at = @At("HEAD"), method = "getFlySpeed()F", cancellable = true)
+	private void getFlySpeed(CallbackInfoReturnable<Float> callback) {
 		if (Modules.dragon.attack.increaseMaxRiseAndFall)
 			callback.setReturnValue(24f);
 	}
 
-	@Shadow public abstract void initPhase();
+	@Shadow public abstract void begin();
 
 	@Override
-	public PhaseType<? extends IPhase> getType() { return PhaseType.CHARGING_PLAYER; }
+	public PhaseType<? extends IPhase> getPhase() { return PhaseType.CHARGING_PLAYER; }
 }
