@@ -72,9 +72,9 @@ public class HealthFeature extends Feature {
 		double difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
 		ModifiableAttributeInstance health = wither.getAttribute(Attributes.MAX_HEALTH);
 		AttributeModifier modifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
-		health.applyPersistentModifier(modifier);
+		health.addPermanentModifier(modifier);
 
-		boolean hasInvulTicks = wither.getInvulTime() > 0;
+		boolean hasInvulTicks = wither.getInvulnerableTicks() > 0;
 
 		if (hasInvulTicks)
 			wither.setHealth(Math.max(1, (float) health.getValue() - 200));
@@ -84,7 +84,7 @@ public class HealthFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().world.isClientSide)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -100,7 +100,7 @@ public class HealthFeature extends Feature {
 
 		fixInvulBossBar(wither);
 
-		if (wither.getInvulTime() > 0)
+		if (wither.getInvulnerableTicks() > 0)
 			return;
 
 		CompoundNBT tags = wither.getPersistentData();
@@ -122,9 +122,9 @@ public class HealthFeature extends Feature {
 
 
 	private void fixInvulBossBar(WitherEntity wither) {
-		if (wither.getInvulTime() == 0)
+		if (wither.getInvulnerableTicks() == 0)
 			return;
 
-		wither.bossInfo.setPercent(wither.getHealth() / wither.getMaxHealth());
+		wither.bossEvent.setPercent(wither.getHealth() / wither.getMaxHealth());
 	}
 }

@@ -12,10 +12,10 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class PBEntities {
 	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITIES, ProgressiveBosses.MOD_ID);
 
-	public static final RegistryObject<EntityType<WitherMinionEntity>> WITHER_MINION = ENTITIES.register("wither_minion", () -> EntityType.Builder.create(WitherMinionEntity::new, EntityClassification.MONSTER)
-			.size(0.55f, 1.5f)
-			.immuneToFire()
-			.func_233607_a_(Blocks.WITHER_ROSE)
-			.trackingRange(8)
+	public static final RegistryObject<EntityType<WitherMinionEntity>> WITHER_MINION = ENTITIES.register("wither_minion", () -> EntityType.Builder.of(WitherMinionEntity::new, EntityClassification.MONSTER)
+			.sized(0.55f, 1.5f)
+			.fireImmune()
+			.immuneTo(Blocks.WITHER_ROSE)
+			.clientTrackingRange(8)
 			.build("wither_minion"));
 }

@@ -67,6 +67,8 @@ public class MiscFeature extends Feature {
 		Config.builder.pop();
 	}
 
+	private boolean behaviourRegistered = false;
+
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
@@ -76,13 +78,15 @@ public class MiscFeature extends Feature {
 		this.biggerBlockBreaking = this.biggerBlockBreakingConfig.get();
 		this.witherNetherOnly = this.witherNetherOnlyConfig.get();
 
-		if (this.witherNetherOnly)
-			DispenserBlock.registerDispenseBehavior(Items.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());
+		if (this.witherNetherOnly && !behaviourRegistered) {
+			DispenserBlock.registerBehavior(Items.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());
+			behaviourRegistered = true;
+		}
 	}
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().world.isClientSide)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -100,16 +104,16 @@ public class MiscFeature extends Feature {
 			return;
 
 		//Overrides the block breaking in wither's updateAI since LivingUpdateEvent is called before
-		if (wither.blockBreakCounter == 1) {
-			--wither.blockBreakCounter;
-			if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.world, wither)) {
-				int i1 = MathHelper.floor(wither.getPosY());
-				int l1 = MathHelper.floor(wither.getPosX());
-				int i2 = MathHelper.floor(wither.getPosZ());
+		if (wither.destroyBlocksTick == 1) {
+			--wither.destroyBlocksTick;
+			if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level, wither)) {
+				int i1 = MathHelper.floor(wither.getY());
+				int l1 = MathHelper.floor(wither.getX());
+				int i2 = MathHelper.floor(wither.getZ());
 				boolean flag = false;
 
 				int yOffsetLow = -1;
-				if (wither.isCharged())
+				if (wither.isPowered())
 					yOffsetLow = 0;
 
 				for(int k2 = -1; k2 <= 1; ++k2) {
@@ -119,16 +123,16 @@ public class MiscFeature extends Feature {
 							int k = i1 + j;
 							int l = i2 + l2;
 							BlockPos blockpos = new BlockPos(i3, k, l);
-							BlockState blockstate = wither.world.getBlockState(blockpos);
+							BlockState blockstate = wither.level.getBlockState(blockpos);
 							if (canWitherDestroy(wither, blockpos, blockstate) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockpos, blockstate)) {
-								flag = wither.world.destroyBlock(blockpos, true, wither) || flag;
+								flag = wither.level.destroyBlock(blockpos, true, wither) || flag;
 							}
 						}
 					}
 				}
 
 				if (flag) {
-					wither.world.playEvent(null, 1022, wither.getPosition(), 0);
+					wither.level.levelEvent(null, 1022, wither.blockPosition(), 0);
 				}
 			}
 		}
@@ -136,9 +140,9 @@ public class MiscFeature extends Feature {
 
 	private boolean canWitherDestroy(WitherEntity wither, BlockPos pos, BlockState state) {
 		if (this.ignoreWitherProofBlocks)
-			return !state.isAir() && state.getBlockHardness(wither.world, pos) >= 0f;
+			return !state.isAir() && state.getDestroySpeed(wither.level, pos) >= 0f;
 		else
-			return state.canEntityDestroy(wither.world, pos, wither);
+			return state.canEntityDestroy(wither.level, pos, wither);
 	}
 
 	@SubscribeEvent
@@ -153,7 +157,7 @@ public class MiscFeature extends Feature {
 			return;
 
 		//Check if the explosion is the one from the wither
-		if (event.getExplosion().size != 7f)
+		if (event.getExplosion().radius != 7f)
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getExplosion().getExploder();
@@ -164,19 +168,19 @@ public class MiscFeature extends Feature {
 		if (difficulty <= 0f)
 			return;
 
-		float explosionPower = (float) (event.getExplosion().size + (this.explosionPowerBonus * difficulty));
+		float explosionPower = (float) (event.getExplosion().radius + (this.explosionPowerBonus * difficulty));
 
 		if (explosionPower > 13f)
 			explosionPower = 13f;
 
-		event.getExplosion().size = explosionPower;
+		event.getExplosion().radius = explosionPower;
 
-		event.getExplosion().causesFire = difficulty >= this.explosionCausesFireAtDifficulty;
+		event.getExplosion().fire = difficulty >= this.explosionCausesFireAtDifficulty;
 	}
 
 	@SubscribeEvent
 	public void onWitherDamage(LivingHurtEvent event) {
-		if (event.getEntity().getEntityWorld().isClientSide)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -192,7 +196,7 @@ public class MiscFeature extends Feature {
 			return;
 
 		WitherEntity wither = (WitherEntity) event.getEntityLiving();
-		wither.blockBreakCounter = 10;
+		wither.destroyBlocksTick = 10;
 	}
 
 	@SubscribeEvent
@@ -203,7 +207,7 @@ public class MiscFeature extends Feature {
 		if (!this.witherNetherOnly)
 			return;
 
-		if (event.getItemStack().getItem() == Items.WITHER_SKELETON_SKULL && !canPlaceSkull(event.getWorld(), event.getPos().add(event.getFace().getDirectionVec()))) {
+		if (event.getItemStack().getItem() == Items.WITHER_SKELETON_SKULL && !canPlaceSkull(event.getWorld(), event.getPos().offset(event.getFace().getNormal()))) {
 			event.setCanceled(true);
 		}
 	}
@@ -212,11 +216,11 @@ public class MiscFeature extends Feature {
 	 * Returns true if at the specified position a Wither Skull can be placed
 	 */
 	public static boolean canPlaceSkull(World world, BlockPos pos) {
-		boolean isNether = world.getDimensionKey().getLocation().equals(DimensionType.THE_NETHER_ID);
+		boolean isNether = world.dimension().location().equals(DimensionType.NETHER_LOCATION);
 
 		boolean hasSoulSandNearby = false;
 		for (Direction dir : Direction.values()) {
-			if (world.getBlockState(pos.add(dir.getDirectionVec())).getBlock().equals(Blocks.SOUL_SAND) || world.getBlockState(pos.add(dir.getDirectionVec())).getBlock().equals(Blocks.SOUL_SOIL)){
+			if (world.getBlockState(pos.offset(dir.getNormal())).getBlock().equals(Blocks.SOUL_SAND) || world.getBlockState(pos.offset(dir.getNormal())).getBlock().equals(Blocks.SOUL_SOIL)){
 				hasSoulSandNearby = true;
 				break;
 			}

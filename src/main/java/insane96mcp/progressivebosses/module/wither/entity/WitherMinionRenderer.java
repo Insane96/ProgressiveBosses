@@ -21,11 +21,11 @@ public class WitherMinionRenderer extends BipedRenderer<WitherMinionEntity, With
 	/**
 	 * Returns the location of an entity's texture.
 	 */
-	public ResourceLocation getEntityTexture(WitherMinionEntity entity) {
+	public ResourceLocation getTextureLocation(WitherMinionEntity entity) {
 		return MINION_TEXTURES;
 	}
 
-	protected void preRenderCallback(WitherMinionEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+	protected void scale(WitherMinionEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
 		matrixStackIn.scale(0.75f, 0.75f, 0.75f);
 	}
 }

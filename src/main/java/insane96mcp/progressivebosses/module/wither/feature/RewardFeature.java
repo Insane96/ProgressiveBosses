@@ -77,7 +77,7 @@ public class RewardFeature extends Feature {
 		CompoundNBT witherTags = wither.getPersistentData();
 		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
 
-		wither.experienceValue = 50 + (int) (50 * (this.bonusExperience * difficulty));
+		wither.xpReward = 50 + (int) (50 * (this.bonusExperience * difficulty));
 	}
 
 	@SubscribeEvent
@@ -96,7 +96,7 @@ public class RewardFeature extends Feature {
 		CompoundNBT tags = wither.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 		for (Drop drop : this.dropsList) {
-			drop.drop(wither.world, wither.getPositionVec(), difficulty);
+			drop.drop(wither.level, wither.position(), difficulty);
 		}
 	}
 }

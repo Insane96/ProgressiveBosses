@@ -81,7 +81,7 @@ public class WitherChargeAttackGoal extends Goal {
 			this.wither.setDeltaMovement(Vector3d.ZERO);
 
 		if (this.wither.getInvulnerableTicks() == AttackFeature.Consts.CHARGE_ATTACK_TICK_START)
-			this.wither.level.playSound(null, this.wither.getPosition(), SoundEvents.WITHER_DEATH, SoundCategory.HOSTILE, 5.0f, 2.0f);
+			this.wither.level.playSound(null, this.wither.blockPosition(), SoundEvents.WITHER_DEATH, SoundCategory.HOSTILE, 5.0f, 2.0f);
 		else if (this.wither.getInvulnerableTicks() == AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
 			this.target = this.wither.level.getNearestPlayer(this.wither, 64d);
 			if (target != null) {
@@ -89,56 +89,56 @@ public class WitherChargeAttackGoal extends Goal {
 				Vector3d forward = this.targetPos.subtract(this.wither.position()).normalize();
 				this.targetPos = this.targetPos.add(forward.multiply(4d, 4d, 4d));
 				this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
-				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.WITHER_SPAWN, SoundCategory.HOSTILE, 4.0f, 2.0f);
+				this.wither.level.playSound(null, new BlockPos(this.targetPos), SoundEvents.WITHER_SPAWN, SoundCategory.HOSTILE, 4.0f, 2.0f);
 			}
 			else {
-				this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 6f, Explosion.Mode.DESTROY);
-				this.wither.setInvulTime(0);
+				this.wither.level.explode(this.wither, this.wither.getX(), this.wither.getY() + 1.75d, this.wither.getZ(), 6f, Explosion.Mode.DESTROY);
+				this.wither.setInvulnerableTicks(0);
 			}
 		}
 		else if (this.wither.getInvulnerableTicks() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
 			//Done so it goes faster and faster
 			double mult = 60d / this.wither.getInvulnerableTicks();
-			Vector3d diff = this.targetPos.subtract(this.wither.getPositionVec()).normalize().mul(mult, mult, mult);
-			this.wither.setMotion(diff.x, diff.y * 0.5, diff.z);
-			this.wither.getLookController().setLookPosition(this.targetPos);
-			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(this.wither.getPosX() - 2, this.wither.getPosY() - 2, this.wither.getPosZ() - 2, this.wither.getPosX() + 2, this.wither.getPosY() + 6, this.wither.getPosZ() + 2);
-			Stream<BlockPos> blocks = BlockPos.getAllInBox(axisAlignedBB);
+			Vector3d diff = this.targetPos.subtract(this.wither.position()).normalize().multiply(mult, mult, mult);
+			this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
+			this.wither.getLookControl().setLookAt(this.targetPos);
+			AxisAlignedBB axisAlignedBB = new AxisAlignedBB(this.wither.getX() - 2, this.wither.getY() - 2, this.wither.getZ() - 2, this.wither.getX() + 2, this.wither.getY() + 6, this.wither.getZ() + 2);
+			Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
 			AtomicBoolean hasBrokenBlocks = new AtomicBoolean(false);
 			blocks.forEach(blockPos -> {
-				BlockState state = wither.world.getBlockState(blockPos);
-				if (state.canEntityDestroy(wither.world, blockPos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
-					TileEntity tileentity = state.hasTileEntity() ? this.wither.world.getTileEntity(blockPos) : null;
-					LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerWorld)this.wither.world)).withRandom(this.wither.world.rand).withParameter(LootParameters.ORIGIN, Vector3d.copyCentered(blockPos)).withParameter(LootParameters.TOOL, ItemStack.EMPTY).withNullableParameter(LootParameters.BLOCK_ENTITY, tileentity);
+				BlockState state = wither.level.getBlockState(blockPos);
+				if (state.canEntityDestroy(wither.level, blockPos, wither) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
+					TileEntity tileentity = state.hasTileEntity() ? this.wither.level.getBlockEntity(blockPos) : null;
+					LootContext.Builder lootcontext$builder = (new LootContext.Builder((ServerWorld)this.wither.level)).withRandom(this.wither.level.random).withParameter(LootParameters.ORIGIN, Vector3d.atCenterOf(blockPos)).withParameter(LootParameters.TOOL, ItemStack.EMPTY).withOptionalParameter(LootParameters.BLOCK_ENTITY, tileentity);
 					state.getDrops(lootcontext$builder).forEach(itemStack -> {
-						ItemEntity itemEntity = new ItemEntity(this.wither.world, blockPos.getX() + .5d, blockPos.getY() + .5d, blockPos.getZ() + .5d, itemStack);
+						ItemEntity itemEntity = new ItemEntity(this.wither.level, blockPos.getX() + .5d, blockPos.getY() + .5d, blockPos.getZ() + .5d, itemStack);
 						itemEntity.lifespan = 1200;
-						this.wither.world.addEntity(itemEntity);
+						this.wither.level.addFreshEntity(itemEntity);
 					});
-					wither.world.setBlockState(blockPos, Blocks.AIR.getDefaultState());
+					wither.level.setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
 					hasBrokenBlocks.set(true);
 				}
 			});
 
 			if (hasBrokenBlocks.get())
-				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_BREAK_BLOCK, SoundCategory.HOSTILE, 1.0f, 0.75f);
+				this.wither.level.playSound(null, new BlockPos(this.targetPos), SoundEvents.WITHER_BREAK_BLOCK, SoundCategory.HOSTILE, 1.0f, 0.75f);
 
 			axisAlignedBB = axisAlignedBB.inflate(1d);
-			this.wither.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB).forEach(entity -> {
+			this.wither.level.getLoadedEntitiesOfClass(LivingEntity.class, axisAlignedBB).forEach(entity -> {
 				if (entity == this.wither)
 					return;
-				entity.attackEntityFrom(new EntityDamageSource(Strings.Translatable.WITHER_CHARGE_ATTACK, this.wither), 16f);
-				double d2 = entity.getPosX() - this.wither.getPosX();
-				double d3 = entity.getPosZ() - this.wither.getPosZ();
+				entity.hurt(new EntityDamageSource(Strings.Translatable.WITHER_CHARGE_ATTACK, this.wither), 16f);
+				double d2 = entity.getX() - this.wither.getX();
+				double d3 = entity.getZ() - this.wither.getZ();
 				double d4 = Math.max(d2 * d2 + d3 * d3, 0.1D);
-				entity.addVelocity(d2 / d4 * 25.0D, 1.4d, d3 / d4 * 25.0D);
+				entity.push(d2 / d4 * 25.0D, 1.4d, d3 / d4 * 25.0D);
 			});
 		}
 		//If the wither's charging and is farther from the target point than the last tick OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-		if ((this.wither.getInvulnerableTicks() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulnerableTicks() > 0 && (this.targetPos.squareDistanceTo(this.wither.getPositionVec()) - this.lastDistanceFromTarget > 16d || this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d)) || this.wither.getInvulTime() == 1) {
-			this.wither.setInvulTime(0);
+		if ((this.wither.getInvulnerableTicks() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulnerableTicks() > 0 && (this.targetPos.distanceToSqr(this.wither.position()) - this.lastDistanceFromTarget > 16d || this.targetPos.distanceToSqr(this.wither.position()) < 4d)) || this.wither.getInvulnerableTicks() == 1) {
+			this.wither.setInvulnerableTicks(0);
 		}
 		if (this.targetPos != null)
-			this.lastDistanceFromTarget = this.targetPos.squareDistanceTo(this.wither.getPositionVec());
+			this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
 	}
 }

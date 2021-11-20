@@ -12,15 +12,15 @@ public class WitherDoNothingGoal extends Goal {
 
 	public WitherDoNothingGoal(WitherEntity wither) {
 		this.wither = wither;
-		this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK));
+		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK));
 	}
 
 	/**
 	 * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
 	 * method as well.
 	 */
-	public boolean shouldExecute() {
+	public boolean canUse() {
 		CompoundNBT tags = this.wither.getPersistentData();
-		return this.wither.getInvulTime() > 0 && !tags.contains(Strings.Tags.CHARGE_ATTACK);
+		return this.wither.getInvulnerableTicks() > 0 && !tags.contains(Strings.Tags.CHARGE_ATTACK);
 	}
 }

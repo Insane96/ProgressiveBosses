@@ -28,19 +28,19 @@ public class WitherRangedAttackGoal extends Goal {
 		this.attackRadius = attackRadius;
 		this.attackRadiusSqr = attackRadius * attackRadius;
 		this.increaseASOnNear = increaseASOnNear;
-		this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 	}
 
 	/**
 	 * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
 	 * method as well.
 	 */
-	public boolean shouldExecute() {
-		if (this.wither.getInvulTime() > 0)
+	public boolean canUse() {
+		if (this.wither.getInvulnerableTicks() > 0)
 			return false;
 
-		int targetId = this.wither.getWatchedTargetId(0);
-		Entity entity = this.wither.world.getEntityByID(targetId);
+		int targetId = this.wither.getAlternativeTarget(0);
+		Entity entity = this.wither.level.getEntity(targetId);
 		if (entity == null)
 			return false;
 		if (!(entity instanceof LivingEntity))
@@ -57,14 +57,14 @@ public class WitherRangedAttackGoal extends Goal {
 	/**
 	 * Returns whether an in-progress EntityAIBase should continue executing
 	 */
-	public boolean shouldContinueExecuting() {
-		return this.shouldExecute() || !this.wither.getNavigator().noPath();
+	public boolean canContinueToUse() {
+		return this.canUse() || !this.wither.getNavigation().isDone();
 	}
 
 	/**
 	 * Reset the task's internal state. Called when this task is interrupted by another one
 	 */
-	public void resetTask() {
+	public void stop() {
 		this.target = null;
 		this.seeTime = 0;
 		this.attackTime = -1;
@@ -76,8 +76,8 @@ public class WitherRangedAttackGoal extends Goal {
 	public void tick() {
 		CompoundNBT witherTags = wither.getPersistentData();
 
-		double distanceSq = this.wither.getDistanceSq(this.target.getPosX(), this.target.getPosY(), this.target.getPosZ());
-		boolean canSee = this.wither.getEntitySenses().canSee(this.target);
+		double distanceSq = this.wither.distanceToSqr(this.target.getX(), this.target.getY(), this.target.getZ());
+		boolean canSee = this.wither.getSensing().canSee(this.target);
 		int unseenPlayerTicks = witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS);
 		if (canSee) {
 			++this.seeTime;
@@ -92,13 +92,13 @@ public class WitherRangedAttackGoal extends Goal {
 
 		if (distanceSq <= (double)this.attackRadiusSqr && this.seeTime > 0) {
 			//Stops the wither from chasing the player
-			this.wither.setMotion(0d, wither.getMotion().y, 0d);
+			this.wither.setDeltaMovement(0d, wither.getDeltaMovement().y, 0d);
 		}
-		else if (this.seeTime <= 0 && !this.wither.world.getBlockState(this.wither.getPosition().down()).isSolid() && !this.wither.world.canSeeSky(this.wither.getPosition())) {
-			this.wither.setMotion(wither.getMotion().x, -1.0d, wither.getMotion().z);
+		else if (this.seeTime <= 0 && !this.wither.level.getBlockState(this.wither.blockPosition().below()).canOcclude() && !this.wither.level.canSeeSky(this.wither.blockPosition())) {
+			this.wither.setDeltaMovement(wither.getDeltaMovement().x, -1.0d, wither.getDeltaMovement().z);
 		}
 
-		this.wither.getLookController().setLookPositionWithEntity(this.target, 30.0F, 30.0F);
+		this.wither.getLookControl().setLookAt(this.target, 30.0F, 30.0F);
 
 		int barrageAttackTick = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
 		if (barrageAttackTick > 0) {
@@ -106,22 +106,22 @@ public class WitherRangedAttackGoal extends Goal {
 				return;
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
 			if (barrageAttackTick % 3 == 0) {
-				this.wither.launchWitherSkullToCoords(RandomHelper.getInt(this.wither.getRNG(), 0, 3), this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), this.target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -2d, 2d), false);
+				this.wither.performRangedAttack(RandomHelper.getInt(this.wither.getRandom(), 0, 3), this.target.getX() + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), this.target.getZ() + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), false);
 			}
 		}
 		else if (--this.attackTime <= 0) {
 			if (!canSee)
 				return;
-			if (RandomHelper.getFloat(this.wither.getRNG(), 0f, 1f) < .1f)
+			if (RandomHelper.getFloat(this.wither.getRandom(), 0f, 1f) < .1f)
 				for (int h = 0; h < 3; h++) {
-					this.wither.launchWitherSkullToCoords(h, this.target.getPosX() + RandomHelper.getDouble(this.wither.getRNG(), -1.25d, 1.25d), this.target.getPosY() + RandomHelper.getDouble(this.wither.getRNG(), -1.25d, 1.25d) + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ() + RandomHelper.getDouble(this.wither.getRNG(), -1.25d, 1.25d), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
+					this.wither.performRangedAttack(h, this.target.getX() + RandomHelper.getDouble(this.wither.getRandom(), -1.25d, 1.25d), this.target.getY() + RandomHelper.getDouble(this.wither.getRandom(), -1.25d, 1.25d) + (double)this.target.getEyeHeight() * 0.5D, target.getZ() + RandomHelper.getDouble(this.wither.getRandom(), -1.25d, 1.25d), RandomHelper.getDouble(this.wither.getRandom(), 0d, 1d) < 0.001F);
 				}
 			else
-				this.wither.launchWitherSkullToCoords(0, this.target.getPosX(), this.target.getPosY() + (double)this.target.getEyeHeight() * 0.5D, target.getPosZ(), RandomHelper.getDouble(this.wither.getRNG(), 0d, 1d) < 0.001F);
+				this.wither.performRangedAttack(0, this.target.getX(), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D, target.getZ(), RandomHelper.getDouble(this.wither.getRandom(), 0d, 1d) < 0.001F);
 			this.attackTime = this.attackInterval;
 
 			if (this.increaseASOnNear) {
-				float distance = this.wither.getDistance(this.target);
+				float distance = this.wither.distanceTo(this.target);
 				if (distance < this.attackRadius) {
 					int nearBonusAS = (int) Math.round((this.attackInterval * 0.75d) * (1d - (distance / this.attackRadius)));
 					this.attackTime -= nearBonusAS;

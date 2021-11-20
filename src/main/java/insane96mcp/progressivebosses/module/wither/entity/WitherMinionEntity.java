@@ -31,7 +31,7 @@ import java.util.function.Predicate;
 
 public class WitherMinionEntity extends AbstractSkeletonEntity {
 
-	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getCreatureAttribute() != CreatureAttribute.UNDEAD && livingEntity.attackable();
+	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getMobType() != CreatureAttribute.UNDEAD && livingEntity.attackable();
 
 	public WitherMinionEntity(EntityType<? extends AbstractSkeletonEntity> type, World worldIn) {
 		super(type, worldIn);
@@ -39,7 +39,7 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 
 	@Override
 	protected SoundEvent getStepSound() {
-		return SoundEvents.ENTITY_WITHER_SKELETON_STEP;
+		return SoundEvents.WITHER_SKELETON_STEP;
 	}
 
 	@Override
@@ -55,15 +55,15 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 	}
 
 	protected SoundEvent getAmbientSound() {
-		return SoundEvents.ENTITY_WITHER_SKELETON_AMBIENT;
+		return SoundEvents.WITHER_SKELETON_AMBIENT;
 	}
 
 	protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
-		return SoundEvents.ENTITY_WITHER_SKELETON_HURT;
+		return SoundEvents.WITHER_SKELETON_HURT;
 	}
 
 	protected SoundEvent getDeathSound() {
-		return SoundEvents.ENTITY_WITHER_SKELETON_DEATH;
+		return SoundEvents.WITHER_SKELETON_DEATH;
 	}
 
 	protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn) {
@@ -73,45 +73,45 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 	/**
 	 * Gets the pitch of living sounds in living entities.
 	 */
-	protected float getSoundPitch() {
-		return (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.33F;
+	protected float getVoicePitch() {
+		return (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.33F;
 	}
 
 	/**
 	 * Gives armor or weapon for entity based on given DifficultyInstance
 	 */
-	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
-		this.setItemStackToSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
+	protected void populateDefaultEquipmentSlots(DifficultyInstance difficulty) {
+		this.setItemSlot(EquipmentSlotType.MAINHAND, new ItemStack(Items.BOW));
 	}
 
 	@Nullable
-	public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
-		ILivingEntityData ilivingentitydata = super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+	public ILivingEntityData finalizeSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, @Nullable ILivingEntityData spawnDataIn, @Nullable CompoundNBT dataTag) {
+		ILivingEntityData ilivingentitydata = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
 		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
-		this.setCombatTask();
+		this.reassessWeaponGoal();
 		return ilivingentitydata;
 	}
 
-	public boolean attackEntityAsMob(Entity entityIn) {
-		if (!super.attackEntityAsMob(entityIn)) {
+	public boolean doHurtTarget(Entity entityIn) {
+		if (!super.doHurtTarget(entityIn)) {
 			return false;
 		} else {
 			if (entityIn instanceof LivingEntity) {
-				((LivingEntity)entityIn).addPotionEffect(new EffectInstance(Effects.WITHER, 200));
+				((LivingEntity)entityIn).addEffect(new EffectInstance(Effects.WITHER, 200));
 			}
 
 			return true;
 		}
 	}
 
-	public boolean attackEntityFrom(DamageSource source, float amount) {
-		if (source.getTrueSource() instanceof WitherMinionEntity)
+	public boolean hurt(DamageSource source, float amount) {
+		if (source.getEntity() instanceof WitherMinionEntity)
 			amount *= 0.2f;
-		return !this.isInvulnerableTo(source) && super.attackEntityFrom(source, amount);
+		return !this.isInvulnerableTo(source) && super.hurt(source, amount);
 	}
 
-	public boolean isPotionApplicable(EffectInstance potioneffectIn) {
-		return potioneffectIn.getPotion() != Effects.WITHER && super.isPotionApplicable(potioneffectIn);
+	public boolean canBeAffected(EffectInstance potioneffectIn) {
+		return potioneffectIn.getEffect() != Effects.WITHER && super.canBeAffected(potioneffectIn);
 	}
 
 	private static final List<EffectInstance> ARROW_EFFECTS = Arrays.asList(new EffectInstance(Effects.WITHER, 200));
@@ -119,12 +119,12 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 	/**
 	 * Fires an arrow
 	 */
-	protected AbstractArrowEntity fireArrow(ItemStack arrowStack, float distanceFactor) {
-		AbstractArrowEntity abstractarrowentity = super.fireArrow(arrowStack, distanceFactor);
+	protected AbstractArrowEntity getArrow(ItemStack arrowStack, float distanceFactor) {
+		AbstractArrowEntity abstractarrowentity = super.getArrow(arrowStack, distanceFactor);
 		if (abstractarrowentity instanceof ArrowEntity) {
 			ItemStack witherArrow = new ItemStack(Items.TIPPED_ARROW, 1);
-			PotionUtils.appendEffects(witherArrow, ARROW_EFFECTS);
-			((ArrowEntity)abstractarrowentity).setPotionEffect(witherArrow);
+			PotionUtils.setCustomEffects(witherArrow, ARROW_EFFECTS);
+			((ArrowEntity)abstractarrowentity).setEffectsFromItem(witherArrow);
 		}
 		return abstractarrowentity;
 	}
@@ -134,11 +134,11 @@ public class WitherMinionEntity extends AbstractSkeletonEntity {
 	}
 
 	public static AttributeModifierMap.MutableAttribute prepareAttributes() {
-		return LivingEntity.registerAttributes()
-				.createMutableAttribute(Attributes.ATTACK_DAMAGE, 3.0d)
-				.createMutableAttribute(Attributes.MAX_HEALTH, 20.0d)
-				.createMutableAttribute(Attributes.FOLLOW_RANGE, 40.0d)
-				.createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25d)
-				.createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 1.5d);
+		return LivingEntity.createLivingAttributes()
+				.add(Attributes.ATTACK_DAMAGE, 3.0d)
+				.add(Attributes.MAX_HEALTH, 20.0d)
+				.add(Attributes.FOLLOW_RANGE, 40.0d)
+				.add(Attributes.MOVEMENT_SPEED, 0.25d)
+				.add(Attributes.ATTACK_KNOCKBACK, 1.5d);
 	}
 }

@@ -147,19 +147,19 @@ public class AttackFeature extends Feature {
 
 		WitherSkullEntity witherSkullEntity = (WitherSkullEntity) entity;
 
-		if (Math.abs(witherSkullEntity.accelerationX) > 10 || Math.abs(witherSkullEntity.accelerationY) > 10 || Math.abs(witherSkullEntity.accelerationZ) > 10) {
-			entity.onKillCommand();
+		if (Math.abs(witherSkullEntity.xPower) > 10 || Math.abs(witherSkullEntity.yPower) > 10 || Math.abs(witherSkullEntity.zPower) > 10) {
+			entity.kill();
 			return;
 		}
 
-		witherSkullEntity.accelerationX *= this.skullVelocityMultiplier;
-		witherSkullEntity.accelerationY *= this.skullVelocityMultiplier;
-		witherSkullEntity.accelerationZ *= this.skullVelocityMultiplier;
+		witherSkullEntity.xPower *= this.skullVelocityMultiplier;
+		witherSkullEntity.yPower *= this.skullVelocityMultiplier;
+		witherSkullEntity.zPower *= this.skullVelocityMultiplier;
 	}
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().getEntityWorld().isClientSide)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -177,20 +177,20 @@ public class AttackFeature extends Feature {
 		WitherEntity wither = (WitherEntity) event.getEntity();
 		CompoundNBT witherTags = wither.getPersistentData();
 		// When in charge attack remove the vanilla health regeneration when he's invulnerable and add 1% health regeneration of the missing health per second
-		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.ticksExisted % 10 == 0){
+		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 10 == 0){
 			float missingHealth = wither.getMaxHealth() - wither.getHealth();
 			if (wither.getHealth() > 10f)
 				wither.setHealth(wither.getHealth() - 10f + (missingHealth * 0.005f));
 		}
 
-		if (!witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.ticksExisted % 20 == 0) {
+		if (!witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 20 == 0) {
 			doCharge(wither, witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS) / 20f);
 		}
 	}
 
 	@SubscribeEvent
 	public void onDamageDealt(LivingHurtEvent event) {
-		if (event.getEntity().getEntityWorld().isClientSide)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -201,10 +201,10 @@ public class AttackFeature extends Feature {
 
 
 		WitherEntity wither;
-		if (event.getSource().getImmediateSource() instanceof WitherEntity)
-			wither = (WitherEntity) event.getSource().getImmediateSource();
-		else if (event.getSource().getTrueSource() instanceof WitherEntity)
-			wither = (WitherEntity) event.getSource().getTrueSource();
+		if (event.getSource().getDirectEntity() instanceof WitherEntity)
+			wither = (WitherEntity) event.getSource().getDirectEntity();
+		else if (event.getSource().getEntity() instanceof WitherEntity)
+			wither = (WitherEntity) event.getSource().getEntity();
 		else
 			return;
 
@@ -217,7 +217,7 @@ public class AttackFeature extends Feature {
 	//High priority so runs before the damage reduction
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onDamaged(LivingHurtEvent event) {
-		if (event.getEntity().getEntityWorld().isClientSide)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -246,7 +246,7 @@ public class AttackFeature extends Feature {
 
 		double chance = (this.maxBarrageChancePerDiff * difficulty) * missingHealthPerc;
 		chance *= (damageTaken / 10f);
-		double r = wither.getRNG().nextDouble();
+		double r = wither.getRandom().nextDouble();
 		if (r < chance) {
 			int duration = (int) (((this.maxBarrageDuration - this.minBarrageDuration) * missingHealthPerc) + this.minBarrageDuration);
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, duration);
@@ -262,16 +262,16 @@ public class AttackFeature extends Feature {
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
 		double chance = this.maxChargeAttackChance * missingHealthPerc;
 		chance *= (damageTaken / 10f);
-		double r = wither.getRNG().nextDouble();
+		double r = wither.getRandom().nextDouble();
 		if (r < chance) {
-			wither.setInvulTime(Consts.CHARGE_ATTACK_TICK_START);
+			wither.setInvulnerableTicks(Consts.CHARGE_ATTACK_TICK_START);
 			witherTags.putBoolean(Strings.Tags.CHARGE_ATTACK, true);
 		}
 	}
 
 	public void setWitherAI(WitherEntity wither) {
 		ArrayList<Goal> toRemove = new ArrayList<>();
-		wither.goalSelector.goals.forEach(goal -> {
+		wither.goalSelector.availableGoals.forEach(goal -> {
 			if (goal.getGoal() instanceof RangedAttackGoal)
 				toRemove.add(goal.getGoal());
 			if (goal.getGoal() instanceof WitherEntity.DoNothingGoal)

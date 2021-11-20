@@ -24,66 +24,66 @@ public class WitherMinionModel<T extends MobEntity & IRangedAttackMob> extends B
 	public WitherMinionModel(float modelSize, boolean p_i46303_2_) {
 		super(modelSize);
 		if (!p_i46303_2_) {
-			this.bipedRightArm = new ModelRenderer(this, 40, 16);
-			this.bipedRightArm.addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, modelSize);
-			this.bipedRightArm.setRotationPoint(-5.0F, 2.0F, 0.0F);
-			this.bipedLeftArm = new ModelRenderer(this, 40, 16);
-			this.bipedLeftArm.mirror = true;
-			this.bipedLeftArm.addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, modelSize);
-			this.bipedLeftArm.setRotationPoint(5.0F, 2.0F, 0.0F);
-			this.bipedRightLeg = new ModelRenderer(this, 0, 16);
-			this.bipedRightLeg.addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, modelSize);
-			this.bipedRightLeg.setRotationPoint(-2.0F, 12.0F, 0.0F);
-			this.bipedLeftLeg = new ModelRenderer(this, 0, 16);
-			this.bipedLeftLeg.mirror = true;
-			this.bipedLeftLeg.addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, modelSize);
-			this.bipedLeftLeg.setRotationPoint(2.0F, 12.0F, 0.0F);
+			this.rightArm = new ModelRenderer(this, 40, 16);
+			this.rightArm.addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, modelSize);
+			this.rightArm.setPos(-5.0F, 2.0F, 0.0F);
+			this.leftArm = new ModelRenderer(this, 40, 16);
+			this.leftArm.mirror = true;
+			this.leftArm.addBox(-1.0F, -2.0F, -1.0F, 2.0F, 12.0F, 2.0F, modelSize);
+			this.leftArm.setPos(5.0F, 2.0F, 0.0F);
+			this.rightLeg = new ModelRenderer(this, 0, 16);
+			this.rightLeg.addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, modelSize);
+			this.rightLeg.setPos(-2.0F, 12.0F, 0.0F);
+			this.leftLeg = new ModelRenderer(this, 0, 16);
+			this.leftLeg.mirror = true;
+			this.leftLeg.addBox(-1.0F, 0.0F, -1.0F, 2.0F, 12.0F, 2.0F, modelSize);
+			this.leftLeg.setPos(2.0F, 12.0F, 0.0F);
 		}
 
 	}
 
-	public void setLivingAnimations(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
+	public void prepareMobModel(T entityIn, float limbSwing, float limbSwingAmount, float partialTick) {
 		this.rightArmPose = BipedModel.ArmPose.EMPTY;
 		this.leftArmPose = BipedModel.ArmPose.EMPTY;
-		ItemStack itemstack = entityIn.getHeldItem(Hand.MAIN_HAND);
+		ItemStack itemstack = entityIn.getItemInHand(Hand.MAIN_HAND);
 		if (itemstack.getItem() == Items.BOW && entityIn.isAggressive()) {
-			if (entityIn.getPrimaryHand() == HandSide.RIGHT) {
+			if (entityIn.getMainArm() == HandSide.RIGHT) {
 				this.rightArmPose = BipedModel.ArmPose.BOW_AND_ARROW;
 			} else {
 				this.leftArmPose = BipedModel.ArmPose.BOW_AND_ARROW;
 			}
 		}
 
-		super.setLivingAnimations(entityIn, limbSwing, limbSwingAmount, partialTick);
+		super.prepareMobModel(entityIn, limbSwing, limbSwingAmount, partialTick);
 	}
 
 	/**
 	 * Sets this entity's model rotation angles
 	 */
-	public void setRotationAngles(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
-		super.setRotationAngles(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
-		ItemStack itemstack = entityIn.getHeldItemMainhand();
+	public void setupAnim(T entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+		super.setupAnim(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+		ItemStack itemstack = entityIn.getMainHandItem();
 		if (entityIn.isAggressive() && (itemstack.isEmpty() || itemstack.getItem() != Items.BOW)) {
-			float f = MathHelper.sin(this.swingProgress * (float)Math.PI);
-			float f1 = MathHelper.sin((1.0F - (1.0F - this.swingProgress) * (1.0F - this.swingProgress)) * (float)Math.PI);
-			this.bipedRightArm.rotateAngleZ = 0.0F;
-			this.bipedLeftArm.rotateAngleZ = 0.0F;
-			this.bipedRightArm.rotateAngleY = -(0.1F - f * 0.6F);
-			this.bipedLeftArm.rotateAngleY = 0.1F - f * 0.6F;
-			this.bipedRightArm.rotateAngleX = (-(float)Math.PI / 2F);
-			this.bipedLeftArm.rotateAngleX = (-(float)Math.PI / 2F);
-			this.bipedRightArm.rotateAngleX -= f * 1.2F - f1 * 0.4F;
-			this.bipedLeftArm.rotateAngleX -= f * 1.2F - f1 * 0.4F;
-			ModelHelper.func_239101_a_(this.bipedRightArm, this.bipedLeftArm, ageInTicks);
+			float f = MathHelper.sin(this.attackTime * (float)Math.PI);
+			float f1 = MathHelper.sin((1.0F - (1.0F - this.attackTime) * (1.0F - this.attackTime)) * (float)Math.PI);
+			this.rightArm.zRot = 0.0F;
+			this.leftArm.zRot = 0.0F;
+			this.rightArm.yRot = -(0.1F - f * 0.6F);
+			this.leftArm.yRot = 0.1F - f * 0.6F;
+			this.rightArm.xRot = (-(float)Math.PI / 2F);
+			this.leftArm.xRot = (-(float)Math.PI / 2F);
+			this.rightArm.xRot -= f * 1.2F - f1 * 0.4F;
+			this.leftArm.xRot -= f * 1.2F - f1 * 0.4F;
+			ModelHelper.bobArms(this.rightArm, this.leftArm, ageInTicks);
 		}
 
 	}
 
-	public void translateHand(HandSide sideIn, MatrixStack matrixStackIn) {
+	public void translateToHand(HandSide sideIn, MatrixStack matrixStackIn) {
 		float f = sideIn == HandSide.RIGHT ? 1.0F : -1.0F;
-		ModelRenderer modelrenderer = this.getArmForSide(sideIn);
-		modelrenderer.rotationPointX += f;
-		modelrenderer.translateRotate(matrixStackIn);
-		modelrenderer.rotationPointX -= f;
+		ModelRenderer modelrenderer = this.getArm(sideIn);
+		modelrenderer.x += f;
+		modelrenderer.translateAndRotate(matrixStackIn);
+		modelrenderer.x -= f;
 	}
 }

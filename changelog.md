@@ -1,6 +1,7 @@
 # Changelog
 
 ## Upcoming
+* Now requires InsaneLib 1.3.3
 * Elder Guardian
   * 
 * Fixed Wither Minions not spawning in spaces smaller than 3 blocks high

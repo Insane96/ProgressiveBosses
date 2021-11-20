@@ -17,21 +17,21 @@ import net.minecraft.world.World;
 
 public class WitherSkullDispenseBehavior extends OptionalDispenseBehavior {
 
-	public ItemStack dispenseStack(IBlockSource source, ItemStack stack) {
-		World world = source.getWorld();
-		Direction direction = source.getBlockState().get(DispenserBlock.FACING);
-		BlockPos blockpos = source.getBlockPos().offset(direction);
-		if (world.isAirBlock(blockpos) && WitherSkeletonSkullBlock.canSpawnMob(world, blockpos, stack) && MiscFeature.canPlaceSkull(world, blockpos)) {
-			world.setBlockState(blockpos, Blocks.WITHER_SKELETON_SKULL.getDefaultState().with(SkullBlock.ROTATION, direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontalIndex() * 4), 3);
-			TileEntity tileentity = world.getTileEntity(blockpos);
+	public ItemStack execute(IBlockSource source, ItemStack stack) {
+		World world = source.getLevel();
+		Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
+		BlockPos blockpos = source.getPos().relative(direction);
+		if (world.isEmptyBlock(blockpos) && WitherSkeletonSkullBlock.canSpawnMob(world, blockpos, stack) && MiscFeature.canPlaceSkull(world, blockpos)) {
+			world.setBlock(blockpos, Blocks.WITHER_SKELETON_SKULL.defaultBlockState().setValue(SkullBlock.ROTATION, direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().get2DDataValue() * 4), 3);
+			TileEntity tileentity = world.getBlockEntity(blockpos);
 			if (tileentity instanceof SkullTileEntity) {
-				WitherSkeletonSkullBlock.checkWitherSpawn(world, blockpos, (SkullTileEntity)tileentity);
+				WitherSkeletonSkullBlock.checkSpawn(world, blockpos, (SkullTileEntity)tileentity);
 			}
 
 			stack.shrink(1);
-			this.setSuccessful(true);
+			this.setSuccess(true);
 		} else {
-			this.setSuccessful(ArmorItem.func_226626_a_(source, stack));
+			this.setSuccess(ArmorItem.dispenseArmor(source, stack));
 		}
 
 		return stack;

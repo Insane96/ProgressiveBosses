@@ -70,19 +70,19 @@ public class ResistancesFeature extends Feature {
 
 		WitherEntity wither = (WitherEntity) event.getEntity();
 		//Handle Magic Damage
-		if (event.getSource().isMagicDamage() && this.magicDamageBonus > 0d) {
+		if (event.getSource().isMagic() && this.magicDamageBonus > 0d) {
 			double missingHealth = wither.getMaxHealth() - wither.getHealth();
 			event.setAmount((event.getAmount() * (float) (missingHealth / (this.magicDamageBonus) + 1)));
 		}
 
-		if (event.getSource().getImmediateSource() != event.getSource().getTrueSource())
+		if (event.getSource().getDirectEntity() != event.getSource().getEntity())
 			return;
 
 		CompoundNBT tags = wither.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 		//Handle Damage Reduction
 		float damageReduction;
-		if (!wither.isCharged())
+		if (!wither.isPowered())
 			damageReduction = (float) Math.min(this.maxMeleeDamageReductionBeforeHalfHealth, difficulty * this.meleeDamageReductionBeforeHalfHealth);
 		else
 			damageReduction = (float) Math.min(this.maxDamageReductionOnHalfHealth, difficulty * this.meleeDamageReductionOnHalfHealth);

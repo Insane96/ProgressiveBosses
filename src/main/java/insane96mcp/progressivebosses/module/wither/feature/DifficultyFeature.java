@@ -113,11 +113,11 @@ public class DifficultyFeature extends Feature {
 		if (witherTags.contains(Strings.Tags.DIFFICULTY))
 			return;
 
-		BlockPos pos1 = wither.getPosition().add(-this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck);
-		BlockPos pos2 = wither.getPosition().add(this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck);
+		BlockPos pos1 = wither.blockPosition().offset(-this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck);
+		BlockPos pos2 = wither.blockPosition().offset(this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
-		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
 		if (players.size() == 0)
 			return;
 
@@ -129,7 +129,7 @@ public class DifficultyFeature extends Feature {
 			if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
 				continue;
 			if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
-				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.DUMMY_UUID);
+				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.NIL_UUID);
 			difficulty.addSpawnedWithers(1);
 		}
 
