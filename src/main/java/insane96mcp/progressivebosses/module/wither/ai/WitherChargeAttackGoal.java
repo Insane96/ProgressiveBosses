@@ -34,41 +34,41 @@ public class WitherChargeAttackGoal extends Goal {
 
 	public WitherChargeAttackGoal(WitherEntity wither) {
 		this.wither = wither;
-		this.setMutexFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Flag.TARGET));
+		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Flag.TARGET));
 	}
 
 	/**
 	 * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
 	 * method as well.
 	 */
-	public boolean shouldExecute() {
-		if (this.wither.getInvulTime() != AttackFeature.Consts.CHARGE_ATTACK_TICK_START)
+	public boolean canUse() {
+		if (this.wither.getInvulnerableTicks() != AttackFeature.Consts.CHARGE_ATTACK_TICK_START)
 			return false;
 		CompoundNBT witherTags = wither.getPersistentData();
 		return witherTags.contains(Strings.Tags.CHARGE_ATTACK);
 	}
 
-	public void startExecuting() {
-		this.wither.getNavigator().clearPath();
+	public void start() {
+		this.wither.getNavigation().stop();
 		for (int h = 0; h < 3; h++)
-			this.wither.updateWatchedTargetId(h, 0);
+			this.wither.setAlternativeTarget(h, 0);
 	}
 
 	/**
 	 * Returns whether an in-progress EntityAIBase should continue executing
 	 */
-	public boolean shouldContinueExecuting() {
-		return this.wither.getInvulTime() > 0;
+	public boolean canContinueToUse() {
+		return this.wither.getInvulnerableTicks() > 0;
 	}
 
 	/**
 	 * Reset the task's internal state. Called when this task is interrupted by another one
 	 */
-	public void resetTask() {
+	public void stop() {
 		this.target = null;
 		CompoundNBT witherTags = wither.getPersistentData();
 		witherTags.remove(Strings.Tags.CHARGE_ATTACK);
-		this.wither.setMotion(this.wither.getMotion().mul(0.02d, 0.02d, 0.02d));
+		this.wither.setDeltaMovement(this.wither.getDeltaMovement().multiply(0.02d, 0.02d, 0.02d));
 		this.lastDistanceFromTarget = 0d;
 		this.targetPos = null;
 	}
@@ -77,28 +77,28 @@ public class WitherChargeAttackGoal extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
-		if (this.wither.getInvulTime() > AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE)
-			this.wither.setMotion(Vector3d.ZERO);
+		if (this.wither.getInvulnerableTicks() > AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE)
+			this.wither.setDeltaMovement(Vector3d.ZERO);
 
-		if (this.wither.getInvulTime() == AttackFeature.Consts.CHARGE_ATTACK_TICK_START)
-			this.wither.world.playSound(null, this.wither.getPosition(), SoundEvents.ENTITY_WITHER_DEATH, SoundCategory.HOSTILE, 5.0f, 2.0f);
-		else if (this.wither.getInvulTime() == AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
-			this.target = this.wither.world.getClosestPlayer(this.wither, 64d);
+		if (this.wither.getInvulnerableTicks() == AttackFeature.Consts.CHARGE_ATTACK_TICK_START)
+			this.wither.level.playSound(null, this.wither.getPosition(), SoundEvents.WITHER_DEATH, SoundCategory.HOSTILE, 5.0f, 2.0f);
+		else if (this.wither.getInvulnerableTicks() == AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
+			this.target = this.wither.level.getNearestPlayer(this.wither, 64d);
 			if (target != null) {
-				this.targetPos = this.target.getPositionVec();
-				Vector3d forward = this.targetPos.subtract(this.wither.getPositionVec()).normalize();
-				this.targetPos = this.targetPos.add(forward.mul(4d, 4d, 4d));
-				this.lastDistanceFromTarget = this.targetPos.squareDistanceTo(this.wither.getPositionVec());
-				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_SPAWN, SoundCategory.HOSTILE, 4.0f, 2.0f);
+				this.targetPos = this.target.position();
+				Vector3d forward = this.targetPos.subtract(this.wither.position()).normalize();
+				this.targetPos = this.targetPos.add(forward.multiply(4d, 4d, 4d));
+				this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
+				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.WITHER_SPAWN, SoundCategory.HOSTILE, 4.0f, 2.0f);
 			}
 			else {
 				this.wither.world.createExplosion(this.wither, this.wither.getPosX(), this.wither.getPosY() + 1.75d, this.wither.getPosZ(), 6f, Explosion.Mode.DESTROY);
 				this.wither.setInvulTime(0);
 			}
 		}
-		else if (this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
+		else if (this.wither.getInvulnerableTicks() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
 			//Done so it goes faster and faster
-			double mult = 60d / this.wither.getInvulTime();
+			double mult = 60d / this.wither.getInvulnerableTicks();
 			Vector3d diff = this.targetPos.subtract(this.wither.getPositionVec()).normalize().mul(mult, mult, mult);
 			this.wither.setMotion(diff.x, diff.y * 0.5, diff.z);
 			this.wither.getLookController().setLookPosition(this.targetPos);
@@ -123,7 +123,7 @@ public class WitherChargeAttackGoal extends Goal {
 			if (hasBrokenBlocks.get())
 				this.wither.world.playSound(null, new BlockPos(this.targetPos), SoundEvents.ENTITY_WITHER_BREAK_BLOCK, SoundCategory.HOSTILE, 1.0f, 0.75f);
 
-			axisAlignedBB = axisAlignedBB.grow(1d);
+			axisAlignedBB = axisAlignedBB.inflate(1d);
 			this.wither.world.getLoadedEntitiesWithinAABB(LivingEntity.class, axisAlignedBB).forEach(entity -> {
 				if (entity == this.wither)
 					return;
@@ -135,7 +135,7 @@ public class WitherChargeAttackGoal extends Goal {
 			});
 		}
 		//If the wither's charging and is farther from the target point than the last tick OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-		if ((this.wither.getInvulTime() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulTime() > 0 && (this.targetPos.squareDistanceTo(this.wither.getPositionVec()) - this.lastDistanceFromTarget > 16d || this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d)) || this.wither.getInvulTime() == 1) {
+		if ((this.wither.getInvulnerableTicks() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && this.wither.getInvulnerableTicks() > 0 && (this.targetPos.squareDistanceTo(this.wither.getPositionVec()) - this.lastDistanceFromTarget > 16d || this.targetPos.squareDistanceTo(this.wither.getPositionVec()) < 4d)) || this.wither.getInvulTime() == 1) {
 			this.wither.setInvulTime(0);
 		}
 		if (this.targetPos != null)

@@ -60,7 +60,7 @@ public class RewardFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())

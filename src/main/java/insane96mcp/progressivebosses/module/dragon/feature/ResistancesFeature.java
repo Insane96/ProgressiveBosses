@@ -78,17 +78,17 @@ public class ResistancesFeature extends Feature {
 		if (this.bonusCurHealthDirectDamage == 0d && this.bonusCurHealthIndirectDamage == 0d)
 			return;
 
-		if (event.getSource().isExplosion() && !event.getSource().getDamageType().equals("fireworks"))
+		if (event.getSource().isExplosion() && !event.getSource().getMsgId().equals("fireworks"))
 			return;
 
-		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()))
+		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
 			return;
 
 		float curHealth = dragon.getHealth();
-		if (event.getSource().getImmediateSource() instanceof PlayerEntity) {
+		if (event.getSource().getDirectEntity() instanceof PlayerEntity) {
 			event.setAmount(event.getAmount() + (float) (curHealth * this.bonusCurHealthDirectDamage));
 		}
-		else if (event.getSource().getTrueSource() instanceof PlayerEntity) {
+		else if (event.getSource().getEntity() instanceof PlayerEntity) {
 			event.setAmount(event.getAmount() + (float) (curHealth * this.bonusCurHealthIndirectDamage));
 		}
 	}
@@ -100,7 +100,7 @@ public class ResistancesFeature extends Feature {
 		CompoundNBT compoundNBT = dragon.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
-		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getType()) && event.getSource().getImmediateSource() instanceof PlayerEntity) {
+		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()) && event.getSource().getDirectEntity() instanceof PlayerEntity) {
 			event.setAmount((event.getAmount() - (float) (event.getAmount() * (this.damageRedutionWhenSitting * difficulty))));
 		}
 	}
@@ -109,7 +109,7 @@ public class ResistancesFeature extends Feature {
 		if (this.explosionDamageReduction == 0d)
 			return;
 
-		if (event.getSource().isExplosion() && !event.getSource().getDamageType().equals("fireworks")) {
+		if (event.getSource().isExplosion() && !event.getSource().getMsgId().equals("fireworks")) {
 			event.setAmount((event.getAmount() - (float) (event.getAmount() * this.explosionDamageReduction)));
 		}
 	}

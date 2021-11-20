@@ -121,7 +121,7 @@ public class AttackFeature extends Feature {
 	public void onSpawn(EntityJoinWorldEvent event) {
 		witherSkullSpeed(event.getEntity());
 
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -159,7 +159,7 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().getEntityWorld().isRemote)
+		if (event.getEntity().getEntityWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -190,7 +190,7 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDamageDealt(LivingHurtEvent event) {
-		if (event.getEntity().getEntityWorld().isRemote)
+		if (event.getEntity().getEntityWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -217,7 +217,7 @@ public class AttackFeature extends Feature {
 	//High priority so runs before the damage reduction
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onDamaged(LivingHurtEvent event) {
-		if (event.getEntity().getEntityWorld().isRemote)
+		if (event.getEntity().getEntityWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())

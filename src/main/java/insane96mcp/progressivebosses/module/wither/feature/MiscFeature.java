@@ -82,7 +82,7 @@ public class MiscFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().world.isRemote)
+		if (event.getEntity().world.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -176,7 +176,7 @@ public class MiscFeature extends Feature {
 
 	@SubscribeEvent
 	public void onWitherDamage(LivingHurtEvent event) {
-		if (event.getEntity().getEntityWorld().isRemote)
+		if (event.getEntity().getEntityWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())

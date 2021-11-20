@@ -12,21 +12,21 @@ public class PBNearestAttackableTargetGoal extends NearestAttackableTargetGoal<P
     public PBNearestAttackableTargetGoal(MobEntity shulkerEntity) {
         super(shulkerEntity, PlayerEntity.class, 0, false, false, null);
         //allowUnseeable
-        this.targetEntitySelector.setIgnoresLineOfSight();
+        this.targetConditions.allowUnseeable();
     }
 
-    public boolean shouldExecute() {
-        return this.goalOwner.world.getDifficulty() != Difficulty.PEACEFUL && super.shouldExecute();
+    public boolean canUse() {
+        return this.mob.level.getDifficulty() != Difficulty.PEACEFUL && super.canUse();
     }
 
 
     protected AxisAlignedBB getTargetableArea(double targetDistance) {
-        Direction direction = ((ShulkerEntity) this.goalOwner).getAttachmentFacing();
+        Direction direction = ((ShulkerEntity) this.mob).getAttachFace();
 
         if (direction.getAxis() == Direction.Axis.X) {
-            return this.goalOwner.getBoundingBox().grow(4.0D, targetDistance, targetDistance);
+            return this.mob.getBoundingBox().inflate(4.0D, targetDistance, targetDistance);
         } else {
-            return direction.getAxis() == Direction.Axis.Z ? this.goalOwner.getBoundingBox().grow(targetDistance, targetDistance, 4.0D) : this.goalOwner.getBoundingBox().grow(targetDistance, 4.0D, targetDistance);
+            return direction.getAxis() == Direction.Axis.Z ? this.mob.getBoundingBox().inflate(targetDistance, targetDistance, 4.0D) : this.mob.getBoundingBox().inflate(targetDistance, 4.0D, targetDistance);
         }
     }
 }

@@ -22,7 +22,7 @@ public class DifficultyCommand {
     }
 
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
-        dispatcher.register(Commands.literal("progressivebosses").requires(source -> source.hasPermissionLevel(2))
+        dispatcher.register(Commands.literal("progressivebosses").requires(source -> source.hasPermission(2))
             .then(Commands.literal("difficulty")
                 .then(Commands.argument("targetPlayer", EntityArgument.player())
                     .then(Commands.literal("get")
@@ -78,19 +78,19 @@ public class DifficultyCommand {
                     .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.wither.difficulty.maxDifficulty))
                         .executes(context -> summon(context.getSource(), Strings.Tags.WITHER_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
-                    .executes(context -> summon(context.getSource(), context.getSource().asPlayer(), Strings.Tags.WITHER_MINION))
+                    .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.WITHER_MINION))
                 )
                 .then(Commands.literal(Strings.Tags.DRAGON_MINION)
                     .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
                         .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
-                    .executes(context -> summon(context.getSource(), context.getSource().asPlayer(), Strings.Tags.DRAGON_MINION))
+                    .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.DRAGON_MINION))
                 )
                 .then(Commands.literal(Strings.Tags.DRAGON_LARVA)
                     .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
                         .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
-                    .executes(context -> summon(context.getSource(), context.getSource().asPlayer(), Strings.Tags.DRAGON_LARVA))
+                    .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.DRAGON_LARVA))
                 )
             )
         );
@@ -101,7 +101,7 @@ public class DifficultyCommand {
             targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficulty -> difficulty.setSpawnedWithers(amount));
         if (boss.equals("dragon"))
             targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficulty -> difficulty.setKilledDragons(amount));
-        source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_SET_BOSS_DIFFICULTY, targetPlayer.getName(), boss, amount), true);
+        source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_SET_BOSS_DIFFICULTY, targetPlayer.getName(), boss, amount), true);
         return amount;
     }
 
@@ -120,7 +120,7 @@ public class DifficultyCommand {
                 difficulty.set(difficultyCap.getKilledDragons());
             });
         }
-        source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_ADD_BOSS_DIFFICULTY, amount, boss, targetPlayer.getName(), difficulty.get()), true);
+        source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_ADD_BOSS_DIFFICULTY, amount, boss, targetPlayer.getName(), difficulty.get()), true);
         return difficulty.get();
     }
 
@@ -130,34 +130,34 @@ public class DifficultyCommand {
         AtomicInteger dragonDifficulty = new AtomicInteger(0);
         targetPlayer.getCapability(DifficultyCapability.DIFFICULTY).ifPresent(difficultyCap -> dragonDifficulty.set(difficultyCap.getKilledDragons()));
         if (boss.equals("wither")) {
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
+            source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
             return witherDifficulty.get();
         }
         else if (boss.equals("dragon")) {
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
+            source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
             return dragonDifficulty.get();
         }
         else {
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
+            source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
+            source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
             return 1;
         }
     }
 
     private static int getBossDifficultyLegacy(CommandSource source, ServerPlayerEntity targetPlayer, String boss) {
-        source.sendFeedback(new StringTextComponent("This difficulty is no longer used by the mod. The command is here to let you see your old difficulty and trasnfer it to the new system with /progressivebosses difficulty <player> set <wither/dragon> <amount>."), true);
+        source.sendSuccess(new StringTextComponent("This difficulty is no longer used by the mod. The command is here to let you see your old difficulty and trasnfer it to the new system with /progressivebosses difficulty <player> set <wither/dragon> <amount>."), true);
         CompoundNBT targetNBT = targetPlayer.getPersistentData();
         if (boss.equals("wither")) {
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS)), true);
+            source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS)), true);
             return targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS);
         }
         else if (boss.equals("dragon")) {
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.KILLED_DRAGONS)), true);
+            source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.KILLED_DRAGONS)), true);
             return targetNBT.getInt(Strings.Tags.KILLED_DRAGONS);
         }
         else {
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS)), true);
-            source.sendFeedback(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.KILLED_DRAGONS)), true);
+            source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.SPAWNED_WITHERS)), true);
+            source.sendSuccess(new TranslationTextComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), targetNBT.getInt(Strings.Tags.KILLED_DRAGONS)), true);
             return 1;
         }
     }
@@ -165,22 +165,22 @@ public class DifficultyCommand {
     private static int summon(CommandSource source, String entity, int difficulty) {
         switch (entity) {
             case Strings.Tags.WITHER_MINION:
-                Modules.wither.minion.summonMinion(source.getWorld(), source.getPos(), difficulty, false);
-                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                Modules.wither.minion.summonMinion(source.getLevel(), source.getPosition(), difficulty, false);
+                source.sendSuccess(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 
             case Strings.Tags.DRAGON_MINION:
-                Modules.dragon.minion.summonMinion(source.getWorld(), source.getPos(), difficulty);
-                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                Modules.dragon.minion.summonMinion(source.getLevel(), source.getPosition(), difficulty);
+                source.sendSuccess(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 
             case Strings.Tags.DRAGON_LARVA:
-                Modules.dragon.larva.summonLarva(source.getWorld(), source.getPos(), difficulty);
-                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                Modules.dragon.larva.summonLarva(source.getLevel(), source.getPosition(), difficulty);
+                source.sendSuccess(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 
             default:
-                source.sendFeedback(new TranslationTextComponent(Strings.Translatable.SUMMON_ENTITY_INVALID, entity), true);
+                source.sendSuccess(new TranslationTextComponent(Strings.Translatable.SUMMON_ENTITY_INVALID, entity), true);
                 return 0;
         }
     }

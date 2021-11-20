@@ -31,9 +31,9 @@ public class CrystalRespawnPhase extends Phase {
 
 	/**
 	 * Gives the phase a chance to update its status.
-	 * Called by dragon's onLivingUpdate. Only used when !worldObj.isRemote.
+	 * Called by dragon's onLivingUpdate. Only used when !worldObj.isClientSide.
 	 */
-	public void serverTick() {
+	public void doServerTick() {
 		CompoundNBT dragonTags = this.dragon.getPersistentData();
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 
@@ -46,17 +46,17 @@ public class CrystalRespawnPhase extends Phase {
 		}
 		int tickSpawnCystal = (int) (50 - (difficulty / 4));
 		if (!respawning) {
-			double d0 = this.targetLocation.squareDistanceTo(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ());
+			double d0 = this.targetLocation.distanceToSqr(dragon.getX(), dragon.getY(), dragon.getZ());
 			if (d0 < 16d) {
-				dragon.setMotion(Vector3d.ZERO);
+				dragon.setDeltaMovement(Vector3d.ZERO);
 				respawning = true;
 			}
 		}
 		else {
 			tick++;
-			dragon.setMotion(Vector3d.ZERO);
+			dragon.setDeltaMovement(Vector3d.ZERO);
 			if (tick <= 25)
-				dragon.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 4F, 1.0F);
+				dragon.playSound(SoundEvents.ENDER_DRAGON_GROWL, 4F, 1.0F);
 			if (tick >= tickSpawnCystal) {
 				if (dragon.getHealth() < 10f) {
 					dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
@@ -66,16 +66,16 @@ public class CrystalRespawnPhase extends Phase {
 				double x = spikesToRespawn.get(0).getCenterX();
 				double y = spikesToRespawn.get(0).getHeight();
 				double z = spikesToRespawn.get(0).getCenterZ();
-				if (dragon.getRNG().nextDouble() < Modules.dragon.crystal.crystalRespawnInsideTowerChance * difficulty)
-					CrystalFeature.generateCrystalInTower(dragon.world, x + 0.5, y + 1, z + 0.5);
+				if (dragon.getRandom().nextDouble() < Modules.dragon.crystal.crystalRespawnInsideTowerChance * difficulty)
+					CrystalFeature.generateCrystalInTower(dragon.level, x + 0.5, y + 1, z + 0.5);
 				else {
-					crystal = new EnderCrystalEntity(dragon.world, x + 0.5, y + 1, z + 0.5);
+					crystal = new EnderCrystalEntity(dragon.level, x + 0.5, y + 1, z + 0.5);
 					crystal.setShowBottom(true);
-					crystal.world.createExplosion(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Explosion.Mode.NONE);
-					dragon.world.addEntity(crystal);
-					CrystalFeature.generateCage(crystal.world, crystal.getPosition());
+					crystal.level.explode(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Explosion.Mode.NONE);
+					dragon.level.addFreshEntity(crystal);
+					CrystalFeature.generateCage(crystal.level, crystal.blockPosition());
 				}
-				dragon.attackEntityPartFrom(dragon.dragonPartHead, DamageSource.causeExplosionDamage(dragon), 10f);
+				dragon.hurt(dragon.head, DamageSource.explosion(dragon), 10f);
 				spikesToRespawn.remove(0);
 				tick = 0;
 				respawning = false;
@@ -84,14 +84,14 @@ public class CrystalRespawnPhase extends Phase {
 		}
 	}
 
-	public boolean getIsStationary() {
+	public boolean isSitting() {
 		return respawning;
 	}
 
 	/**
 	 * Called when this phase is set to active
 	 */
-	public void initPhase() {
+	public void begin() {
 		this.targetLocation = null;
 		this.spikesToRespawn.clear();
 	}
@@ -99,7 +99,7 @@ public class CrystalRespawnPhase extends Phase {
 	/**
 	 * Returns the maximum amount dragon may rise or fall during this phase
 	 */
-	public float getMaxRiseOrFall() {
+	public float getFlySpeed() {
 		return 24F;
 	}
 
@@ -107,7 +107,7 @@ public class CrystalRespawnPhase extends Phase {
 	 * Returns the location the dragon is flying toward
 	 */
 	@Nullable
-	public Vector3d getTargetLocation() {
+	public Vector3d getFlyTargetLocation() {
 		return this.targetLocation;
 	}
 
@@ -116,7 +116,7 @@ public class CrystalRespawnPhase extends Phase {
 			this.spikesToRespawn.add(spike);
 	}
 
-	public PhaseType<CrystalRespawnPhase> getType() {
+	public PhaseType<CrystalRespawnPhase> getPhase() {
 		return CRYSTAL_RESPAWN;
 	}
 

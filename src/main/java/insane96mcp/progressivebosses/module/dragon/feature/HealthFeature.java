@@ -60,7 +60,7 @@ public class HealthFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -81,13 +81,13 @@ public class HealthFeature extends Feature {
 		double difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 		ModifiableAttributeInstance health = enderDragon.getAttribute(Attributes.MAX_HEALTH);
 		AttributeModifier modifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
-		health.applyPersistentModifier(modifier);
+		health.addPermanentModifier(modifier);
 		enderDragon.setHealth(enderDragon.getMaxHealth());
 	}
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().world.isRemote)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		/*if (event.getEntity() instanceof EnderDragonEntity) {
@@ -114,7 +114,7 @@ public class HealthFeature extends Feature {
 
 		EnderDragonEntity enderDragon = (EnderDragonEntity) event.getEntity();
 
-		if (!enderDragon.isAlive() || enderDragon.getPhaseManager().getCurrentPhase().getType() == PhaseType.DYING)
+		if (!enderDragon.isAlive() || enderDragon.getPhaseManager().getCurrentPhase().getPhase() == PhaseType.DYING)
 			return;
 
 		CompoundNBT tags = enderDragon.getPersistentData();
@@ -131,7 +131,7 @@ public class HealthFeature extends Feature {
 		if (heal == 0f)
 			return;
 
-		if (enderDragon.ticksExisted % 20 == 0)
+		if (enderDragon.tickCount % 20 == 0)
 			LogHelper.info(ProgressiveBosses.LOGGER, "heal: %s, health: %s", heal, enderDragon.getHealth());
 
 		heal /= 20f;
@@ -149,7 +149,7 @@ public class HealthFeature extends Feature {
 		if (this.bonusCrystalRegen == 0d)
 			return 0f;
 
-		if (enderDragon.closestEnderCrystal == null || !enderDragon.closestEnderCrystal.isAlive())
+		if (enderDragon.nearestCrystal == null || !enderDragon.nearestCrystal.isAlive())
 			return 0f;
 
 		return (float) (this.bonusCrystalRegen * difficulty);

@@ -51,7 +51,7 @@ public class HealthFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -76,7 +76,7 @@ public class HealthFeature extends Feature {
 
 			ModifiableAttributeInstance health = elderGuardian.getAttribute(Attributes.MAX_HEALTH);
 			AttributeModifier modifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, this.bonusHealth, AttributeModifier.Operation.MULTIPLY_BASE);
-			health.applyPersistentModifier(modifier);
+			health.addPermanentModifier(modifier);
 			elderGuardian.setHealth(elderGuardian.getMaxHealth());
 		}
 
@@ -86,7 +86,7 @@ public class HealthFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().world.isRemote)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())

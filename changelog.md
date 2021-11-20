@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Elder Guardian
+  * 
+* Fixed Wither Minions not spawning in spaces smaller than 3 blocks high
+
 ## Alpha 3.4.0
 * Added Elder Guardian Module!
   * Health Feature 

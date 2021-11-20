@@ -82,10 +82,10 @@ public class RewardFeature extends Feature {
 		if (this.bonusExperience == 0d)
 			return;
 
-		if (dragon.deathTicks <= 150 || dragon.deathTicks % 5 != 0)
+		if (dragon.dragonDeathTime <= 150 || dragon.dragonDeathTime % 5 != 0)
 			return;
 
-		if (dragon.getFightManager() == null)
+		if (dragon.getDragonFight() == null)
 			return;
 
 		CompoundNBT dragonTags = dragon.getPersistentData();
@@ -96,13 +96,13 @@ public class RewardFeature extends Feature {
 
 		//Drop 8% of experience each tick (for 10 ticks) + 20% at the last tick
 		int bonusXP = (int) (500 * this.bonusExperience * difficulty * 0.08);
-		if (dragon.deathTicks == 200)
+		if (dragon.dragonDeathTime == 200)
 			bonusXP += (int) (500 * this.bonusExperience * difficulty * 0.2);
 
 		while (bonusXP > 0) {
-			int i = ExperienceOrbEntity.getXPSplit(bonusXP);
+			int i = ExperienceOrbEntity.getExperienceValue(bonusXP);
 			bonusXP -= i;
-			dragon.world.addEntity(new ExperienceOrbEntity(dragon.world, dragon.getPositionVec().getX(), dragon.getPositionVec().getY(), dragon.getPositionVec().getZ(), i));
+			dragon.level.addFreshEntity(new ExperienceOrbEntity(dragon.level, dragon.position().x(), dragon.position().y(), dragon.position().z(), i));
 		}
 	}
 
@@ -110,19 +110,19 @@ public class RewardFeature extends Feature {
 		if (!this.dragonEggPerPlayer)
 			return;
 
-		if (dragon.deathTicks != 100)
+		if (dragon.dragonDeathTime != 100)
 			return;
 
 		CompoundNBT tags = dragon.getPersistentData();
 
 		int eggsToDrop = tags.getInt(Strings.Tags.EGGS_TO_DROP);
 
-		if (dragon.getFightManager() != null && !dragon.getFightManager().hasPreviouslyKilledDragon()) {
+		if (dragon.getDragonFight() != null && !dragon.getDragonFight().hasPreviouslyKilledDragon()) {
 			eggsToDrop--;
 		}
 
 		for (int i = 0; i < eggsToDrop; i++) {
-			dragon.world.setBlockState(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.getDefaultState());
+			dragon.level.setBlockAndUpdate(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.defaultBlockState());
 		}
 	}
 
@@ -142,7 +142,7 @@ public class RewardFeature extends Feature {
 		CompoundNBT tags = dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 		for (Drop drop : this.dropsList) {
-			drop.drop(dragon.world, dragon.getPositionVec(), difficulty);
+			drop.drop(dragon.level, dragon.position(), difficulty);
 		}
 	}
 

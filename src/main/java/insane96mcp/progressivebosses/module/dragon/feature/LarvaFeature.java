@@ -91,7 +91,7 @@ public class LarvaFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDragonSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -104,13 +104,13 @@ public class LarvaFeature extends Feature {
 
 		CompoundNBT dragonTags = dragon.getPersistentData();
 
-		int cooldown = (int) (RandomHelper.getInt(dragon.getRNG(), this.minCooldown, this.maxCooldown) * 0.5d);
+		int cooldown = (int) (RandomHelper.getInt(dragon.getRandom(), this.minCooldown, this.maxCooldown) * 0.5d);
 		dragonTags.putInt(Strings.Tags.DRAGON_LARVA_COOLDOWN, cooldown);
 	}
 
 	@SubscribeEvent
 	public void onLarvaSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -130,7 +130,7 @@ public class LarvaFeature extends Feature {
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().world.isRemote)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -139,7 +139,7 @@ public class LarvaFeature extends Feature {
 		if (!(event.getEntity() instanceof EnderDragonEntity))
 			return;
 
-		World world = event.getEntity().world;
+		World world = event.getEntity().level;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 		CompoundNBT dragonTags = dragon.getPersistentData();
@@ -158,9 +158,9 @@ public class LarvaFeature extends Feature {
 		}
 
 		//If there is no player in the main island don't spawn larvae
-		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(96d);
-		List<ServerPlayerEntity> players = world.getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).inflate(96d);
+		List<ServerPlayerEntity> players = world.getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
 
 		if (players.isEmpty())
 			return;
@@ -168,15 +168,15 @@ public class LarvaFeature extends Feature {
 		int minCooldown = this.minCooldown;
 		int maxCooldown = this.maxCooldown;
 
-		cooldown = RandomHelper.getInt(world.rand, minCooldown, maxCooldown);
+		cooldown = RandomHelper.getInt(world.random, minCooldown, maxCooldown);
 		dragonTags.putInt(Strings.Tags.DRAGON_LARVA_COOLDOWN, cooldown - 1);
 
 		int larvaSpawnedCount = 0;
 		for (int i = this.larvaAtDifficulty; i <= difficulty; i += this.bonusLarvaEveryDifficulty) {
-			float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
+			float angle = world.random.nextFloat() * (float) Math.PI * 2f;
 			float x = (float) Math.floor(Math.cos(angle) * 3.33f);
 			float z = (float) Math.floor(Math.sin(angle) * 3.33f);
-			int y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
+			int y = world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
 			EndermiteEntity endermite = summonLarva(world, new Vector3d(x + 0.5, y, z + 0.5), difficulty);
 			larvaSpawnedCount++;
 			if (larvaSpawnedCount >= this.maxSpawned)
@@ -186,7 +186,7 @@ public class LarvaFeature extends Feature {
 
 	private static void setLarvaAI(EndermiteEntity endermite) {
 		ArrayList<Goal> toRemove = new ArrayList<>();
-		endermite.targetSelector.goals.forEach(goal -> {
+		endermite.targetSelector.availableGoals.forEach(goal -> {
 			if (goal.getGoal() instanceof NearestAttackableTargetGoal)
 				toRemove.add(goal.getGoal());
 		});
@@ -203,34 +203,34 @@ public class LarvaFeature extends Feature {
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 		//TODO Scaling health
 
-		endermite.setPosition(pos.x, pos.y, pos.z);
+		endermite.setPos(pos.x, pos.y, pos.z);
 		endermite.setCustomName(new TranslationTextComponent(Strings.Translatable.DRAGON_LARVA));
-		endermite.deathLootTable = LootTables.EMPTY;
-		endermite.enablePersistence();
+		endermite.lootTable = LootTables.EMPTY;
+		endermite.setPersistenceRequired();
 
 		ModifiableAttributeInstance followRange = endermite.getAttribute(Attributes.FOLLOW_RANGE);
 		AttributeModifier followRangeBonus = new AttributeModifier(Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 64, AttributeModifier.Operation.ADDITION);
-		followRange.applyPersistentModifier(followRangeBonus);
+		followRange.addPermanentModifier(followRangeBonus);
 
 		ModifiableAttributeInstance movementSpeed = endermite.getAttribute(Attributes.MOVEMENT_SPEED);
 		AttributeModifier movementSpeedModifier = new AttributeModifier(Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, 0.75d, AttributeModifier.Operation.MULTIPLY_BASE);
-		movementSpeed.applyPersistentModifier(movementSpeedModifier);
+		movementSpeed.addPermanentModifier(movementSpeedModifier);
 
 		ModifiableAttributeInstance maxHealth = endermite.getAttribute(Attributes.MAX_HEALTH);
 		AttributeModifier maxHealthModifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, -0.5, AttributeModifier.Operation.MULTIPLY_BASE);
-		maxHealth.applyPersistentModifier(maxHealthModifier);
+		maxHealth.addPermanentModifier(maxHealthModifier);
 
 		ModifiableAttributeInstance attackDamage = endermite.getAttribute(Attributes.ATTACK_DAMAGE);
 		AttributeModifier attackDamageModifier = new AttributeModifier(Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS_UUID, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS, 0.35 * difficulty, AttributeModifier.Operation.ADDITION);
-		attackDamage.applyPersistentModifier(attackDamageModifier);
+		attackDamage.addPermanentModifier(attackDamageModifier);
 
 		ModifiableAttributeInstance swimSpeed = endermite.getAttribute(ForgeMod.SWIM_SPEED.get());
 		if (swimSpeed != null) {
 			AttributeModifier swimSpeedBonus = new AttributeModifier(Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 3d, AttributeModifier.Operation.MULTIPLY_BASE);
-			swimSpeed.applyPersistentModifier(swimSpeedBonus);
+			swimSpeed.addPermanentModifier(swimSpeedBonus);
 		}
 
-		world.addEntity(endermite);
+		world.addFreshEntity(endermite);
 		return endermite;
 	}
 
@@ -250,7 +250,7 @@ public class LarvaFeature extends Feature {
 		if (!compoundNBT.contains(Strings.Tags.DRAGON_LARVA))
 			return;
 
-		if (event.getSource().getTrueSource() instanceof EnderDragonEntity || event.getSource().getImmediateSource() instanceof EnderDragonEntity)
+		if (event.getSource().getEntity() instanceof EnderDragonEntity || event.getSource().getDirectEntity() instanceof EnderDragonEntity)
 			event.setCanceled(true);
 	}
 }

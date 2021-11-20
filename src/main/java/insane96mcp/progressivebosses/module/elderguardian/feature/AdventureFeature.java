@@ -43,39 +43,39 @@ public class AdventureFeature extends Feature {
 
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-		if (event.player.world.isRemote)
+		if (event.player.level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
 			return;
 
-		if (event.player.ticksExisted % 20 != 0)
+		if (event.player.tickCount % 20 != 0)
 			return;
 
 		if (!event.player.isAlive())
 			return;
 
 		ServerPlayerEntity serverPlayer = (ServerPlayerEntity) event.player;
-		ServerWorld world = (ServerWorld) serverPlayer.world;
+		ServerWorld world = (ServerWorld) serverPlayer.level;
 
 		CompoundNBT nbt = serverPlayer.getPersistentData();
 		boolean previouslyNearElderGuardian = nbt.getBoolean(Strings.Tags.PREVIOUSLY_NEAR_ELDER_GUARDIAN);
 		boolean adventureMessage = nbt.getBoolean(Strings.Tags.ADVENTURE_MESSAGE);
 
-		boolean nearElderGuardian = !world.getEntitiesWithinAABB(ElderGuardianEntity.class, serverPlayer.getBoundingBox().grow(32d), null).isEmpty();
+		boolean nearElderGuardian = !world.getEntitiesOfClass(ElderGuardianEntity.class, serverPlayer.getBoundingBox().inflate(32d), null).isEmpty();
 		nbt.putBoolean(Strings.Tags.PREVIOUSLY_NEAR_ELDER_GUARDIAN, nearElderGuardian);
 
-		if (serverPlayer.interactionManager.getGameType() == GameType.SURVIVAL && nearElderGuardian) {
-			serverPlayer.interactionManager.setGameType(GameType.ADVENTURE);
-			serverPlayer.connection.sendPacket(new SChangeGameStatePacket(SChangeGameStatePacket.CHANGE_GAMETYPE, (float)GameType.ADVENTURE.getID()));
+		if (serverPlayer.gameMode.getGameModeForPlayer() == GameType.SURVIVAL && nearElderGuardian) {
+			serverPlayer.gameMode.setGameModeForPlayer(GameType.ADVENTURE);
+			serverPlayer.connection.send(new SChangeGameStatePacket(SChangeGameStatePacket.CHANGE_GAME_MODE, (float)GameType.ADVENTURE.getId()));
 			if (!adventureMessage) {
-				serverPlayer.sendMessage(new TranslationTextComponent(Strings.Translatable.APPROACHING_ELDER_GUARDIAN), Util.DUMMY_UUID);
+				serverPlayer.sendMessage(new TranslationTextComponent(Strings.Translatable.APPROACHING_ELDER_GUARDIAN), Util.NIL_UUID);
 				nbt.putBoolean(Strings.Tags.ADVENTURE_MESSAGE, true);
 			}
 		}
-		else if (serverPlayer.interactionManager.getGameType() == GameType.ADVENTURE && !nearElderGuardian && previouslyNearElderGuardian) {
-			serverPlayer.interactionManager.setGameType(GameType.SURVIVAL);
-			serverPlayer.connection.sendPacket(new SChangeGameStatePacket(SChangeGameStatePacket.CHANGE_GAMETYPE, (float)GameType.SURVIVAL.getID()));
+		else if (serverPlayer.gameMode.getGameModeForPlayer() == GameType.ADVENTURE && !nearElderGuardian && previouslyNearElderGuardian) {
+			serverPlayer.gameMode.setGameModeForPlayer(GameType.SURVIVAL);
+			serverPlayer.connection.send(new SChangeGameStatePacket(SChangeGameStatePacket.CHANGE_GAME_MODE, (float)GameType.SURVIVAL.getId()));
 		}
 	}
 
@@ -92,9 +92,9 @@ public class AdventureFeature extends Feature {
 		CompoundNBT nbt = serverPlayer.getPersistentData();
 		boolean previouslyNearElderGuardian = nbt.getBoolean(Strings.Tags.PREVIOUSLY_NEAR_ELDER_GUARDIAN);
 
-		if (previouslyNearElderGuardian && serverPlayer.interactionManager.getGameType() == GameType.ADVENTURE) {
-			serverPlayer.interactionManager.setGameType(GameType.SURVIVAL);
-			serverPlayer.connection.sendPacket(new SChangeGameStatePacket(SChangeGameStatePacket.CHANGE_GAMETYPE, (float)GameType.SURVIVAL.getID()));
+		if (previouslyNearElderGuardian && serverPlayer.gameMode.getGameModeForPlayer() == GameType.ADVENTURE) {
+			serverPlayer.gameMode.setGameModeForPlayer(GameType.SURVIVAL);
+			serverPlayer.connection.send(new SChangeGameStatePacket(SChangeGameStatePacket.CHANGE_GAME_MODE, (float)GameType.SURVIVAL.getId()));
 		}
 	}
 
@@ -106,7 +106,7 @@ public class AdventureFeature extends Feature {
 		if (event.getExplosion().getExploder() == null)
 			return;
 
-		boolean nearElderGuardian = !event.getWorld().getEntitiesWithinAABB(ElderGuardianEntity.class, event.getExplosion().getExploder().getBoundingBox().grow(32d)).isEmpty();
+		boolean nearElderGuardian = !event.getWorld().getEntitiesOfClass(ElderGuardianEntity.class, event.getExplosion().getExploder().getBoundingBox().inflate(32d)).isEmpty();
 		if (nearElderGuardian)
 			event.setCanceled(true);
 	}
@@ -121,10 +121,10 @@ public class AdventureFeature extends Feature {
 
 		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getEntity();
 
-		int elderGuardiansNearby = elderGuardian.world.getEntitiesInAABBexcluding(elderGuardian, elderGuardian.getBoundingBox().grow(48d), entity -> entity instanceof ElderGuardianEntity).size();
+		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardianEntity).size();
 		if (elderGuardiansNearby == 0)
 			return;
 
-		elderGuardian.playSound(SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, 2f, 0.5f);
+		elderGuardian.playSound(SoundEvents.ELDER_GUARDIAN_CURSE, 2f, 0.5f);
 	}
 }

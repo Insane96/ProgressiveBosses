@@ -44,7 +44,7 @@ public class Drop {
 		}
 
 		//Item
-		ResourceLocation item = ResourceLocation.tryCreate(split[0]);
+		ResourceLocation item = ResourceLocation.tryParse(split[0]);
 		if (item == null) {
 			LogHelper.warn("%s item for Drop is not a valid Resource Location", split[0]);
 			return null;
@@ -129,9 +129,9 @@ public class Drop {
 			chance *= difficulty - this.difficultyRequired + 1;
 
 		if (this.difficultyMode == Drop.DifficultyMode.MINIMUM) {
-			if (RandomHelper.getDouble(world.rand, 0d, 1d) >= chance)
+			if (RandomHelper.getDouble(world.random, 0d, 1d) >= chance)
 				return;
-			world.addEntity(createDrop(world, pos, ForgeRegistries.ITEMS.getValue(this.itemId), this.amount));
+			world.addFreshEntity(createDrop(world, pos, ForgeRegistries.ITEMS.getValue(this.itemId), this.amount));
 		}
 		else if (this.difficultyMode == Drop.DifficultyMode.PER_DIFFICULTY) {
 			int tries = (int) (difficulty - this.difficultyRequired + 1);
@@ -139,25 +139,25 @@ public class Drop {
 				return;
 			int dropped = 0;
 			for (int i = 0; i < tries; i++) {
-				if (RandomHelper.getDouble(world.rand, 0d, 1d) >= chance)
+				if (RandomHelper.getDouble(world.random, 0d, 1d) >= chance)
 					continue;
 				dropped++;
-				world.addEntity(createDrop(world, pos, ForgeRegistries.ITEMS.getValue(this.itemId), this.amount));
+				world.addFreshEntity(createDrop(world, pos, ForgeRegistries.ITEMS.getValue(this.itemId), this.amount));
 			}
 			if (this.itemId.equals(PBItems.NETHER_STAR_SHARD.getId()) && dropped < difficulty * chance) {
-				world.addEntity(createDrop(world, pos, ForgeRegistries.ITEMS.getValue(this.itemId), (int) (Math.round(difficulty * chance - dropped))));
+				world.addFreshEntity(createDrop(world, pos, ForgeRegistries.ITEMS.getValue(this.itemId), (int) (Math.round(difficulty * chance - dropped))));
 			}
 		}
 	}
 
 	private static ItemEntity createDrop(World world, Vector3d pos, Item item, int amount) {
-		ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), new ItemStack(item, amount));
+		ItemEntity itemEntity = new ItemEntity(world, pos.x, pos.y, pos.z, new ItemStack(item, amount));
 		//If it's a nether star shard set it as "invincible"
 		if (item.getRegistryName().equals(PBItems.NETHER_STAR_SHARD.get().getRegistryName())) {
 			CompoundNBT compoundNBT = new CompoundNBT();
-			itemEntity.writeAdditional(compoundNBT);
+			itemEntity.addAdditionalSaveData(compoundNBT);
 			compoundNBT.putShort("Health", Short.MAX_VALUE);
-			itemEntity.readAdditional(compoundNBT);
+			itemEntity.readAdditionalSaveData(compoundNBT);
 		}
 		return itemEntity;
 	}

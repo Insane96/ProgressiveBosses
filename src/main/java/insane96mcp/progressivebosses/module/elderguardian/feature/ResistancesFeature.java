@@ -44,7 +44,7 @@ public class ResistancesFeature extends Feature {
 
 		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getEntity();
 
-		int elderGuardiansNearby = elderGuardian.world.getEntitiesInAABBexcluding(elderGuardian, elderGuardian.getBoundingBox().grow(48d), entity -> entity instanceof ElderGuardianEntity).size();
+		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardianEntity).size();
 		if (elderGuardiansNearby == 2)
 			return;
 

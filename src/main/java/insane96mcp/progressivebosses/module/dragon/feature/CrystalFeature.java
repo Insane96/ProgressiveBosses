@@ -125,7 +125,7 @@ public class CrystalFeature extends Feature {
 		if (dragonTags.getBoolean(Strings.Tags.CRYSTAL_RESPAWN))
 			return;
 
-		if (!VALID_CRYSTAL_RESPAWN_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getType()))
+		if (!VALID_CRYSTAL_RESPAWN_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
 			return;
 
 		double healthRatio = dragon.getHealth() / dragon.getMaxHealth();
@@ -137,16 +137,16 @@ public class CrystalFeature extends Feature {
 		//0.15 - (0.05 - 0.05) = 0.15 / 0.15 =	100%
 		double chance = (0.15d - (healthRatio - 0.05d)) / 0.15d;
 
-		if (dragon.getRNG().nextFloat() < chance)
+		if (dragon.getRandom().nextFloat() < chance)
 			return;
 
 		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
 		CrystalRespawnPhase phase = (CrystalRespawnPhase) dragon.getPhaseManager().getCurrentPhase();
 
-		ArrayList<EndSpikeFeature.EndSpike> spikes = new ArrayList<>(EndSpikeFeature.getSpikes((ServerWorld)dragon.world));
+		ArrayList<EndSpikeFeature.EndSpike> spikes = new ArrayList<>(EndSpikeFeature.getSpikesForLevel((ServerWorld)dragon.level));
 		int maxTries = (int) MathHelper.clamp(difficulty * this.crystalRespawnMultiplier, 1, 100);
 		for (int i = 0; i < maxTries; i++) {
-			EndSpikeFeature.EndSpike targetSpike = spikes.get(RandomHelper.getInt(dragon.getRNG(), 0, spikes.size()));
+			EndSpikeFeature.EndSpike targetSpike = spikes.get(RandomHelper.getInt(dragon.getRandom(), 0, spikes.size()));
 			phase.addCrystalRespawn(targetSpike);
 		}
 		dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, true);
@@ -154,7 +154,7 @@ public class CrystalFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -186,12 +186,12 @@ public class CrystalFeature extends Feature {
 
 		List<EnderCrystalEntity> crystals = new ArrayList<>();
 
-		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.getSpikes((ServerWorld) dragon.world)) {
-			crystals.addAll(dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
+		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.getSpikesForLevel((ServerWorld) dragon.level)) {
+			crystals.addAll(dragon.level.getEntitiesOfClass(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
 		}
 
 		//Remove all the crystals that already have cages around
-		crystals.removeIf(c -> c.world.getBlockState(c.getPosition().up(2)).getBlock() == Blocks.IRON_BARS);
+		crystals.removeIf(c -> c.level.getBlockState(c.blockPosition().above(2)).getBlock() == Blocks.IRON_BARS);
 		//Shuffle the list
 		Collections.shuffle(crystals);
 
@@ -199,7 +199,7 @@ public class CrystalFeature extends Feature {
 		int cagesGenerated = 0;
 
 		for (EnderCrystalEntity crystal : crystals) {
-			generateCage(crystal.world, crystal.getPosition());
+			generateCage(crystal.level, crystal.blockPosition());
 
 			cagesGenerated++;
 			if (cagesGenerated == crystalsInvolved || cagesGenerated == this.maxBonusCages)
@@ -222,8 +222,8 @@ public class CrystalFeature extends Feature {
 
 		List<EnderCrystalEntity> crystals = new ArrayList<>();
 
-		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.getSpikes((ServerWorld) dragon.world)) {
-			crystals.addAll(dragon.world.getEntitiesWithinAABB(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
+		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.getSpikesForLevel((ServerWorld) dragon.level)) {
+			crystals.addAll(dragon.level.getEntitiesOfClass(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
 		}
 
 		//Shuffle the list
@@ -233,7 +233,7 @@ public class CrystalFeature extends Feature {
 		int crystalSpawned = 0;
 
 		for (EnderCrystalEntity crystal : crystals) {
-			generateCrystalInTower(dragon.world, crystal.getPosX(), crystal.getPosY(), crystal.getPosZ());
+			generateCrystalInTower(dragon.level, crystal.getX(), crystal.getY(), crystal.getZ());
 
 			crystalSpawned++;
 			if (crystalSpawned == crystalsInvolved || crystalSpawned == this.maxMoreCrystals)
@@ -254,29 +254,29 @@ public class CrystalFeature extends Feature {
 	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER_RL = new ResourceLocation("endergetic:crystal_holder");
 
 	public static EnderCrystalEntity generateCrystalInTower(World world, double x, double y, double z) {
-		Vector3d centerPodium = Vector3d.copyCenteredHorizontally(world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
+		Vector3d centerPodium = Vector3d.atBottomCenterOf(world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
 
 		int spawnY = (int) (y - RandomHelper.getInt(world.getRandom(), 12, 24));
-		if (spawnY < centerPodium.getY())
-			spawnY = (int) centerPodium.getY();
+		if (spawnY < centerPodium.y())
+			spawnY = (int) centerPodium.y();
 		BlockPos crystalPos = new BlockPos(x, spawnY, z);
 
-		Stream<BlockPos> blocks = BlockPos.getAllInBox(crystalPos.add(-1, -1, -1), crystalPos.add(1, 1, 1));
+		Stream<BlockPos> blocks = BlockPos.betweenClosedStream(crystalPos.offset(-1, -1, -1), crystalPos.offset(1, 1, 1));
 
-		blocks.forEach(pos -> world.setBlockState(pos, Blocks.AIR.getDefaultState()));
+		blocks.forEach(pos -> world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
 
-		BlockState baseBlockState = Blocks.BEDROCK.getDefaultState();
+		BlockState baseBlockState = Blocks.BEDROCK.defaultBlockState();
 		if (ModList.get().isLoaded("endergetic"))
 			if (ForgeRegistries.BLOCKS.containsKey(ENDERGETIC_CRYSTAL_HOLDER_RL))
-				baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_HOLDER_RL).getDefaultState();
+				baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_HOLDER_RL).defaultBlockState();
 			else
 				LogHelper.warn("The Endergetic Expansion is loaded but the %s block was not registered", ENDERGETIC_CRYSTAL_HOLDER_RL);
-		world.setBlockState(crystalPos.add(0, -1, 0), baseBlockState);
+		world.setBlockAndUpdate(crystalPos.offset(0, -1, 0), baseBlockState);
 
-		world.createExplosion(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.Mode.DESTROY);
+		world.explode(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.Mode.DESTROY);
 
 		EnderCrystalEntity crystal = new EnderCrystalEntity(world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
-		world.addEntity(crystal);
+		world.addFreshEntity(crystal);
 
 		return crystal;
 	}
@@ -293,8 +293,8 @@ public class CrystalFeature extends Feature {
 					if (flag || flag1 || flag2) {
 						boolean flag3 = k == -2 || k == 2 || flag2;
 						boolean flag4 = l == -2 || l == 2 || flag2;
-						BlockState blockstate = Blocks.IRON_BARS.getDefaultState().with(PaneBlock.NORTH, flag3 && l != -2).with(PaneBlock.SOUTH, flag3 && l != 2).with(PaneBlock.WEST, flag4 && k != -2).with(PaneBlock.EAST, flag4 && k != 2);
-						world.setBlockState(blockpos$mutable.setPos(pos.getX() + k, pos.getY() - 1 + i1, pos.getZ() + l), blockstate);
+						BlockState blockstate = Blocks.IRON_BARS.defaultBlockState().setValue(PaneBlock.NORTH, flag3 && l != -2).setValue(PaneBlock.SOUTH, flag3 && l != 2).setValue(PaneBlock.WEST, flag4 && k != -2).setValue(PaneBlock.EAST, flag4 && k != 2);
+						world.setBlockAndUpdate(blockpos$mutable.set(pos.getX() + k, pos.getY() - 1 + i1, pos.getZ() + l), blockstate);
 					}
 				}
 			}

@@ -155,7 +155,7 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void onWitherSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -174,7 +174,7 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().world.isRemote)
+		if (event.getEntity().world.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -214,7 +214,7 @@ public class MinionFeature extends Feature {
 		if (players.isEmpty())
 			return;
 
-		List<WitherMinionEntity> minionsInAABB = world.getLoadedEntitiesWithinAABB(WitherMinionEntity.class, wither.getBoundingBox().grow(16));
+		List<WitherMinionEntity> minionsInAABB = world.getLoadedEntitiesWithinAABB(WitherMinionEntity.class, wither.getBoundingBox().inflate(16));
 		int minionsCountInAABB = minionsInAABB.size();
 
 		if (minionsCountInAABB >= this.maxAround)
@@ -234,9 +234,9 @@ public class MinionFeature extends Feature {
 			int x = 0, y = 0, z = 0;
 			//Tries to spawn the Minion up to 5 times
 			for (int t = 0; t < 5; t++) {
-				x = (int) (wither.getPosX() + (RandomHelper.getInt(world.rand, -3, 3)));
-				y = (int) (wither.getPosY() + 3);
-				z = (int) (wither.getPositionVec().getZ() + (RandomHelper.getInt(world.rand, -3, 3)));
+				x = (int) (wither.getX() + (RandomHelper.getInt(world.rand, -3, 3)));
+				y = (int) (wither.getY() + 3);
+				z = (int) (wither.getZ() + (RandomHelper.getInt(world.rand, -3, 3)));
 
 				y = getYSpawn(PBEntities.WITHER_MINION.get(), new BlockPos(x, y, z), world, 8);
 				if (y != -1)
@@ -285,7 +285,7 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
-		if (event.getEntity().world.isRemote)
+		if (event.getEntity().world.isClientSide)
 			return;
 
 		if (!this.isEnabled())

@@ -39,7 +39,7 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDamageDealt(LivingHurtEvent event) {
-		if (event.getEntity().getEntityWorld().isRemote)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -48,12 +48,12 @@ public class AttackFeature extends Feature {
 		if (this.bonusDamagePer == 0d)
 			return;
 
-		if (!(event.getSource().getTrueSource() instanceof ElderGuardianEntity))
+		if (!(event.getSource().getEntity() instanceof ElderGuardianEntity))
 			return;
 
-		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getSource().getTrueSource();
+		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getSource().getEntity();
 
-		int elderGuardiansNearby = elderGuardian.world.getEntitiesInAABBexcluding(elderGuardian, elderGuardian.getBoundingBox().grow(48d), entity -> entity instanceof ElderGuardianEntity).size();
+		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardianEntity).size();
 		if (elderGuardiansNearby == 2)
 			return;
 
@@ -67,7 +67,7 @@ public class AttackFeature extends Feature {
 	public int getAttackDuration(ElderGuardianEntity elderGuardian) {
 		if (!this.isEnabled() || this.attackDurationReduction == 0)
 			return BASE_ATTACK_DURATION;
-		int elderGuardiansNearby = elderGuardian.world.getEntitiesInAABBexcluding(elderGuardian, elderGuardian.getBoundingBox().grow(48d), entity -> entity instanceof ElderGuardianEntity).size();
+		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardianEntity).size();
 		if (elderGuardiansNearby == 2)
 			return BASE_ATTACK_DURATION;
 

@@ -22,50 +22,50 @@ public class DragonMinionAttackGoal extends Goal {
     public DragonMinionAttackGoal(ShulkerEntity shulker, int attackInterval) {
         this.shulker = shulker;
         this.baseAttackInterval = attackInterval;
-        this.setMutexFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
-    public boolean shouldExecute() {
-        LivingEntity livingentity = shulker.getAttackTarget();
+    public boolean canUse() {
+        LivingEntity livingentity = shulker.getTarget();
         if (livingentity != null && livingentity.isAlive()) {
-            return shulker.world.getDifficulty() != Difficulty.PEACEFUL;
+            return shulker.level.getDifficulty() != Difficulty.PEACEFUL;
         } else {
             return false;
         }
     }
 
-    public void startExecuting() {
+    public void start() {
         this.attackTime = this.baseAttackInterval;
-        shulker.updateArmorModifier(100);
+        shulker.setRawPeekAmount(100);
     }
 
-    public void resetTask() {
-        shulker.updateArmorModifier(0);
+    public void stop() {
+        shulker.setRawPeekAmount(0);
     }
 
     public void tick() {
-        if (shulker.world.getDifficulty() == Difficulty.PEACEFUL)
+        if (shulker.level.getDifficulty() == Difficulty.PEACEFUL)
             return;
 
         --this.attackTime;
-        LivingEntity livingentity = shulker.getAttackTarget();
+        LivingEntity livingentity = shulker.getTarget();
         if (livingentity == null)
             return;
-        shulker.getLookController().setLookPositionWithEntity(livingentity, 180.0F, 180.0F);
-        double d0 = shulker.getDistanceSq(livingentity.getPositionVec());
+        shulker.getLookControl().setLookAt(livingentity, 180.0F, 180.0F);
+        double d0 = shulker.distanceToSqr(livingentity.position());
         if (d0 < 9216d) { //96 blocks
             if (this.attackTime <= 0) {
-                this.attackTime = this.baseAttackInterval + shulker.getRNG().nextInt(10) * this.baseAttackInterval / 2;
-                ShulkerBulletEntity bullet = new ShulkerBulletEntity(shulker.world, shulker, livingentity, shulker.getAttachmentFacing().getAxis());
+                this.attackTime = this.baseAttackInterval + shulker.getRandom().nextInt(10) * this.baseAttackInterval / 2;
+                ShulkerBulletEntity bullet = new ShulkerBulletEntity(shulker.level, shulker, livingentity, shulker.getAttachFace().getAxis());
                 if (DragonMinionHelper.isBlindingMinion(this.shulker)) {
                     CompoundNBT nbt = bullet.getPersistentData();
                     nbt.putBoolean(Strings.Tags.BLINDNESS_BULLET, true);
                 }
-                shulker.world.addEntity(bullet);
-                shulker.playSound(SoundEvents.ENTITY_SHULKER_SHOOT, 2.0F, (shulker.world.rand.nextFloat() - shulker.world.rand.nextFloat()) * 0.2F + 1.0F);
+                shulker.level.addFreshEntity(bullet);
+                shulker.playSound(SoundEvents.SHULKER_SHOOT, 2.0F, (shulker.level.random.nextFloat() - shulker.level.random.nextFloat()) * 0.2F + 1.0F);
             }
         } else {
-            shulker.setAttackTarget(null);
+            shulker.setTarget(null);
         }
 
         super.tick();

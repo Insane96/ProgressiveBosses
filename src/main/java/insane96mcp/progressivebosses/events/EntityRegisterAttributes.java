@@ -11,6 +11,6 @@ import net.minecraftforge.fml.common.Mod;
 public class EntityRegisterAttributes {
 	@SubscribeEvent
 	public static void registerAttributes(EntityAttributeCreationEvent event) {
-		event.put(PBEntities.WITHER_MINION.get(), WitherMinionEntity.prepareAttributes().create());
+		event.put(PBEntities.WITHER_MINION.get(), WitherMinionEntity.prepareAttributes().build());
 	}
 }

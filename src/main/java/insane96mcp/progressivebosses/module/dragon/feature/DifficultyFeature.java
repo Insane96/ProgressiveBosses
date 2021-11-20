@@ -72,13 +72,13 @@ public class DifficultyFeature extends Feature {
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
 			return;
 
-		if (!event.getWorld().getDimensionKey().getLocation().equals(DimensionType.THE_END.getLocation()))
+		if (!event.getWorld().dimension().location().equals(DimensionType.END_LOCATION.location()))
 			return;
 
 		if (!(event.getEntity() instanceof EnderDragonEntity))
@@ -86,7 +86,7 @@ public class DifficultyFeature extends Feature {
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 
-		if (dragon.getFightManager() == null)
+		if (dragon.getDragonFight() == null)
 			return;
 
 		CompoundNBT dragonTags = dragon.getPersistentData();
@@ -98,7 +98,7 @@ public class DifficultyFeature extends Feature {
 		BlockPos pos2 = new BlockPos(radius, radius, radius);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
-		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
 
 		if (players.size() == 0)
 			return;
@@ -129,7 +129,7 @@ public class DifficultyFeature extends Feature {
 	//Increase Player Difficulty
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
-		if (event.getEntity().world.isRemote)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -145,17 +145,17 @@ public class DifficultyFeature extends Feature {
 		BlockPos pos2 = new BlockPos(radius, radius, radius);
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 
-		List<ServerPlayerEntity> players = dragon.world.getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		List<ServerPlayerEntity> players = dragon.level.getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0) {
-			ServerPlayerEntity nearestPlayer = (ServerPlayerEntity) dragon.world.getClosestPlayer(dragon.getPosX(), dragon.getPosY(), dragon.getPosZ(), Double.MAX_VALUE, true);
+			ServerPlayerEntity nearestPlayer = (ServerPlayerEntity) dragon.level.getNearestPlayer(dragon.getX(), dragon.getY(), dragon.getZ(), Double.MAX_VALUE, true);
 			players.add(nearestPlayer);
 		}
 
 		for (ServerPlayerEntity player : players) {
 			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
 			if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstKilledDragonMessage)
-				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_DRAGON_KILL), Util.DUMMY_UUID);
+				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_DRAGON_KILL), Util.NIL_UUID);
 			if (difficulty.getKilledDragons() < this.maxDifficulty)
 				difficulty.addKilledDragons(1);
 		}
@@ -163,7 +163,7 @@ public class DifficultyFeature extends Feature {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void setPlayerData(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())

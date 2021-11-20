@@ -101,7 +101,7 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDragonSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -114,13 +114,13 @@ public class MinionFeature extends Feature {
 
 		CompoundNBT dragonTags = dragon.getPersistentData();
 
-		int cooldown = (int) (RandomHelper.getInt(dragon.getRNG(), this.minCooldown, this.maxCooldown) * 0.5d);
+		int cooldown = (int) (RandomHelper.getInt(dragon.getRandom(), this.minCooldown, this.maxCooldown) * 0.5d);
 		dragonTags.putInt(Strings.Tags.DRAGON_MINION_COOLDOWN, cooldown);
 	}
 
 	@SubscribeEvent
 	public void onShulkerSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isRemote)
+		if (event.getWorld().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -140,7 +140,7 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().world.isRemote)
+		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -149,7 +149,7 @@ public class MinionFeature extends Feature {
 		if (!(event.getEntity() instanceof EnderDragonEntity))
 			return;
 
-		World world = event.getEntity().world;
+		World world = event.getEntity().level;
 
 		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 		CompoundNBT dragonTags = dragon.getPersistentData();
@@ -168,9 +168,9 @@ public class MinionFeature extends Feature {
 		}
 
 		//If there is no player in the main island don't spawn minions
-		BlockPos centerPodium = dragon.world.getHeight(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).grow(96d);
-		List<ServerPlayerEntity> players = world.getLoadedEntitiesWithinAABB(ServerPlayerEntity.class, bb);
+		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).inflate(96d);
+		List<ServerPlayerEntity> players = world.getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
 
 		if (players.isEmpty())
 			return;
@@ -178,20 +178,20 @@ public class MinionFeature extends Feature {
 		int minCooldown = this.minCooldown;
 		int maxCooldown = this.maxCooldown;
 
-		cooldown = RandomHelper.getInt(world.rand, minCooldown, maxCooldown);
+		cooldown = RandomHelper.getInt(world.random, minCooldown, maxCooldown);
 		cooldown *= 1 - this.cooldownReduction * difficulty;
 		dragonTags.putInt(Strings.Tags.DRAGON_MINION_COOLDOWN, cooldown - 1);
 
-		float angle = world.rand.nextFloat() * (float) Math.PI * 2f;
-		float x = (float) (Math.cos(angle) * (RandomHelper.getFloat(dragon.getRNG(), 16f, 46f)));
-		float z = (float) (Math.sin(angle) * (RandomHelper.getFloat(dragon.getRNG(), 16f, 46f)));
-		float y = world.getHeight(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
+		float angle = world.random.nextFloat() * (float) Math.PI * 2f;
+		float x = (float) (Math.cos(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 46f)));
+		float z = (float) (Math.sin(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 46f)));
+		float y = world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
 		ShulkerEntity shulker = summonMinion(world, new Vector3d(x, y, z), difficulty);
 	}
 
 	private static void setMinionAI(ShulkerEntity shulker) {
 		ArrayList<Goal> toRemove = new ArrayList<>();
-		shulker.goalSelector.goals.forEach(goal -> {
+		shulker.goalSelector.availableGoals.forEach(goal -> {
 			if (goal.getGoal() instanceof ShulkerEntity.AttackGoal)
 				toRemove.add(goal.getGoal());
 		});
@@ -199,7 +199,7 @@ public class MinionFeature extends Feature {
 		shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 70));
 
 		toRemove.clear();
-		shulker.targetSelector.goals.forEach(goal -> {
+		shulker.targetSelector.availableGoals.forEach(goal -> {
 			if (goal.getGoal() instanceof NearestAttackableTargetGoal)
 				toRemove.add(goal.getGoal());
 			if (goal.getGoal() instanceof HurtByTargetGoal)
@@ -221,17 +221,17 @@ public class MinionFeature extends Feature {
 
 		boolean isBlindingMinion = world.getRandom().nextDouble() < this.blindingChance * difficulty;
 
-		shulker.setPosition(pos.x, pos.y, pos.z);
+		shulker.setPos(pos.x, pos.y, pos.z);
 		shulker.setCustomName(new TranslationTextComponent(Strings.Translatable.DRAGON_MINION));
-		shulker.deathLootTable = LootTables.EMPTY;
-		shulker.enablePersistence();
+		shulker.lootTable = LootTables.EMPTY;
+		shulker.setPersistenceRequired();
 		DragonMinionHelper.setMinionColor(shulker, isBlindingMinion);
 
 		ModifiableAttributeInstance followRange = shulker.getAttribute(Attributes.FOLLOW_RANGE);
 		AttributeModifier followRangeBonus = new AttributeModifier(Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 64, AttributeModifier.Operation.ADDITION);
-		followRange.applyPersistentModifier(followRangeBonus);
+		followRange.addPermanentModifier(followRangeBonus);
 
-		world.addEntity(shulker);
+		world.addFreshEntity(shulker);
 		return shulker;
 	}
 
@@ -251,27 +251,27 @@ public class MinionFeature extends Feature {
 		if (!compoundNBT.contains(Strings.Tags.DRAGON_MINION))
 			return;
 
-		if (event.getSource().getTrueSource() instanceof EnderDragonEntity || event.getSource().getImmediateSource() instanceof EnderDragonEntity)
+		if (event.getSource().getEntity() instanceof EnderDragonEntity || event.getSource().getDirectEntity() instanceof EnderDragonEntity)
 			event.setCanceled(true);
 	}
 
 	public void onBulletTick(ShulkerBulletEntity shulkerBulletEntity) {
-		if (!shulkerBulletEntity.world.isRemote && shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET)) {
-			((ServerWorld)shulkerBulletEntity.world).spawnParticle(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getPosX(), shulkerBulletEntity.getPosY(), shulkerBulletEntity.getPosZ(), 1, 0d, 0d, 0d, 0d);
+		if (!shulkerBulletEntity.level.isClientSide && shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET)) {
+			((ServerWorld)shulkerBulletEntity.level).sendParticles(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getX(), shulkerBulletEntity.getY(), shulkerBulletEntity.getZ(), 1, 0d, 0d, 0d, 0d);
 		}
 	}
 
 	public void onBulletEntityHit(ShulkerBulletEntity shulkerBulletEntity, EntityRayTraceResult rayTraceResult) {
 		Entity entityHit = rayTraceResult.getEntity();
-		Entity entityOwner = shulkerBulletEntity.getShooter();
+		Entity entityOwner = shulkerBulletEntity.getOwner();
 		LivingEntity livingEntityOwner = entityOwner instanceof LivingEntity ? (LivingEntity)entityOwner : null;
-		boolean flag = entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(shulkerBulletEntity, livingEntityOwner).setProjectile(), 4.0F);
+		boolean flag = entityHit.hurt(DamageSource.indirectMobAttack(shulkerBulletEntity, livingEntityOwner).setProjectile(), 4.0F);
 		if (flag) {
-			shulkerBulletEntity.applyEnchantments(livingEntityOwner, entityHit);
+			shulkerBulletEntity.doEnchantDamageEffects(livingEntityOwner, entityHit);
 			if (entityHit instanceof LivingEntity) {
-				((LivingEntity)entityHit).addPotionEffect(new EffectInstance(Effects.LEVITATION, 200));
+				((LivingEntity)entityHit).addEffect(new EffectInstance(Effects.LEVITATION, 200));
 				if (shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-					((LivingEntity)entityHit).addPotionEffect(new EffectInstance(Effects.BLINDNESS, 150));
+					((LivingEntity)entityHit).addEffect(new EffectInstance(Effects.BLINDNESS, 150));
 			}
 		}
 	}
