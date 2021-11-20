@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.dragon.ai.PBNearestAttackableTargetGoal;
@@ -10,7 +11,6 @@ import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
@@ -208,27 +208,11 @@ public class LarvaFeature extends Feature {
 		endermite.lootTable = LootTables.EMPTY;
 		endermite.setPersistenceRequired();
 
-		ModifiableAttributeInstance followRange = endermite.getAttribute(Attributes.FOLLOW_RANGE);
-		AttributeModifier followRangeBonus = new AttributeModifier(Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 64, AttributeModifier.Operation.ADDITION);
-		followRange.addPermanentModifier(followRangeBonus);
-
-		ModifiableAttributeInstance movementSpeed = endermite.getAttribute(Attributes.MOVEMENT_SPEED);
-		AttributeModifier movementSpeedModifier = new AttributeModifier(Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, 0.75d, AttributeModifier.Operation.MULTIPLY_BASE);
-		movementSpeed.addPermanentModifier(movementSpeedModifier);
-
-		ModifiableAttributeInstance maxHealth = endermite.getAttribute(Attributes.MAX_HEALTH);
-		AttributeModifier maxHealthModifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, -0.5, AttributeModifier.Operation.MULTIPLY_BASE);
-		maxHealth.addPermanentModifier(maxHealthModifier);
-
-		ModifiableAttributeInstance attackDamage = endermite.getAttribute(Attributes.ATTACK_DAMAGE);
-		AttributeModifier attackDamageModifier = new AttributeModifier(Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS_UUID, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS, 0.35 * difficulty, AttributeModifier.Operation.ADDITION);
-		attackDamage.addPermanentModifier(attackDamageModifier);
-
-		ModifiableAttributeInstance swimSpeed = endermite.getAttribute(ForgeMod.SWIM_SPEED.get());
-		if (swimSpeed != null) {
-			AttributeModifier swimSpeedBonus = new AttributeModifier(Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 3d, AttributeModifier.Operation.MULTIPLY_BASE);
-			swimSpeed.addPermanentModifier(swimSpeedBonus);
-		}
+		MCUtils.applyModifier(endermite, Attributes.FOLLOW_RANGE, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 64, AttributeModifier.Operation.ADDITION);
+		MCUtils.applyModifier(endermite, Attributes.MOVEMENT_SPEED, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, 0.75d, AttributeModifier.Operation.MULTIPLY_BASE);
+		MCUtils.applyModifier(endermite, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, -0.5, AttributeModifier.Operation.MULTIPLY_BASE);
+		MCUtils.applyModifier(endermite, Attributes.ATTACK_DAMAGE, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS_UUID, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS, 0.35 * difficulty, AttributeModifier.Operation.ADDITION);
+		MCUtils.applyModifier(endermite, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 3d, AttributeModifier.Operation.MULTIPLY_BASE);
 
 		world.addFreshEntity(endermite);
 		return endermite;

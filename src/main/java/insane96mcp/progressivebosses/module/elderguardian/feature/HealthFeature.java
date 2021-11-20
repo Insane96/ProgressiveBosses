@@ -3,11 +3,11 @@ package insane96mcp.progressivebosses.module.elderguardian.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.monster.ElderGuardianEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -70,14 +70,10 @@ public class HealthFeature extends Feature {
 
 		nbt.putBoolean(Strings.Tags.DIFFICULTY, true);
 
-		if (this.bonusHealth != 0d) {
+		if (this.bonusHealth > 0d) {
 			if (elderGuardian.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
 				return;
-
-			ModifiableAttributeInstance health = elderGuardian.getAttribute(Attributes.MAX_HEALTH);
-			AttributeModifier modifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, this.bonusHealth, AttributeModifier.Operation.MULTIPLY_BASE);
-			health.addPermanentModifier(modifier);
-			elderGuardian.setHealth(elderGuardian.getMaxHealth());
+			MCUtils.applyModifier(elderGuardian, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, this.bonusHealth, AttributeModifier.Operation.MULTIPLY_BASE);
 		}
 
 		if (this.absorptionHealth > 0d)

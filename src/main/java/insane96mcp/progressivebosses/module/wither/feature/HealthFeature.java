@@ -3,11 +3,11 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -70,16 +70,12 @@ public class HealthFeature extends Feature {
 
 		CompoundNBT witherTags = wither.getPersistentData();
 		double difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
-		ModifiableAttributeInstance health = wither.getAttribute(Attributes.MAX_HEALTH);
-		AttributeModifier modifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
-		health.addPermanentModifier(modifier);
+		MCUtils.applyModifier(wither, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
 
 		boolean hasInvulTicks = wither.getInvulnerableTicks() > 0;
 
 		if (hasInvulTicks)
-			wither.setHealth(Math.max(1, (float) health.getValue() - 200));
-		else
-			wither.setHealth((float) health.getValue());
+			wither.setHealth(Math.max(1, (float) wither.getMaxHealth() - 200));
 	}
 
 	@SubscribeEvent

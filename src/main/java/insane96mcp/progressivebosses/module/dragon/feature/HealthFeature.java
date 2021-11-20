@@ -4,12 +4,12 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.LogHelper;
+import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.phase.PhaseType;
 import net.minecraft.nbt.CompoundNBT;
@@ -79,10 +79,7 @@ public class HealthFeature extends Feature {
 
 		CompoundNBT dragonTags = enderDragon.getPersistentData();
 		double difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
-		ModifiableAttributeInstance health = enderDragon.getAttribute(Attributes.MAX_HEALTH);
-		AttributeModifier modifier = new AttributeModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
-		health.addPermanentModifier(modifier);
-		enderDragon.setHealth(enderDragon.getMaxHealth());
+		MCUtils.applyModifier(enderDragon, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
 	}
 
 	@SubscribeEvent

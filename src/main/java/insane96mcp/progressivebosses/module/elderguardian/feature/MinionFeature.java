@@ -3,12 +3,12 @@ package insane96mcp.progressivebosses.module.elderguardian.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
@@ -174,18 +174,12 @@ public class MinionFeature extends Feature {
 		elderMinion.lootTable = LootTables.EMPTY;
 		elderMinion.setPersistenceRequired();
 
-		ModifiableAttributeInstance swimSpeed = elderMinion.getAttribute(ForgeMod.SWIM_SPEED.get());
-		if (swimSpeed != null) {
-			AttributeModifier swimSpeedBonus = new AttributeModifier(Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);
-			swimSpeed.addPermanentModifier(swimSpeedBonus);
-		}
+		MCUtils.applyModifier(elderMinion, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);
 
 		ArrayList<Goal> goalsToRemove = new ArrayList<>();
 		for (PrioritizedGoal prioritizedGoal : elderMinion.targetSelector.availableGoals) {
 			if (!(prioritizedGoal.getGoal() instanceof NearestAttackableTargetGoal))
 				continue;
-
-			NearestAttackableTargetGoal<?> goal = (NearestAttackableTargetGoal<?>) prioritizedGoal.getGoal();
 
 			goalsToRemove.add(prioritizedGoal.getGoal());
 		}
