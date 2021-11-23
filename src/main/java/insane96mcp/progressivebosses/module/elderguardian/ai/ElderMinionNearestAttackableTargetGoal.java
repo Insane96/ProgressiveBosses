@@ -20,8 +20,6 @@ public class ElderMinionNearestAttackableTargetGoal<T extends LivingEntity> exte
 	/** This filter is applied to the Entity search. Only matching entities will be targeted. */
 	public EntityPredicate targetEntitySelector;
 
-	private boolean xray;
-
 	public ElderMinionNearestAttackableTargetGoal(MobEntity goalOwnerIn, Class<T> targetClassIn, boolean checkSight) {
 		this(goalOwnerIn, targetClassIn, checkSight, false);
 	}
@@ -35,7 +33,7 @@ public class ElderMinionNearestAttackableTargetGoal<T extends LivingEntity> exte
 		this.targetClass = targetClassIn;
 		this.targetChance = 10;
 		this.setFlags(EnumSet.of(Goal.Flag.TARGET));
-		EntityPredicate predicate = (new EntityPredicate()).range(this.getFollowDistance()).selector(targetPredicate);
+		EntityPredicate predicate = (new EntityPredicate()).range(this.getFollowDistance()).selector(targetPredicate).allowUnseeable();
 		this.targetEntitySelector = predicate;
 	}
 
@@ -73,14 +71,5 @@ public class ElderMinionNearestAttackableTargetGoal<T extends LivingEntity> exte
 	public void start() {
 		this.mob.setTarget(this.nearestTarget);
 		super.start();
-	}
-
-	public void setInstaTarget(boolean instaTarget) {
-		this.targetChance = instaTarget ? 0 : 10;
-	}
-
-	public void setXray(boolean xray) {
-		this.xray = xray;
-		this.targetEntitySelector.allowUnseeable();
 	}
 }

@@ -8,6 +8,8 @@
   "progressivebosses:dragon_minion": "Dragon Minion",
   "death.attack.progressivebosses:dragon_fireball": "%1$s was fireballed by %2$s",
 
+  "progressivebosses:elder_minion": "Elder Minion",
+
   "progressivebosses:command.player_get_wither_difficulty": "%s has summoned %d Withers",
   "progressivebosses:command.player_get_dragon_difficulty": "%s has killed %d Dragons",
   "progressivebosses:command.player_set_boss_difficulty": "Set %s's %s difficulty to %d",

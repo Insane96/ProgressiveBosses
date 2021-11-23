@@ -14,31 +14,32 @@ import net.minecraft.util.Util;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.GameType;
 import net.minecraft.world.server.ServerWorld;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-@Label(name = "Adventure", description = "Player's not able to break blocks while in range of Elder Guardians.")
-public class AdventureFeature extends Feature {
+@Label(name = "Base", description = "Base feature for the Elder Guardian harder fights. Disabling this feature will disable the added sound when an Elder Guardian is killed.")
+public class BaseFeature extends Feature {
 
-	//private final ForgeConfigSpec.ConfigValue<Double> bonusHealthConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> adventureConfig;
 
-	//public double bonusHealth = 0d;
+	public boolean adventure = true;
 
-	public AdventureFeature(Module module) {
+	public BaseFeature(Module module) {
 		super(Config.builder, module);
-		/*this.pushConfig(Config.builder);
-		this.bonusHealthConfig = Config.builder
-				.comment("Increase Elder Guardians' Health by this percentage (1 = +100% health)")
-				.defineInRange("Health Bonus per Difficulty", this.bonusHealth, 0.0, Double.MAX_VALUE);
-		Config.builder.pop();*/
+		this.pushConfig(Config.builder);
+		this.adventureConfig = Config.builder
+				.comment("If true, the player will not be able to break blocks when an Elder Guardian is nearby.")
+				.define("Adventure mode", this.adventure);
+		Config.builder.pop();
 	}
 
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		//this.bonusHealth = this.bonusHealthConfig.get();
+		this.adventure = this.adventureConfig.get();
 	}
 
 	@SubscribeEvent
@@ -47,6 +48,9 @@ public class AdventureFeature extends Feature {
 			return;
 
 		if (!this.isEnabled())
+			return;
+
+		if (!this.adventure)
 			return;
 
 		if (event.player.tickCount % 20 != 0)
@@ -84,6 +88,9 @@ public class AdventureFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
+		if (!this.adventure)
+			return;
+
 		if (!(event.getEntity() instanceof ServerPlayerEntity))
 			return;
 
@@ -103,6 +110,9 @@ public class AdventureFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
+		if (!this.adventure)
+			return;
+
 		if (event.getExplosion().getExploder() == null)
 			return;
 
@@ -113,8 +123,8 @@ public class AdventureFeature extends Feature {
 
 	@SubscribeEvent
 	public void onElderGuardianDeath(LivingDeathEvent event) {
-		//if (!this.isEnabled())
-			//return;
+		if (!this.isEnabled())
+			return;
 
 		if (!(event.getEntity() instanceof ElderGuardianEntity))
 			return;
@@ -126,5 +136,10 @@ public class AdventureFeature extends Feature {
 			return;
 
 		elderGuardian.playSound(SoundEvents.ELDER_GUARDIAN_CURSE, 2f, 0.5f);
+	}
+
+	public static int getDeadElderGuardians(ElderGuardianEntity elderGuardian) {
+		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardianEntity).size();
+		return 2 - elderGuardiansNearby;
 	}
 }

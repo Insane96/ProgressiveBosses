@@ -2,27 +2,26 @@ package insane96mcp.progressivebosses.module.elderguardian;
 
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.progressivebosses.module.elderguardian.feature.AdventureFeature;
-import insane96mcp.progressivebosses.module.elderguardian.feature.AttackFeature;
-import insane96mcp.progressivebosses.module.elderguardian.feature.HealthFeature;
-import insane96mcp.progressivebosses.module.elderguardian.feature.ResistancesFeature;
+import insane96mcp.progressivebosses.module.elderguardian.feature.*;
 import insane96mcp.progressivebosses.setup.Config;
 
 @Label(name = "Elder Guardian")
 public class ElderGuardianModule extends Module {
 
 	public HealthFeature health;
-	public AdventureFeature adventure;
+	public BaseFeature base;
 	public ResistancesFeature resistances;
 	public AttackFeature attack;
+	public MinionFeature minion;
 
 	public ElderGuardianModule() {
 		super(Config.builder);
 		pushConfig(Config.builder);
 		health = new HealthFeature(this);
-		adventure = new AdventureFeature(this);
+		base = new BaseFeature(this);
 		resistances = new ResistancesFeature(this);
 		attack = new AttackFeature(this);
+		minion = new MinionFeature(this);
 		Config.builder.pop();
 	}
 
@@ -30,8 +29,9 @@ public class ElderGuardianModule extends Module {
 	public void loadConfig() {
 		super.loadConfig();
 		health.loadConfig();
-		adventure.loadConfig();
+		base.loadConfig();
 		resistances.loadConfig();
 		attack.loadConfig();
+		minion.loadConfig();
 	}
 }

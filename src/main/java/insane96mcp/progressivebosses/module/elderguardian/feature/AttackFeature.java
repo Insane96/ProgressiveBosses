@@ -53,11 +53,7 @@ public class AttackFeature extends Feature {
 
 		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getSource().getEntity();
 
-		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardianEntity).size();
-		if (elderGuardiansNearby == 2)
-			return;
-
-		float bonusDamage = (float) (this.bonusDamagePer * (2 - elderGuardiansNearby));
+		float bonusDamage = (float) (this.bonusDamagePer * BaseFeature.getDeadElderGuardians(elderGuardian));
 
 		event.setAmount(event.getAmount() * (1f + bonusDamage));
 	}

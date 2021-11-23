@@ -30,8 +30,8 @@ public class Strings {
 
 		public static final String PREVIOUSLY_NEAR_ELDER_GUARDIAN = ProgressiveBosses.RESOURCE_PREFIX + "previously_near_elder_guardian";
 		public static final String ADVENTURE_MESSAGE = ProgressiveBosses.RESOURCE_PREFIX + "adventure_message";
-		public static final String ELDER_GUARDIAN_MINION_COOLDOWN = "elder_guardian_minion_cooldown";
-		public static final String ELDER_GUARDIAN_MINION = "elder_guardian_minion";
+		public static final String ELDER_MINION_COOLDOWN = "elder_minion_cooldown";
+		public static final String ELDER_MINION = "elder_minion";
 	}
 
 	public static class AttributeModifiers {

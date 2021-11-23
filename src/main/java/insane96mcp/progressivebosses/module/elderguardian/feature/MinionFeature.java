@@ -4,8 +4,9 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
-import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.module.elderguardian.ai.ElderMinionAttackGoal;
+import insane96mcp.progressivebosses.module.elderguardian.ai.ElderMinionNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
@@ -14,6 +15,7 @@ import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.PrioritizedGoal;
 import net.minecraft.entity.monster.ElderGuardianEntity;
 import net.minecraft.entity.monster.GuardianEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundNBT;
@@ -31,27 +33,32 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-@Label(name = "Minions", description = "Elder Guardians got some help")
+@Label(name = "Minions", description = "Elder Guardians will spawn Elder Minions.")
 public class MinionFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Integer> minionPerMissingGuardianConfig;
+	private final ForgeConfigSpec.ConfigValue<Integer> baseCooldownConfig;
+	private final ForgeConfigSpec.ConfigValue<Integer> cooldownReductionPerMissingGuardianConfig;
 
-	public int minionPerMissingGuardian = 1;
+	public int baseCooldown = 200;
+	public int cooldownReductionPerMissingGuardian = 60;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
-		minionPerMissingGuardianConfig = Config.builder
-				.comment("Elder Guardians will spawn this_value * missing_elder_guardians amount of minions.")
-				.defineInRange("Minion per Missing Elder Guardian", minionPerMissingGuardian, 0, Integer.MAX_VALUE);
-
+		baseCooldownConfig = Config.builder
+				.comment("Elder Guardians will spawn Elder Minions every this tick value (20 ticks = 1 sec).")
+				.defineInRange("Base Cooldown", this.baseCooldown, 0, Integer.MAX_VALUE);
+		cooldownReductionPerMissingGuardianConfig = Config.builder
+				.comment("The base cooldown is reduced by this value for each missing Elder Guardian.")
+				.defineInRange("Cooldown Reduction per Missing Elder", this.cooldownReductionPerMissingGuardian, 0, Integer.MAX_VALUE);
 		Config.builder.pop();
 	}
 
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.minionPerMissingGuardian = this.minionPerMissingGuardianConfig.get();
+		this.baseCooldown = this.baseCooldownConfig.get();
+		this.cooldownReductionPerMissingGuardian = this.cooldownReductionPerMissingGuardianConfig.get();
 	}
 
 	@SubscribeEvent
@@ -69,8 +76,7 @@ public class MinionFeature extends Feature {
 
 		CompoundNBT witherTags = elderGuardian.getPersistentData();
 
-		//TODO move to config, 10 seconds
-		witherTags.putInt(Strings.Tags.ELDER_GUARDIAN_MINION_COOLDOWN, 200);
+		witherTags.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, this.baseCooldown);
 	}
 
 	@SubscribeEvent
@@ -91,12 +97,12 @@ public class MinionFeature extends Feature {
 
 		if (elderGuardian.getHealth() <= 0)
 			return;
-
-		int cooldown = elderGuardianTags.getInt(Strings.Tags.ELDER_GUARDIAN_MINION_COOLDOWN);
+		int cooldown = elderGuardianTags.getInt(Strings.Tags.ELDER_MINION_COOLDOWN);
 		if (cooldown > 0) {
-			elderGuardianTags.putInt(Strings.Tags.ELDER_GUARDIAN_MINION_COOLDOWN, cooldown - 1);
+			elderGuardianTags.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, cooldown - 1);
 			return;
 		}
+		elderGuardianTags.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, this.baseCooldown - (this.cooldownReductionPerMissingGuardian * BaseFeature.getDeadElderGuardians(elderGuardian)));
 
 		//If there is no player in a radius from the elderGuardian, don't spawn minions
 		int radius = 24;
@@ -108,58 +114,13 @@ public class MinionFeature extends Feature {
 		if (players.isEmpty())
 			return;
 
-		List<GuardianEntity> minionsInAABB = world.getLoadedEntitiesOfClass(GuardianEntity.class, elderGuardian.getBoundingBox().inflate(16), entity -> entity.getPersistentData().contains(Strings.Tags.ELDER_GUARDIAN_MINION));
+		List<GuardianEntity> minionsInAABB = world.getLoadedEntitiesOfClass(GuardianEntity.class, elderGuardian.getBoundingBox().inflate(16), entity -> entity.getPersistentData().contains(Strings.Tags.ELDER_MINION));
 		int minionsCountInAABB = minionsInAABB.size();
 
 		if (minionsCountInAABB >= 5)
 			return;
 
-		elderGuardianTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, 200);
-
-		int x = 0, y = 0, z = 0;
-		//Tries to spawn the Minion up to 5 times
-		for (int t = 0; t < 5; t++) {
-			x = (int) (elderGuardian.getX() + (RandomHelper.getInt(world.random, -3, 3)));
-			y = (int) (elderGuardian.getY() + 3);
-			z = (int) (elderGuardian.getZ() + (RandomHelper.getInt(world.random, -3, 3)));
-
-			y = getYSpawn(EntityType.GUARDIAN, new BlockPos(x, y, z), world, 8);
-			if (y != -1)
-				break;
-		}
-		if (y <= 0)
-			return;
-
-		GuardianEntity guardianEntity = summonMinion(world, new Vector3d(x + 0.5, y + 0.5, z + 0.5));
-	}
-
-	/**
-	 * Returns -1 when no spawn spots are found, otherwise the Y coord
-	 * @param pos
-	 * @param world
-	 * @param minRelativeY
-	 * @return
-	 */
-	private static int getYSpawn(EntityType entityType, BlockPos pos, World world, int minRelativeY) {
-		int height = (int) Math.ceil(entityType.getHeight());
-		int fittingYPos = -1;
-		for (int y = pos.getY(); y > pos.getY() - minRelativeY; y--) {
-			boolean viable = true;
-			BlockPos p = new BlockPos(pos.getX(), y, pos.getZ());
-			for (int i = 0; i < height; i++) {
-				if (world.getBlockState(p.above(i)).getMaterial().blocksMotion()) {
-					viable = false;
-					break;
-				}
-			}
-			if (!viable)
-				continue;
-			fittingYPos = y;
-			if (!world.getBlockState(p.below()).getMaterial().blocksMotion())
-				continue;
-			return y;
-		}
-		return fittingYPos;
+		summonMinion(world, new Vector3d(elderGuardian.getX(), elderGuardian.getY(), elderGuardian.getZ()));
 	}
 
 	public GuardianEntity summonMinion(World world, Vector3d pos) {
@@ -185,6 +146,19 @@ public class MinionFeature extends Feature {
 		}
 
 		goalsToRemove.forEach(elderMinion.goalSelector::removeGoal);
+
+		goalsToRemove.clear();
+		for (PrioritizedGoal prioritizedGoal : elderMinion.goalSelector.availableGoals) {
+			if (!(prioritizedGoal.getGoal() instanceof GuardianEntity.AttackGoal))
+				continue;
+
+			goalsToRemove.add(prioritizedGoal.getGoal());
+		}
+
+		goalsToRemove.forEach(elderMinion.goalSelector::removeGoal);
+
+		elderMinion.goalSelector.addGoal(4, new ElderMinionAttackGoal(elderMinion));
+		elderMinion.targetSelector.addGoal(1, new ElderMinionNearestAttackableTargetGoal<>(elderMinion, PlayerEntity.class, true));
 
 		world.addFreshEntity(elderMinion);
 		return elderMinion;

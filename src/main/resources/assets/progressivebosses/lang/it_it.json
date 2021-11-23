@@ -8,6 +8,8 @@
   "progressivebosses:dragon_minion": "Minion del Drago",
   "death.attack.progressivebosses:dragon_fireball": "%1$s è stato ucciso da palla di acido di %2$s",
 
+  "progressivebosses:elder_minion": "Minion Antico",
+
   "progressivebosses:command.player_get_wither_difficulty": "%s ha evocato %d Wither",
   "progressivebosses:command.player_get_dragon_difficulty": "%s ha ucciso %d Draghi",
   "progressivebosses:command.player_set_boss_difficulty": "Impostata la difficoltà di %s del %s a %d",
