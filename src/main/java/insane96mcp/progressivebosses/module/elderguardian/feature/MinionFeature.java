@@ -5,7 +5,6 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.base.Strings;
-import insane96mcp.progressivebosses.module.elderguardian.ai.ElderMinionAttackGoal;
 import insane96mcp.progressivebosses.module.elderguardian.ai.ElderMinionNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.entity.EntityType;
@@ -114,7 +113,7 @@ public class MinionFeature extends Feature {
 		if (players.isEmpty())
 			return;
 
-		List<GuardianEntity> minionsInAABB = world.getLoadedEntitiesOfClass(GuardianEntity.class, elderGuardian.getBoundingBox().inflate(16), entity -> entity.getPersistentData().contains(Strings.Tags.ELDER_MINION));
+		List<GuardianEntity> minionsInAABB = world.getLoadedEntitiesOfClass(GuardianEntity.class, elderGuardian.getBoundingBox().inflate(24), entity -> entity.getPersistentData().contains(Strings.Tags.ELDER_MINION));
 		int minionsCountInAABB = minionsInAABB.size();
 
 		if (minionsCountInAABB >= 5)
@@ -130,10 +129,11 @@ public class MinionFeature extends Feature {
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 		//TODO Scaling health
 
+		minionTags.putBoolean(Strings.Tags.ELDER_MINION, true);
+
 		elderMinion.setPos(pos.x, pos.y, pos.z);
 		elderMinion.setCustomName(new TranslationTextComponent(Strings.Translatable.ELDER_MINION));
 		elderMinion.lootTable = LootTables.EMPTY;
-		elderMinion.setPersistenceRequired();
 
 		MCUtils.applyModifier(elderMinion, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);
 
@@ -146,8 +146,9 @@ public class MinionFeature extends Feature {
 		}
 
 		goalsToRemove.forEach(elderMinion.goalSelector::removeGoal);
+		elderMinion.targetSelector.addGoal(1, new ElderMinionNearestAttackableTargetGoal<>(elderMinion, PlayerEntity.class, true));
 
-		goalsToRemove.clear();
+		/*goalsToRemove.clear();
 		for (PrioritizedGoal prioritizedGoal : elderMinion.goalSelector.availableGoals) {
 			if (!(prioritizedGoal.getGoal() instanceof GuardianEntity.AttackGoal))
 				continue;
@@ -157,8 +158,7 @@ public class MinionFeature extends Feature {
 
 		goalsToRemove.forEach(elderMinion.goalSelector::removeGoal);
 
-		elderMinion.goalSelector.addGoal(4, new ElderMinionAttackGoal(elderMinion));
-		elderMinion.targetSelector.addGoal(1, new ElderMinionNearestAttackableTargetGoal<>(elderMinion, PlayerEntity.class, true));
+		elderMinion.goalSelector.addGoal(4, new ElderMinionAttackGoal(elderMinion));*/
 
 		world.addFreshEntity(elderMinion);
 		return elderMinion;
