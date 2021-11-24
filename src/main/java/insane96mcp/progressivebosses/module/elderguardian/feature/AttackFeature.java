@@ -15,7 +15,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> attackDurationReductionConfig;
 
-	public double bonusDamagePer = 0.2d;
+	public double bonusDamage = 0d;
 	public int attackDurationReduction = 25;
 
 	public AttackFeature(Module module) {
@@ -23,7 +23,7 @@ public class AttackFeature extends Feature {
 		this.pushConfig(Config.builder);
 		bonusDamageConfig = Config.builder
 				.comment("Percentage Bonus damage per defeated Elder Guardian.")
-				.defineInRange("Bonus Damage per Elder Guardian Defeated", bonusDamagePer, 0d, 1d);
+				.defineInRange("Bonus Damage per Elder Guardian Defeated", bonusDamage, 0d, 128d);
 		attackDurationReductionConfig = Config.builder
 				.comment("How many ticks faster will Elder Guardian attack (multiplied by defeated Elder Guardians). Vanilla Attack Duration is 60 ticks (3 secs)")
 				.defineInRange("Attack Duration Reduction per Elder Guardian Defeated", attackDurationReduction, 0, 60);
@@ -33,7 +33,7 @@ public class AttackFeature extends Feature {
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.bonusDamagePer = this.bonusDamageConfig.get();
+		this.bonusDamage = this.bonusDamageConfig.get();
 		this.attackDurationReduction = this.attackDurationReductionConfig.get();
 	}
 
@@ -45,7 +45,7 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (this.bonusDamagePer == 0d)
+		if (this.bonusDamage == 0d)
 			return;
 
 		if (!(event.getSource().getEntity() instanceof ElderGuardianEntity))
@@ -53,7 +53,7 @@ public class AttackFeature extends Feature {
 
 		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getSource().getEntity();
 
-		float bonusDamage = (float) (this.bonusDamagePer * BaseFeature.getDeadElderGuardians(elderGuardian));
+		float bonusDamage = (float) (this.bonusDamage * BaseFeature.getDeadElderGuardians(elderGuardian));
 
 		event.setAmount(event.getAmount() * (1f + bonusDamage));
 	}
