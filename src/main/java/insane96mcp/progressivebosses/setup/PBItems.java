@@ -11,6 +11,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 public class PBItems {
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(ForgeRegistries.ITEMS, ProgressiveBosses.MOD_ID);
 
-    //TODO Maybe remove the stack limit?
-    public static final RegistryObject<Item> NETHER_STAR_SHARD = ITEMS.register(Strings.Items.NETHER_STAR_SHARD, () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS).stacksTo(32)));
+    public static final RegistryObject<Item> NETHER_STAR_SHARD = ITEMS.register(Strings.Items.NETHER_STAR_SHARD, () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
+    public static final RegistryObject<Item> ELDER_GUARDIAN_SPIKE = ITEMS.register(Strings.Items.ELDER_GUARDIAN_SPIKE, () -> new Item(new Item.Properties().tab(ItemGroup.TAB_MATERIALS)));
 }

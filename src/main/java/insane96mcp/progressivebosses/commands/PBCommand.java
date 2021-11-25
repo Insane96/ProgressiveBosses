@@ -93,7 +93,7 @@ public class PBCommand {
                     .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.DRAGON_LARVA))
                 )
                 .then(Commands.literal(Strings.Tags.ELDER_MINION)
-                        .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.ELDER_MINION))
+                    .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.ELDER_MINION))
                 )
             )
         );

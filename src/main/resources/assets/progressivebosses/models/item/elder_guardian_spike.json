@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "progressivebosses:item/elder_guardian_spike"
+  }
+}

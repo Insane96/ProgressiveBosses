@@ -30,8 +30,8 @@ public class Strings {
 
 		public static final String PREVIOUSLY_NEAR_ELDER_GUARDIAN = ProgressiveBosses.RESOURCE_PREFIX + "previously_near_elder_guardian";
 		public static final String ADVENTURE_MESSAGE = ProgressiveBosses.RESOURCE_PREFIX + "adventure_message";
-		public static final String ELDER_MINION_COOLDOWN = "elder_minion_cooldown";
-		public static final String ELDER_MINION = "elder_minion";
+		public static final String ELDER_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion_cooldown";
+		public static final String ELDER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion";
 	}
 
 	public static class AttributeModifiers {
@@ -55,8 +55,6 @@ public class Strings {
 		public static final String SUMMONED_ENTITY = ProgressiveBosses.RESOURCE_PREFIX + "command.summoned_entity";
 		public static final String SUMMON_ENTITY_INVALID = ProgressiveBosses.RESOURCE_PREFIX + "command.summon_entity_invalid";
 
-		public static final String WITHER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "wither_minion";
-
 		public static final String WITHER_CHARGE_ATTACK = ProgressiveBosses.RESOURCE_PREFIX + "wither_charge_attack";
 
 
@@ -73,5 +71,6 @@ public class Strings {
 	}
 	public static class Items {
 		public static final String NETHER_STAR_SHARD = "nether_star_shard";
+		public static final String ELDER_GUARDIAN_SPIKE = "elder_guardian_spike";
 	}
 }

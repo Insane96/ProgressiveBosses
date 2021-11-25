@@ -148,18 +148,6 @@ public class MinionFeature extends Feature {
 		goalsToRemove.forEach(elderMinion.goalSelector::removeGoal);
 		elderMinion.targetSelector.addGoal(1, new ElderMinionNearestAttackableTargetGoal<>(elderMinion, PlayerEntity.class, true));
 
-		/*goalsToRemove.clear();
-		for (PrioritizedGoal prioritizedGoal : elderMinion.goalSelector.availableGoals) {
-			if (!(prioritizedGoal.getGoal() instanceof GuardianEntity.AttackGoal))
-				continue;
-
-			goalsToRemove.add(prioritizedGoal.getGoal());
-		}
-
-		goalsToRemove.forEach(elderMinion.goalSelector::removeGoal);
-
-		elderMinion.goalSelector.addGoal(4, new ElderMinionAttackGoal(elderMinion));*/
-
 		world.addFreshEntity(elderMinion);
 		return elderMinion;
 	}

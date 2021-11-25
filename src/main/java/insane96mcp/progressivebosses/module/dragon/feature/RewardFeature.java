@@ -40,7 +40,7 @@ public class RewardFeature extends Feature {
 				.comment("If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg ìì will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
 				.define("Dragon Egg per Player", dragonEggPerPlayer);
 		dropsListConfig = Config.builder
-				.comment("A list of drops for the Withers. Entry format: item,amount,difficulty_required,chance,difficulty_mode,chance_mode\n" +
+				.comment("A list of drops for the Dragons. Entry format: item,amount,difficulty_required,chance,difficulty_mode,chance_mode\n" +
 						"item: item id\n" +
 						"amount: amount\n" +
 						"difficulty_required: the amount of difficulty required for the item to drop, works differently based on mode\n" +

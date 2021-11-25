@@ -6,8 +6,13 @@
   * Added Elder Minions
     * Every 10/7/4 seconds (for 0/1/2 missing Elder Guardians), Elder Guardians will spawn Elder Minions (Guardians)
     * Elder Minions swim faster and drop nothing but normal xp
+  * Added Rewards
+    * Elder Guardians now drop 40 xp instead of 10, increased by 100% per missing Elder Guardian
+    * Elder Guardians now drop 2 sponges + 2 sponges per missing Elder Guardian
+    * Elder Guardians drop an Elder Guardian Shard. 3 Elder Guardian Shards + 2 prismarine = Trident!
   * Explosions are no longer canceled when near an Elder Guardian. Instead, are set to break no blocks
   * Renamed Adventure feature to Base feature
+* Nether Star Shards no longer stack to 32
 * Fixed Wither Minions not spawning in spaces smaller than 3 blocks high
 
 ## Alpha 3.4.0

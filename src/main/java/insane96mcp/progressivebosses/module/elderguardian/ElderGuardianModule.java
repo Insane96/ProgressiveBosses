@@ -13,6 +13,7 @@ public class ElderGuardianModule extends Module {
 	public ResistancesFeature resistances;
 	public AttackFeature attack;
 	public MinionFeature minion;
+	public RewardFeature reward;
 
 	public ElderGuardianModule() {
 		super(Config.builder);
@@ -22,6 +23,7 @@ public class ElderGuardianModule extends Module {
 		resistances = new ResistancesFeature(this);
 		attack = new AttackFeature(this);
 		minion = new MinionFeature(this);
+		reward = new RewardFeature(this);
 		Config.builder.pop();
 	}
 
@@ -33,5 +35,6 @@ public class ElderGuardianModule extends Module {
 		resistances.loadConfig();
 		attack.loadConfig();
 		minion.loadConfig();
+		reward.loadConfig();
 	}
 }

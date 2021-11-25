@@ -1,5 +1,6 @@
 {
   "item.progressivebosses.nether_star_shard": "Scheggia di Stella del Nether",
+  "item.progressivebosses.elder_guardian_spike": "Spuntone di Guardiano Antico",
 
   "entity.progressivebosses.wither_minion": "Minion del Wither",
   "death.attack.progressivebosses:wither_charge_attack": "%1$s è stato caricato da %2$s",
