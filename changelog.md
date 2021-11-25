@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.4.1
 * Now requires InsaneLib 1.4.0
 * Elder Guardian
   * Added Elder Minions
@@ -11,6 +11,7 @@
     * Elder Guardians now drop 2 sponges + 2 sponges per missing Elder Guardian
     * Elder Guardians drop an Elder Guardian Shard. 3 Elder Guardian Shards + 2 prismarine = Trident!
   * Explosions are no longer canceled when near an Elder Guardian. Instead, are set to break no blocks
+  * Reduced bonus damage from Elder Guardians (+20% -> +10% per missing guardian)
   * Renamed Adventure feature to Base feature
 * Nether Star Shards no longer stack to 32
 * Fixed Wither Minions not spawning in spaces smaller than 3 blocks high
