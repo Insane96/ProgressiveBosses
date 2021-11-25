@@ -2,7 +2,7 @@ package insane96mcp.progressivebosses;
 
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.capability.DifficultyCapability;
-import insane96mcp.progressivebosses.commands.DifficultyCommand;
+import insane96mcp.progressivebosses.commands.PBCommand;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.*;
 import net.minecraft.entity.Entity;
@@ -57,6 +57,6 @@ public class ProgressiveBosses {
 
 	@SubscribeEvent
 	public void registerCommands(RegisterCommandsEvent event) {
-		DifficultyCommand.register(event.getDispatcher());
+		PBCommand.register(event.getDispatcher());
 	}
 }

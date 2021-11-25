@@ -12,6 +12,7 @@ import net.minecraft.network.play.server.SChangeGameStatePacket;
 import net.minecraft.util.SoundEvents;
 import net.minecraft.util.Util;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.GameType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -116,9 +117,14 @@ public class BaseFeature extends Feature {
 		if (event.getExplosion().getExploder() == null)
 			return;
 
+		if (event.getExplosion().blockInteraction == Explosion.Mode.NONE)
+			return;
+
 		boolean nearElderGuardian = !event.getWorld().getEntitiesOfClass(ElderGuardianEntity.class, event.getExplosion().getExploder().getBoundingBox().inflate(32d)).isEmpty();
-		if (nearElderGuardian)
+		if (nearElderGuardian) {
 			event.setCanceled(true);
+			event.getWorld().explode(event.getExplosion().getExploder(), event.getExplosion().getPosition().x, event.getExplosion().getPosition().y, event.getExplosion().getPosition().z, event.getExplosion().radius, event.getExplosion().fire, Explosion.Mode.NONE);
+		}
 	}
 
 	@SubscribeEvent

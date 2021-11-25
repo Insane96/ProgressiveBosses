@@ -15,9 +15,9 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class DifficultyCommand {
+public class PBCommand {
 
-    private DifficultyCommand() {
+    private PBCommand() {
 
     }
 
@@ -91,6 +91,9 @@ public class DifficultyCommand {
                         .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
                     .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.DRAGON_LARVA))
+                )
+                .then(Commands.literal(Strings.Tags.ELDER_MINION)
+                        .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.ELDER_MINION))
                 )
             )
         );
@@ -179,6 +182,11 @@ public class DifficultyCommand {
                 source.sendSuccess(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
                 return 1;
 
+            case Strings.Tags.ELDER_MINION:
+                Modules.elderGuardian.minion.summonMinion(source.getLevel(), source.getPosition());
+                source.sendSuccess(new TranslationTextComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslationTextComponent(entity), difficulty), true);
+                return 1;
+
             default:
                 source.sendSuccess(new TranslationTextComponent(Strings.Translatable.SUMMON_ENTITY_INVALID, entity), true);
                 return 0;
@@ -194,6 +202,8 @@ public class DifficultyCommand {
             return summon(source, entity, witherDifficulty.get());
         else if (entity.contains("dragon"))
             return summon(source, entity, dragonDifficulty.get());
+        else if (entity.contains("elder"))
+            return summon(source, entity, 0);
         return 0;
     }
 }
