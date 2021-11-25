@@ -113,7 +113,7 @@ public class MinionFeature extends Feature {
 		if (players.isEmpty())
 			return;
 
-		List<GuardianEntity> minionsInAABB = world.getLoadedEntitiesOfClass(GuardianEntity.class, elderGuardian.getBoundingBox().inflate(24), entity -> entity.getPersistentData().contains(Strings.Tags.ELDER_MINION));
+		List<GuardianEntity> minionsInAABB = world.getLoadedEntitiesOfClass(GuardianEntity.class, elderGuardian.getBoundingBox().inflate(12), entity -> entity.getPersistentData().contains(Strings.Tags.ELDER_MINION));
 		int minionsCountInAABB = minionsInAABB.size();
 
 		if (minionsCountInAABB >= 5)

@@ -6,6 +6,8 @@
   * Added Elder Minions
     * Every 10/7/4 seconds (for 0/1/2 missing Elder Guardians), Elder Guardians will spawn Elder Minions (Guardians)
     * Elder Minions swim faster and drop nothing but normal xp
+  * Explosions are no longer canceled when near an Elder Guardian. Instead, are set to break no blocks
+  * Renamed Adventure feature to Base feature
 * Fixed Wither Minions not spawning in spaces smaller than 3 blocks high
 
 ## Alpha 3.4.0
