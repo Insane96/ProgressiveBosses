@@ -1,16 +1,16 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
 import insane96mcp.progressivebosses.base.Strings;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.util.EnumSet;
 
 public class WitherDoNothingGoal extends Goal {
-	WitherBoss wither;
+	WitherEntity wither;
 
-	public WitherDoNothingGoal(WitherBoss wither) {
+	public WitherDoNothingGoal(WitherEntity wither) {
 		this.wither = wither;
 		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK));
 	}
@@ -20,7 +20,7 @@ public class WitherDoNothingGoal extends Goal {
 	 * method as well.
 	 */
 	public boolean canUse() {
-		CompoundTag tags = this.wither.getPersistentData();
+		CompoundNBT tags = this.wither.getPersistentData();
 		return this.wither.getInvulnerableTicks() > 0 && !tags.contains(Strings.Tags.CHARGE_ATTACK);
 	}
 }

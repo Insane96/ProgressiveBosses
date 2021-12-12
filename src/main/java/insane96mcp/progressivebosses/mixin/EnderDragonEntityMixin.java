@@ -1,25 +1,25 @@
 package insane96mcp.progressivebosses.mixin;
 
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.level.Level;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.util.DamageSource;
+import net.minecraft.util.EntityDamageSource;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(EnderDragon.class)
-public class EnderDragonEntityMixin extends Mob {
-	protected EnderDragonEntityMixin(EntityType<? extends Mob> type, Level worldIn) {
+@Mixin(EnderDragonEntity.class)
+public class EnderDragonEntityMixin extends MobEntity {
+	protected EnderDragonEntityMixin(EntityType<? extends MobEntity> type, World worldIn) {
 		super(type, worldIn);
 	}
 
-	@Inject(at = @At("HEAD"), method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", cancellable = true)
+	@Inject(at = @At("HEAD"), method = "hurt(Lnet/minecraft/util/DamageSource;F)Z", cancellable = true)
 	private void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {
-		EnderDragon $this = (EnderDragon) (Object) this;
+		EnderDragonEntity $this = (EnderDragonEntity) (Object) this;
 		if (source instanceof EntityDamageSource && !((EntityDamageSource)source).isThorns()) {
 			$this.hurt($this.getSubEntities()[2], source, amount);
 		}
