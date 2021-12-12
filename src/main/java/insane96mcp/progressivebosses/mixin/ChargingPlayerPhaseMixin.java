@@ -1,12 +1,12 @@
 package insane96mcp.progressivebosses.mixin;
 
 import insane96mcp.progressivebosses.module.Modules;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.phase.ChargingPlayerPhase;
-import net.minecraft.entity.boss.dragon.phase.IPhase;
-import net.minecraft.entity.boss.dragon.phase.Phase;
-import net.minecraft.entity.boss.dragon.phase.PhaseType;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonChargePlayerPhase;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Final;
@@ -16,8 +16,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(ChargingPlayerPhase.class)
-public abstract class ChargingPlayerPhaseMixin extends Phase {
+@Mixin(DragonChargePlayerPhase.class)
+public abstract class ChargingPlayerPhaseMixin extends AbstractDragonPhaseInstance {
 
 	@Shadow
 	@Final
@@ -25,9 +25,9 @@ public abstract class ChargingPlayerPhaseMixin extends Phase {
 	@Shadow
 	private int timeSinceCharge;
 	@Shadow
-	private Vector3d targetLocation;
+	private Vec3 targetLocation;
 
-	public ChargingPlayerPhaseMixin(EnderDragonEntity dragonIn) {
+	public ChargingPlayerPhaseMixin(EnderDragon dragonIn) {
 		super(dragonIn);
 	}
 
@@ -35,11 +35,11 @@ public abstract class ChargingPlayerPhaseMixin extends Phase {
 	public void doServerTick() {
 		if (this.targetLocation == null) {
 			LOGGER.warn("Aborting charge player as no target was set.");
-			this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+			this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
 		} else if (this.timeSinceCharge > 0 && this.timeSinceCharge++ >= 10) {
 			//If must not charge or fireball then go back to holding pattern
 			if (!Modules.dragon.attack.onPhaseEnd(this.dragon))
-				this.dragon.getPhaseManager().setPhase(PhaseType.HOLDING_PATTERN);
+				this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
 			//Otherwise reset the phase, in case she charges again
 			else
 				//Can't use initPhase() otherwise the target is reset. Also making the dragon take more time to restart the charging
@@ -62,5 +62,5 @@ public abstract class ChargingPlayerPhaseMixin extends Phase {
 	@Shadow public abstract void begin();
 
 	@Override
-	public PhaseType<? extends IPhase> getPhase() { return PhaseType.CHARGING_PLAYER; }
+	public EnderDragonPhase<? extends DragonPhaseInstance> getPhase() { return EnderDragonPhase.CHARGING_PLAYER; }
 }

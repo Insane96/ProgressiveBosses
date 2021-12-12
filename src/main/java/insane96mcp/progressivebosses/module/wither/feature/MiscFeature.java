@@ -6,17 +6,17 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.DispenserBlock;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.DimensionType;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DispenserBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -95,10 +95,10 @@ public class MiscFeature extends Feature {
 		if (!this.biggerBlockBreaking)
 			return;
 
-		if (!(event.getEntity() instanceof WitherEntity))
+		if (!(event.getEntity() instanceof WitherBoss))
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getEntity();
+		WitherBoss wither = (WitherBoss) event.getEntity();
 
 		if (!wither.isAlive())
 			return;
@@ -107,9 +107,9 @@ public class MiscFeature extends Feature {
 		if (wither.destroyBlocksTick == 1) {
 			--wither.destroyBlocksTick;
 			if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level, wither)) {
-				int i1 = MathHelper.floor(wither.getY());
-				int l1 = MathHelper.floor(wither.getX());
-				int i2 = MathHelper.floor(wither.getZ());
+				int i1 = Mth.floor(wither.getY());
+				int l1 = Mth.floor(wither.getX());
+				int i2 = Mth.floor(wither.getZ());
 				boolean flag = false;
 
 				int yOffsetLow = -1;
@@ -138,7 +138,7 @@ public class MiscFeature extends Feature {
 		}
 	}
 
-	private boolean canWitherDestroy(WitherEntity wither, BlockPos pos, BlockState state) {
+	private boolean canWitherDestroy(WitherBoss wither, BlockPos pos, BlockState state) {
 		if (this.ignoreWitherProofBlocks)
 			return !state.isAir() && state.getDestroySpeed(wither.level, pos) >= 0f;
 		else
@@ -153,15 +153,15 @@ public class MiscFeature extends Feature {
 		if (this.explosionCausesFireAtDifficulty == -1 && this.explosionPowerBonus == 0d)
 			return;
 
-		if (!(event.getExplosion().getExploder() instanceof WitherEntity))
+		if (!(event.getExplosion().getExploder() instanceof WitherBoss))
 			return;
 
 		//Check if the explosion is the one from the wither
 		if (event.getExplosion().radius != 7f)
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getExplosion().getExploder();
-		CompoundNBT tags = wither.getPersistentData();
+		WitherBoss wither = (WitherBoss) event.getExplosion().getExploder();
+		CompoundTag tags = wither.getPersistentData();
 
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
@@ -192,10 +192,10 @@ public class MiscFeature extends Feature {
 		if (!event.getEntity().isAlive())
 			return;
 
-		if (!(event.getEntityLiving() instanceof WitherEntity))
+		if (!(event.getEntityLiving() instanceof WitherBoss))
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getEntityLiving();
+		WitherBoss wither = (WitherBoss) event.getEntityLiving();
 		wither.destroyBlocksTick = 10;
 	}
 
@@ -215,7 +215,7 @@ public class MiscFeature extends Feature {
 	/**
 	 * Returns true if at the specified position a Wither Skull can be placed
 	 */
-	public static boolean canPlaceSkull(World world, BlockPos pos) {
+	public static boolean canPlaceSkull(Level world, BlockPos pos) {
 		boolean isNether = world.dimension().location().equals(DimensionType.NETHER_LOCATION);
 
 		boolean hasSoulSandNearby = false;

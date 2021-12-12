@@ -10,33 +10,33 @@ import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.module.dragon.ai.PBNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.utils.DragonMinionHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.HurtByTargetGoal;
-import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.monster.ShulkerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.feature.EndPodiumFeature;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.entity.projectile.ShulkerBullet;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -107,12 +107,12 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		EnderDragon dragon = (EnderDragon) event.getEntity();
 
-		CompoundNBT dragonTags = dragon.getPersistentData();
+		CompoundTag dragonTags = dragon.getPersistentData();
 
 		int cooldown = (int) (RandomHelper.getInt(dragon.getRandom(), this.minCooldown, this.maxCooldown) * 0.5d);
 		dragonTags.putInt(Strings.Tags.DRAGON_MINION_COOLDOWN, cooldown);
@@ -126,12 +126,12 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ShulkerEntity))
+		if (!(event.getEntity() instanceof Shulker))
 			return;
 
-		ShulkerEntity shulker = (ShulkerEntity) event.getEntity();
+		Shulker shulker = (Shulker) event.getEntity();
 
-		CompoundNBT tags = shulker.getPersistentData();
+		CompoundTag tags = shulker.getPersistentData();
 		if (!tags.contains(Strings.Tags.DRAGON_MINION))
 			return;
 
@@ -146,13 +146,13 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
-		World world = event.getEntity().level;
+		Level world = event.getEntity().level;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		CompoundNBT dragonTags = dragon.getPersistentData();
+		EnderDragon dragon = (EnderDragon) event.getEntity();
+		CompoundTag dragonTags = dragon.getPersistentData();
 
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 		if (difficulty < this.minionAtDifficulty)
@@ -168,9 +168,9 @@ public class MinionFeature extends Feature {
 		}
 
 		//If there is no player in the main island don't spawn minions
-		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).inflate(96d);
-		List<ServerPlayerEntity> players = world.getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
+		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		AABB bb = new AABB(centerPodium).inflate(96d);
+		List<ServerPlayer> players = world.getEntitiesOfClass(ServerPlayer.class, bb);
 
 		if (players.isEmpty())
 			return;
@@ -185,14 +185,14 @@ public class MinionFeature extends Feature {
 		float angle = world.random.nextFloat() * (float) Math.PI * 2f;
 		float x = (float) (Math.cos(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 46f)));
 		float z = (float) (Math.sin(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 46f)));
-		float y = world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
-		ShulkerEntity shulker = summonMinion(world, new Vector3d(x, y, z), difficulty);
+		float y = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
+		Shulker shulker = summonMinion(world, new Vec3(x, y, z), difficulty);
 	}
 
-	private static void setMinionAI(ShulkerEntity shulker) {
+	private static void setMinionAI(Shulker shulker) {
 		ArrayList<Goal> toRemove = new ArrayList<>();
 		shulker.goalSelector.availableGoals.forEach(goal -> {
-			if (goal.getGoal() instanceof ShulkerEntity.AttackGoal)
+			if (goal.getGoal() instanceof Shulker.ShulkerAttackGoal)
 				toRemove.add(goal.getGoal());
 		});
 		toRemove.forEach(shulker.goalSelector::removeGoal);
@@ -208,12 +208,12 @@ public class MinionFeature extends Feature {
 		toRemove.forEach(shulker.targetSelector::removeGoal);
 
 		shulker.targetSelector.addGoal(2, new PBNearestAttackableTargetGoal(shulker));
-		shulker.targetSelector.addGoal(1, new HurtByTargetGoal(shulker, ShulkerEntity.class, EnderDragonEntity.class));
+		shulker.targetSelector.addGoal(1, new HurtByTargetGoal(shulker, Shulker.class, EnderDragon.class));
 	}
 
-	public ShulkerEntity summonMinion(World world, Vector3d pos, float difficulty) {
-		ShulkerEntity shulker = new ShulkerEntity(EntityType.SHULKER, world);
-		CompoundNBT minionTags = shulker.getPersistentData();
+	public Shulker summonMinion(Level world, Vec3 pos, float difficulty) {
+		Shulker shulker = new Shulker(EntityType.SHULKER, world);
+		CompoundTag minionTags = shulker.getPersistentData();
 		minionTags.putBoolean(Strings.Tags.DRAGON_MINION, true);
 
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
@@ -222,8 +222,8 @@ public class MinionFeature extends Feature {
 		boolean isBlindingMinion = world.getRandom().nextDouble() < this.blindingChance * difficulty;
 
 		shulker.setPos(pos.x, pos.y, pos.z);
-		shulker.setCustomName(new TranslationTextComponent(Strings.Translatable.DRAGON_MINION));
-		shulker.lootTable = LootTables.EMPTY;
+		shulker.setCustomName(new TranslatableComponent(Strings.Translatable.DRAGON_MINION));
+		shulker.lootTable = BuiltInLootTables.EMPTY;
 		shulker.setPersistenceRequired();
 		DragonMinionHelper.setMinionColor(shulker, isBlindingMinion);
 
@@ -241,25 +241,25 @@ public class MinionFeature extends Feature {
 		if (!this.dragonImmune)
 			return;
 
-		if (!(event.getEntity() instanceof ShulkerEntity))
+		if (!(event.getEntity() instanceof Shulker))
 			return;
 
-		ShulkerEntity shulker = (ShulkerEntity) event.getEntity();
-		CompoundNBT compoundNBT = shulker.getPersistentData();
+		Shulker shulker = (Shulker) event.getEntity();
+		CompoundTag compoundNBT = shulker.getPersistentData();
 		if (!compoundNBT.contains(Strings.Tags.DRAGON_MINION))
 			return;
 
-		if (event.getSource().getEntity() instanceof EnderDragonEntity || event.getSource().getDirectEntity() instanceof EnderDragonEntity)
+		if (event.getSource().getEntity() instanceof EnderDragon || event.getSource().getDirectEntity() instanceof EnderDragon)
 			event.setCanceled(true);
 	}
 
-	public void onBulletTick(ShulkerBulletEntity shulkerBulletEntity) {
+	public void onBulletTick(ShulkerBullet shulkerBulletEntity) {
 		if (!shulkerBulletEntity.level.isClientSide && shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET)) {
-			((ServerWorld)shulkerBulletEntity.level).sendParticles(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getX(), shulkerBulletEntity.getY(), shulkerBulletEntity.getZ(), 1, 0d, 0d, 0d, 0d);
+			((ServerLevel)shulkerBulletEntity.level).sendParticles(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getX(), shulkerBulletEntity.getY(), shulkerBulletEntity.getZ(), 1, 0d, 0d, 0d, 0d);
 		}
 	}
 
-	public void onBulletEntityHit(ShulkerBulletEntity shulkerBulletEntity, EntityRayTraceResult rayTraceResult) {
+	public void onBulletEntityHit(ShulkerBullet shulkerBulletEntity, EntityHitResult rayTraceResult) {
 		Entity entityHit = rayTraceResult.getEntity();
 		Entity entityOwner = shulkerBulletEntity.getOwner();
 		LivingEntity livingEntityOwner = entityOwner instanceof LivingEntity ? (LivingEntity)entityOwner : null;
@@ -267,9 +267,9 @@ public class MinionFeature extends Feature {
 		if (flag) {
 			shulkerBulletEntity.doEnchantDamageEffects(livingEntityOwner, entityHit);
 			if (entityHit instanceof LivingEntity) {
-				((LivingEntity)entityHit).addEffect(new EffectInstance(Effects.LEVITATION, 200));
+				((LivingEntity)entityHit).addEffect(new MobEffectInstance(MobEffects.LEVITATION, 200));
 				if (shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-					((LivingEntity)entityHit).addEffect(new EffectInstance(Effects.BLINDNESS, 150));
+					((LivingEntity)entityHit).addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 150));
 			}
 		}
 	}
