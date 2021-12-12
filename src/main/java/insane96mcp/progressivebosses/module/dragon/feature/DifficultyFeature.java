@@ -5,17 +5,17 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.base.Strings;
-import insane96mcp.progressivebosses.capability.DifficultyCapability;
+import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.capability.IDifficulty;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.DimensionType;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -81,24 +81,24 @@ public class DifficultyFeature extends Feature {
 		if (!event.getWorld().dimension().location().equals(DimensionType.END_LOCATION.location()))
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		EnderDragon dragon = (EnderDragon) event.getEntity();
 
 		if (dragon.getDragonFight() == null)
 			return;
 
-		CompoundNBT dragonTags = dragon.getPersistentData();
+		CompoundTag dragonTags = dragon.getPersistentData();
 		if (dragonTags.contains(Strings.Tags.DIFFICULTY))
 			return;
 
 		int radius = 256;
 		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
 		BlockPos pos2 = new BlockPos(radius, radius, radius);
-		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+		AABB bb = new AABB(pos1, pos2);
 
-		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
+		List<ServerPlayer> players = event.getWorld().getEntitiesOfClass(ServerPlayer.class, bb);
 
 		if (players.size() == 0)
 			return;
@@ -106,8 +106,8 @@ public class DifficultyFeature extends Feature {
 		int playersFirstDragon = 0;
 		float dragonDifficulty = 0;
 
-		for (ServerPlayerEntity player : players) {
-			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+		for (ServerPlayer player : players) {
+			IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
 			dragonDifficulty += difficulty.getKilledDragons();
 			if (difficulty.getFirstDragon() == (byte) 1) {
 				playersFirstDragon++;
@@ -135,27 +135,27 @@ public class DifficultyFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		EnderDragon dragon = (EnderDragon) event.getEntity();
 
 		int radius = 256;
 		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
 		BlockPos pos2 = new BlockPos(radius, radius, radius);
-		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+		AABB bb = new AABB(pos1, pos2);
 
-		List<ServerPlayerEntity> players = dragon.level.getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
+		List<ServerPlayer> players = dragon.level.getEntitiesOfClass(ServerPlayer.class, bb);
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0) {
-			ServerPlayerEntity nearestPlayer = (ServerPlayerEntity) dragon.level.getNearestPlayer(dragon.getX(), dragon.getY(), dragon.getZ(), Double.MAX_VALUE, true);
+			ServerPlayer nearestPlayer = (ServerPlayer) dragon.level.getNearestPlayer(dragon.getX(), dragon.getY(), dragon.getZ(), Double.MAX_VALUE, true);
 			players.add(nearestPlayer);
 		}
 
-		for (ServerPlayerEntity player : players) {
-			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+		for (ServerPlayer player : players) {
+			IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
 			if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstKilledDragonMessage)
-				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_DRAGON_KILL), Util.NIL_UUID);
+				player.sendMessage(new TranslatableComponent(Strings.Translatable.FIRST_DRAGON_KILL), Util.NIL_UUID);
 			if (difficulty.getKilledDragons() < this.maxDifficulty)
 				difficulty.addKilledDragons(1);
 		}
@@ -169,12 +169,12 @@ public class DifficultyFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ServerPlayerEntity))
+		if (!(event.getEntity() instanceof ServerPlayer))
 			return;
 
-		ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+		ServerPlayer player = (ServerPlayer) event.getEntity();
 
-		IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+		IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
 
 		if (difficulty.getKilledDragons() < this.startingDifficulty) {
 			difficulty.setKilledDragons(this.startingDifficulty);

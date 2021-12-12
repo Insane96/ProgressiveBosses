@@ -1,21 +1,22 @@
 package insane96mcp.progressivebosses.setup;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
+//TODO Dafuq is this
 public class Reflection {
 	static MethodHandles.Lookup lookup = MethodHandles.lookup();
 
 	static Method onEntityHitMethod;
 	public static MethodHandle onEntityHitMH;
-	public static void ProjectileEntity_onEntityHit(ProjectileEntity projectileEntity, EntityRayTraceResult p_213868_1_) {
+	public static void ProjectileEntity_onEntityHit(Projectile projectileEntity, EntityHitResult p_213868_1_) {
 		try {
 			onEntityHitMH.invoke(projectileEntity, p_213868_1_);
 		}
@@ -26,7 +27,7 @@ public class Reflection {
 
 	static Method onBlockHitMethod;
 	public static MethodHandle onBlockHitMH;
-	public static void ProjectileEntity_onBlockHit(ProjectileEntity projectileEntity, BlockRayTraceResult p_213868_1_) {
+	public static void ProjectileEntity_onBlockHit(Projectile projectileEntity, BlockHitResult p_213868_1_) {
 		try {
 			onBlockHitMH.invoke(projectileEntity, p_213868_1_);
 		}
@@ -37,10 +38,10 @@ public class Reflection {
 
 	public static void init() {
 		try {
-			onEntityHitMethod = ObfuscationReflectionHelper.findMethod(ProjectileEntity.class, "func_213868_a", EntityRayTraceResult.class);
+			onEntityHitMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "onHitEntity", EntityHitResult.class);
 			onEntityHitMH = lookup.unreflect(onEntityHitMethod);
 
-			onBlockHitMethod = ObfuscationReflectionHelper.findMethod(ProjectileEntity.class, "func_230299_a_", BlockRayTraceResult.class);
+			onBlockHitMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "onHitBlock", BlockHitResult.class);
 			onBlockHitMH = lookup.unreflect(onBlockHitMethod);
 		} catch (IllegalAccessException e) {
 			ProgressiveBosses.LOGGER.error(e.toString());

@@ -6,10 +6,10 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.monster.ElderGuardianEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -60,11 +60,11 @@ public class HealthFeature extends Feature {
 		if (this.bonusHealth == 0d && this.absorptionHealth == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardianEntity))
+		if (!(event.getEntity() instanceof ElderGuardian))
 			return;
 
-		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getEntity();
-		CompoundNBT nbt = elderGuardian.getPersistentData();
+		ElderGuardian elderGuardian = (ElderGuardian) event.getEntity();
+		CompoundTag nbt = elderGuardian.getPersistentData();
 		if (nbt.getBoolean(Strings.Tags.DIFFICULTY))
 			return;
 
@@ -88,13 +88,13 @@ public class HealthFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardianEntity))
+		if (!(event.getEntity() instanceof ElderGuardian))
 			return;
 
 		if (this.healthRegen == 0d)
 			return;
 
-		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getEntity();
+		ElderGuardian elderGuardian = (ElderGuardian) event.getEntity();
 
 		if (!elderGuardian.isAlive())
 			return;

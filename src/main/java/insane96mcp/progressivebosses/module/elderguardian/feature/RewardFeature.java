@@ -5,7 +5,7 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.classutils.Drop;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.entity.monster.ElderGuardianEntity;
+import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -74,10 +74,10 @@ public class RewardFeature extends Feature {
 		if (this.baseExperience == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardianEntity))
+		if (!(event.getEntity() instanceof ElderGuardian))
 			return;
 
-		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getEntity();
+		ElderGuardian elderGuardian = (ElderGuardian) event.getEntity();
 
 		elderGuardian.xpReward = this.baseExperience;
 	}
@@ -90,7 +90,7 @@ public class RewardFeature extends Feature {
 		if (this.bonusExperience == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardianEntity))
+		if (!(event.getEntity() instanceof ElderGuardian))
 			return;
 
 		int bonusExperience = (int) (event.getOriginalExperience() * (this.bonusExperience));
@@ -105,10 +105,10 @@ public class RewardFeature extends Feature {
 		if (this.dropsList.isEmpty())
 			return;
 
-		if (!(event.getEntityLiving() instanceof ElderGuardianEntity))
+		if (!(event.getEntityLiving() instanceof ElderGuardian))
 			return;
 
-		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getEntityLiving();
+		ElderGuardian elderGuardian = (ElderGuardian) event.getEntityLiving();
 
 		for (Drop drop : this.dropsList) {
 			drop.drop(elderGuardian.level, elderGuardian.position(), BaseFeature.getDeadElderGuardians(elderGuardian));
