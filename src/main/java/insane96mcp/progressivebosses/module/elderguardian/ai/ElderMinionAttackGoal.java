@@ -1,23 +1,23 @@
 package insane96mcp.progressivebosses.module.elderguardian.ai;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.monster.ElderGuardianEntity;
-import net.minecraft.entity.monster.GuardianEntity;
-import net.minecraft.util.DamageSource;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.monster.ElderGuardian;
+import net.minecraft.world.entity.monster.Guardian;
 
 import java.util.EnumSet;
 
 public class ElderMinionAttackGoal extends Goal {
-	private final GuardianEntity guardian;
+	private final Guardian guardian;
 	private int attackTime;
 	private final boolean elder;
 
-	public ElderMinionAttackGoal(GuardianEntity p_i45833_1_) {
+	public ElderMinionAttackGoal(Guardian p_i45833_1_) {
 		this.guardian = p_i45833_1_;
-		this.elder = p_i45833_1_ instanceof ElderGuardianEntity;
+		this.elder = p_i45833_1_ instanceof ElderGuardian;
 		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 	}
 

@@ -6,8 +6,8 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.classutils.Drop;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -69,12 +69,12 @@ public class RewardFeature extends Feature {
 		if (this.bonusExperience == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof WitherEntity))
+		if (!(event.getEntity() instanceof WitherBoss))
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getEntity();
+		WitherBoss wither = (WitherBoss) event.getEntity();
 
-		CompoundNBT witherTags = wither.getPersistentData();
+		CompoundTag witherTags = wither.getPersistentData();
 		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
 
 		wither.xpReward = 50 + (int) (50 * (this.bonusExperience * difficulty));
@@ -88,12 +88,12 @@ public class RewardFeature extends Feature {
 		if (this.dropsList.isEmpty())
 			return;
 
-		if (!(event.getEntityLiving() instanceof WitherEntity))
+		if (!(event.getEntityLiving() instanceof WitherBoss))
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getEntityLiving();
+		WitherBoss wither = (WitherBoss) event.getEntityLiving();
 
-		CompoundNBT tags = wither.getPersistentData();
+		CompoundTag tags = wither.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 		for (Drop drop : this.dropsList) {
 			drop.drop(wither.level, wither.position(), difficulty);

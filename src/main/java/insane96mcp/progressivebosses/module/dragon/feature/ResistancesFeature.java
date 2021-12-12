@@ -5,11 +5,11 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.phase.IPhase;
-import net.minecraft.entity.boss.dragon.phase.PhaseType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -62,19 +62,19 @@ public class ResistancesFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		EnderDragon dragon = (EnderDragon) event.getEntity();
 
 		bonusDamageNotInCenter(event, dragon);
 		meleeDamageReduction(event, dragon);
 		explosionDamageReduction(event, dragon);
 	}
 
-	private static final List<PhaseType<? extends IPhase>> sittingPhases = Arrays.asList(PhaseType.SITTING_SCANNING, PhaseType.SITTING_ATTACKING, PhaseType.SITTING_FLAMING, PhaseType.TAKEOFF);
+	private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);
 
-	private void bonusDamageNotInCenter(LivingDamageEvent event, EnderDragonEntity dragon) {
+	private void bonusDamageNotInCenter(LivingDamageEvent event, EnderDragon dragon) {
 		if (this.bonusCurHealthDirectDamage == 0d && this.bonusCurHealthIndirectDamage == 0d)
 			return;
 
@@ -85,27 +85,27 @@ public class ResistancesFeature extends Feature {
 			return;
 
 		float curHealth = dragon.getHealth();
-		if (event.getSource().getDirectEntity() instanceof PlayerEntity) {
+		if (event.getSource().getDirectEntity() instanceof Player) {
 			event.setAmount(event.getAmount() + (float) (curHealth * this.bonusCurHealthDirectDamage));
 		}
-		else if (event.getSource().getEntity() instanceof PlayerEntity) {
+		else if (event.getSource().getEntity() instanceof Player) {
 			event.setAmount(event.getAmount() + (float) (curHealth * this.bonusCurHealthIndirectDamage));
 		}
 	}
 
-	private void meleeDamageReduction(LivingDamageEvent event, EnderDragonEntity dragon) {
+	private void meleeDamageReduction(LivingDamageEvent event, EnderDragon dragon) {
 		if (this.damageRedutionWhenSitting == 0d)
 			return;
 
-		CompoundNBT compoundNBT = dragon.getPersistentData();
+		CompoundTag compoundNBT = dragon.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
-		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()) && event.getSource().getDirectEntity() instanceof PlayerEntity) {
+		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()) && event.getSource().getDirectEntity() instanceof Player) {
 			event.setAmount((event.getAmount() - (float) (event.getAmount() * (this.damageRedutionWhenSitting * difficulty))));
 		}
 	}
 
-	private void explosionDamageReduction(LivingDamageEvent event, EnderDragonEntity dragon) {
+	private void explosionDamageReduction(LivingDamageEvent event, EnderDragon dragon) {
 		if (this.explosionDamageReduction == 0d)
 			return;
 

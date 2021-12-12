@@ -3,13 +3,13 @@ package insane96mcp.progressivebosses.classutils;
 import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.setup.PBItems;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.math.NumberUtils;
 
@@ -118,7 +118,7 @@ public class Drop {
 		return drops;
 	}
 
-	public void drop(World world, Vector3d pos, float difficulty) {
+	public void drop(Level world, Vec3 pos, float difficulty) {
 		if (this.amount == 0)
 			return;
 		if (difficulty < this.difficultyRequired)
@@ -150,11 +150,11 @@ public class Drop {
 		}
 	}
 
-	private static ItemEntity createDrop(World world, Vector3d pos, Item item, int amount) {
+	private static ItemEntity createDrop(Level world, Vec3 pos, Item item, int amount) {
 		ItemEntity itemEntity = new ItemEntity(world, pos.x, pos.y, pos.z, new ItemStack(item, amount));
 		//If it's a nether star shard set it as "invincible"
 		if (item.getRegistryName().equals(PBItems.NETHER_STAR_SHARD.get().getRegistryName())) {
-			CompoundNBT compoundNBT = new CompoundNBT();
+			CompoundTag compoundNBT = new CompoundTag();
 			itemEntity.addAdditionalSaveData(compoundNBT);
 			compoundNBT.putShort("Health", Short.MAX_VALUE);
 			itemEntity.readAdditionalSaveData(compoundNBT);

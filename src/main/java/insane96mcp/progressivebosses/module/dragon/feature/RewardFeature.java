@@ -6,11 +6,11 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.classutils.Drop;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.item.ExperienceOrbEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -69,16 +69,16 @@ public class RewardFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		EnderDragon dragon = (EnderDragon) event.getEntity();
 
 		dropExperience(dragon);
 		dropEgg(dragon);
 	}
 
-	private void dropExperience(EnderDragonEntity dragon) {
+	private void dropExperience(EnderDragon dragon) {
 		if (this.bonusExperience == 0d)
 			return;
 
@@ -88,7 +88,7 @@ public class RewardFeature extends Feature {
 		if (dragon.getDragonFight() == null)
 			return;
 
-		CompoundNBT dragonTags = dragon.getPersistentData();
+		CompoundTag dragonTags = dragon.getPersistentData();
 
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 		if (difficulty == 0d)
@@ -100,20 +100,20 @@ public class RewardFeature extends Feature {
 			bonusXP += (int) (500 * this.bonusExperience * difficulty * 0.2);
 
 		while (bonusXP > 0) {
-			int i = ExperienceOrbEntity.getExperienceValue(bonusXP);
+			int i = ExperienceOrb.getExperienceValue(bonusXP);
 			bonusXP -= i;
-			dragon.level.addFreshEntity(new ExperienceOrbEntity(dragon.level, dragon.position().x(), dragon.position().y(), dragon.position().z(), i));
+			dragon.level.addFreshEntity(new ExperienceOrb(dragon.level, dragon.position().x(), dragon.position().y(), dragon.position().z(), i));
 		}
 	}
 
-	private void dropEgg(EnderDragonEntity dragon) {
+	private void dropEgg(EnderDragon dragon) {
 		if (!this.dragonEggPerPlayer)
 			return;
 
 		if (dragon.dragonDeathTime != 100)
 			return;
 
-		CompoundNBT tags = dragon.getPersistentData();
+		CompoundTag tags = dragon.getPersistentData();
 
 		int eggsToDrop = tags.getInt(Strings.Tags.EGGS_TO_DROP);
 
@@ -134,12 +134,12 @@ public class RewardFeature extends Feature {
 		if (this.dropsList.isEmpty())
 			return;
 
-		if (!(event.getEntityLiving() instanceof EnderDragonEntity))
+		if (!(event.getEntityLiving() instanceof EnderDragon))
 			return;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntityLiving();
+		EnderDragon dragon = (EnderDragon) event.getEntityLiving();
 
-		CompoundNBT tags = dragon.getPersistentData();
+		CompoundTag tags = dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 		for (Drop drop : this.dropsList) {
 			drop.drop(dragon.level, dragon.position(), difficulty);

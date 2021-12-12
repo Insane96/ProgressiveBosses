@@ -5,8 +5,8 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -65,10 +65,10 @@ public class ResistancesFeature extends Feature {
 		if ((this.meleeDamageReductionOnHalfHealth == 0d || this.maxDamageReductionOnHalfHealth == 0d) && (this.meleeDamageReductionBeforeHalfHealth == 0d || this.maxMeleeDamageReductionBeforeHalfHealth == 0d) && this.magicDamageBonus == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof WitherEntity))
+		if (!(event.getEntity() instanceof WitherBoss))
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getEntity();
+		WitherBoss wither = (WitherBoss) event.getEntity();
 		//Handle Magic Damage
 		if (event.getSource().isMagic() && this.magicDamageBonus > 0d) {
 			double missingHealth = wither.getMaxHealth() - wither.getHealth();
@@ -78,7 +78,7 @@ public class ResistancesFeature extends Feature {
 		if (event.getSource().getDirectEntity() != event.getSource().getEntity())
 			return;
 
-		CompoundNBT tags = wither.getPersistentData();
+		CompoundTag tags = wither.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 		//Handle Damage Reduction
 		float damageReduction;

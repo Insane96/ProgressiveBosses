@@ -9,27 +9,27 @@ import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.wither.entity.WitherMinionEntity;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -144,6 +144,7 @@ public class MinionFeature extends Feature {
 			this.minCooldown = this.maxCooldown;
 		this.cooldownMultiplierBelowHalfHealth = this.cooldownMultiplierBelowHalfHealthConfig.get();
 		this.bonusSpeedPerDifficulty = this.bonusSpeedPerDifficultyConfig.get();
+		this.magicDamageMultiplier = this.magicDamageMultiplierConfig.get();
 		this.killMinionOnWitherDeath = this.killMinionOnWitherDeathConfig.get();
 		//Equipment
 		this.hasSword = this.hasSwordConfig.get();
@@ -161,12 +162,12 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherEntity))
+		if (!(event.getEntity() instanceof WitherBoss))
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getEntity();
+		WitherBoss wither = (WitherBoss) event.getEntity();
 
-		CompoundNBT witherTags = wither.getPersistentData();
+		CompoundTag witherTags = wither.getPersistentData();
 
 		int cooldown = (int) (RandomHelper.getInt(wither.level.random, this.minCooldown, this.maxCooldown) * this.cooldownMultiplierBelowHalfHealth);
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown);
@@ -180,13 +181,13 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherEntity))
+		if (!(event.getEntity() instanceof WitherBoss))
 			return;
 
-		World world = event.getEntity().level;
+		Level world = event.getEntity().level;
 
-		WitherEntity wither = (WitherEntity) event.getEntity();
-		CompoundNBT witherTags = wither.getPersistentData();
+		WitherBoss wither = (WitherBoss) event.getEntity();
+		CompoundTag witherTags = wither.getPersistentData();
 
 		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
 		if (difficulty < this.minionAtDifficulty)
@@ -208,13 +209,13 @@ public class MinionFeature extends Feature {
 		int radius = 32;
 		BlockPos pos1 = wither.blockPosition().offset(-radius, -radius, -radius);
 		BlockPos pos2 = wither.blockPosition().offset(radius, radius, radius);
-		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
-		List<ServerPlayerEntity> players = world.getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
+		AABB bb = new AABB(pos1, pos2);
+		List<ServerPlayer> players = world.getEntitiesOfClass(ServerPlayer.class, bb);
 
 		if (players.isEmpty())
 			return;
 
-		List<WitherMinionEntity> minionsInAABB = world.getLoadedEntitiesOfClass(WitherMinionEntity.class, wither.getBoundingBox().inflate(16));
+		List<WitherMinionEntity> minionsInAABB = world.getEntitiesOfClass(WitherMinionEntity.class, wither.getBoundingBox().inflate(16));
 		int minionsCountInAABB = minionsInAABB.size();
 
 		if (minionsCountInAABB >= this.maxAround)
@@ -242,16 +243,16 @@ public class MinionFeature extends Feature {
 				if (y != -1)
 					break;
 			}
-			if (y <= 0)
+			if (y <= wither.level.getMinBuildHeight())
 				continue;
 
-			WitherMinionEntity witherMinion = summonMinion(world, new Vector3d(x + 0.5, y + 0.5, z + 0.5), difficulty, wither.isPowered());
+			WitherMinionEntity witherMinion = summonMinion(world, new Vec3(x + 0.5, y + 0.5, z + 0.5), difficulty, wither.isPowered());
 
 			//No need since EntityJoinWorldEvent is triggered
 			//setMinionAI(witherMinion);
 
-			ListNBT minionsList = witherTags.getList(Strings.Tags.MINIONS, Constants.NBT.TAG_COMPOUND);
-			CompoundNBT uuid = new CompoundNBT();
+			ListTag minionsList = witherTags.getList(Strings.Tags.MINIONS, Tag.TAG_COMPOUND);
+			CompoundTag uuid = new CompoundTag();
 			uuid.putUUID("uuid", witherMinion.getUUID());
 			minionsList.add(uuid);
 			witherTags.put(Strings.Tags.MINIONS, minionsList);
@@ -294,26 +295,26 @@ public class MinionFeature extends Feature {
 		if (!this.killMinionOnWitherDeath)
 			return;
 
-		if (!(event.getEntity() instanceof WitherEntity))
+		if (!(event.getEntity() instanceof WitherBoss))
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getEntity();
-		ServerWorld world = (ServerWorld) wither.level;
+		WitherBoss wither = (WitherBoss) event.getEntity();
+		ServerLevel world = (ServerLevel) wither.level;
 
-		CompoundNBT tags = wither.getPersistentData();
-		ListNBT minionsList = tags.getList(Strings.Tags.MINIONS, Constants.NBT.TAG_COMPOUND);
+		CompoundTag tags = wither.getPersistentData();
+		ListTag minionsList = tags.getList(Strings.Tags.MINIONS, Tag.TAG_COMPOUND);
 
 		for (int i = 0; i < minionsList.size(); i++) {
 			UUID uuid = minionsList.getCompound(i).getUUID("uuid");
 			WitherMinionEntity witherMinionEntity = (WitherMinionEntity) world.getEntity(uuid);
 			if (witherMinionEntity == null)
 				continue;
-			witherMinionEntity.addEffect(new EffectInstance(Effects.HEAL, 10000, 0, false, false));
+			witherMinionEntity.addEffect(new MobEffectInstance(MobEffects.HEAL, 10000, 0, false, false));
 		}
 	}
 
 	private void setEquipment(WitherMinionEntity witherMinionEntity, float difficulty, boolean isCharged) {
-		witherMinionEntity.setDropChance(EquipmentSlotType.MAINHAND, Float.MIN_VALUE);
+		witherMinionEntity.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
 
 		int powerSharpnessLevel = (int) (this.powerSharpnessChance * difficulty);
 		if (RandomHelper.getDouble(witherMinionEntity.level.getRandom(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - powerSharpnessLevel)
@@ -329,7 +330,7 @@ public class MinionFeature extends Feature {
 		if (punchKnockbackLevel > 0)
 			sword.enchant(Enchantments.KNOCKBACK, punchKnockbackLevel);
 		if (this.hasSword)
-			witherMinionEntity.setItemSlot(EquipmentSlotType.MAINHAND, sword);
+			witherMinionEntity.setItemSlot(EquipmentSlot.MAINHAND, sword);
 
 		ItemStack bow = new ItemStack(Items.BOW);
 		if (powerSharpnessLevel > 0)
@@ -338,12 +339,12 @@ public class MinionFeature extends Feature {
 			bow.enchant(Enchantments.POWER_ARROWS, punchKnockbackLevel);
 		if (isCharged) {
 			if (RandomHelper.getDouble(witherMinionEntity.level.getRandom(), 0d, 1d) < this.halfHealthBowChance) {
-				witherMinionEntity.setItemSlot(EquipmentSlotType.MAINHAND, bow);
+				witherMinionEntity.setItemSlot(EquipmentSlot.MAINHAND, bow);
 			}
 		}
 		else {
 			if (RandomHelper.getDouble(witherMinionEntity.level.getRandom(), 0d, 1d) < this.preHalfHealthBowChance) {
-				witherMinionEntity.setItemSlot(EquipmentSlotType.MAINHAND, bow);
+				witherMinionEntity.setItemSlot(EquipmentSlot.MAINHAND, bow);
 			}
 		}
 	}
@@ -355,7 +356,7 @@ public class MinionFeature extends Feature {
 	 * @param minRelativeY
 	 * @return
 	 */
-	private static int getYSpawn(EntityType entityType, BlockPos pos, World world, int minRelativeY) {
+	private static int getYSpawn(EntityType entityType, BlockPos pos, Level world, int minRelativeY) {
 		int height = (int) Math.ceil(entityType.getHeight());
 		int fittingYPos = -1;
 		for (int y = pos.getY(); y > pos.getY() - minRelativeY; y--) {
@@ -377,9 +378,9 @@ public class MinionFeature extends Feature {
 		return fittingYPos;
 	}
 
-	public WitherMinionEntity summonMinion(World world, Vector3d pos, float difficulty, boolean isCharged) {
+	public WitherMinionEntity summonMinion(Level world, Vec3 pos, float difficulty, boolean isCharged) {
 		WitherMinionEntity witherMinion = new WitherMinionEntity(PBEntities.WITHER_MINION.get(), world);
-		CompoundNBT minionTags = witherMinion.getPersistentData();
+		CompoundTag minionTags = witherMinion.getPersistentData();
 
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 		//TODO Scaling health
