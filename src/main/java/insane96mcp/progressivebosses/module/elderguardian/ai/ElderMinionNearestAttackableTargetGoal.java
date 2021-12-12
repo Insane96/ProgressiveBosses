@@ -1,13 +1,13 @@
 package insane96mcp.progressivebosses.module.elderguardian.ai;
 
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.target.TargetGoal;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.entity.EntityPredicate;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.TargetGoal;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.math.AxisAlignedBB;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -18,22 +18,22 @@ public class ElderMinionNearestAttackableTargetGoal<T extends LivingEntity> exte
 	protected int targetChance;
 	protected LivingEntity nearestTarget;
 	/** This filter is applied to the Entity search. Only matching entities will be targeted. */
-	public TargetingConditions targetEntitySelector;
+	public EntityPredicate targetEntitySelector;
 
-	public ElderMinionNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean checkSight) {
+	public ElderMinionNearestAttackableTargetGoal(MobEntity goalOwnerIn, Class<T> targetClassIn, boolean checkSight) {
 		this(goalOwnerIn, targetClassIn, checkSight, false);
 	}
 
-	public ElderMinionNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean checkSight, boolean nearbyOnlyIn) {
+	public ElderMinionNearestAttackableTargetGoal(MobEntity goalOwnerIn, Class<T> targetClassIn, boolean checkSight, boolean nearbyOnlyIn) {
 		this(goalOwnerIn, targetClassIn, checkSight, nearbyOnlyIn, null);
 	}
 
-	public ElderMinionNearestAttackableTargetGoal(Mob goalOwnerIn, Class<T> targetClassIn, boolean checkSight, boolean nearbyOnlyIn, @Nullable Predicate<LivingEntity> targetPredicate) {
+	public ElderMinionNearestAttackableTargetGoal(MobEntity goalOwnerIn, Class<T> targetClassIn, boolean checkSight, boolean nearbyOnlyIn, @Nullable Predicate<LivingEntity> targetPredicate) {
 		super(goalOwnerIn, checkSight, nearbyOnlyIn);
 		this.targetClass = targetClassIn;
 		this.targetChance = 10;
 		this.setFlags(EnumSet.of(Goal.Flag.TARGET));
-		TargetingConditions predicate = TargetingConditions.DEFAULT.range(this.getFollowDistance()).selector(targetPredicate).ignoreLineOfSight();
+		EntityPredicate predicate = (new EntityPredicate()).range(this.getFollowDistance()).selector(targetPredicate).allowUnseeable();
 		this.targetEntitySelector = predicate;
 	}
 
@@ -51,13 +51,13 @@ public class ElderMinionNearestAttackableTargetGoal<T extends LivingEntity> exte
 		}
 	}
 
-	protected AABB getTargetableArea(double targetDistance) {
+	protected AxisAlignedBB getTargetableArea(double targetDistance) {
 		return this.mob.getBoundingBox().inflate(targetDistance, 4.0D, targetDistance);
 	}
 
 	protected void findNearestTarget() {
-		if (this.targetClass != Player.class && this.targetClass != ServerPlayer.class) {
-			this.nearestTarget = this.mob.level.getNearestEntity(this.targetClass, this.targetEntitySelector, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ(), this.getTargetableArea(this.getFollowDistance()));
+		if (this.targetClass != PlayerEntity.class && this.targetClass != ServerPlayerEntity.class) {
+			this.nearestTarget = this.mob.level.getNearestLoadedEntity(this.targetClass, this.targetEntitySelector, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ(), this.getTargetableArea(this.getFollowDistance()));
 		}
 		else {
 			this.nearestTarget = this.mob.level.getNearestPlayer(this.targetEntitySelector, this.mob, this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());

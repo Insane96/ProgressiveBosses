@@ -1,19 +1,18 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
 import insane96mcp.insanelib.utils.RandomHelper;
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.base.Strings;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 
 import java.util.EnumSet;
 
 public class WitherRangedAttackGoal extends Goal {
-	private final WitherBoss wither;
+	private final WitherEntity wither;
 	private LivingEntity target;
 	private int attackTime = -1;
 	private int seeTime;
@@ -23,7 +22,7 @@ public class WitherRangedAttackGoal extends Goal {
 	//Increases the rate of attack of the middle head the closer the player is to the wither
 	private final boolean increaseASOnNear;
 
-	public WitherRangedAttackGoal(WitherBoss wither, int attackInterval, float attackRadius, boolean increaseASOnNear) {
+	public WitherRangedAttackGoal(WitherEntity wither, int attackInterval, float attackRadius, boolean increaseASOnNear) {
 		this.wither = wither;
 		this.attackInterval = attackInterval;
 		this.attackRadius = attackRadius;
@@ -75,10 +74,10 @@ public class WitherRangedAttackGoal extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
-		CompoundTag witherTags = wither.getPersistentData();
+		CompoundNBT witherTags = wither.getPersistentData();
 
 		double distanceSq = this.wither.distanceToSqr(this.target.getX(), this.target.getY(), this.target.getZ());
-		boolean canSee = this.wither.getSensing().hasLineOfSight(this.target);
+		boolean canSee = this.wither.getSensing().canSee(this.target);
 		int unseenPlayerTicks = witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS);
 		if (canSee) {
 			++this.seeTime;
@@ -87,7 +86,7 @@ public class WitherRangedAttackGoal extends Goal {
 		}
 		else {
 			this.seeTime = 0;
-			if (this.target instanceof Player)
+			if (this.target instanceof PlayerEntity)
 				witherTags.putInt(Strings.Tags.UNSEEN_PLAYER_TICKS, unseenPlayerTicks + 2);
 		}
 
@@ -103,7 +102,6 @@ public class WitherRangedAttackGoal extends Goal {
 
 		int barrageAttackTick = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
 		if (barrageAttackTick > 0) {
-			ProgressiveBosses.LOGGER.info("barrageAttackTick: " + barrageAttackTick);
 			if (!canSee)
 				return;
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);

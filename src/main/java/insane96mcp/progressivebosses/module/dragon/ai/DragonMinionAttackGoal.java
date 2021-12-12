@@ -2,24 +2,24 @@ package insane96mcp.progressivebosses.module.dragon.ai;
 
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.utils.DragonMinionHelper;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.monster.ShulkerEntity;
+import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.SoundEvents;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.Shulker;
-import net.minecraft.world.entity.projectile.ShulkerBullet;
 
 import java.util.EnumSet;
 
 public class DragonMinionAttackGoal extends Goal {
 
     private int attackTime;
-    private final Shulker shulker;
+    private final ShulkerEntity shulker;
 
     private final int baseAttackInterval;
 
-    public DragonMinionAttackGoal(Shulker shulker, int attackInterval) {
+    public DragonMinionAttackGoal(ShulkerEntity shulker, int attackInterval) {
         this.shulker = shulker;
         this.baseAttackInterval = attackInterval;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
@@ -56,9 +56,9 @@ public class DragonMinionAttackGoal extends Goal {
         if (d0 < 9216d) { //96 blocks
             if (this.attackTime <= 0) {
                 this.attackTime = this.baseAttackInterval + shulker.getRandom().nextInt(10) * this.baseAttackInterval / 2;
-                ShulkerBullet bullet = new ShulkerBullet(shulker.level, shulker, livingentity, shulker.getAttachFace().getAxis());
+                ShulkerBulletEntity bullet = new ShulkerBulletEntity(shulker.level, shulker, livingentity, shulker.getAttachFace().getAxis());
                 if (DragonMinionHelper.isBlindingMinion(this.shulker)) {
-                    CompoundTag nbt = bullet.getPersistentData();
+                    CompoundNBT nbt = bullet.getPersistentData();
                     nbt.putBoolean(Strings.Tags.BLINDNESS_BULLET, true);
                 }
                 shulker.level.addFreshEntity(bullet);

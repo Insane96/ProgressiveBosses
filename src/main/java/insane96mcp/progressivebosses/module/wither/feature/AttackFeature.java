@@ -8,14 +8,14 @@ import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherDoNothingGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.WitherSkull;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.ai.goal.RangedAttackGoal;
+import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.WitherSkullEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -127,11 +127,11 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
-		WitherBoss wither = (WitherBoss) event.getEntity();
-		CompoundTag compoundNBT = wither.getPersistentData();
+		WitherEntity wither = (WitherEntity) event.getEntity();
+		CompoundNBT compoundNBT = wither.getPersistentData();
 		if ((!compoundNBT.contains(Strings.Tags.DIFFICULTY) || compoundNBT.getFloat(Strings.Tags.DIFFICULTY) == 0f) && !this.applyToVanillaWither)
 			return;
 
@@ -139,13 +139,13 @@ public class AttackFeature extends Feature {
 	}
 
 	private void witherSkullSpeed(Entity entity) {
-		if (!(entity instanceof WitherSkull))
+		if (!(entity instanceof WitherSkullEntity))
 			return;
 
 		if (!this.isEnabled() || this.skullVelocityMultiplier == 0d)
 			return;
 
-		WitherSkull witherSkullEntity = (WitherSkull) entity;
+		WitherSkullEntity witherSkullEntity = (WitherSkullEntity) entity;
 
 		if (Math.abs(witherSkullEntity.xPower) > 10 || Math.abs(witherSkullEntity.yPower) > 10 || Math.abs(witherSkullEntity.zPower) > 10) {
 			entity.kill();
@@ -171,11 +171,11 @@ public class AttackFeature extends Feature {
 		if (!event.getEntity().isAlive())
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
-		WitherBoss wither = (WitherBoss) event.getEntity();
-		CompoundTag witherTags = wither.getPersistentData();
+		WitherEntity wither = (WitherEntity) event.getEntity();
+		CompoundNBT witherTags = wither.getPersistentData();
 		// When in charge attack remove the vanilla health regeneration when he's invulnerable and add 1% health regeneration of the missing health per second
 		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 10 == 0){
 			float missingHealth = wither.getMaxHealth() - wither.getHealth();
@@ -200,15 +200,15 @@ public class AttackFeature extends Feature {
 			return;
 
 
-		WitherBoss wither;
-		if (event.getSource().getDirectEntity() instanceof WitherBoss)
-			wither = (WitherBoss) event.getSource().getDirectEntity();
-		else if (event.getSource().getEntity() instanceof WitherBoss)
-			wither = (WitherBoss) event.getSource().getEntity();
+		WitherEntity wither;
+		if (event.getSource().getDirectEntity() instanceof WitherEntity)
+			wither = (WitherEntity) event.getSource().getDirectEntity();
+		else if (event.getSource().getEntity() instanceof WitherEntity)
+			wither = (WitherEntity) event.getSource().getEntity();
 		else
 			return;
 
-		CompoundTag compoundNBT = wither.getPersistentData();
+		CompoundNBT compoundNBT = wither.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDamage * difficulty)));
@@ -226,20 +226,20 @@ public class AttackFeature extends Feature {
 		if (!event.getEntity().isAlive())
 			return;
 
-		if (!(event.getEntityLiving() instanceof WitherBoss))
+		if (!(event.getEntityLiving() instanceof WitherEntity))
 			return;
 
-		WitherBoss wither = (WitherBoss) event.getEntityLiving();
+		WitherEntity wither = (WitherEntity) event.getEntityLiving();
 
 		doBarrage(wither, event.getAmount());
 		doCharge(wither, event.getAmount());
 	}
 
-	private void doBarrage(WitherBoss wither, float damageTaken) {
+	private void doBarrage(WitherEntity wither, float damageTaken) {
 		if (this.maxBarrageChancePerDiff == 0d/* || this.maxBarrageAttackChance == 0d*/)
 			return;
 
-		CompoundTag witherTags = wither.getPersistentData();
+		CompoundNBT witherTags = wither.getPersistentData();
 		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
 
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
@@ -253,11 +253,11 @@ public class AttackFeature extends Feature {
 		}
 	}
 
-	private void doCharge(WitherBoss wither, float damageTaken) {
+	private void doCharge(WitherEntity wither, float damageTaken) {
 		if (this.maxChargeAttackChance == 0d)
 			return;
 
-		CompoundTag witherTags = wither.getPersistentData();
+		CompoundNBT witherTags = wither.getPersistentData();
 
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
 		double chance = this.maxChargeAttackChance * missingHealthPerc;
@@ -269,12 +269,12 @@ public class AttackFeature extends Feature {
 		}
 	}
 
-	public void setWitherAI(WitherBoss wither) {
+	public void setWitherAI(WitherEntity wither) {
 		ArrayList<Goal> toRemove = new ArrayList<>();
 		wither.goalSelector.availableGoals.forEach(goal -> {
 			if (goal.getGoal() instanceof RangedAttackGoal)
 				toRemove.add(goal.getGoal());
-			if (goal.getGoal() instanceof WitherBoss.WitherDoNothingGoal)
+			if (goal.getGoal() instanceof WitherEntity.DoNothingGoal)
 				toRemove.add(goal.getGoal());
 		});
 
@@ -285,7 +285,7 @@ public class AttackFeature extends Feature {
 		wither.goalSelector.addGoal(2, new WitherChargeAttackGoal(wither));
 
 		//Fixes https://bugs.mojang.com/browse/MC-29274
-		wither.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(wither, Player.class, 0, false, false, null));
+		wither.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(wither, PlayerEntity.class, 0, false, false, null));
 	}
 
 	public static class Consts {

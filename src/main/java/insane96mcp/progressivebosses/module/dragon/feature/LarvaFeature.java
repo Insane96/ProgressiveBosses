@@ -8,23 +8,23 @@ import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.dragon.ai.PBNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.monster.Endermite;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
-import net.minecraft.world.level.storage.loot.BuiltInLootTables;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.boss.dragon.EnderDragonEntity;
+import net.minecraft.entity.monster.EndermiteEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.loot.LootTables;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
+import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.gen.feature.EndPodiumFeature;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -97,12 +97,12 @@ public class LarvaFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragonEntity))
 			return;
 
-		EnderDragon dragon = (EnderDragon) event.getEntity();
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
 
-		CompoundTag dragonTags = dragon.getPersistentData();
+		CompoundNBT dragonTags = dragon.getPersistentData();
 
 		int cooldown = (int) (RandomHelper.getInt(dragon.getRandom(), this.minCooldown, this.maxCooldown) * 0.5d);
 		dragonTags.putInt(Strings.Tags.DRAGON_LARVA_COOLDOWN, cooldown);
@@ -116,12 +116,12 @@ public class LarvaFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof Endermite))
+		if (!(event.getEntity() instanceof EndermiteEntity))
 			return;
 
-		Endermite endermite = (Endermite) event.getEntity();
+		EndermiteEntity endermite = (EndermiteEntity) event.getEntity();
 
-		CompoundTag tags = endermite.getPersistentData();
+		CompoundNBT tags = endermite.getPersistentData();
 		if (!tags.contains(Strings.Tags.DRAGON_LARVA))
 			return;
 
@@ -136,13 +136,13 @@ public class LarvaFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragonEntity))
 			return;
 
-		Level world = event.getEntity().level;
+		World world = event.getEntity().level;
 
-		EnderDragon dragon = (EnderDragon) event.getEntity();
-		CompoundTag dragonTags = dragon.getPersistentData();
+		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		CompoundNBT dragonTags = dragon.getPersistentData();
 
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 		if (difficulty < this.larvaAtDifficulty)
@@ -158,9 +158,9 @@ public class LarvaFeature extends Feature {
 		}
 
 		//If there is no player in the main island don't spawn larvae
-		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AABB bb = new AABB(centerPodium).inflate(96d);
-		List<ServerPlayer> players = world.getEntitiesOfClass(ServerPlayer.class, bb);
+		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		AxisAlignedBB bb = new AxisAlignedBB(centerPodium).inflate(96d);
+		List<ServerPlayerEntity> players = world.getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
 
 		if (players.isEmpty())
 			return;
@@ -176,15 +176,15 @@ public class LarvaFeature extends Feature {
 			float angle = world.random.nextFloat() * (float) Math.PI * 2f;
 			float x = (float) Math.floor(Math.cos(angle) * 3.33f);
 			float z = (float) Math.floor(Math.sin(angle) * 3.33f);
-			int y = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
-			Endermite endermite = summonLarva(world, new Vec3(x + 0.5, y, z + 0.5), difficulty);
+			int y = world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
+			EndermiteEntity endermite = summonLarva(world, new Vector3d(x + 0.5, y, z + 0.5), difficulty);
 			larvaSpawnedCount++;
 			if (larvaSpawnedCount >= this.maxSpawned)
 				break;
 		}
 	}
 
-	private static void setLarvaAI(Endermite endermite) {
+	private static void setLarvaAI(EndermiteEntity endermite) {
 		ArrayList<Goal> toRemove = new ArrayList<>();
 		endermite.targetSelector.availableGoals.forEach(goal -> {
 			if (goal.getGoal() instanceof NearestAttackableTargetGoal)
@@ -195,17 +195,17 @@ public class LarvaFeature extends Feature {
 		endermite.targetSelector.addGoal(2, new PBNearestAttackableTargetGoal(endermite));
 	}
 
-	public Endermite summonLarva(Level world, Vec3 pos, float difficulty) {
-		Endermite endermite = new Endermite(EntityType.ENDERMITE, world);
-		CompoundTag minionTags = endermite.getPersistentData();
+	public EndermiteEntity summonLarva(World world, Vector3d pos, float difficulty) {
+		EndermiteEntity endermite = new EndermiteEntity(EntityType.ENDERMITE, world);
+		CompoundNBT minionTags = endermite.getPersistentData();
 		minionTags.putBoolean(Strings.Tags.DRAGON_LARVA, true);
 
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 		//TODO Scaling health
 
 		endermite.setPos(pos.x, pos.y, pos.z);
-		endermite.setCustomName(new TranslatableComponent(Strings.Translatable.DRAGON_LARVA));
-		endermite.lootTable = BuiltInLootTables.EMPTY;
+		endermite.setCustomName(new TranslationTextComponent(Strings.Translatable.DRAGON_LARVA));
+		endermite.lootTable = LootTables.EMPTY;
 		endermite.setPersistenceRequired();
 
 		MCUtils.applyModifier(endermite, Attributes.FOLLOW_RANGE, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 64, AttributeModifier.Operation.ADDITION);
@@ -226,15 +226,15 @@ public class LarvaFeature extends Feature {
 		if (!this.dragonImmune)
 			return;
 
-		if (!(event.getEntity() instanceof Endermite))
+		if (!(event.getEntity() instanceof EndermiteEntity))
 			return;
 
-		Endermite endermite = (Endermite) event.getEntity();
-		CompoundTag compoundNBT = endermite.getPersistentData();
+		EndermiteEntity endermite = (EndermiteEntity) event.getEntity();
+		CompoundNBT compoundNBT = endermite.getPersistentData();
 		if (!compoundNBT.contains(Strings.Tags.DRAGON_LARVA))
 			return;
 
-		if (event.getSource().getEntity() instanceof EnderDragon || event.getSource().getDirectEntity() instanceof EnderDragon)
+		if (event.getSource().getEntity() instanceof EnderDragonEntity || event.getSource().getDirectEntity() instanceof EnderDragonEntity)
 			event.setCanceled(true);
 	}
 }
