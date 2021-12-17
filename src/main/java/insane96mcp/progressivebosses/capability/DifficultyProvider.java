@@ -11,7 +11,6 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-//TODO Cleanup this mess
 public class DifficultyProvider implements ICapabilityProvider, ICapabilitySerializable<CompoundTag> {
 
 	public static final ResourceLocation IDENTIFIER = new ResourceLocation(Strings.Tags.DIFFICULTY);
