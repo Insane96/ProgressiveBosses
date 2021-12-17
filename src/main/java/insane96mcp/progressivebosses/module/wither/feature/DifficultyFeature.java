@@ -1,12 +1,12 @@
 package insane96mcp.progressivebosses.module.wither.feature;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.capability.Difficulty;
-import insane96mcp.progressivebosses.capability.IDifficulty;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -101,13 +101,11 @@ public class DifficultyFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
 		if (this.entityBlacklist.contains(event.getEntity().getType().getRegistryName().toString()))
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getEntity();
 
 		CompoundTag witherTags = wither.getPersistentData();
 		if (witherTags.contains(Strings.Tags.DIFFICULTY))
@@ -121,25 +119,26 @@ public class DifficultyFeature extends Feature {
 		if (players.size() == 0)
 			return;
 
-		float witherDifficulty = 0;
+		final AtomicDouble witherDifficulty = new AtomicDouble(0d);
 
 		for (ServerPlayer player : players) {
-			IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
-			witherDifficulty += difficulty.getSpawnedWithers();
-			if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
-				continue;
-			if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
-				player.sendMessage(new TranslatableComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.NIL_UUID);
-			difficulty.addSpawnedWithers(1);
+			player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
+				witherDifficulty.addAndGet(difficulty.getSpawnedWithers());
+				if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
+					return;
+				if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
+					player.sendMessage(new TranslatableComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.NIL_UUID);
+				difficulty.addSpawnedWithers(1);
+			});
 		}
 
 		if (!this.sumSpawnedWitherDifficulty)
-			witherDifficulty /= players.size();
+			witherDifficulty.set(witherDifficulty.get() / players.size());
 
 		if (players.size() > 1)
-			witherDifficulty *= 1d + ((players.size() - 1) * this.bonusDifficultyPerPlayer);
+			witherDifficulty.set(witherDifficulty.get() * (1d + ((players.size() - 1) * this.bonusDifficultyPerPlayer)));
 
-		witherTags.putFloat(Strings.Tags.DIFFICULTY, witherDifficulty);
+		witherTags.putFloat(Strings.Tags.DIFFICULTY, (float) witherDifficulty.get());
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -155,11 +154,11 @@ public class DifficultyFeature extends Feature {
 
 		ServerPlayer player = (ServerPlayer) event.getEntity();
 
-		IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
-
-		if (difficulty.getSpawnedWithers() < this.startingDifficulty) {
-			difficulty.setSpawnedWithers(this.startingDifficulty);
-			LogHelper.info("[Progressive Bosses] %s spawned withers counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
-		}
+		player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
+			if (difficulty.getSpawnedWithers() < this.startingDifficulty) {
+				difficulty.setSpawnedWithers(this.startingDifficulty);
+				LogHelper.info("[Progressive Bosses] %s spawned withers counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
+			}
+		});
 	}
 }

@@ -177,7 +177,7 @@ public class LarvaFeature extends Feature {
 			float x = (float) Math.floor(Math.cos(angle) * 3.33f);
 			float z = (float) Math.floor(Math.sin(angle) * 3.33f);
 			int y = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
-			Endermite endermite = summonLarva(world, new Vec3(x + 0.5, y, z + 0.5), difficulty);
+			summonLarva(world, new Vec3(x + 0.5, y, z + 0.5), difficulty);
 			larvaSpawnedCount++;
 			if (larvaSpawnedCount >= this.maxSpawned)
 				break;

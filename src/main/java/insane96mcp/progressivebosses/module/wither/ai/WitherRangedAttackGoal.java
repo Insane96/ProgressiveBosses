@@ -108,6 +108,7 @@ public class WitherRangedAttackGoal extends Goal {
 				return;
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
 			if (barrageAttackTick % 3 == 0) {
+				ProgressiveBosses.LOGGER.info("barrageAttackTickIn: " + barrageAttackTick);
 				this.wither.performRangedAttack(RandomHelper.getInt(this.wither.getRandom(), 0, 3), this.target.getX() + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), this.target.getZ() + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), false);
 			}
 		}

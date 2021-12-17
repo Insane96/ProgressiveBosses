@@ -126,10 +126,8 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof Shulker))
+		if (!(event.getEntity() instanceof Shulker shulker))
 			return;
-
-		Shulker shulker = (Shulker) event.getEntity();
 
 		CompoundTag tags = shulker.getPersistentData();
 		if (!tags.contains(Strings.Tags.DRAGON_MINION))

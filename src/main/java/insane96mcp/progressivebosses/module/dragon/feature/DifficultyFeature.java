@@ -1,12 +1,12 @@
 package insane96mcp.progressivebosses.module.dragon.feature;
 
+import com.google.common.util.concurrent.AtomicDouble;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.capability.Difficulty;
-import insane96mcp.progressivebosses.capability.IDifficulty;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -23,6 +23,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Label(name = "Difficulty Settings", description = "How difficulty is handled for the Dragon.")
 public class DifficultyFeature extends Feature {
@@ -103,27 +104,28 @@ public class DifficultyFeature extends Feature {
 		if (players.size() == 0)
 			return;
 
-		int playersFirstDragon = 0;
-		float dragonDifficulty = 0;
+		AtomicInteger playersFirstDragon = new AtomicInteger(0);
+		final AtomicDouble dragonDifficulty = new AtomicDouble(0d);
 
 		for (ServerPlayer player : players) {
-			IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
-			dragonDifficulty += difficulty.getKilledDragons();
-			if (difficulty.getFirstDragon() == (byte) 1) {
-				playersFirstDragon++;
-				difficulty.setFirstDragon((byte) 2);
-			}
+			player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
+				dragonDifficulty.addAndGet(difficulty.getKilledDragons());
+				if (difficulty.getFirstDragon() == (byte) 1) {
+					playersFirstDragon.incrementAndGet();
+					difficulty.setFirstDragon((byte) 2);
+				}
+			});
 		}
 
-		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, playersFirstDragon);
+		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, playersFirstDragon.get());
 
 		if (!this.sumKilledDragonDifficulty)
-			dragonDifficulty /= players.size();
+			dragonDifficulty.set(dragonDifficulty.get() / players.size());
 
 		if (players.size() > 1)
-			dragonDifficulty *= 1d + ((players.size() - 1) * this.bonusDifficultyPerPlayer);
+			dragonDifficulty.set(dragonDifficulty.get() * (1d + ((players.size() - 1) * this.bonusDifficultyPerPlayer)));
 
-		dragonTags.putFloat(Strings.Tags.DIFFICULTY, dragonDifficulty);
+		dragonTags.putFloat(Strings.Tags.DIFFICULTY, (float) dragonDifficulty.get());
 	}
 
 	//Increase Player Difficulty
@@ -153,11 +155,12 @@ public class DifficultyFeature extends Feature {
 		}
 
 		for (ServerPlayer player : players) {
-			IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
-			if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstKilledDragonMessage)
-				player.sendMessage(new TranslatableComponent(Strings.Translatable.FIRST_DRAGON_KILL), Util.NIL_UUID);
-			if (difficulty.getKilledDragons() < this.maxDifficulty)
-				difficulty.addKilledDragons(1);
+			player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
+				if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstKilledDragonMessage)
+					player.sendMessage(new TranslatableComponent(Strings.Translatable.FIRST_DRAGON_KILL), Util.NIL_UUID);
+				if (difficulty.getKilledDragons() < this.maxDifficulty)
+					difficulty.addKilledDragons(1);
+			});
 		}
 	}
 
@@ -169,25 +172,23 @@ public class DifficultyFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ServerPlayer))
+		if (!(event.getEntity() instanceof ServerPlayer player))
 			return;
 
-		ServerPlayer player = (ServerPlayer) event.getEntity();
+		player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
+			if (difficulty.getKilledDragons() < this.startingDifficulty) {
+				difficulty.setKilledDragons(this.startingDifficulty);
+				LogHelper.info("[Progressive Bosses] %s killed dragons counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
+			}
+			if (difficulty.getKilledDragons() > this.maxDifficulty) {
+				difficulty.setKilledDragons(this.maxDifficulty);
+				LogHelper.info("[Progressive Bosses] %s killed dragons counter was above the 'Max Difficulty', Has been decreased to match 'Max Difficulty'", player.getName().getString());
+			}
 
-		IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
-
-		if (difficulty.getKilledDragons() < this.startingDifficulty) {
-			difficulty.setKilledDragons(this.startingDifficulty);
-			LogHelper.info("[Progressive Bosses] %s killed dragons counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
-		}
-		if (difficulty.getKilledDragons() > this.maxDifficulty) {
-			difficulty.setKilledDragons(this.maxDifficulty);
-			LogHelper.info("[Progressive Bosses] %s killed dragons counter was above the 'Max Difficulty', Has been decreased to match 'Max Difficulty'", player.getName().getString());
-		}
-
-		if (difficulty.getFirstDragon() == 0) {
-			difficulty.setFirstDragon((byte) 1);
-			LogHelper.info("[Progressive Bosses] %s first spawned. Set First Dragon to 1", player.getName().getString());
-		}
+			if (difficulty.getFirstDragon() == 0) {
+				difficulty.setFirstDragon((byte) 1);
+				LogHelper.info("[Progressive Bosses] %s first spawned. Set First Dragon to 1", player.getName().getString());
+			}
+		});
 	}
 }
