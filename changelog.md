@@ -1,5 +1,10 @@
 # Changelog
 
+## Alpha 3.5.0
+* Updated to Minecraft 1.18.1
+* Requires InsaneLib 1.4.2
+* Removed bonus damage per missing Elder Guardian (+10% -> +0% attack damage per missing guardian)
+
 ## 3.4.1
 * Now requires InsaneLib 1.4.0
 * Elder Guardian
