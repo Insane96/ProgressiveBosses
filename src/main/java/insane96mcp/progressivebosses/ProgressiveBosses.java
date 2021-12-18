@@ -40,12 +40,8 @@ public class ProgressiveBosses {
 	@SubscribeEvent
 	public void attachCapabilitiesEntity(final AttachCapabilitiesEvent<Entity> event)
 	{
-		final DifficultyProvider provider = new DifficultyProvider();
-
-		if (event.getObject() instanceof Player) {
-			event.addCapability(DifficultyProvider.IDENTIFIER, provider);
-			event.addListener(provider::invalidate);
-		}
+		if (event.getObject() instanceof Player)
+			event.addCapability(DifficultyProvider.IDENTIFIER, new DifficultyProvider());
 	}
 
 	@SubscribeEvent

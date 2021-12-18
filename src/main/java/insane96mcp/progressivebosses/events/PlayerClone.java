@@ -15,10 +15,12 @@ public class PlayerClone {
         Player oldPlayer = event.getOriginal();
         Player newPlayer = event.getPlayer();
 
+        oldPlayer.reviveCaps();
         oldPlayer.getCapability(Difficulty.INSTANCE).ifPresent(oldDifficulty -> newPlayer.getCapability(Difficulty.INSTANCE).ifPresent(newDifficulty -> {
            newDifficulty.setSpawnedWithers(oldDifficulty.getSpawnedWithers());
            newDifficulty.setKilledDragons(oldDifficulty.getKilledDragons());
            newDifficulty.setFirstDragon(oldDifficulty.getFirstDragon());
         }));
+        oldPlayer.invalidateCaps();
     }
 }
