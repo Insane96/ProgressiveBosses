@@ -15,7 +15,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> attackDurationReductionConfig;
 
-	public double bonusDamage = 0.1d;
+	public double bonusDamage = 0d;
 	public int attackDurationReduction = 25;
 
 	public AttackFeature(Module module) {
