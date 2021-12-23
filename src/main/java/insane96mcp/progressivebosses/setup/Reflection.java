@@ -10,7 +10,6 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 
-//TODO Dafuq is this
 public class Reflection {
 	static MethodHandles.Lookup lookup = MethodHandles.lookup();
 
@@ -38,10 +37,10 @@ public class Reflection {
 
 	public static void init() {
 		try {
-			onEntityHitMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "onHitEntity", EntityHitResult.class);
+			onEntityHitMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "m_5790_", EntityHitResult.class);
 			onEntityHitMH = lookup.unreflect(onEntityHitMethod);
 
-			onBlockHitMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "onHitBlock", BlockHitResult.class);
+			onBlockHitMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "m_8060_", BlockHitResult.class);
 			onBlockHitMH = lookup.unreflect(onBlockHitMethod);
 		} catch (IllegalAccessException e) {
 			ProgressiveBosses.LOGGER.error(e.toString());
