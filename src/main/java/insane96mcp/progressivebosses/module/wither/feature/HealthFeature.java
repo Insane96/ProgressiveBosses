@@ -6,10 +6,10 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.boss.WitherEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -60,15 +60,15 @@ public class HealthFeature extends Feature {
 		if (this.bonusPerDifficulty == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
-		WitherBoss wither = (WitherBoss) event.getEntity();
+		WitherEntity wither = (WitherEntity) event.getEntity();
 
 		if (wither.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
 			return;
 
-		CompoundTag witherTags = wither.getPersistentData();
+		CompoundNBT witherTags = wither.getPersistentData();
 		double difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
 		MCUtils.applyModifier(wither, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
 
@@ -86,20 +86,20 @@ public class HealthFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherEntity))
 			return;
 
 		if (this.bonusRegenPerDifficulty == 0d || this.maxBonusRegen == 0d)
 			return;
 
-		WitherBoss wither = (WitherBoss) event.getEntity();
+		WitherEntity wither = (WitherEntity) event.getEntity();
 
 		fixInvulBossBar(wither);
 
 		if (wither.getInvulnerableTicks() > 0)
 			return;
 
-		CompoundTag tags = wither.getPersistentData();
+		CompoundNBT tags = wither.getPersistentData();
 
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
@@ -117,10 +117,10 @@ public class HealthFeature extends Feature {
 	}
 
 
-	private void fixInvulBossBar(WitherBoss wither) {
+	private void fixInvulBossBar(WitherEntity wither) {
 		if (wither.getInvulnerableTicks() == 0)
 			return;
 
-		wither.bossEvent.setProgress(wither.getHealth() / wither.getMaxHealth());
+		wither.bossEvent.setPercent(wither.getHealth() / wither.getMaxHealth());
 	}
 }

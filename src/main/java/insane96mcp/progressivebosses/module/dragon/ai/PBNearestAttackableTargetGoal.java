@@ -1,18 +1,18 @@
 package insane96mcp.progressivebosses.module.dragon.ai;
 
-import net.minecraft.core.Direction;
+import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.monster.ShulkerEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Direction;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.monster.Shulker;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.phys.AABB;
 
-public class PBNearestAttackableTargetGoal extends NearestAttackableTargetGoal<Player> {
-    public PBNearestAttackableTargetGoal(Mob shulkerEntity) {
-        super(shulkerEntity, Player.class, 0, false, false, null);
+public class PBNearestAttackableTargetGoal extends NearestAttackableTargetGoal<PlayerEntity> {
+    public PBNearestAttackableTargetGoal(MobEntity shulkerEntity) {
+        super(shulkerEntity, PlayerEntity.class, 0, false, false, null);
         //allowUnseeable
-        this.targetConditions.ignoreLineOfSight();
+        this.targetConditions.allowUnseeable();
     }
 
     public boolean canUse() {
@@ -20,8 +20,8 @@ public class PBNearestAttackableTargetGoal extends NearestAttackableTargetGoal<P
     }
 
 
-    protected AABB getTargetableArea(double targetDistance) {
-        Direction direction = ((Shulker) this.mob).getAttachFace();
+    protected AxisAlignedBB getTargetableArea(double targetDistance) {
+        Direction direction = ((ShulkerEntity) this.mob).getAttachFace();
 
         if (direction.getAxis() == Direction.Axis.X) {
             return this.mob.getBoundingBox().inflate(4.0D, targetDistance, targetDistance);
