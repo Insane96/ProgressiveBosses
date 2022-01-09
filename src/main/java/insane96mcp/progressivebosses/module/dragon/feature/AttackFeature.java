@@ -218,7 +218,6 @@ public class AttackFeature extends Feature {
 		}
 
 		double rng = dragon.getRandom().nextDouble();
-		//LogHelper.info("charge chance: %s, %s", chance, rng < chance);
 
 		return rng < chance;
 	}
@@ -259,8 +258,6 @@ public class AttackFeature extends Feature {
 
 		double rng = dragon.getRandom().nextDouble();
 
-		//LogHelper.info("fireball chance: %s, %s", chance, rng < chance);
-
 		return rng < chance;
 	}
 
@@ -271,8 +268,6 @@ public class AttackFeature extends Feature {
 
 		if (player == null)
 			return;
-
-		//LogHelper.info("fireballing");
 
 		dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
 		dragon.getPhaseManager().getPhase(PhaseType.STRAFE_PLAYER).setTarget(player);
@@ -297,7 +292,8 @@ public class AttackFeature extends Feature {
 			difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 		}
 
-		float damage = 6 * (1f + (float) (this.increasedAcidPoolDamage * difficulty));
+		//float damage = 6 * (1f + (float) (this.increasedAcidPoolDamage * difficulty));
+		float damage = 4 * (1f + ((float) Math.pow(difficulty, 2) * .0075f));
 
 		AxisAlignedBB axisAlignedBB = new AxisAlignedBB(result.getLocation(), result.getLocation()).inflate(4d);
 		List<LivingEntity> livingEntities = fireball.level.getLoadedEntitiesOfClass(LivingEntity.class, axisAlignedBB);
@@ -328,11 +324,15 @@ public class AttackFeature extends Feature {
 				if (entity instanceof LivingEntity) {
 					areaeffectcloudentity.setOwner((LivingEntity)entity);
 				}
+				int waitTime = 10;
+				if (entity instanceof EnderDragonEntity && entity.getPersistentData().contains(Strings.Tags.DIFFICULTY)) {
+					waitTime = (int) Math.max(20 - (entity.getPersistentData().getFloat(Strings.Tags.DIFFICULTY) / 2), 10);
+				}
 
 				areaeffectcloudentity.setParticle(ParticleTypes.DRAGON_BREATH);
 				areaeffectcloudentity.setRadius(3.0F);
 				areaeffectcloudentity.setDuration(300);
-				areaeffectcloudentity.setWaitTime(10);
+				areaeffectcloudentity.setWaitTime(waitTime);
 				areaeffectcloudentity.setRadiusPerTick((7.0F - areaeffectcloudentity.getRadius()) / (float)areaeffectcloudentity.getDuration());
 				areaeffectcloudentity.addEffect(new EffectInstance(Effects.HARM, 1, 1));
 				if (!list.isEmpty()) {
