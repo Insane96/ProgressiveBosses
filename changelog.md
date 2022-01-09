@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.4.2
 * Now requires InsaneLib 1.4.2
 * Ender Dragon Acid Fireball 
   * Now deals less damage on impact at lower difficulties (6 to 21.8 scaling linearly -> 4 to 21.3 scaling slower at low difficulties (e.g. at difficulty 0/6/12/18/24 deals ~~6/10/14/17.8/21.8~~ -> 4/5/8.3/13.7/21.3))
