@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Now requires InsaneLib 1.4.2
+* Fixed minions and larvae losing attributes on reload
+* Fixed log spam with the Ender Dragon
+
 ## 3.4.1
 * Now requires InsaneLib 1.4.0
 * Elder Guardian
