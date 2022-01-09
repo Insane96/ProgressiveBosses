@@ -5,17 +5,17 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.base.Strings;
-import insane96mcp.progressivebosses.capability.DifficultyCapability;
+import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.capability.IDifficulty;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.entity.boss.WitherEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -101,35 +101,35 @@ public class DifficultyFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherEntity))
+		if (!(event.getEntity() instanceof WitherBoss))
 			return;
 
 		if (this.entityBlacklist.contains(event.getEntity().getType().getRegistryName().toString()))
 			return;
 
-		WitherEntity wither = (WitherEntity) event.getEntity();
+		WitherBoss wither = (WitherBoss) event.getEntity();
 
-		CompoundNBT witherTags = wither.getPersistentData();
+		CompoundTag witherTags = wither.getPersistentData();
 		if (witherTags.contains(Strings.Tags.DIFFICULTY))
 			return;
 
 		BlockPos pos1 = wither.blockPosition().offset(-this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck);
 		BlockPos pos2 = wither.blockPosition().offset(this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck);
-		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+		AABB bb = new AABB(pos1, pos2);
 
-		List<ServerPlayerEntity> players = event.getWorld().getLoadedEntitiesOfClass(ServerPlayerEntity.class, bb);
+		List<ServerPlayer> players = event.getWorld().getEntitiesOfClass(ServerPlayer.class, bb);
 		if (players.size() == 0)
 			return;
 
 		float witherDifficulty = 0;
 
-		for (ServerPlayerEntity player : players) {
-			IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+		for (ServerPlayer player : players) {
+			IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
 			witherDifficulty += difficulty.getSpawnedWithers();
 			if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
 				continue;
 			if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
-				player.sendMessage(new TranslationTextComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.NIL_UUID);
+				player.sendMessage(new TranslatableComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.NIL_UUID);
 			difficulty.addSpawnedWithers(1);
 		}
 
@@ -150,12 +150,12 @@ public class DifficultyFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ServerPlayerEntity))
+		if (!(event.getEntity() instanceof ServerPlayer))
 			return;
 
-		ServerPlayerEntity player = (ServerPlayerEntity) event.getEntity();
+		ServerPlayer player = (ServerPlayer) event.getEntity();
 
-		IDifficulty difficulty = player.getCapability(DifficultyCapability.DIFFICULTY).orElse(null);
+		IDifficulty difficulty = player.getCapability(Difficulty.INSTANCE).orElse(null);
 
 		if (difficulty.getSpawnedWithers() < this.startingDifficulty) {
 			difficulty.setSpawnedWithers(this.startingDifficulty);

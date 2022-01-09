@@ -8,25 +8,25 @@ import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.PaneBlock;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.phase.IPhase;
-import net.minecraft.entity.boss.dragon.phase.PhaseType;
-import net.minecraft.entity.item.EnderCrystalEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.Explosion;
-import net.minecraft.world.World;
-import net.minecraft.world.gen.Heightmap;
-import net.minecraft.world.gen.feature.EndPodiumFeature;
-import net.minecraft.world.gen.feature.EndSpikeFeature;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.IronBarsBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
+import net.minecraft.world.level.levelgen.feature.SpikeFeature;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -104,22 +104,22 @@ public class CrystalFeature extends Feature {
 		this.explosionImmune = this.explosionImmuneConfig.get();
 	}
 
-	private static final List<PhaseType<? extends IPhase>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(PhaseType.SITTING_SCANNING, PhaseType.SITTING_ATTACKING, PhaseType.SITTING_FLAMING, PhaseType.HOLDING_PATTERN, PhaseType.TAKEOFF);
+	private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF);
 
 	@SubscribeEvent
 	public void onDragonDamage(LivingDamageEvent event) {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
 		if (!this.enableCrystalRespawn)
 			return;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
+		EnderDragon dragon = (EnderDragon) event.getEntity();
 
-		CompoundNBT dragonTags = dragon.getPersistentData();
+		CompoundTag dragonTags = dragon.getPersistentData();
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (dragonTags.getBoolean(Strings.Tags.CRYSTAL_RESPAWN))
@@ -143,10 +143,10 @@ public class CrystalFeature extends Feature {
 		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
 		CrystalRespawnPhase phase = (CrystalRespawnPhase) dragon.getPhaseManager().getCurrentPhase();
 
-		ArrayList<EndSpikeFeature.EndSpike> spikes = new ArrayList<>(EndSpikeFeature.getSpikesForLevel((ServerWorld)dragon.level));
-		int maxTries = (int) MathHelper.clamp(difficulty * this.crystalRespawnMultiplier, 1, 100);
+		ArrayList<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level));
+		int maxTries = (int) Mth.clamp(difficulty * this.crystalRespawnMultiplier, 1, 100);
 		for (int i = 0; i < maxTries; i++) {
-			EndSpikeFeature.EndSpike targetSpike = spikes.get(RandomHelper.getInt(dragon.getRandom(), 0, spikes.size()));
+			SpikeFeature.EndSpike targetSpike = spikes.get(RandomHelper.getInt(dragon.getRandom(), 0, spikes.size()));
 			phase.addCrystalRespawn(targetSpike);
 		}
 		dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, true);
@@ -160,34 +160,34 @@ public class CrystalFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
-		EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-		CompoundNBT dragonTags = dragon.getPersistentData();
+		EnderDragon dragon = (EnderDragon) event.getEntity();
+		CompoundTag dragonTags = dragon.getPersistentData();
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 
 		crystalCages(dragon, difficulty);
 		moreCrystals(dragon, difficulty);
 	}
 
-	private void crystalCages(EnderDragonEntity dragon, float difficulty) {
+	private void crystalCages(EnderDragon dragon, float difficulty) {
 		if (this.moreCagesAtDifficulty == -1 || this.maxBonusCages == 0)
 			return;
 
 		if (difficulty < moreCagesAtDifficulty)
 			return;
 
-		CompoundNBT dragonTags = dragon.getPersistentData();
+		CompoundTag dragonTags = dragon.getPersistentData();
 		if (dragonTags.contains(Strings.Tags.CRYSTAL_CAGES))
 			return;
 
 		dragonTags.putBoolean(Strings.Tags.CRYSTAL_CAGES, true);
 
-		List<EnderCrystalEntity> crystals = new ArrayList<>();
+		List<EndCrystal> crystals = new ArrayList<>();
 
-		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.getSpikesForLevel((ServerWorld) dragon.level)) {
-			crystals.addAll(dragon.level.getEntitiesOfClass(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
+		for(SpikeFeature.EndSpike endspikefeature$endspike : SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level)) {
+			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, endspikefeature$endspike.getTopBoundingBox()));
 		}
 
 		//Remove all the crystals that already have cages around
@@ -198,7 +198,7 @@ public class CrystalFeature extends Feature {
 		int crystalsInvolved = Math.round(difficulty - this.moreCagesAtDifficulty + 1);
 		int cagesGenerated = 0;
 
-		for (EnderCrystalEntity crystal : crystals) {
+		for (EndCrystal crystal : crystals) {
 			generateCage(crystal.level, crystal.blockPosition());
 
 			cagesGenerated++;
@@ -207,23 +207,23 @@ public class CrystalFeature extends Feature {
 		}
 	}
 
-	private void moreCrystals(EnderDragonEntity dragon, float difficulty) {
+	private void moreCrystals(EnderDragon dragon, float difficulty) {
 		if (this.moreCrystalsAtDifficulty == -1 || this.maxMoreCrystals == 0)
 			return;
 
 		if (difficulty < this.moreCrystalsAtDifficulty)
 			return;
 
-		CompoundNBT dragonTags = dragon.getPersistentData();
+		CompoundTag dragonTags = dragon.getPersistentData();
 		if (dragonTags.contains(Strings.Tags.MORE_CRYSTALS))
 			return;
 
 		dragonTags.putBoolean(Strings.Tags.MORE_CRYSTALS, true);
 
-		List<EnderCrystalEntity> crystals = new ArrayList<>();
+		List<EndCrystal> crystals = new ArrayList<>();
 
-		for(EndSpikeFeature.EndSpike endspikefeature$endspike : EndSpikeFeature.getSpikesForLevel((ServerWorld) dragon.level)) {
-			crystals.addAll(dragon.level.getEntitiesOfClass(EnderCrystalEntity.class, endspikefeature$endspike.getTopBoundingBox()));
+		for(SpikeFeature.EndSpike endspikefeature$endspike : SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level)) {
+			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, endspikefeature$endspike.getTopBoundingBox()));
 		}
 
 		//Shuffle the list
@@ -232,7 +232,7 @@ public class CrystalFeature extends Feature {
 		int crystalsInvolved = Math.round(difficulty - this.moreCrystalsAtDifficulty + 1);
 		int crystalSpawned = 0;
 
-		for (EnderCrystalEntity crystal : crystals) {
+		for (EndCrystal crystal : crystals) {
 			generateCrystalInTower(dragon.level, crystal.getX(), crystal.getY(), crystal.getZ());
 
 			crystalSpawned++;
@@ -241,7 +241,7 @@ public class CrystalFeature extends Feature {
 		}
 	}
 
-	public boolean onDamageFromExplosion(EnderCrystalEntity enderCrystalEntity, DamageSource source) {
+	public boolean onDamageFromExplosion(EndCrystal enderCrystalEntity, DamageSource source) {
 		if (!this.isEnabled())
 			return false;
 
@@ -253,8 +253,8 @@ public class CrystalFeature extends Feature {
 
 	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER_RL = new ResourceLocation("endergetic:crystal_holder");
 
-	public static EnderCrystalEntity generateCrystalInTower(World world, double x, double y, double z) {
-		Vector3d centerPodium = Vector3d.atBottomCenterOf(world.getHeightmapPos(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
+	public static EndCrystal generateCrystalInTower(Level world, double x, double y, double z) {
+		Vec3 centerPodium = Vec3.atBottomCenterOf(world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
 
 		int spawnY = (int) (y - RandomHelper.getInt(world.getRandom(), 12, 24));
 		if (spawnY < centerPodium.y())
@@ -273,27 +273,27 @@ public class CrystalFeature extends Feature {
 				LogHelper.warn("The Endergetic Expansion is loaded but the %s block was not registered", ENDERGETIC_CRYSTAL_HOLDER_RL);
 		world.setBlockAndUpdate(crystalPos.offset(0, -1, 0), baseBlockState);
 
-		world.explode(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.Mode.DESTROY);
+		world.explode(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.BlockInteraction.DESTROY);
 
-		EnderCrystalEntity crystal = new EnderCrystalEntity(world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
+		EndCrystal crystal = new EndCrystal(world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
 		world.addFreshEntity(crystal);
 
 		return crystal;
 	}
 
-	public static void generateCage(World world, BlockPos pos) {
+	public static void generateCage(Level world, BlockPos pos) {
 		//Shamelessly copied from Vanilla Code
-		BlockPos.Mutable blockpos$mutable = new BlockPos.Mutable();
+		BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
 		for(int k = -2; k <= 2; ++k) {
 			for(int l = -2; l <= 2; ++l) {
 				for(int i1 = 0; i1 <= 3; ++i1) {
-					boolean flag = MathHelper.abs(k) == 2;
-					boolean flag1 = MathHelper.abs(l) == 2;
+					boolean flag = Mth.abs(k) == 2;
+					boolean flag1 = Mth.abs(l) == 2;
 					boolean flag2 = i1 == 3;
 					if (flag || flag1 || flag2) {
 						boolean flag3 = k == -2 || k == 2 || flag2;
 						boolean flag4 = l == -2 || l == 2 || flag2;
-						BlockState blockstate = Blocks.IRON_BARS.defaultBlockState().setValue(PaneBlock.NORTH, flag3 && l != -2).setValue(PaneBlock.SOUTH, flag3 && l != 2).setValue(PaneBlock.WEST, flag4 && k != -2).setValue(PaneBlock.EAST, flag4 && k != 2);
+						BlockState blockstate = Blocks.IRON_BARS.defaultBlockState().setValue(IronBarsBlock.NORTH, flag3 && l != -2).setValue(IronBarsBlock.SOUTH, flag3 && l != 2).setValue(IronBarsBlock.WEST, flag4 && k != -2).setValue(IronBarsBlock.EAST, flag4 && k != 2);
 						world.setBlockAndUpdate(blockpos$mutable.set(pos.getX() + k, pos.getY() - 1 + i1, pos.getZ() + l), blockstate);
 					}
 				}

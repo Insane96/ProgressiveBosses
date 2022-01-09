@@ -4,7 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.entity.monster.ElderGuardianEntity;
+import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -48,10 +48,10 @@ public class AttackFeature extends Feature {
 		if (this.bonusDamage == 0d)
 			return;
 
-		if (!(event.getSource().getEntity() instanceof ElderGuardianEntity))
+		if (!(event.getSource().getEntity() instanceof ElderGuardian))
 			return;
 
-		ElderGuardianEntity elderGuardian = (ElderGuardianEntity) event.getSource().getEntity();
+		ElderGuardian elderGuardian = (ElderGuardian) event.getSource().getEntity();
 
 		float bonusDamage = (float) (this.bonusDamage * BaseFeature.getDeadElderGuardians(elderGuardian));
 
@@ -60,10 +60,10 @@ public class AttackFeature extends Feature {
 
 	private static final int BASE_ATTACK_DURATION = 60;
 
-	public int getAttackDuration(ElderGuardianEntity elderGuardian) {
+	public int getAttackDuration(ElderGuardian elderGuardian) {
 		if (!this.isEnabled() || this.attackDurationReduction == 0)
 			return BASE_ATTACK_DURATION;
-		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardianEntity).size();
+		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardian).size();
 		if (elderGuardiansNearby == 2)
 			return BASE_ATTACK_DURATION;
 

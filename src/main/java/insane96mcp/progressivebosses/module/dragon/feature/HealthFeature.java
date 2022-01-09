@@ -6,11 +6,11 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.Attributes;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.phase.PhaseType;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -67,15 +67,15 @@ public class HealthFeature extends Feature {
 		if (this.bonusPerDifficulty == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
-		EnderDragonEntity enderDragon = (EnderDragonEntity) event.getEntity();
+		EnderDragon enderDragon = (EnderDragon) event.getEntity();
 
 		if (enderDragon.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
 			return;
 
-		CompoundNBT dragonTags = enderDragon.getPersistentData();
+		CompoundTag dragonTags = enderDragon.getPersistentData();
 		double difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 		MCUtils.applyModifier(enderDragon, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
 	}
@@ -96,7 +96,7 @@ public class HealthFeature extends Feature {
 					world.spawnParticle(ParticleTypes.ANGRY_VILLAGER, part.getPosX(), part.getPosY(), part.getPosZ(), 1, 0, 0, 0, 0);
 					if (part.getBoundingBox().intersects(player.getBoundingBox())) {
 						part.attackEntityFrom(DamageSource.causePlayerDamage(player), 20f);
-						LogHelper.info("Colliding with %s", part.field_213853_c);
+						LogHelper.info("Colliding with %s", part.name);
 					}
 				}
 			}
@@ -104,15 +104,15 @@ public class HealthFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragonEntity))
+		if (!(event.getEntity() instanceof EnderDragon))
 			return;
 
-		EnderDragonEntity enderDragon = (EnderDragonEntity) event.getEntity();
+		EnderDragon enderDragon = (EnderDragon) event.getEntity();
 
-		if (!enderDragon.isAlive() || enderDragon.getPhaseManager().getCurrentPhase().getPhase() == PhaseType.DYING)
+		if (!enderDragon.isAlive() || enderDragon.getPhaseManager().getCurrentPhase().getPhase() == EnderDragonPhase.DYING)
 			return;
 
-		CompoundNBT tags = enderDragon.getPersistentData();
+		CompoundTag tags = enderDragon.getPersistentData();
 
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
@@ -137,7 +137,7 @@ public class HealthFeature extends Feature {
 		return (float) Math.min(difficulty * this.bonusRegenPerDifficulty, this.maxBonusRegen);
 	}
 
-	private float getCrystalBonusHeal(EnderDragonEntity enderDragon, float difficulty) {
+	private float getCrystalBonusHeal(EnderDragon enderDragon, float difficulty) {
 		if (this.bonusCrystalRegen == 0d)
 			return 0f;
 
