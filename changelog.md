@@ -5,6 +5,7 @@
 * Ender Dragon Acid Fireball 
   * Now deals less damage on impact at lower difficulties (6 to 21.8 scaling linearly -> 4 to 21.3 scaling slower at low difficulties (e.g. at difficulty 0/6/12/18/24 deals ~~6/10/14/17.8/21.8~~ -> 4/5/8.3/13.7/21.3))
   * Reduced time before the area effect cloud starts dealing damage (0.5 sec -> 1 to 0.5 sec at difficulty 0 to 20)
+* Reduced larvae bonus movement speed (+75% -> +65%)
 * Fixed minions and larvae losing attributes on reload
 * Fixed log spam with the Ender Dragon
 

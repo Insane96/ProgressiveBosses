@@ -11,7 +11,6 @@ import net.minecraft.world.Difficulty;
 public class PBNearestAttackableTargetGoal extends NearestAttackableTargetGoal<PlayerEntity> {
     public PBNearestAttackableTargetGoal(MobEntity shulkerEntity) {
         super(shulkerEntity, PlayerEntity.class, 0, false, false, null);
-        //allowUnseeable
         this.targetConditions.allowUnseeable();
     }
 
