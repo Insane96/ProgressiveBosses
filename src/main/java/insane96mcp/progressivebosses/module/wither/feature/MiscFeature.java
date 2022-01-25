@@ -61,7 +61,7 @@ public class MiscFeature extends Feature {
 				.define("Ignore Witherproof Blocks", ignoreWitherProofBlocks);
 		witherNetherOnlyConfig = Config.builder
 				.comment("The wither can only be spawned in the Nether.\n" +
-						"Note that this feature completely disables Wither Skulls from begin placed nearby Soul Sand when not in the Nether or when on the Nether Roof.\n" +
+						"Note that this feature completely disables Wither Skulls from begin placed nearby Soul Sand when not in the Nether or when on the Nether Roof (if you need to place a skull near a Soul Sand place the skull first).\n" +
 						"Requires Minecraft restart.")
 				.define("Wither Nether Only", witherNetherOnly);
 		Config.builder.pop();
@@ -216,7 +216,7 @@ public class MiscFeature extends Feature {
 	 * Returns true if at the specified position a Wither Skull can be placed
 	 */
 	public static boolean canPlaceSkull(World world, BlockPos pos) {
-		boolean isNether = world.dimension().location().equals(DimensionType.NETHER_LOCATION);
+		boolean isNether = world.dimension().location().equals(DimensionType.NETHER_LOCATION.location());
 
 		boolean hasSoulSandNearby = false;
 		for (Direction dir : Direction.values()) {
