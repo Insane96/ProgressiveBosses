@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.4.3
 * Fixed 'Wither Nether Only' preventing the Wither from spawning in any dimension
 
 ## 3.4.2
