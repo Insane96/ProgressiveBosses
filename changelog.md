@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Fixed crash with InsaneLib 1.4.3
+
 ## Alpha 3.5.0
 * Updated to Minecraft 1.18.1
 * Requires InsaneLib 1.4.2

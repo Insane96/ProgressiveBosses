@@ -3,9 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.MCUtils;
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.nbt.CompoundTag;
@@ -127,9 +125,6 @@ public class HealthFeature extends Feature {
 		float heal = flatBonusHeal + crystalBonusHeal;
 		if (heal == 0f)
 			return;
-
-		if (enderDragon.tickCount % 20 == 0)
-			LogHelper.info(ProgressiveBosses.LOGGER, "heal: %s, health: %s", heal, enderDragon.getHealth());
 
 		heal /= 20f;
 

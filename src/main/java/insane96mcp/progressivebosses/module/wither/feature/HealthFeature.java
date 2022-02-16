@@ -6,6 +6,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
+import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -60,10 +61,8 @@ public class HealthFeature extends Feature {
 		if (this.bonusPerDifficulty == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getEntity();
 
 		if (wither.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
 			return;
@@ -75,7 +74,7 @@ public class HealthFeature extends Feature {
 		boolean hasInvulTicks = wither.getInvulnerableTicks() > 0;
 
 		if (hasInvulTicks)
-			wither.setHealth(Math.max(1, (float) wither.getMaxHealth() - 200));
+			wither.setHealth(Math.max(1, wither.getMaxHealth() - 200));
 	}
 
 	@SubscribeEvent
@@ -86,15 +85,13 @@ public class HealthFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
 		if (this.bonusRegenPerDifficulty == 0d || this.maxBonusRegen == 0d)
 			return;
 
-		WitherBoss wither = (WitherBoss) event.getEntity();
-
-		fixInvulBossBar(wither);
+		//fixInvulBossBar(wither);
 
 		if (wither.getInvulnerableTicks() > 0)
 			return;
@@ -121,6 +118,7 @@ public class HealthFeature extends Feature {
 		if (wither.getInvulnerableTicks() == 0)
 			return;
 
+		LogHelper.info("Health: %s, Max Health: %s", wither.getHealth(), wither.getMaxHealth());
 		wither.bossEvent.setProgress(wither.getHealth() / wither.getMaxHealth());
 	}
 }

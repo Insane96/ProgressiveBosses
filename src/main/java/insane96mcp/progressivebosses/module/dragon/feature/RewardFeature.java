@@ -78,6 +78,7 @@ public class RewardFeature extends Feature {
 		dropEgg(dragon);
 	}
 
+	//TODO Check (when https://github.com/MinecraftForge/MinecraftForge/pull/8388 is merged) if it's possible to use LivingExperienceDrop
 	private void dropExperience(EnderDragon dragon) {
 		if (this.bonusExperience == 0d)
 			return;
@@ -94,7 +95,7 @@ public class RewardFeature extends Feature {
 		if (difficulty == 0d)
 			return;
 
-		//Drop 8% of experience each tick (for 10 ticks) + 20% at the last tick
+		//Drop 8% of experience each tick (for 10 ticks) + 20% at the last tick like vanilla
 		int bonusXP = (int) (500 * this.bonusExperience * difficulty * 0.08);
 		if (dragon.dragonDeathTime == 200)
 			bonusXP += (int) (500 * this.bonusExperience * difficulty * 0.2);
