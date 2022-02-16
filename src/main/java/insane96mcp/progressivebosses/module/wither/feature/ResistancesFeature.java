@@ -62,13 +62,14 @@ public class ResistancesFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if ((this.meleeDamageReductionOnHalfHealth == 0d || this.maxDamageReductionOnHalfHealth == 0d) && (this.meleeDamageReductionBeforeHalfHealth == 0d || this.maxMeleeDamageReductionBeforeHalfHealth == 0d) && this.magicDamageBonus == 0d)
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if ((this.meleeDamageReductionOnHalfHealth == 0d || this.maxDamageReductionOnHalfHealth == 0d)
+				&& (this.meleeDamageReductionBeforeHalfHealth == 0d || this.maxMeleeDamageReductionBeforeHalfHealth == 0d)
+				&& this.magicDamageBonus == 0d)
 			return;
 
-		WitherBoss wither = (WitherBoss) event.getEntity();
 		//Handle Magic Damage
 		if (event.getSource().isMagic() && this.magicDamageBonus > 0d) {
 			double missingHealth = wither.getMaxHealth() - wither.getHealth();

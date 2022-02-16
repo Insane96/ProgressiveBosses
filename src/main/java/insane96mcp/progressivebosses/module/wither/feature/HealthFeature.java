@@ -6,7 +6,6 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.setup.Config;
-import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -118,7 +117,6 @@ public class HealthFeature extends Feature {
 		if (wither.getInvulnerableTicks() == 0)
 			return;
 
-		LogHelper.info("Health: %s, Max Health: %s", wither.getHealth(), wither.getMaxHealth());
 		wither.bossEvent.setProgress(wither.getHealth() / wither.getMaxHealth());
 	}
 }
