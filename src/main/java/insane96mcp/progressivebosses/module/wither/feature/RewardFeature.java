@@ -46,7 +46,7 @@ public class RewardFeature extends Feature {
 						"chance_mode:\n" +
 						"* FLAT: chance is the percentage chance for the item to drop if the difficulty criteria matches\n" +
 						"* SCALING: each point of difficulty >= 'difficulty to drop the item' will be multiplied by the chance (e.g. chance 2% and difficulty 10, difficulty required 5, chance to drop the item will be chance * (difficulty - difficulty_required + 1) = 2% * (10 - 5 + 1) = 12%)\n" +
-						"By default Withers have 2% chance per difficulty >= 2 to drop 1 shard + 4% chance per difficulty >= 4 to drop 2 shards + 8% chance per difficulty >= 8 to drop 4 shards.")
+						"By default Withers have 2% chance per (difficulty >= 2) to drop 1 shard + 4% chance per (difficulty >= 4) to drop 2 shards + 8% chance per (difficulty >= 8) to drop 4 shards.")
 				.defineList("Drops", dropsListDefault, o -> o instanceof String);
 		Config.builder.pop();
 	}
@@ -69,10 +69,8 @@ public class RewardFeature extends Feature {
 		if (this.bonusExperience == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getEntity();
 
 		CompoundTag witherTags = wither.getPersistentData();
 		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
@@ -88,10 +86,8 @@ public class RewardFeature extends Feature {
 		if (this.dropsList.isEmpty())
 			return;
 
-		if (!(event.getEntityLiving() instanceof WitherBoss))
+		if (!(event.getEntityLiving() instanceof WitherBoss wither))
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getEntityLiving();
 
 		CompoundTag tags = wither.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);

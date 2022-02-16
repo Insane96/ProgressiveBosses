@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Fixed crash with InsaneLib 1.4.3
+* Fixed Wither Nether Only preventing the spawn of the wither anywhere
 
 ## Alpha 3.5.0
 * Updated to Minecraft 1.18.1
