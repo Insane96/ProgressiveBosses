@@ -162,11 +162,8 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getEntity();
-
 		CompoundTag witherTags = wither.getPersistentData();
 
 		int cooldown = (int) (RandomHelper.getInt(wither.level.random, this.minCooldown, this.maxCooldown) * this.cooldownMultiplierBelowHalfHealth);
@@ -181,12 +178,10 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
 		Level world = event.getEntity().level;
-
-		WitherBoss wither = (WitherBoss) event.getEntity();
 		CompoundTag witherTags = wither.getPersistentData();
 
 		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
@@ -295,10 +290,8 @@ public class MinionFeature extends Feature {
 		if (!this.killMinionOnWitherDeath)
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getEntity();
 		ServerLevel world = (ServerLevel) wither.level;
 
 		CompoundTag tags = wither.getPersistentData();
@@ -351,12 +344,8 @@ public class MinionFeature extends Feature {
 
 	/**
 	 * Returns -1 when no spawn spots are found, otherwise the Y coord
-	 * @param pos
-	 * @param world
-	 * @param minRelativeY
-	 * @return
 	 */
-	private static int getYSpawn(EntityType entityType, BlockPos pos, Level world, int minRelativeY) {
+	private static int getYSpawn(EntityType<WitherMinionEntity> entityType, BlockPos pos, Level world, int minRelativeY) {
 		int height = (int) Math.ceil(entityType.getHeight());
 		int fittingYPos = -1;
 		for (int y = pos.getY(); y > pos.getY() - minRelativeY; y--) {
