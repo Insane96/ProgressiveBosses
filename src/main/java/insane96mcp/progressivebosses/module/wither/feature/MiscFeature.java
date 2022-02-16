@@ -57,7 +57,7 @@ public class MiscFeature extends Feature {
 				.comment("The Wither will break even blocks below him when hit.")
 				.define("Bigger Breaking Blocks", biggerBlockBreaking);
 		ignoreWitherProofBlocksConfig = Config.builder
-				.comment("If true the Wither will break even blocks that are witherproof.")
+				.comment("If true the Wither will break even blocks that are witherproof. Unbreakable blocks will still be unbreakable, so it's really useful with other mods as in vanilla Wither Proof Blocks are all the unbreakable blocks.")
 				.define("Ignore Witherproof Blocks", ignoreWitherProofBlocks);
 		witherNetherOnlyConfig = Config.builder
 				.comment("The wither can only be spawned in the Nether.\n" +
@@ -95,11 +95,8 @@ public class MiscFeature extends Feature {
 		if (!this.biggerBlockBreaking)
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getEntity();
-
 		if (!wither.isAlive())
 			return;
 
@@ -153,14 +150,12 @@ public class MiscFeature extends Feature {
 		if (this.explosionCausesFireAtDifficulty == -1 && this.explosionPowerBonus == 0d)
 			return;
 
-		if (!(event.getExplosion().getExploder() instanceof WitherBoss))
+		if (!(event.getExplosion().getExploder() instanceof WitherBoss wither))
 			return;
 
 		//Check if the explosion is the one from the wither
 		if (event.getExplosion().radius != 7f)
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getExplosion().getExploder();
 		CompoundTag tags = wither.getPersistentData();
 
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
@@ -192,10 +187,9 @@ public class MiscFeature extends Feature {
 		if (!event.getEntity().isAlive())
 			return;
 
-		if (!(event.getEntityLiving() instanceof WitherBoss))
+		if (!(event.getEntityLiving() instanceof WitherBoss wither))
 			return;
 
-		WitherBoss wither = (WitherBoss) event.getEntityLiving();
 		wither.destroyBlocksTick = 10;
 	}
 
@@ -216,7 +210,7 @@ public class MiscFeature extends Feature {
 	 * Returns true if at the specified position a Wither Skull can be placed
 	 */
 	public static boolean canPlaceSkull(Level world, BlockPos pos) {
-		boolean isNether = world.dimension().location().equals(DimensionType.NETHER_LOCATION);
+		boolean isNether = world.dimension().location().equals(DimensionType.NETHER_LOCATION.location());
 
 		boolean hasSoulSandNearby = false;
 		for (Direction dir : Direction.values()) {
