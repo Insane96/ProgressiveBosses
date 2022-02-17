@@ -41,8 +41,9 @@ public class WitherChargeAttackGoal extends Goal {
 	 * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
 	 * method as well.
 	 */
+	//TODO Maybe rework this to no longer use InvulnTicks
 	public boolean canUse() {
-		if (this.wither.getInvulnerableTicks() != AttackFeature.Consts.CHARGE_ATTACK_TICK_START)
+		if (this.wither.getInvulnerableTicks() != AttackFeature.Consts.CHARGE_ATTACK_TICK_START && this.wither.getInvulnerableTicks() != AttackFeature.Consts.CHARGE_ATTACK_TICK_START - 1)
 			return false;
 		CompoundTag witherTags = wither.getPersistentData();
 		return witherTags.contains(Strings.Tags.CHARGE_ATTACK);
@@ -77,6 +78,12 @@ public class WitherChargeAttackGoal extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
+		//Needed since stop() now gets called every other tick
+		if (this.wither.getInvulnerableTicks() <= 0) {
+			this.stop();
+			return;
+		}
+
 		if (this.wither.getInvulnerableTicks() > AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE)
 			this.wither.setDeltaMovement(Vec3.ZERO);
 
@@ -85,7 +92,7 @@ public class WitherChargeAttackGoal extends Goal {
 		else if (this.wither.getInvulnerableTicks() == AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
 			this.target = this.wither.level.getNearestPlayer(this.wither, 64d);
 			if (target != null) {
-				this.targetPos = this.target.position();
+				this.targetPos = this.target.position().add(0, -1.5d, 0);
 				Vec3 forward = this.targetPos.subtract(this.wither.position()).normalize();
 				this.targetPos = this.targetPos.add(forward.multiply(4d, 4d, 4d));
 				this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
@@ -97,7 +104,7 @@ public class WitherChargeAttackGoal extends Goal {
 			}
 		}
 		else if (this.wither.getInvulnerableTicks() < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
-			//Done so it goes faster and faster
+			//So it goes faster and faster
 			double mult = 60d / this.wither.getInvulnerableTicks();
 			Vec3 diff = this.targetPos.subtract(this.wither.position()).normalize().multiply(mult, mult, mult);
 			this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
@@ -131,7 +138,7 @@ public class WitherChargeAttackGoal extends Goal {
 				double d2 = entity.getX() - this.wither.getX();
 				double d3 = entity.getZ() - this.wither.getZ();
 				double d4 = Math.max(d2 * d2 + d3 * d3, 0.1D);
-				entity.push(d2 / d4 * 25.0D, 1.4d, d3 / d4 * 25.0D);
+				entity.push(d2 / d4 * 10d, 0.5d, d3 / d4 * 10d);
 			});
 		}
 		//If the wither's charging and is farther from the target point than the last tick OR is about to finish the invulnerability time then prevent the explosion and stop the attack
