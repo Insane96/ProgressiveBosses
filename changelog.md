@@ -5,6 +5,7 @@
 * Fixed crash with InsaneLib 1.4.3
 * Fixed Wither Nether Only preventing the spawn of the wither anywhere
 * Reduced Wither Minions Bonus speed per difficulty (+12% -> +10%)
+* Wither will no longer continuously Charge if it has not seen the player for a while
 
 ## Alpha 3.5.0
 * Updated to Minecraft 1.18.1

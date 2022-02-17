@@ -84,7 +84,7 @@ public class WitherRangedAttackGoal extends Goal {
 		}
 		else {
 			this.seeTime = 0;
-			if (this.target instanceof Player)
+			if (this.target instanceof Player && unseenPlayerTicks < 300)
 				witherTags.putInt(Strings.Tags.UNSEEN_PLAYER_TICKS, unseenPlayerTicks + 2);
 		}
 
