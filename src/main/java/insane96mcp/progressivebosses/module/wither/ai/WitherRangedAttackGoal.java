@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
 import insane96mcp.insanelib.utils.RandomHelper;
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.base.Strings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
@@ -44,10 +43,8 @@ public class WitherRangedAttackGoal extends Goal {
 		Entity entity = this.wither.level.getEntity(targetId);
 		if (entity == null)
 			return false;
-		if (!(entity instanceof LivingEntity))
+		if (!(entity instanceof LivingEntity livingEntity))
 			return false;
-
-		LivingEntity livingEntity = (LivingEntity) entity;
 		if (!livingEntity.isAlive())
 			return false;
 
@@ -103,12 +100,10 @@ public class WitherRangedAttackGoal extends Goal {
 
 		int barrageAttackTick = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
 		if (barrageAttackTick > 0) {
-			ProgressiveBosses.LOGGER.info("barrageAttackTick: " + barrageAttackTick);
 			if (!canSee)
 				return;
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
 			if (barrageAttackTick % 3 == 0) {
-				ProgressiveBosses.LOGGER.info("barrageAttackTickIn: " + barrageAttackTick);
 				this.wither.performRangedAttack(RandomHelper.getInt(this.wither.getRandom(), 0, 3), this.target.getX() + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), this.target.getZ() + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), false);
 			}
 		}
@@ -133,29 +128,8 @@ public class WitherRangedAttackGoal extends Goal {
 		}
 	}
 
-	/*public void launchWitherSkullToCoords(int head, double x, double y, double z, boolean invulnerable) {
-		if (!this.wither.isSilent()) {
-			this.wither.world.playEvent((PlayerEntity)null, 1024, this.wither.getPosition(), 0);
-		}
-
-		double d0 = this.wither.getHeadX(head);
-		double d1 = this.wither.getHeadY(head);
-		double d2 = this.wither.getHeadZ(head);
-		double d3 = x - d0;
-		double d4 = y - d1;
-		double d5 = z - d2;
-		CompoundNBT compoundNBT = this.wither.getPersistentData();
-		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
-		WitherSkullEntity witherskullentity = new WitherSkullEntity(this.wither.world, this.wither, d3, d4, d5);
-		witherskullentity.setShooter(this.wither);
-		witherskullentity.accelerationX *= 1 + (Modules.witherModule.attackFeature.skullBonusVelocity * difficulty);
-		witherskullentity.accelerationY *= 1 + (Modules.witherModule.attackFeature.skullBonusVelocity * difficulty);
-		witherskullentity.accelerationZ *= 1 + (Modules.witherModule.attackFeature.skullBonusVelocity * difficulty);
-		if (invulnerable) {
-			witherskullentity.setSkullInvulnerable(true);
-		}
-
-		witherskullentity.setRawPosition(d0, d1, d2);
-		this.wither.world.addEntity(witherskullentity);
-	}*/
+	@Override
+	public boolean requiresUpdateEveryTick() {
+		return true;
+	}
 }

@@ -12,9 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -32,7 +30,6 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> maxChargeAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> increasedDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageChancePerDiffConfig;
-	//private final ForgeConfigSpec.ConfigValue<Double> maxBarrageAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> minBarrageDurationConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxBarrageDurationConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
@@ -44,7 +41,6 @@ public class AttackFeature extends Feature {
 	public double increasedDamage = 0.04d;
 	//Barrage Attack
 	public double maxBarrageChancePerDiff = 0.0035d;
-	//public double maxBarrageAttackChance = 0.04d;
 	public int minBarrageDuration = 20;
 	public int maxBarrageDuration = 150;
 	//Skulls
@@ -70,9 +66,6 @@ public class AttackFeature extends Feature {
 		maxBarrageChancePerDiffConfig = Config.builder
 				.comment("Chance (per difficulty) every time the Wither takes damage to start a barrage attack. The actual chance is inversely proportional to Wither's health and damage taken (more damage and less health = higher chance).")
 				.defineInRange("Max Barrage Attack Chance Per Difficulty", maxBarrageChancePerDiff, 0d, 1d);
-		/*maxBarrageAttackChanceConfig = Config.builder
-				.comment("Max Chance for the barrage attack. The max chance is doubled when the Wither is below half health")
-				.defineInRange("Max Barrage Attack Chance", maxBarrageAttackChance, 0d, 1d);*/
 		minBarrageDurationConfig = Config.builder
 				.comment("Min time (in ticks) for the duration of the barrage attack. The actual duration is inversely proportional to Wither's health and damage taken (more damage and less health = higher chance)")
 				.defineInRange("Min Barrage Duration", minBarrageDuration, 0, Integer.MAX_VALUE);
@@ -127,10 +120,8 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getEntity();
 		CompoundTag compoundNBT = wither.getPersistentData();
 		if ((!compoundNBT.contains(Strings.Tags.DIFFICULTY) || compoundNBT.getFloat(Strings.Tags.DIFFICULTY) == 0f) && !this.applyToVanillaWither)
 			return;
@@ -139,13 +130,11 @@ public class AttackFeature extends Feature {
 	}
 
 	private void witherSkullSpeed(Entity entity) {
-		if (!(entity instanceof WitherSkull))
+		if (!(entity instanceof WitherSkull witherSkullEntity))
 			return;
 
 		if (!this.isEnabled() || this.skullVelocityMultiplier == 0d)
 			return;
-
-		WitherSkull witherSkullEntity = (WitherSkull) entity;
 
 		if (Math.abs(witherSkullEntity.xPower) > 10 || Math.abs(witherSkullEntity.yPower) > 10 || Math.abs(witherSkullEntity.zPower) > 10) {
 			entity.kill();
@@ -165,16 +154,19 @@ public class AttackFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (this.maxChargeAttackChance == 0d)
-			return;
-
 		if (!event.getEntity().isAlive())
 			return;
 
-		if (!(event.getEntity() instanceof WitherBoss))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		WitherBoss wither = (WitherBoss) event.getEntity();
+		healDuringCharge(wither);
+		chargeUnseen(wither);
+	}
+
+	private void healDuringCharge(WitherBoss wither) {
+		if (this.maxChargeAttackChance == 0d)
+			return;
 		CompoundTag witherTags = wither.getPersistentData();
 		// When in charge attack remove the vanilla health regeneration when he's invulnerable and add 1% health regeneration of the missing health per second
 		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 10 == 0){
@@ -182,6 +174,12 @@ public class AttackFeature extends Feature {
 			if (wither.getHealth() > 10f)
 				wither.setHealth(wither.getHealth() - 10f + (missingHealth * 0.005f));
 		}
+	}
+
+	private void chargeUnseen(WitherBoss wither) {
+		if (this.maxChargeAttackChance == 0d)
+			return;
+		CompoundTag witherTags = wither.getPersistentData();
 
 		if (!witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 20 == 0) {
 			doCharge(wither, witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS) / 20f);
@@ -226,10 +224,8 @@ public class AttackFeature extends Feature {
 		if (!event.getEntity().isAlive())
 			return;
 
-		if (!(event.getEntityLiving() instanceof WitherBoss))
+		if (!(event.getEntityLiving() instanceof WitherBoss wither))
 			return;
-
-		WitherBoss wither = (WitherBoss) event.getEntityLiving();
 
 		doBarrage(wither, event.getAmount());
 		doCharge(wither, event.getAmount());
@@ -283,9 +279,6 @@ public class AttackFeature extends Feature {
 		wither.goalSelector.addGoal(0, new WitherDoNothingGoal(wither));
 		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.increaseAttackSpeedWhenNear));
 		wither.goalSelector.addGoal(2, new WitherChargeAttackGoal(wither));
-
-		//Fixes https://bugs.mojang.com/browse/MC-29274
-		wither.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(wither, Player.class, 0, false, false, null));
 	}
 
 	public static class Consts {

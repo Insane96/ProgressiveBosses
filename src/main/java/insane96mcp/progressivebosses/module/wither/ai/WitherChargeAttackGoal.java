@@ -141,4 +141,9 @@ public class WitherChargeAttackGoal extends Goal {
 		if (this.targetPos != null)
 			this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
 	}
+
+	@Override
+	public boolean requiresUpdateEveryTick() {
+		return true;
+	}
 }
