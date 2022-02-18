@@ -14,5 +14,8 @@
 		"ShulkerBulletEntityMixin",
 		"StrafePlayerPhaseMixin"
 	],
+	"client": [
+		"client.WitherBossRendererMixin"
+	],
 	"minVersion": "0.8"
 }

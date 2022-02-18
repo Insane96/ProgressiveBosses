@@ -8,14 +8,18 @@ import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherDoNothingGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
+import insane96mcp.progressivebosses.network.MessageWitherSync;
+import insane96mcp.progressivebosses.network.PacketManager;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -23,6 +27,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.network.NetworkDirection;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -173,7 +178,7 @@ public class AttackFeature extends Feature {
 			return;
 		CompoundTag witherTags = wither.getPersistentData();
 		// When in charge attack remove the vanilla health regeneration when he's invulnerable and add 1% health regeneration of the missing health per second
-		if (witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 10 == 0){
+		if (witherTags.getBoolean(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 10 == 0){
 			float missingHealth = wither.getMaxHealth() - wither.getHealth();
 			if (wither.getHealth() > 10f)
 				wither.setHealth(wither.getHealth() - 10f + (missingHealth * 0.005f));
@@ -185,7 +190,7 @@ public class AttackFeature extends Feature {
 			return;
 		CompoundTag witherTags = wither.getPersistentData();
 
-		if (!witherTags.contains(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 20 == 0) {
+		if (!witherTags.getBoolean(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 20 == 0) {
 			doCharge(wither, witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS) / 20f);
 		}
 	}
@@ -257,15 +262,13 @@ public class AttackFeature extends Feature {
 		if (this.maxChargeAttackChance == 0d)
 			return;
 
-		CompoundTag witherTags = wither.getPersistentData();
-
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
 		double chance = this.maxChargeAttackChance * missingHealthPerc;
 		chance *= (damageTaken / 10f);
 		double r = wither.getRandom().nextDouble();
 		if (r < chance) {
 			wither.setInvulnerableTicks(Consts.CHARGE_ATTACK_TICK_START);
-			witherTags.putBoolean(Strings.Tags.CHARGE_ATTACK, true);
+			setCharging(wither, true);
 		}
 	}
 
@@ -290,5 +293,13 @@ public class AttackFeature extends Feature {
 	public static class Consts {
 		public static final int CHARGE_ATTACK_TICK_START = 90;
 		public static final int CHARGE_ATTACK_TICK_CHARGE = 30;
+	}
+
+	public static void setCharging(WitherBoss wither, boolean charge) {
+		wither.getPersistentData().putBoolean(Strings.Tags.CHARGE_ATTACK, charge);
+		Object msg = new MessageWitherSync(wither.getId(), charge);
+		for (Player player : wither.level.players()) {
+			PacketManager.CHANNEL.sendTo(msg, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+		}
 	}
 }

@@ -1,13 +1,18 @@
 # Changelog
 
 ## Upcoming
-* Fixed Wither Attack Goal broken (slow barrage and no longer standing still)
+* Wither
+  * Attack
+    * Wither now becomes red when is about to Charge attack
+    * Fixed Wither Attack Goal broken (slow barrage and no longer standing still)
+    * Wither will no longer continuously Charge if it has not seen the player for a while (basically added a cap for the chance)
+    * Fixed Charge attack broken as glass
+    * Wither knockback on charge attack greatly reduced
+  * Minion
+    * Reduced Wither Minions Bonus speed per difficulty (+12% -> +10%)
+  * Misc
+    * Fixed Wither Nether Only preventing the spawn of the wither anywhere**
 * Fixed crash with InsaneLib 1.4.3
-* Fixed Wither Nether Only preventing the spawn of the wither anywhere
-* Reduced Wither Minions Bonus speed per difficulty (+12% -> +10%)
-* Wither will no longer continuously Charge if it has not seen the player for a while
-* Fixed Charge attack broken as glass
-* Wither knockback on charge attack greatly reduced
 
 ## Alpha 3.5.0
 * Updated to Minecraft 1.18.1

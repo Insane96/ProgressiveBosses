@@ -21,6 +21,6 @@ public class WitherDoNothingGoal extends Goal {
 	 */
 	public boolean canUse() {
 		CompoundTag tags = this.wither.getPersistentData();
-		return this.wither.getInvulnerableTicks() > 0 && !tags.contains(Strings.Tags.CHARGE_ATTACK);
+		return this.wither.getInvulnerableTicks() > 0 && !tags.getBoolean(Strings.Tags.CHARGE_ATTACK);
 	}
 }

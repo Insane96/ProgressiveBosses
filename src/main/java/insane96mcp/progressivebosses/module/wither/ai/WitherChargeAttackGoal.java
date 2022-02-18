@@ -46,7 +46,7 @@ public class WitherChargeAttackGoal extends Goal {
 		if (this.wither.getInvulnerableTicks() != AttackFeature.Consts.CHARGE_ATTACK_TICK_START && this.wither.getInvulnerableTicks() != AttackFeature.Consts.CHARGE_ATTACK_TICK_START - 1)
 			return false;
 		CompoundTag witherTags = wither.getPersistentData();
-		return witherTags.contains(Strings.Tags.CHARGE_ATTACK);
+		return witherTags.getBoolean(Strings.Tags.CHARGE_ATTACK);
 	}
 
 	public void start() {
@@ -67,8 +67,7 @@ public class WitherChargeAttackGoal extends Goal {
 	 */
 	public void stop() {
 		this.target = null;
-		CompoundTag witherTags = wither.getPersistentData();
-		witherTags.remove(Strings.Tags.CHARGE_ATTACK);
+		AttackFeature.setCharging(this.wither, false);
 		this.wither.setDeltaMovement(this.wither.getDeltaMovement().multiply(0.02d, 0.02d, 0.02d));
 		this.lastDistanceFromTarget = 0d;
 		this.targetPos = null;
