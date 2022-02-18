@@ -3,11 +3,14 @@
 ## Upcoming
 * Wither
   * Attack
-    * Wither now becomes red when is about to Charge attack
-    * Fixed Wither Attack Goal broken (slow barrage and no longer standing still)
-    * Wither will no longer continuously Charge if it has not seen the player for a while (basically added a cap for the chance)
-    * Fixed Charge attack broken as glass
-    * Wither knockback on charge attack greatly reduced
+    * Charge
+      * Wither now becomes purple when is in Charge mode
+      * Wither is no longer invulnerable when charging
+      * Wither no longer explodes if no players are found to charge
+      * Items are now dropped when the charge attack ends and are spawned already stacked (like Explosions do since around 1.14)
+      * Knockback on charge attack reduced
+      * Wither will no longer continuously Charge if it has not seen the player for a while (basically added a cap for the chance)
+    * Fixed Wither AI completely broken
   * Minion
     * Reduced Wither Minions Bonus speed per difficulty (+12% -> +10%)
   * Misc

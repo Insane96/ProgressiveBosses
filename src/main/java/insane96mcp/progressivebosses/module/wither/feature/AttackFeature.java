@@ -6,7 +6,6 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
-import insane96mcp.progressivebosses.module.wither.ai.WitherDoNothingGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.network.MessageWitherSync;
 import insane96mcp.progressivebosses.network.PacketManager;
@@ -157,9 +156,6 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().level.isClientSide)
-			return;
-
 		if (!this.isEnabled())
 			return;
 
@@ -169,19 +165,26 @@ public class AttackFeature extends Feature {
 		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		healDuringCharge(wither);
+		tickCharge(wither);
+
+		if (event.getEntity().level.isClientSide)
+			return;
+
 		chargeUnseen(wither);
 	}
 
-	private void healDuringCharge(WitherBoss wither) {
+	private void tickCharge(WitherBoss wither) {
 		if (this.maxChargeAttackChance == 0d)
 			return;
-		CompoundTag witherTags = wither.getPersistentData();
+		byte chargeTick = wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK);
+
 		// When in charge attack remove the vanilla health regeneration when he's invulnerable and add 1% health regeneration of the missing health per second
-		if (witherTags.getBoolean(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 10 == 0){
-			float missingHealth = wither.getMaxHealth() - wither.getHealth();
-			if (wither.getHealth() > 10f)
-				wither.setHealth(wither.getHealth() - 10f + (missingHealth * 0.005f));
+		if (chargeTick > 0){
+			if (wither.tickCount % 10 == 0) {
+				float missingHealth = wither.getMaxHealth() - wither.getHealth();
+				wither.setHealth(wither.getHealth() + (missingHealth * 0.005f));
+			}
+			wither.getPersistentData().putByte(Strings.Tags.CHARGE_ATTACK, (byte) (chargeTick - 1));
 		}
 	}
 
@@ -190,7 +193,7 @@ public class AttackFeature extends Feature {
 			return;
 		CompoundTag witherTags = wither.getPersistentData();
 
-		if (!witherTags.getBoolean(Strings.Tags.CHARGE_ATTACK) && wither.tickCount % 20 == 0) {
+		if (witherTags.getByte(Strings.Tags.CHARGE_ATTACK) <= 0 && wither.tickCount % 20 == 0) {
 			doCharge(wither, witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS) / 20f);
 		}
 	}
@@ -241,7 +244,7 @@ public class AttackFeature extends Feature {
 	}
 
 	private void doBarrage(WitherBoss wither, float damageTaken) {
-		if (this.maxBarrageChancePerDiff == 0d/* || this.maxBarrageAttackChance == 0d*/)
+		if (this.maxBarrageChancePerDiff == 0d)
 			return;
 
 		CompoundTag witherTags = wither.getPersistentData();
@@ -261,14 +264,15 @@ public class AttackFeature extends Feature {
 	private void doCharge(WitherBoss wither, float damageTaken) {
 		if (this.maxChargeAttackChance == 0d)
 			return;
+		if (wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK) > 0)
+			return;
 
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
 		double chance = this.maxChargeAttackChance * missingHealthPerc;
 		chance *= (damageTaken / 10f);
 		double r = wither.getRandom().nextDouble();
 		if (r < chance) {
-			wither.setInvulnerableTicks(Consts.CHARGE_ATTACK_TICK_START);
-			setCharging(wither, true);
+			initCharging(wither);
 		}
 	}
 
@@ -283,9 +287,8 @@ public class AttackFeature extends Feature {
 
 		toRemove.forEach(wither.goalSelector::removeGoal);
 
-		wither.goalSelector.addGoal(0, new WitherDoNothingGoal(wither));
-		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.increaseAttackSpeedWhenNear));
 		wither.goalSelector.addGoal(1, new WitherChargeAttackGoal(wither));
+		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.increaseAttackSpeedWhenNear));
 
 		MCUtils.applyModifier(wither, Attributes.FOLLOW_RANGE, UUID.randomUUID(), "Wither Glasses", 48d, AttributeModifier.Operation.ADDITION);
 	}
@@ -295,9 +298,17 @@ public class AttackFeature extends Feature {
 		public static final int CHARGE_ATTACK_TICK_CHARGE = 30;
 	}
 
-	public static void setCharging(WitherBoss wither, boolean charge) {
-		wither.getPersistentData().putBoolean(Strings.Tags.CHARGE_ATTACK, charge);
-		Object msg = new MessageWitherSync(wither.getId(), charge);
+	public static void initCharging(WitherBoss wither) {
+		wither.getPersistentData().putByte(Strings.Tags.CHARGE_ATTACK, (byte) Consts.CHARGE_ATTACK_TICK_START);
+		Object msg = new MessageWitherSync(wither.getId(), (byte) Consts.CHARGE_ATTACK_TICK_START);
+		for (Player player : wither.level.players()) {
+			PacketManager.CHANNEL.sendTo(msg, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+		}
+	}
+
+	public static void stopCharging(WitherBoss wither) {
+		wither.getPersistentData().putByte(Strings.Tags.CHARGE_ATTACK, (byte) 0);
+		Object msg = new MessageWitherSync(wither.getId(), (byte) 0);
 		for (Player player : wither.level.players()) {
 			PacketManager.CHANNEL.sendTo(msg, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		}

@@ -7,20 +7,20 @@ import java.util.function.Supplier;
 
 public class MessageWitherSync {
 	int entityId;
-	boolean charging;
+	byte charging;
 
-	public MessageWitherSync(int entityId, boolean charging) {
+	public MessageWitherSync(int entityId, byte charging) {
 		this.entityId = entityId;
 		this.charging = charging;
 	}
 
 	public static void encode(MessageWitherSync pkt, FriendlyByteBuf buf) {
 		buf.writeInt(pkt.entityId);
-		buf.writeBoolean(pkt.charging);
+		buf.writeByte(pkt.charging);
 	}
 
 	public static MessageWitherSync decode(FriendlyByteBuf buf) {
-		return new MessageWitherSync(buf.readInt(), buf.readBoolean());
+		return new MessageWitherSync(buf.readInt(), buf.readByte());
 	}
 
 	public static void handle(final MessageWitherSync message, Supplier<NetworkEvent.Context> ctx) {

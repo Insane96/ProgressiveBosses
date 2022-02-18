@@ -18,13 +18,13 @@ public class MessageHandler {
 		return ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER ? ctx.getSender() : Minecraft.getInstance().player;
 	}
 
-	public static void handleWitherSyncMessage(int id, boolean charging) {
+	public static void handleWitherSyncMessage(int id, byte charging) {
 		BlockableEventLoop<? super TickTask> executor = LogicalSidedProvider.WORKQUEUE.get(LogicalSide.CLIENT);
 		executor.tell(new TickTask(0, () -> {
 			Level level = Minecraft.getInstance().level;
 			Entity entity = level.getEntity(id);
 			if (entity instanceof WitherBoss wither) {
-				wither.getPersistentData().putBoolean(Strings.Tags.CHARGE_ATTACK, charging);
+				wither.getPersistentData().putByte(Strings.Tags.CHARGE_ATTACK, charging);
 			}
 		}));
 	}
