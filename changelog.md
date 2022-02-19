@@ -17,6 +17,7 @@
     * Nether Stars are now crafted with 9 shards instead of duplicating a Nether Star
   * Minion
     * Reduced Wither Minions Bonus speed per difficulty (+12% -> +10%)
+    * Texture changed
   * Misc
     * Fixed Wither Nether Only preventing the spawn of the wither anywhere
 * Ender Dragon
