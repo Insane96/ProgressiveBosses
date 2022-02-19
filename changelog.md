@@ -11,10 +11,14 @@
       * Knockback on charge attack reduced
       * Wither will no longer continuously Charge if it has not seen the player for a while (basically added a cap for the chance)
     * Fixed Wither AI completely broken
+  * Rewards
+    * Increased bonus experience (+200% -> +250% exp per difficulty)
+    * Increased chance to drop a Nether Star Shard (50% -> 60% per shard per difficulty)
+    * Nether Stars are now crafted with 9 shards instead of duplicating a Nether Star
   * Minion
     * Reduced Wither Minions Bonus speed per difficulty (+12% -> +10%)
   * Misc
-    * Fixed Wither Nether Only preventing the spawn of the wither anywhere**
+    * Fixed Wither Nether Only preventing the spawn of the wither anywhere
 * Fixed crash with InsaneLib 1.4.3
 
 ## Alpha 3.5.0

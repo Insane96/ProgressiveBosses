@@ -23,16 +23,16 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> dropsListConfig;
 
-	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,1,0.5,PER_DIFFICULTY,FLAT");
+	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,1,1,0.6,PER_DIFFICULTY,FLAT");
 
-	public double bonusExperience = 2d;
+	public double bonusExperience = 2.5d;
 	public ArrayList<Drop> dropsList;
 
 	public RewardFeature(Module module) {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
 		bonusExperienceConfig = Config.builder
-				.comment("How much more experience (percentage) will Wither drop per Difficulty. The percentage is additive (e.g. with this set to 10%, 7 withers spawned = 70% more experience)")
+				.comment("How much more experience (percentage) will Wither drop per Difficulty. The percentage is additive (e.g. with this set to 200%, 7 withers spawned = 1400% more experience)")
 				.defineInRange("Bonus Experience per Difficulty", bonusExperience, 0.0, Double.MAX_VALUE);
 		dropsListConfig = Config.builder
 				.comment("A list of drops for the Withers. Entry format: item,amount,difficulty_required,chance,difficulty_mode,chance_mode\n" +
@@ -46,7 +46,7 @@ public class RewardFeature extends Feature {
 						"chance_mode:\n" +
 						"* FLAT: chance is the percentage chance for the item to drop if the difficulty criteria matches\n" +
 						"* SCALING: each point of difficulty >= 'difficulty to drop the item' will be multiplied by the chance (e.g. chance 2% and difficulty 10, difficulty required 5, chance to drop the item will be chance * (difficulty - difficulty_required + 1) = 2% * (10 - 5 + 1) = 12%)\n" +
-						"By default Withers have 2% chance per (difficulty >= 2) to drop 1 shard + 4% chance per (difficulty >= 4) to drop 2 shards + 8% chance per (difficulty >= 8) to drop 4 shards.")
+						"By default Withers have 60% chance per difficulty to drop 1 shard (So at difficulty 20, up to 20 shards can be dropped, 60% chance each).")
 				.defineList("Drops", dropsListDefault, o -> o instanceof String);
 		Config.builder.pop();
 	}

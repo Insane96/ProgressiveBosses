@@ -2,19 +2,16 @@
   "type": "minecraft:crafting_shaped",
   "pattern": [
     "SSS",
-    "SNS",
+    "SSS",
     "SSS"
   ],
   "key": {
     "S": {
       "item": "progressivebosses:nether_star_shard"
-    },
-    "N": {
-      "item": "minecraft:nether_star"
     }
   },
   "result": {
     "item": "minecraft:nether_star",
-    "count": 2
+    "count": 1
   }
 }
