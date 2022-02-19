@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.capability;
 
-import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

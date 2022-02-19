@@ -2,8 +2,8 @@ package insane96mcp.progressivebosses.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.wither.feature.AttackFeature;
+import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.client.renderer.entity.WitherBossRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.boss.wither.WitherBoss;

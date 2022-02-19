@@ -1,8 +1,8 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
-import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.module.dragon.feature.CrystalFeature;
+import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;

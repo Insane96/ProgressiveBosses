@@ -1,8 +1,8 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
 import com.mojang.datafixers.util.Pair;
-import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.wither.feature.AttackFeature;
+import insane96mcp.progressivebosses.setup.Strings;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;

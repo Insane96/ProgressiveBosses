@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.setup;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.base.Strings;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.DeferredRegister;

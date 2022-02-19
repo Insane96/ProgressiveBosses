@@ -2,9 +2,9 @@ package insane96mcp.progressivebosses.commands;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -117,46 +117,50 @@ public class PBCommand {
         targetPlayer.getCapability(Difficulty.INSTANCE).ifPresent(difficultyCap -> witherDifficulty.set(difficultyCap.getSpawnedWithers()));
         AtomicInteger dragonDifficulty = new AtomicInteger(0);
         targetPlayer.getCapability(Difficulty.INSTANCE).ifPresent(difficultyCap -> dragonDifficulty.set(difficultyCap.getKilledDragons()));
-        if (boss.equals("wither")) {
-            source.sendSuccess(new TranslatableComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
-            return witherDifficulty.get();
-        }
-        else if (boss.equals("dragon")) {
-            source.sendSuccess(new TranslatableComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
-            return dragonDifficulty.get();
-        }
-        else {
-            source.sendSuccess(new TranslatableComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
-            source.sendSuccess(new TranslatableComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
-            return 1;
+
+        switch (boss) {
+            case "wither" -> {
+                source.sendSuccess(new TranslatableComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
+                return witherDifficulty.get();
+            }
+            case "dragon" -> {
+                source.sendSuccess(new TranslatableComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
+                return dragonDifficulty.get();
+            }
+            default -> {
+                source.sendSuccess(new TranslatableComponent(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
+                source.sendSuccess(new TranslatableComponent(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
+                return 1;
+            }
         }
     }
 
     private static int summon(CommandSourceStack source, String entity, int difficulty) {
         switch (entity) {
-            case Strings.Tags.WITHER_MINION:
+            case Strings.Tags.WITHER_MINION -> {
                 Modules.wither.minion.summonMinion(source.getLevel(), source.getPosition(), difficulty, false);
                 source.sendSuccess(new TranslatableComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslatableComponent(entity), difficulty), true);
                 return 1;
-
-            case Strings.Tags.DRAGON_MINION:
+            }
+            case Strings.Tags.DRAGON_MINION -> {
                 Modules.dragon.minion.summonMinion(source.getLevel(), source.getPosition(), difficulty);
                 source.sendSuccess(new TranslatableComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslatableComponent(entity), difficulty), true);
                 return 1;
-
-            case Strings.Tags.DRAGON_LARVA:
+            }
+            case Strings.Tags.DRAGON_LARVA -> {
                 Modules.dragon.larva.summonLarva(source.getLevel(), source.getPosition(), difficulty);
                 source.sendSuccess(new TranslatableComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslatableComponent(entity), difficulty), true);
                 return 1;
-
-            case Strings.Tags.ELDER_MINION:
+            }
+            case Strings.Tags.ELDER_MINION -> {
                 Modules.elderGuardian.minion.summonMinion(source.getLevel(), source.getPosition());
                 source.sendSuccess(new TranslatableComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslatableComponent(entity), difficulty), true);
                 return 1;
-
-            default:
-                source.sendSuccess(new TranslatableComponent(Strings.Translatable.SUMMON_ENTITY_INVALID, entity), true);
+            }
+            default -> {
+                source.sendFailure(new TranslatableComponent(Strings.Translatable.SUMMON_ENTITY_INVALID, entity));
                 return 0;
+            }
         }
     }
 

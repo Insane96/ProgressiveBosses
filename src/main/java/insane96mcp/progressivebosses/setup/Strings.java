@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.base;
+package insane96mcp.progressivebosses.setup;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
 

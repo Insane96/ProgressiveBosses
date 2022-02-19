@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.setup;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.dragon.entity.LarvaEntity;
 import insane96mcp.progressivebosses.module.wither.entity.WitherMinionEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -18,4 +19,9 @@ public class PBEntities {
 			.immuneTo(Blocks.WITHER_ROSE)
 			.clientTrackingRange(8)
 			.build("wither_minion"));
+
+	public static final RegistryObject<EntityType<LarvaEntity>> LARVA = ENTITIES.register("larva", () -> EntityType.Builder.of(LarvaEntity::new, MobCategory.MONSTER)
+			.sized(0.6f, 0.45f)
+			.clientTrackingRange(8)
+			.build("larva"));
 }

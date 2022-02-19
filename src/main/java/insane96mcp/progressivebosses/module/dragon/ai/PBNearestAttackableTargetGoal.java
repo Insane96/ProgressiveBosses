@@ -9,8 +9,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 
 public class PBNearestAttackableTargetGoal extends NearestAttackableTargetGoal<Player> {
-    public PBNearestAttackableTargetGoal(Mob shulkerEntity) {
-        super(shulkerEntity, Player.class, 0, false, false, null);
+    public PBNearestAttackableTargetGoal(Mob mob) {
+        super(mob, Player.class, 0, false, false, null);
         //allowUnseeable
         this.targetConditions.ignoreLineOfSight();
     }

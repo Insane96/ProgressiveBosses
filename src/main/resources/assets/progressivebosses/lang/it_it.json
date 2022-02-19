@@ -5,7 +5,7 @@
   "entity.progressivebosses.wither_minion": "Minion del Wither",
   "death.attack.progressivebosses:wither_charge_attack": "%1$s è stato caricato da %2$s",
 
-  "progressivebosses:dragon_larva": "Larva del Drago",
+  "entity.progressivebosses.larva": "Larva del Drago",
   "progressivebosses:dragon_minion": "Minion del Drago",
   "death.attack.progressivebosses:dragon_fireball": "%1$s è stato ucciso da palla di acido di %2$s",
 

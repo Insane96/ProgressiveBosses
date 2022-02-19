@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.ai;
 
-import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DragonMinionHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;

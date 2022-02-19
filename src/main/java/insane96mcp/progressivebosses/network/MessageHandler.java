@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.network;
 
-import insane96mcp.progressivebosses.base.Strings;
+import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.TickTask;
 import net.minecraft.util.thread.BlockableEventLoop;

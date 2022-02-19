@@ -5,7 +5,7 @@
   "entity.progressivebosses.wither_minion": "Wither Minion",
   "death.attack.progressivebosses:wither_charge_attack": "%1$s was charged by %2$s",
 
-  "progressivebosses:dragon_larva": "Dragon Larva",
+  "entity.progressivebosses.larva": "Dragon Larva",
   "progressivebosses:dragon_minion": "Dragon Minion",
   "death.attack.progressivebosses:dragon_fireball": "%1$s was fireballed by %2$s",
 

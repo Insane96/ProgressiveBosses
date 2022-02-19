@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.base.Strings;
 import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EntityType;

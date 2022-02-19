@@ -19,6 +19,10 @@
     * Reduced Wither Minions Bonus speed per difficulty (+12% -> +10%)
   * Misc
     * Fixed Wither Nether Only preventing the spawn of the wither anywhere
+* Ender Dragon
+  * Larva
+    * Is now an actual entity and no longer an Endermite in disguise. It's bigger and black-purplish
+    * Increased health (4 -> 6)
 * Fixed crash with InsaneLib 1.4.3
 
 ## Alpha 3.5.0
