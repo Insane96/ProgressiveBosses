@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
@@ -62,14 +63,27 @@ public class ResistancesFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
-		EnderDragon dragon = (EnderDragon) event.getEntity();
-
+		bonusDamageWhenRespawningCrystals(event, dragon);
 		bonusDamageNotInCenter(event, dragon);
 		meleeDamageReduction(event, dragon);
 		explosionDamageReduction(event, dragon);
+	}
+
+	private void bonusDamageWhenRespawningCrystals(LivingDamageEvent event, EnderDragon dragon) {
+		if (this.bonusCurHealthDirectDamage == 0d && this.bonusCurHealthIndirectDamage == 0d)
+			return;
+
+		if (event.getSource().isExplosion() && !event.getSource().getMsgId().equals("fireworks"))
+			return;
+
+		if (!dragon.getPhaseManager().getCurrentPhase().getPhase().equals(CrystalRespawnPhase.getPhaseType()))
+			return;
+
+		float curHealthPerc = dragon.getHealth() / dragon.getMaxHealth();
+		event.setAmount(event.getAmount() * (1.2f + curHealthPerc));
 	}
 
 	private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);

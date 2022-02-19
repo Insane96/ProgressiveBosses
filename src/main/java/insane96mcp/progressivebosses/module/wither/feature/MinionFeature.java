@@ -5,7 +5,7 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.insanelib.utils.RandomHelper;
-import insane96mcp.progressivebosses.module.wither.entity.WitherMinionEntity;
+import insane96mcp.progressivebosses.module.wither.entity.WitherMinion;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.setup.Strings;
@@ -210,7 +210,7 @@ public class MinionFeature extends Feature {
 		if (players.isEmpty())
 			return;
 
-		List<WitherMinionEntity> minionsInAABB = world.getEntitiesOfClass(WitherMinionEntity.class, wither.getBoundingBox().inflate(16));
+		List<WitherMinion> minionsInAABB = world.getEntitiesOfClass(WitherMinion.class, wither.getBoundingBox().inflate(16));
 		int minionsCountInAABB = minionsInAABB.size();
 
 		if (minionsCountInAABB >= this.maxAround)
@@ -241,7 +241,7 @@ public class MinionFeature extends Feature {
 			if (y <= wither.level.getMinBuildHeight())
 				continue;
 
-			WitherMinionEntity witherMinion = summonMinion(world, new Vec3(x + 0.5, y + 0.5, z + 0.5), difficulty, wither.isPowered());
+			WitherMinion witherMinion = summonMinion(world, new Vec3(x + 0.5, y + 0.5, z + 0.5), difficulty, wither.isPowered());
 
 			//No need since EntityJoinWorldEvent is triggered
 			//setMinionAI(witherMinion);
@@ -270,7 +270,7 @@ public class MinionFeature extends Feature {
 		if (this.magicDamageMultiplier == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof WitherMinionEntity))
+		if (!(event.getEntity() instanceof WitherMinion))
 			return;
 
 		//Handle Magic Damage
@@ -299,22 +299,22 @@ public class MinionFeature extends Feature {
 
 		for (int i = 0; i < minionsList.size(); i++) {
 			UUID uuid = minionsList.getCompound(i).getUUID("uuid");
-			WitherMinionEntity witherMinionEntity = (WitherMinionEntity) world.getEntity(uuid);
-			if (witherMinionEntity == null)
+			WitherMinion witherMinion = (WitherMinion) world.getEntity(uuid);
+			if (witherMinion == null)
 				continue;
-			witherMinionEntity.addEffect(new MobEffectInstance(MobEffects.HEAL, 10000, 0, false, false));
+			witherMinion.addEffect(new MobEffectInstance(MobEffects.HEAL, 10000, 0, false, false));
 		}
 	}
 
-	private void setEquipment(WitherMinionEntity witherMinionEntity, float difficulty, boolean isCharged) {
-		witherMinionEntity.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
+	private void setEquipment(WitherMinion witherMinion, float difficulty, boolean isCharged) {
+		witherMinion.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
 
 		int powerSharpnessLevel = (int) (this.powerSharpnessChance * difficulty);
-		if (RandomHelper.getDouble(witherMinionEntity.level.getRandom(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - powerSharpnessLevel)
+		if (RandomHelper.getDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - powerSharpnessLevel)
 			powerSharpnessLevel++;
 
 		int punchKnockbackLevel = (int) (this.punchKnockbackChance * difficulty);
-		if (RandomHelper.getDouble(witherMinionEntity.level.getRandom(), 0d, 1d) < (this.punchKnockbackChance * difficulty) - punchKnockbackLevel)
+		if (RandomHelper.getDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.punchKnockbackChance * difficulty) - punchKnockbackLevel)
 			punchKnockbackLevel++;
 
 		ItemStack sword = new ItemStack(Items.STONE_SWORD);
@@ -323,7 +323,7 @@ public class MinionFeature extends Feature {
 		if (punchKnockbackLevel > 0)
 			sword.enchant(Enchantments.KNOCKBACK, punchKnockbackLevel);
 		if (this.hasSword)
-			witherMinionEntity.setItemSlot(EquipmentSlot.MAINHAND, sword);
+			witherMinion.setItemSlot(EquipmentSlot.MAINHAND, sword);
 
 		ItemStack bow = new ItemStack(Items.BOW);
 		if (powerSharpnessLevel > 0)
@@ -331,13 +331,13 @@ public class MinionFeature extends Feature {
 		if (punchKnockbackLevel > 0)
 			bow.enchant(Enchantments.POWER_ARROWS, punchKnockbackLevel);
 		if (isCharged) {
-			if (RandomHelper.getDouble(witherMinionEntity.level.getRandom(), 0d, 1d) < this.halfHealthBowChance) {
-				witherMinionEntity.setItemSlot(EquipmentSlot.MAINHAND, bow);
+			if (RandomHelper.getDouble(witherMinion.level.getRandom(), 0d, 1d) < this.halfHealthBowChance) {
+				witherMinion.setItemSlot(EquipmentSlot.MAINHAND, bow);
 			}
 		}
 		else {
-			if (RandomHelper.getDouble(witherMinionEntity.level.getRandom(), 0d, 1d) < this.preHalfHealthBowChance) {
-				witherMinionEntity.setItemSlot(EquipmentSlot.MAINHAND, bow);
+			if (RandomHelper.getDouble(witherMinion.level.getRandom(), 0d, 1d) < this.preHalfHealthBowChance) {
+				witherMinion.setItemSlot(EquipmentSlot.MAINHAND, bow);
 			}
 		}
 	}
@@ -345,7 +345,7 @@ public class MinionFeature extends Feature {
 	/**
 	 * Returns -1 when no spawn spots are found, otherwise the Y coord
 	 */
-	private static int getYSpawn(EntityType<WitherMinionEntity> entityType, BlockPos pos, Level world, int minRelativeY) {
+	private static int getYSpawn(EntityType<WitherMinion> entityType, BlockPos pos, Level world, int minRelativeY) {
 		int height = (int) Math.ceil(entityType.getHeight());
 		int fittingYPos = -1;
 		for (int y = pos.getY(); y > pos.getY() - minRelativeY; y--) {
@@ -367,8 +367,8 @@ public class MinionFeature extends Feature {
 		return fittingYPos;
 	}
 
-	public WitherMinionEntity summonMinion(Level world, Vec3 pos, float difficulty, boolean isCharged) {
-		WitherMinionEntity witherMinion = new WitherMinionEntity(PBEntities.WITHER_MINION.get(), world);
+	public WitherMinion summonMinion(Level world, Vec3 pos, float difficulty, boolean isCharged) {
+		WitherMinion witherMinion = new WitherMinion(PBEntities.WITHER_MINION.get(), world);
 		CompoundTag minionTags = witherMinion.getPersistentData();
 
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);

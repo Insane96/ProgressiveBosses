@@ -21,9 +21,16 @@
   * Misc
     * Fixed Wither Nether Only preventing the spawn of the wither anywhere
 * Ender Dragon
+  * Resistances and Vulnerabilities
+    * Dragon takes more damage (up to +120%, min +20%) when she's respawning crystals
+  * Crystals
+    * Dragon no longer sacrifices health when respawns a crystal
   * Larva
     * Is now an actual entity and no longer an Endermite in disguise. It's bigger and black-purplish
     * Increased health (4 -> 6)
+    * Are no longer immune to Dragon damage. Instead, they take 10% damage from her.
+  * Minion
+    * Are no longer immune to Dragon damage. Instead, they take 10% damage from her.
 * Fixed crash with InsaneLib 1.4.3
 
 ## Alpha 3.5.0

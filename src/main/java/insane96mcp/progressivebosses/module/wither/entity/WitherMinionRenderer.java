@@ -12,7 +12,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
-public class WitherMinionRenderer extends HumanoidMobRenderer<WitherMinionEntity, WitherMinionModel<WitherMinionEntity>> {
+public class WitherMinionRenderer extends HumanoidMobRenderer<WitherMinion, WitherMinionModel<WitherMinion>> {
 	private static final ResourceLocation MINION_TEXTURES = new ResourceLocation(ProgressiveBosses.MOD_ID, "textures/entity/wither_minion.png");
 
 	public WitherMinionRenderer(EntityRendererProvider.Context context) {
@@ -27,11 +27,11 @@ public class WitherMinionRenderer extends HumanoidMobRenderer<WitherMinionEntity
 	/**
 	 * Returns the location of an entity's texture.
 	 */
-	public ResourceLocation getTextureLocation(WitherMinionEntity entity) {
+	public ResourceLocation getTextureLocation(WitherMinion entity) {
 		return MINION_TEXTURES;
 	}
 
-	protected void scale(WitherMinionEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
+	protected void scale(WitherMinion entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
 		matrixStackIn.scale(0.75f, 0.75f, 0.75f);
 	}
 }

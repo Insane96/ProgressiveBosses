@@ -39,8 +39,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -53,14 +53,14 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> maxCooldownConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> cooldownReductionConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> blindingChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> dragonImmuneConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> reducedDragonDamageConfig;
 
 	public int minionAtDifficulty = 1;
 	public int minCooldown = 1400;
 	public int maxCooldown = 2000;
 	public double cooldownReduction = 0.017d;
 	public double blindingChance = 0.015d;
-	public boolean dragonImmune = true;
+	public boolean reducedDragonDamage = true;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);
@@ -80,9 +80,9 @@ public class MinionFeature extends Feature {
 		blindingChanceConfig = Config.builder
 				.comment("Percentage chance per difficulty for a Minion to spawn as a Blinding Minion.")
 				.defineInRange("Blinding Chance", blindingChance, 0d, 1d);
-		dragonImmuneConfig = Config.builder
-				.comment("Dragon Minions are immune to any damage from the Ender Dragon, either direct or Acid.")
-				.define("Dragon Immune", dragonImmune);
+		reducedDragonDamageConfig = Config.builder
+				.comment("If true, Dragon Minions will take only 10% damage from the Ender Dragon.")
+				.define("Reduced Dragon Damage", reducedDragonDamage);
 		Config.builder.pop();
 	}
 
@@ -96,7 +96,7 @@ public class MinionFeature extends Feature {
 			this.minCooldown = this.maxCooldown;
 		this.cooldownReduction = this.cooldownReductionConfig.get();
 		this.blindingChance = this.blindingChanceConfig.get();
-		this.dragonImmune = this.dragonImmuneConfig.get();
+		this.reducedDragonDamage = this.reducedDragonDamageConfig.get();
 	}
 
 	@SubscribeEvent
@@ -107,10 +107,8 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
-
-		EnderDragon dragon = (EnderDragon) event.getEntity();
 
 		CompoundTag dragonTags = dragon.getPersistentData();
 
@@ -144,12 +142,11 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
 		Level world = event.getEntity().level;
 
-		EnderDragon dragon = (EnderDragon) event.getEntity();
 		CompoundTag dragonTags = dragon.getPersistentData();
 
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
@@ -181,8 +178,8 @@ public class MinionFeature extends Feature {
 		dragonTags.putInt(Strings.Tags.DRAGON_MINION_COOLDOWN, cooldown - 1);
 
 		float angle = world.random.nextFloat() * (float) Math.PI * 2f;
-		float x = (float) (Math.cos(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 46f)));
-		float z = (float) (Math.sin(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 46f)));
+		float x = (float) (Math.cos(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 45f)));
+		float z = (float) (Math.sin(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 45f)));
 		float y = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
 		Shulker shulker = summonMinion(world, new Vec3(x, y, z), difficulty);
 	}
@@ -232,23 +229,22 @@ public class MinionFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onMinionHurt(LivingAttackEvent event) {
+	public void onMinionHurt(LivingHurtEvent event) {
 		if (!this.isEnabled())
 			return;
 
-		if (!this.dragonImmune)
+		if (!this.reducedDragonDamage)
 			return;
 
-		if (!(event.getEntity() instanceof Shulker))
+		if (!(event.getEntity() instanceof Shulker shulker))
 			return;
 
-		Shulker shulker = (Shulker) event.getEntity();
 		CompoundTag compoundNBT = shulker.getPersistentData();
 		if (!compoundNBT.contains(Strings.Tags.DRAGON_MINION))
 			return;
 
-		if (event.getSource().getEntity() instanceof EnderDragon || event.getSource().getDirectEntity() instanceof EnderDragon)
-			event.setCanceled(true);
+		if (event.getSource().getEntity() instanceof EnderDragon)
+			event.setAmount(event.getAmount() * 0.1f);
 	}
 
 	public void onBulletTick(ShulkerBullet shulkerBulletEntity) {

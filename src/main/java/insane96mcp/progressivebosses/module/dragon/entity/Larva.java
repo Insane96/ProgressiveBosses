@@ -10,7 +10,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
@@ -18,8 +17,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
-public class LarvaEntity extends Monster {
-	public LarvaEntity(EntityType<? extends LarvaEntity> p_32591_, Level p_32592_) {
+public class Larva extends Monster {
+	public Larva(EntityType<? extends Larva> p_32591_, Level p_32592_) {
 		super(p_32591_, p_32592_);
 		this.xpReward = 3;
 	}
@@ -30,8 +29,7 @@ public class LarvaEntity extends Monster {
 		this.goalSelector.addGoal(3, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 		this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
 		this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
-		this.targetSelector.addGoal(1, (new HurtByTargetGoal(this)).setAlertOthers());
-		this.targetSelector.addGoal(2, new PBNearestAttackableTargetGoal(this));
+		this.targetSelector.addGoal(1, new PBNearestAttackableTargetGoal(this));
 	}
 
 	protected float getStandingEyeHeight(Pose p_32604_, EntityDimensions p_32605_) {
@@ -74,8 +72,8 @@ public class LarvaEntity extends Monster {
 
 	@Override
 	public boolean hurt(DamageSource damageSource, float amount) {
-		if (Modules.dragon.larva.isEnabled() && Modules.dragon.larva.dragonImmune && damageSource.getEntity() instanceof EnderDragon)
-			return false;
+		if (Modules.dragon.larva.isEnabled() && Modules.dragon.larva.reducedDragonDamage && damageSource.getEntity() instanceof EnderDragon)
+			return super.hurt(damageSource, amount * 0.1f);
 		return super.hurt(damageSource, amount);
 	}
 

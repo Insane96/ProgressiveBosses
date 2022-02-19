@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
-public class LarvaRenderer extends MobRenderer<LarvaEntity, LarvaModel<LarvaEntity>> {
+public class LarvaRenderer extends MobRenderer<Larva, LarvaModel<Larva>> {
 	private static final ResourceLocation LARVA_LOCATION = new ResourceLocation(ProgressiveBosses.MOD_ID, "textures/entity/larva.png");
 
 	public LarvaRenderer(EntityRendererProvider.Context p_173994_) {
@@ -15,11 +15,11 @@ public class LarvaRenderer extends MobRenderer<LarvaEntity, LarvaModel<LarvaEnti
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(LarvaEntity p_114482_) {
+	public ResourceLocation getTextureLocation(Larva p_114482_) {
 		return LARVA_LOCATION;
 	}
 
-	protected void scale(LarvaEntity entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
+	protected void scale(Larva entitylivingbaseIn, PoseStack matrixStackIn, float partialTickTime) {
 		matrixStackIn.scale(1.5f, 1.5f, 1.5f);
 	}
 }

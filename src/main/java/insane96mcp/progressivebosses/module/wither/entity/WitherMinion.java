@@ -33,11 +33,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class WitherMinionEntity extends AbstractSkeleton {
+public class WitherMinion extends AbstractSkeleton {
 
 	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
 
-	public WitherMinionEntity(EntityType<? extends AbstractSkeleton> type, Level worldIn) {
+	public WitherMinion(EntityType<? extends AbstractSkeleton> type, Level worldIn) {
 		super(type, worldIn);
 	}
 
@@ -53,7 +53,7 @@ public class WitherMinionEntity extends AbstractSkeleton {
 		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
 		this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 
-		this.targetSelector.addGoal(1, new HurtByTargetGoal(this, WitherBoss.class, WitherMinionEntity.class));
+		this.targetSelector.addGoal(1, new HurtByTargetGoal(this, WitherBoss.class, WitherMinion.class));
 		this.targetSelector.addGoal(2, new MinionNearestAttackableTargetGoal(this, Player.class, 0, false, false, null));
 		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, NOT_UNDEAD));
 	}
@@ -109,7 +109,7 @@ public class WitherMinionEntity extends AbstractSkeleton {
 	}
 
 	public boolean hurt(DamageSource source, float amount) {
-		if (source.getEntity() instanceof WitherMinionEntity)
+		if (source.getEntity() instanceof WitherMinion)
 			amount *= 0.2f;
 		return !this.isInvulnerableTo(source) && super.hurt(source, amount);
 	}

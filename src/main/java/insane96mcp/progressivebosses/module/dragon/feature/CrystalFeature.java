@@ -160,10 +160,9 @@ public class CrystalFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
-		EnderDragon dragon = (EnderDragon) event.getEntity();
 		CompoundTag dragonTags = dragon.getPersistentData();
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 

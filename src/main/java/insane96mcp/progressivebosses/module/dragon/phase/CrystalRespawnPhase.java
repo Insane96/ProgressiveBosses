@@ -5,7 +5,6 @@ import insane96mcp.progressivebosses.module.dragon.feature.CrystalFeature;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
@@ -75,7 +74,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 					dragon.level.addFreshEntity(crystal);
 					CrystalFeature.generateCage(crystal.level, crystal.blockPosition());
 				}
-				dragon.hurt(dragon.head, DamageSource.explosion(dragon), 10f);
+				//dragon.hurt(dragon.head, DamageSource.explosion(dragon), 10f);
 				spikesToRespawn.remove(0);
 				tick = 0;
 				respawning = false;

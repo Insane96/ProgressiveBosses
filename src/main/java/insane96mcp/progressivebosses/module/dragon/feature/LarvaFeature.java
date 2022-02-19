@@ -3,9 +3,10 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.insanelib.utils.RandomHelper;
-import insane96mcp.progressivebosses.module.dragon.entity.LarvaEntity;
+import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.setup.Strings;
@@ -36,14 +37,14 @@ public class LarvaFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> maxSpawnedConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> minCooldownConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxCooldownConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> dragonImmuneConfig;
+	private final ForgeConfigSpec.ConfigValue<Boolean> reducedDragonDamageConfig;
 
 	public int larvaAtDifficulty = 1;
 	public int bonusLarvaEveryDifficulty = 2;
 	public int maxSpawned = 7;
 	public int minCooldown = 800;
 	public int maxCooldown = 1400;
-	public boolean dragonImmune = true;
+	public boolean reducedDragonDamage = true;
 
 	public LarvaFeature(Module module) {
 		super(Config.builder, module);
@@ -63,9 +64,9 @@ public class LarvaFeature extends Feature {
 		maxCooldownConfig = Config.builder
 				.comment("Maximum ticks (20 ticks = 1 seconds) after Minions can spwan.")
 				.defineInRange("Maximum Cooldown", maxCooldown, 0, Integer.MAX_VALUE);
-		dragonImmuneConfig = Config.builder
-				.comment("Dragon Minions are immune to any damage from the Ender Dragon, either direct or Acid.")
-				.define("Dragon Immune", dragonImmune);
+		reducedDragonDamageConfig = Config.builder
+				.comment("If true, Larvae will take only 10% damage from the Ender Dragon.")
+				.define("Reduced Dragon Damage", reducedDragonDamage);
 		Config.builder.pop();
 	}
 
@@ -79,7 +80,7 @@ public class LarvaFeature extends Feature {
 		this.maxCooldown = this.maxCooldownConfig.get();
 		if (this.minCooldown > this.maxCooldown)
 			this.minCooldown = this.maxCooldown;
-		this.dragonImmune = this.dragonImmuneConfig.get();
+		this.reducedDragonDamage = this.reducedDragonDamageConfig.get();
 	}
 
 	@SubscribeEvent
@@ -106,12 +107,11 @@ public class LarvaFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
-
+		LogHelper.info("heealth: %s", dragon.getHealth());
 		Level world = event.getEntity().level;
 
-		EnderDragon dragon = (EnderDragon) event.getEntity();
 		CompoundTag dragonTags = dragon.getPersistentData();
 
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
@@ -154,8 +154,8 @@ public class LarvaFeature extends Feature {
 		}
 	}
 
-	public LarvaEntity summonLarva(Level world, Vec3 pos, float difficulty) {
-		LarvaEntity larva = new LarvaEntity(PBEntities.LARVA.get(), world);
+	public Larva summonLarva(Level world, Vec3 pos, float difficulty) {
+		Larva larva = new Larva(PBEntities.LARVA.get(), world);
 		CompoundTag minionTags = larva.getPersistentData();
 
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
