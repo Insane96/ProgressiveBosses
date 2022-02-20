@@ -4,6 +4,8 @@
 * Dragon
   * Crystals
     * No longer respawn in towers
+    * Reduced crystals inside towers (1 at difficulty 8, 4 at difficulty 12 -> 1 at difficulty 8, 2 at difficulty 16, 3 at difficulty 24)
+    * Increased bonus cages (4 -> 6)
     * Increased health required to trigger the respawn (0% at 20% -> 25% health; 100% at 5% -> 10% health)
     * Cystals left from previous fights are removed on dragon respawn
   * Attack
