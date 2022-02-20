@@ -23,12 +23,6 @@ public abstract class ShulkerBulletEntityMixin extends Projectile {
 		this.noPhysics = true;
 	}
 
-	/*@Override
-	protected void onEntityHit(EntityRayTraceResult rayTraceResult) {
-		super.onEntityHit(rayTraceResult);
-		Modules.dragon.minion.onBulletEntityHit((ShulkerBulletEntity) (Object) this, rayTraceResult);
-	}*/
-
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"), method = "onHitEntity(Lnet/minecraft/world/phys/EntityHitResult;)V")
 	protected void onEntityHit(EntityHitResult rayTraceResult, CallbackInfo callbackInfo) {
 		ShulkerBullet $this = (ShulkerBullet) (Object) this;
@@ -36,7 +30,7 @@ public abstract class ShulkerBulletEntityMixin extends Projectile {
 			((LivingEntity)rayTraceResult.getEntity()).addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 150));
 	}
 
-	@Inject(at = @At("HEAD"), method = "tick()V", cancellable = true)
+	@Inject(at = @At("HEAD"), method = "tick()V")
 	public void tick(CallbackInfo callback) {
 		Modules.dragon.minion.onBulletTick((ShulkerBullet) (Object) this);
 	}

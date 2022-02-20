@@ -55,7 +55,7 @@ public class DragonMinionAttackGoal extends Goal {
         double d0 = shulker.distanceToSqr(livingentity.position());
         if (d0 < 9216d) { //96 blocks
             if (this.attackTime <= 0) {
-                this.attackTime = (this.baseAttackInterval + shulker.getRandom().nextInt(10) * this.baseAttackInterval / 2) / 2;
+                this.attackTime = this.baseAttackInterval + shulker.getRandom().nextInt(10) * this.baseAttackInterval / 2;
                 ShulkerBullet bullet = new ShulkerBullet(shulker.level, shulker, livingentity, shulker.getAttachFace().getAxis());
                 if (DragonMinionHelper.isBlindingMinion(this.shulker)) {
                     CompoundTag nbt = bullet.getPersistentData();

@@ -17,7 +17,7 @@ public class EnderDragonEntityMixin extends Mob {
 		super(type, worldIn);
 	}
 
-	@Inject(at = @At("HEAD"), method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", cancellable = true)
+	@Inject(at = @At("HEAD"), method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z")
 	private void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {
 		EnderDragon $this = (EnderDragon) (Object) this;
 		if (source instanceof EntityDamageSource && !((EntityDamageSource)source).isThorns()) {

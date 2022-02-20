@@ -149,11 +149,10 @@ public class AttackFeature extends Feature {
 	}
 
 	private void onDirectDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getDirectEntity() instanceof EnderDragon) || event.getEntityLiving() instanceof EnderDragon)
+		if (!(event.getSource().getDirectEntity() instanceof EnderDragon dragon) || event.getEntityLiving() instanceof EnderDragon)
 			return;
-		EnderDragon wither = (EnderDragon) event.getSource().getDirectEntity();
 
-		CompoundTag compoundNBT = wither.getPersistentData();
+		CompoundTag compoundNBT = dragon.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (difficulty == 0f)
@@ -163,9 +162,8 @@ public class AttackFeature extends Feature {
 	}
 
 	private void onAcidDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getEntity() instanceof EnderDragon) || !(event.getSource().getDirectEntity() instanceof AreaEffectCloud))
+		if (!(event.getSource().getEntity() instanceof EnderDragon dragon) || !(event.getSource().getDirectEntity() instanceof AreaEffectCloud))
 			return;
-		EnderDragon dragon = (EnderDragon) event.getSource().getEntity();
 
 		CompoundTag compoundNBT = dragon.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
@@ -210,15 +208,14 @@ public class AttackFeature extends Feature {
 		List<Player> players = dragon.level.getEntitiesOfClass(Player.class, boundingBox);
 
 		for (Player player : players) {
-			List<EndCrystal> endCrystals = player.level.getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(10d));
+			List<EndCrystal> endCrystals = player.level.getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(8d));
 			if (endCrystals.size() > 0) {
-				chance *= 2d;
+				chance *= 1.75d;
 				break;
 			}
 		}
 
 		double rng = dragon.getRandom().nextDouble();
-		//LogHelper.info("charge chance: %s, %s", chance, rng < chance);
 
 		return rng < chance;
 	}
@@ -230,8 +227,6 @@ public class AttackFeature extends Feature {
 
 		if (player == null)
 			return;
-
-		//LogHelper.info("charging");
 
 		dragon.getPhaseManager().setPhase(EnderDragonPhase.CHARGING_PLAYER);
 		Vec3 targetPos = player.position();
@@ -259,8 +254,6 @@ public class AttackFeature extends Feature {
 
 		double rng = dragon.getRandom().nextDouble();
 
-		//LogHelper.info("fireball chance: %s, %s", chance, rng < chance);
-
 		return rng < chance;
 	}
 
@@ -271,8 +264,6 @@ public class AttackFeature extends Feature {
 
 		if (player == null)
 			return;
-
-		//LogHelper.info("fireballing");
 
 		dragon.getPhaseManager().setPhase(EnderDragonPhase.STRAFE_PLAYER);
 		dragon.getPhaseManager().getPhase(EnderDragonPhase.STRAFE_PLAYER).setTarget(player);
@@ -332,7 +323,7 @@ public class AttackFeature extends Feature {
 				areaeffectcloudentity.setParticle(ParticleTypes.DRAGON_BREATH);
 				areaeffectcloudentity.setRadius(3.0F);
 				areaeffectcloudentity.setDuration(300);
-				areaeffectcloudentity.setWaitTime(10);
+				areaeffectcloudentity.setWaitTime(15);
 				areaeffectcloudentity.setRadiusPerTick((7.0F - areaeffectcloudentity.getRadius()) / (float)areaeffectcloudentity.getDuration());
 				areaeffectcloudentity.addEffect(new MobEffectInstance(MobEffects.HARM, 1, 1));
 				if (!list.isEmpty()) {
