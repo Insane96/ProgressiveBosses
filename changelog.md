@@ -1,11 +1,18 @@
 # Changelog
 
 ## Upcoming
-* Halved range where the Ender Dragon would charge and fireball the player (128 -> 64 blocks from the center of the island)
-* Halved range where a player is required to let Minions and Larvae spawn (128 -> 64 blocks from the center of the island)
-* Increased by 0.25 seconds the time before the Acid Fireball cloud starts dealing damage
-* Reduced "increased chance" and range to charge if the player is near a crystal (when 10 -> 8 blocks from a crystal) (x2 chance to charge -> x1.75 chance to charge)
-* Fixed Dragon Minion shooting twice as fast
+* Dragon
+  * Crystals
+    * No longer respawn in towers
+    * Increased health required to trigger the respawn (0% at 20% -> 25% health; 100% at 5% -> 10% health)
+    * Cystals left from previous fights are removed on dragon respawn
+  * Attack
+    * Increased by 0.25 seconds the time before the Acid Fireball cloud starts dealing damage
+    * Halved range where the Ender Dragon would charge and fireball the player (128 -> 64 blocks from the center of the island)
+    * Reduced "increased chance" and range to charge if the player is near a crystal (when 10 -> 8 blocks from a crystal) (x2 chance to charge -> x1.75 chance to charge)
+  * Minions
+    * Halved range where a player is required to let Minions **and Larvae** spawn (128 -> 64 blocks from the center of the island)
+    * Fixed Dragon Minion shooting twice as fast
 
 ## Beta 3.5.1
 * Wither

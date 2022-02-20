@@ -7,6 +7,7 @@
 		"ChargingPlayerPhaseMixin",
 		"DragonFireballEntityMixin",
 		"ElderGuardianEntityMixin",
+		"EndDragonFightMixin",
 		"EnderCrystalEntityMixin",
 		"EnderDragonEntityMixin",
 		"HoldingPatternPhaseMixin",

@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.module.dragon.entity.Larva;
@@ -109,7 +108,7 @@ public class LarvaFeature extends Feature {
 
 		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
-		LogHelper.info("heealth: %s", dragon.getHealth());
+
 		Level world = event.getEntity().level;
 
 		CompoundTag dragonTags = dragon.getPersistentData();

@@ -43,22 +43,25 @@ import java.util.stream.Stream;
 @Label(name = "Crystals", description = "Makes more Crystal spawn and with more cages.")
 public class CrystalFeature extends Feature {
 
+	//TODO Less crystals inside towers, 1 cystal inside at diff 8 and 2 at diff 16
+	//TODO More bonus cages, max 6
+
 	private final ForgeConfigSpec.ConfigValue<Integer> moreCagesAtDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxBonusCagesConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsAtDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsStepConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxMoreCrystalsConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> enableCrystalRespawnConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnMultiplierConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnInsideTowerChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
 
 	public int moreCagesAtDifficulty = 2;
 	public int maxBonusCages = 4;
 	public int moreCrystalsAtDifficulty = 8;
-	public int maxMoreCrystals = 5;
+	public int moreCrystalsStep = 8;
+	public int maxMoreCrystals = 2;
 	public boolean enableCrystalRespawn = true;
 	public double crystalRespawnMultiplier = 0.6d;
-	public double crystalRespawnInsideTowerChance = 0.005d;
 	public boolean explosionImmune = true;
 
 	public CrystalFeature(Module module) {
@@ -73,18 +76,18 @@ public class CrystalFeature extends Feature {
 		moreCrystalsAtDifficultyConfig = Config.builder
 				.comment("At this difficulty more crystals will start to appear inside obsidian towers. -1 will disable this feature.")
 				.defineInRange("More Crystals at Difficulty", moreCrystalsAtDifficulty, -1, Integer.MAX_VALUE);
+		moreCrystalsStepConfig = Config.builder
+				.comment("Every how much difficulty one more crystal will be spawned inside towers")
+				.defineInRange("More Crystals Step", this.moreCrystalsStep, -1, Integer.MAX_VALUE);
 		maxMoreCrystalsConfig = Config.builder
 				.comment("Max number of bonus crystals that can spawn inside the towers.")
 				.defineInRange("Max Bonus Crystals", maxMoreCrystals, 0, 10);
 		enableCrystalRespawnConfig = Config.builder
-				.comment("Everytime the dragon is hit (when below 20% of health) there's a chance to to trigger a Crystal respawn Phase. The phase can only happen once. The chance is 0% when health >= 20% and 100% when health <= 5%.")
+				.comment("Everytime the dragon is hit (when below 20% of health) there's a chance to to trigger a Crystal respawn Phase. The phase can only happen once. The chance is 0% when health >=25% and 100% when health <=10%.")
 				.define("Enable crystal respawn", enableCrystalRespawn);
 		crystalRespawnMultiplierConfig = Config.builder
 				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")
 				.defineInRange("Crystal Respawn Multiplier", crystalRespawnMultiplier, 0d, 100d);
-		crystalRespawnInsideTowerChanceConfig = Config.builder
-				.comment("When respawning Crystals, chance for the crystal to be spawned inside a Tower instead of on top")
-				.defineInRange("Crystal Respawn Inside Tower Chance", crystalRespawnInsideTowerChance, 0d, 1d);
 		explosionImmuneConfig = Config.builder
 				.comment("Crystals can no longer be destroyed by other explosions.")
 				.define("Explosion Immune", explosionImmune);
@@ -97,10 +100,10 @@ public class CrystalFeature extends Feature {
 		this.moreCagesAtDifficulty = this.moreCagesAtDifficultyConfig.get();
 		this.maxBonusCages = this.maxBonusCagesConfig.get();
 		this.moreCrystalsAtDifficulty = this.moreCrystalsAtDifficultyConfig.get();
+		this.moreCrystalsStep = this.moreCrystalsStepConfig.get();
 		this.maxMoreCrystals = this.maxMoreCrystalsConfig.get();
 		this.enableCrystalRespawn = this.enableCrystalRespawnConfig.get();
 		this.crystalRespawnMultiplier = this.crystalRespawnMultiplierConfig.get();
-		this.crystalRespawnInsideTowerChance = this.crystalRespawnInsideTowerChanceConfig.get();
 		this.explosionImmune = this.explosionImmuneConfig.get();
 	}
 
@@ -111,13 +114,11 @@ public class CrystalFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
 		if (!this.enableCrystalRespawn)
 			return;
-
-		EnderDragon dragon = (EnderDragon) event.getEntity();
 
 		CompoundTag dragonTags = dragon.getPersistentData();
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
@@ -129,13 +130,11 @@ public class CrystalFeature extends Feature {
 			return;
 
 		double healthRatio = dragon.getHealth() / dragon.getMaxHealth();
-		if (healthRatio >= 0.2d)
+		if (healthRatio >= 0.25d)
 			return;
-		//Chance is 0% at >= 20% health and 100% at <= 5% health
-		//0.15 - (0.20 - 0.05) = 0.00 / 0.15 =	0%
-		//0.15 - (0.13 - 0.05) = 0.08 / 0.15 =~	46.7%
-		//0.15 - (0.05 - 0.05) = 0.15 / 0.15 =	100%
-		double chance = (0.15d - (healthRatio - 0.05d)) / 0.15d;
+
+		//Chance is 0% at >=25% health and 100% at <=10% health
+		double chance = (0.15d - (healthRatio - 0.10d)) / 0.15d;
 
 		if (dragon.getRandom().nextFloat() < chance)
 			return;
@@ -222,7 +221,7 @@ public class CrystalFeature extends Feature {
 		List<EndCrystal> crystals = new ArrayList<>();
 
 		for(SpikeFeature.EndSpike endspikefeature$endspike : SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level)) {
-			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, endspikefeature$endspike.getTopBoundingBox()));
+			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, endspikefeature$endspike.getTopBoundingBox(), EndCrystal::showsBottom));
 		}
 
 		//Shuffle the list
