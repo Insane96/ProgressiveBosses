@@ -164,7 +164,7 @@ public class MinionFeature extends Feature {
 
 		//If there is no player in the main island don't spawn minions
 		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AABB bb = new AABB(centerPodium).inflate(96d);
+		AABB bb = new AABB(centerPodium).inflate(64d);
 		List<ServerPlayer> players = world.getEntitiesOfClass(ServerPlayer.class, bb);
 
 		if (players.isEmpty())

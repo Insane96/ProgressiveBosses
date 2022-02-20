@@ -1,6 +1,8 @@
 # Changelog
 
 ## Upcoming
+* Halved range where the Ender Dragon would charge and fireball the player (128 -> 64 blocks from the center of the island)
+* Halved range where a player is required to let Minions and Larvae spawn (128 -> 64 blocks from the center of the island)
 * Increased by 0.25 seconds the time before the Acid Fireball cloud starts dealing damage
 * Reduced "increased chance" and range to charge if the player is near a crystal (when 10 -> 8 blocks from a crystal) (x2 chance to charge -> x1.75 chance to charge)
 * Fixed Dragon Minion shooting twice as fast

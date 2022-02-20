@@ -204,7 +204,7 @@ public class AttackFeature extends Feature {
 		double chance = this.chargePlayerMaxChance * (difficulty / Modules.dragon.difficulty.maxDifficulty);
 
 		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AABB boundingBox = new AABB(centerPodium).inflate(128d);
+		AABB boundingBox = new AABB(centerPodium).inflate(64d);
 		List<Player> players = dragon.level.getEntitiesOfClass(Player.class, boundingBox);
 
 		for (Player player : players) {
@@ -222,7 +222,7 @@ public class AttackFeature extends Feature {
 
 	private void chargePlayer(EnderDragon dragon) {
 		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AABB bb = new AABB(centerPodium).inflate(128d);
+		AABB bb = new AABB(centerPodium).inflate(64d);
 		ServerPlayer player = (ServerPlayer) getRandomPlayerNearCrystal(dragon.level, bb);
 
 		if (player == null)
@@ -259,7 +259,7 @@ public class AttackFeature extends Feature {
 
 	private void fireballPlayer(EnderDragon dragon) {
 		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-		AABB bb = new AABB(centerPodium).inflate(128d);
+		AABB bb = new AABB(centerPodium).inflate(64d);
 		ServerPlayer player = (ServerPlayer) getRandomPlayer(dragon.level, bb);
 
 		if (player == null)
