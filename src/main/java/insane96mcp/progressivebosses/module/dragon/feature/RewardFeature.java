@@ -26,7 +26,7 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> dragonEggPerPlayerConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> dropsListConfig;
 
-	public double bonusExperience = 1.0d;
+	public double bonusExperience = 1.5d;
 	public boolean dragonEggPerPlayer = true;
 	public ArrayList<Drop> dropsList;
 
