@@ -4,17 +4,20 @@
 * Dragon
   * Crystals
     * No longer respawn in towers
-    * Reduced crystals inside towers (1 at difficulty 8, 4 at difficulty 12 -> 1 at difficulty 8, 2 at difficulty 16, 3 at difficulty 24)
+    * Reduced crystals inside towers (1 at difficulty 8, 4 at difficulty 11 -> 1 at difficulty 8, 2 at difficulty 16, 3 at difficulty 24)
     * Increased bonus cages (4 -> 6)
-    * Increased health required to trigger the respawn (0% at 20% -> 25% health; 100% at 5% -> 10% health)
+    * Reduced number of tries to respawn a crystal (0.6 -> 0.2 tries per difficulty; 14.4 -> 4.8 tries at max difficulty) but the dragon can now trigger the respawn phase multiple times. The health threshold reduces by 5% each time 
     * Cystals left from previous fights are removed on dragon respawn
   * Attack
-    * Increased by 0.25 seconds the time before the Acid Fireball cloud starts dealing damage
+    * Reduced bonus damage dealt (+12.5 -> +10% direct damage per difficulty; +11% -> +10% acid damage per difficulty)
     * Halved range where the Ender Dragon would charge and fireball the player (128 -> 64 blocks from the center of the island)
-    * Reduced "increased chance" and range to charge if the player is near a crystal (when 10 -> 8 blocks from a crystal) (x2 chance to charge -> x1.75 chance to charge)
   * Minions
     * Halved range where a player is required to let Minions **and Larvae** spawn (128 -> 64 blocks from the center of the island)
     * Fixed Dragon Minion shooting twice as fast
+  * Resistances and Vulnerabilities
+    * Increased explosion damage reduction (-50% -> -66.7 damage)
+  * Rewards
+    * Increased bonus experience (+100% -> +150% exp per difficulty)
 
 ## Beta 3.5.1
 * Wither
@@ -38,7 +41,7 @@
     * Fixed Wither Nether Only preventing the spawn of the wither anywhere
 * Ender Dragon
   * Resistances and Vulnerabilities
-    * Dragon takes more damage (up to +120%, min +20%) when she's respawning crystals
+    * Dragon takes more damage (up to +120% based off current missing health, min +20%) when she's respawning crystals
   * Crystals
     * Dragon no longer sacrifices health when respawns a crystal
   * Larva
