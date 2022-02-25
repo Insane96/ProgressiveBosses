@@ -58,7 +58,7 @@ public class CrystalFeature extends Feature {
 	public int moreCrystalsStep = 8;
 	public int moreCrystalsMax = 3;
 	public boolean enableCrystalRespawn = true;
-	public double crystalRespawnMultiplier = 0.6d;
+	public double crystalRespawnMultiplier = 0.2d;
 	public boolean explosionImmune = true;
 
 	public CrystalFeature(Module module) {
@@ -71,7 +71,7 @@ public class CrystalFeature extends Feature {
 				.comment("Max number of bonus cages that can spawn around the crystals.")
 				.defineInRange("Max Bonus Cages", maxBonusCages, 0, 8);
 		moreCrystalsAtDifficultyConfig = Config.builder
-				.comment("At this difficulty more crystals will start to appear inside obsidian towers. -1 will disable this feature.")
+				.comment("At this difficulty one crystal will start to appear inside obsidian towers. -1 will disable this feature.")
 				.defineInRange("More Crystals at Difficulty", moreCrystalsAtDifficulty, -1, Integer.MAX_VALUE);
 		moreCrystalsStepConfig = Config.builder
 				.comment("Every how much difficulty one more crystal will be spawned inside towers")
@@ -80,7 +80,7 @@ public class CrystalFeature extends Feature {
 				.comment("Max number of bonus crystals that can spawn inside the towers.")
 				.defineInRange("More Crystals Max", moreCrystalsMax, 0, 10);
 		enableCrystalRespawnConfig = Config.builder
-				.comment("Everytime the dragon is hit (when below 20% of health) there's a chance to to trigger a Crystal respawn Phase. The phase can only happen once. The chance is 0% when health >=25% and 100% when health <=10%.")
+				.comment("Everytime the dragon is hit (when below 20% of health) there's a chance to to trigger a Crystal respawn Phase. The respawn phase only triggers if there are no crystals in the battlefield area. The chance is 0% when health >=20% and 100% when health <=5%, the health threshold decreases by 5% every time the dragon respawns crystals.")
 				.define("Enable crystal respawn", enableCrystalRespawn);
 		crystalRespawnMultiplierConfig = Config.builder
 				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")
@@ -120,18 +120,18 @@ public class CrystalFeature extends Feature {
 		CompoundTag dragonTags = dragon.getPersistentData();
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 
-		if (dragonTags.getBoolean(Strings.Tags.CRYSTAL_RESPAWN))
-			return;
-
 		if (!VALID_CRYSTAL_RESPAWN_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
 			return;
 
-		double healthRatio = dragon.getHealth() / dragon.getMaxHealth();
+		float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
 		if (healthRatio >= 0.25d)
 			return;
 
-		//Chance is 0% at >=25% health and 100% at <=10% health
-		double chance = (0.15d - (healthRatio - 0.10d)) / 0.15d;
+		byte crystalRespawn = dragonTags.getByte(Strings.Tags.CRYSTAL_RESPAWN);
+
+		//The first time, the chance is 0% at >=20% health and 100% at <=5% health. The health threshold decreases by 5% every time the enderdragon respawns the crystals
+		float chance = getChanceAtValue(healthRatio, 0.20f - (crystalRespawn * 0.05f), 0.05f - (crystalRespawn * 0.05f));
+		LogHelper.info("Chance: %s", chance);
 
 		if (dragon.getRandom().nextFloat() < chance)
 			return;
@@ -145,7 +145,14 @@ public class CrystalFeature extends Feature {
 			SpikeFeature.EndSpike targetSpike = spikes.get(RandomHelper.getInt(dragon.getRandom(), 0, spikes.size()));
 			phase.addCrystalRespawn(targetSpike);
 		}
-		dragonTags.putBoolean(Strings.Tags.CRYSTAL_RESPAWN, true);
+		dragonTags.putByte(Strings.Tags.CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
+	}
+
+	/**
+	 * Returns a percentage value based off a min and max value. when value >= max the chance is 0%, when value <= min the chance is 100%. In-between the threshold, chance scales accordingly
+	 */
+	private float getChanceAtValue(float value, float max, float min) {
+		return (max - min - (value - min)) / (max - min);
 	}
 
 	@SubscribeEvent
