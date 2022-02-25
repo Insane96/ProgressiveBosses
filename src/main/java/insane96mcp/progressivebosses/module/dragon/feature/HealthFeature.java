@@ -85,29 +85,11 @@ public class HealthFeature extends Feature {
 		if (event.getEntity().level.isClientSide)
 			return;
 
-		/*if (event.getEntity() instanceof EnderDragonEntity) {
-			EnderDragonEntity dragon = (EnderDragonEntity) event.getEntity();
-			List<Entity> list = dragon.world.getEntitiesWithinAABB(PlayerEntity.class, dragon.getBoundingBox());
-			for (Entity entity : list) {
-				PlayerEntity player = (PlayerEntity) entity;
-				LogHelper.info("Colliding");
-				for (EnderDragonPartEntity part : dragon.getDragonParts()) {
-					ServerWorld world = (ServerWorld) dragon.world;
-					world.spawnParticle(ParticleTypes.ANGRY_VILLAGER, part.getPosX(), part.getPosY(), part.getPosZ(), 1, 0, 0, 0, 0);
-					if (part.getBoundingBox().intersects(player.getBoundingBox())) {
-						part.attackEntityFrom(DamageSource.causePlayerDamage(player), 20f);
-						LogHelper.info("Colliding with %s", part.name);
-					}
-				}
-			}
-		}*/
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon enderDragon))
 			return;
-
-		EnderDragon enderDragon = (EnderDragon) event.getEntity();
 
 		if (!enderDragon.isAlive() || enderDragon.getPhaseManager().getCurrentPhase().getPhase() == EnderDragonPhase.DYING)
 			return;

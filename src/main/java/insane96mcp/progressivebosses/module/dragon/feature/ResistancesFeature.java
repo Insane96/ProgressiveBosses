@@ -83,7 +83,7 @@ public class ResistancesFeature extends Feature {
 			return;
 
 		float curHealthPerc = dragon.getHealth() / dragon.getMaxHealth();
-		event.setAmount(event.getAmount() * (1.2f + curHealthPerc));
+		event.setAmount(event.getAmount() * (1.25f + curHealthPerc));
 	}
 
 	private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);

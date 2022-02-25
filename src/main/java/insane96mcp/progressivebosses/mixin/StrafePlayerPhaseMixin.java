@@ -74,7 +74,7 @@ public abstract class StrafePlayerPhaseMixin extends AbstractDragonPhaseInstance
 						//Otherwise reset the phase, in case she fireballs again
 						else
 							//Can't use initPhase() otherwise the target is reset. Also making the dragon fire slower when chaining fireballs
-							this.fireballCharge = -5;
+							this.fireballCharge = -10;
 					}
 				}
 				else if (this.fireballCharge > 0) {

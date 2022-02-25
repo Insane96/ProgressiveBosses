@@ -18,6 +18,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -205,7 +206,7 @@ public class AttackFeature extends Feature {
 
 		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB boundingBox = new AABB(centerPodium).inflate(64d);
-		List<Player> players = dragon.level.getEntitiesOfClass(Player.class, boundingBox);
+		List<Player> players = dragon.level.getEntitiesOfClass(Player.class, boundingBox, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
 
 		for (Player player : players) {
 			List<EndCrystal> endCrystals = player.level.getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(10d));
@@ -390,7 +391,7 @@ public class AttackFeature extends Feature {
 
 	@Nullable
 	public Player getRandomPlayer(Level world, AABB boundingBox) {
-		List<Player> players = world.getEntitiesOfClass(Player.class, boundingBox);
+		List<Player> players = world.getEntitiesOfClass(Player.class, boundingBox, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
 		if (players.isEmpty())
 			return null;
 
@@ -408,7 +409,7 @@ public class AttackFeature extends Feature {
 		List<Player> playersNearCrystals = new ArrayList<>();
 
  		for (Player player : players) {
-			List<EndCrystal> endCrystals = player.level.getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(10d));
+			List<EndCrystal> endCrystals = player.level.getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(10d), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
 			if (endCrystals.size() > 0)
 				playersNearCrystals.add(player);
 		}

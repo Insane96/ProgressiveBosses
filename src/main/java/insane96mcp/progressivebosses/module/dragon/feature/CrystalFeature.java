@@ -80,7 +80,7 @@ public class CrystalFeature extends Feature {
 				.comment("Max number of bonus crystals that can spawn inside the towers.")
 				.defineInRange("More Crystals Max", moreCrystalsMax, 0, 10);
 		enableCrystalRespawnConfig = Config.builder
-				.comment("Everytime the dragon is hit (when below 20% of health) there's a chance to to trigger a Crystal respawn Phase. The respawn phase only triggers if there are no crystals in the battlefield area. The chance is 0% when health >=20% and 100% when health <=5%, the health threshold decreases by 5% every time the dragon respawns crystals.")
+				.comment("Everytime the dragon is hit (when below 50% of health) there's a chance to to trigger a Crystal respawn Phase. The chance is 0% when health >=50% and 100% when health <=30%, the health threshold decreases by 20% every time the dragon respawns crystals.")
 				.define("Enable crystal respawn", enableCrystalRespawn);
 		crystalRespawnMultiplierConfig = Config.builder
 				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")
@@ -130,10 +130,9 @@ public class CrystalFeature extends Feature {
 		byte crystalRespawn = dragonTags.getByte(Strings.Tags.CRYSTAL_RESPAWN);
 
 		//The first time, the chance is 0% at >=20% health and 100% at <=5% health. The health threshold decreases by 5% every time the enderdragon respawns the crystals
-		float chance = getChanceAtValue(healthRatio, 0.20f - (crystalRespawn * 0.05f), 0.05f - (crystalRespawn * 0.05f));
-		LogHelper.info("Chance: %s", chance);
+		float chance = getChanceAtValue(healthRatio, 0.50f - (crystalRespawn * 0.20f), 0.30f - (crystalRespawn * 0.20f));
 
-		if (dragon.getRandom().nextFloat() < chance)
+		if (dragon.getRandom().nextFloat() > chance)
 			return;
 
 		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
@@ -149,10 +148,10 @@ public class CrystalFeature extends Feature {
 	}
 
 	/**
-	 * Returns a percentage value based off a min and max value. when value >= max the chance is 0%, when value <= min the chance is 100%. In-between the threshold, chance scales accordingly
+	 * Returns a percentage value (0~1) based off a min and max value. when value >= max the chance is 0%, when value <= min the chance is 100%. In-between the threshold, chance scales accordingly
 	 */
 	private float getChanceAtValue(float value, float max, float min) {
-		return (max - min - (value - min)) / (max - min);
+		return Mth.clamp((max - min - (value - min)) / (max - min), 0f, 1f);
 	}
 
 	@SubscribeEvent
