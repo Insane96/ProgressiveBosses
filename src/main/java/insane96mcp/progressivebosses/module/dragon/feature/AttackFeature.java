@@ -49,8 +49,8 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBonusFireballConfig;
 
-	public double increasedDirectDamage = 0.125d;
-	public double increasedAcidPoolDamage = 0.11d;
+	public double increasedDirectDamage = 0.1d;
+	public double increasedAcidPoolDamage = 0.1d;
 	public double chargePlayerMaxChance = 0.50d; //Chance at max difficulty
 	public double fireballMaxChance = 0.40d; //Chance at max difficulty
 	public boolean increaseMaxRiseAndFall = true;
@@ -70,14 +70,16 @@ public class AttackFeature extends Feature {
 				.defineInRange("Bonus Acid Pool Damage", increasedAcidPoolDamage, 0.0, Double.MAX_VALUE);
 
 		chargePlayerMaxChanceConfig = Config.builder
-				.comment("Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to charge the player.\n" +
-						"This is the chance to start a charge attack when the difficulty is at max (24 by default). Otherwise it scales accordingly.\n" +
-						"The actual chance is: (this_value * (difficulty / max difficulty)).")
+				.comment("""
+						Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to charge the player.
+						This is the chance to start a charge attack when the difficulty is at max (24 by default). Otherwise it scales accordingly.
+						The actual chance is: (this_value * (difficulty / max difficulty)).""")
 				.defineInRange("Charge Player Max Chance", chargePlayerMaxChance, 0.0, Double.MAX_VALUE);
 		fireballMaxChanceConfig = Config.builder
-				.comment("Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to spit a fireball.\n" +
-						"This is the chance to start a fireball attack when the difficulty is at max (24 by default). Otherwise it scales accordingly.\n" +
-						"The actual chance is: (this_value * (difficulty / max difficulty)).")
+				.comment("""
+						Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to spit a fireball.
+						This is the chance to start a fireball attack when the difficulty is at max (24 by default). Otherwise it scales accordingly.
+						The actual chance is: (this_value * (difficulty / max difficulty)).""")
 				.defineInRange("Fireball Max Chance", fireballMaxChance, 0.0, Double.MAX_VALUE);
 		increaseMaxRiseAndFallConfig = Config.builder
 				.comment("Since around 1.13/1.14 the Ender Dragon can no longer dive for more than about 3 blocks so she takes a lot to rise / fall. With this active the dragon will be able to rise and fall many more blocks, making easier to hit the player and approach the center.")
@@ -118,13 +120,11 @@ public class AttackFeature extends Feature {
 	}
 
 	private void fireballSpeed(Entity entity) {
-		if (!(entity instanceof DragonFireball))
+		if (!(entity instanceof DragonFireball fireball))
 			return;
 
 		if (!this.isEnabled() || this.fireballVelocityMultiplier == 0d)
 			return;
-
-		DragonFireball fireball = (DragonFireball) entity;
 
 		if (Math.abs(fireball.xPower) > 10 || Math.abs(fireball.yPower) > 10 || Math.abs(fireball.zPower) > 10) {
 			entity.kill();
@@ -208,9 +208,9 @@ public class AttackFeature extends Feature {
 		List<Player> players = dragon.level.getEntitiesOfClass(Player.class, boundingBox);
 
 		for (Player player : players) {
-			List<EndCrystal> endCrystals = player.level.getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(8d));
+			List<EndCrystal> endCrystals = player.level.getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(10d));
 			if (endCrystals.size() > 0) {
-				chance *= 1.75d;
+				chance *= 2d;
 				break;
 			}
 		}
@@ -323,7 +323,7 @@ public class AttackFeature extends Feature {
 				areaeffectcloudentity.setParticle(ParticleTypes.DRAGON_BREATH);
 				areaeffectcloudentity.setRadius(3.0F);
 				areaeffectcloudentity.setDuration(300);
-				areaeffectcloudentity.setWaitTime(15);
+				areaeffectcloudentity.setWaitTime(10);
 				areaeffectcloudentity.setRadiusPerTick((7.0F - areaeffectcloudentity.getRadius()) / (float)areaeffectcloudentity.getDuration());
 				areaeffectcloudentity.addEffect(new MobEffectInstance(MobEffects.HARM, 1, 1));
 				if (!list.isEmpty()) {
