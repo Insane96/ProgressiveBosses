@@ -52,8 +52,8 @@ public class AttackFeature extends Feature {
 
 	public double increasedDirectDamage = 0.1d;
 	public double increasedAcidPoolDamage = 0.1d;
-	public double chargePlayerMaxChance = 0.50d; //Chance at max difficulty
-	public double fireballMaxChance = 0.40d; //Chance at max difficulty
+	public double chargePlayerMaxChance = 0.45d; //Chance at max difficulty
+	public double fireballMaxChance = 0.35d; //Chance at max difficulty
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
 	public boolean fireball3DEffectCloud = true;
@@ -232,7 +232,7 @@ public class AttackFeature extends Feature {
 		dragon.getPhaseManager().setPhase(EnderDragonPhase.CHARGING_PLAYER);
 		Vec3 targetPos = player.position();
 		if (targetPos.y < dragon.getY())
-			targetPos = targetPos.add(0d, -6d, 0d);
+			targetPos = targetPos.add(0d, -5d, 0d);
 		else
 			targetPos = targetPos.add(0d, 6d, 0d);
 		dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(targetPos);
