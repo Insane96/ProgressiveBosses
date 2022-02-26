@@ -1,30 +1,30 @@
 # Changelog
 
-## Upcoming
+## 3.5.2
 * Dragon
   * Crystals
     * No longer respawn in towers
-    * Reduced crystals inside towers (1 at difficulty 8, 4 at difficulty 11 -> 1 at difficulty 8, 2 at difficulty 16, 3 at difficulty 24)
-    * Increased bonus cages (4 -> 6)
-    * Reduced number of tries to respawn a crystal (0.6 -> 0.2 tries per difficulty; 14.4 -> 4.8 tries at max difficulty) but the dragon can now trigger the respawn phase multiple times. 
-      * The health threshold to trigger the respawn has been changed (0% chance when health >= 20% -> 50%; 100% chance when health <= 5% -> 20%) and reduces by 20% each time (so after triggering one time, the second time the chance is 0% at >= 30% health and 100% at <= 0% health)
+    * Reduced crystals inside towers (~~1 at difficulty 8, 4 at difficulty 11~~ -> 1 at difficulty 8, 2 at difficulty 16, 3 at difficulty 24)
+    * Increased bonus cages (~~4~~ -> 6)
+    * Reduced number of tries to respawn a crystal (~~0.6~~ -> 0.2 tries per difficulty; ~~14.4~~ -> 4.8 tries at max difficulty) but the dragon can now trigger the respawn phase multiple times. 
+      * The health threshold to trigger the respawn has been changed (0% chance when health >= ~~20%~~ -> 50%; 100% chance when health <= ~~5%~~ -> 20%) and reduces by 20% each time (so after triggering one time, the second time the chance is 0% at >= 30% health and 100% at <= 0% health)
     * Cystals left from previous fights are removed on dragon respawn
     * Fixed dragon always having opposite chance to trigger crystal respawning
   * Attack
-    * Reduced bonus damage dealt (+12.5 -> +10% direct damage per difficulty; +11% -> +10% acid damage per difficulty)
-    * Halved range where the Ender Dragon would charge and fireball the player (128 -> 64 blocks from the center of the island)
+    * Reduced bonus damage dealt (~~+12.5~~ -> +10% direct damage per difficulty; ~~+11%~~ -> +10% acid damage per difficulty)
+    * Halved range where the Ender Dragon would charge and fireball the player (~~128~~ -> 64 blocks from the center of the island)
     * Chaining fireballing is now slightly slower
     * Ender dragon no longer targets creative or spectator players
-    * Reduced Charge (50% -> 45% at max difficulty) and Fireball (40% -> 35% at max difficulty) chance
+    * Reduced Charge (~~50%~~ -> 45% at max difficulty) and Fireball (~~40%~~ -> 35% at max difficulty) chance
   * Minions
-    * Halved range where a player is required to let Minions **and Larvae** spawn (128 -> 64 blocks from the center of the island)
+    * Halved range where a player is required to let Minions **and Larvae** spawn (~~128~~ -> 64 blocks from the center of the island)
     * Fixed Dragon Minion shooting twice as fast
   * Resistances and Vulnerabilities
-    * Increased explosion damage reduction (-50% -> -66.7 damage)
-    * Increased bonus damage when respawning crystals (+20%~120% -> +25%~125% damage)
-    * Increased bonus indirect damage (0.8% -> 0.9% of current health)
+    * Increased explosion damage reduction (~~-50%~~ -> -66.7 damage)
+    * Increased bonus damage when respawning crystals (~~+20%~120%~~ -> +25%~125% damage)
+    * Increased bonus indirect damage (~~0.8%~~ -> 0.9% of current health)
   * Rewards
-    * Increased bonus experience (+100% -> +150% exp per difficulty)
+    * Increased bonus experience (~~+100%~~ -> +150% exp per difficulty)
 
 ## Beta 3.5.1
 * Wither
