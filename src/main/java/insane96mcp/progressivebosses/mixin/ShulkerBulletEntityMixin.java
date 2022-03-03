@@ -23,10 +23,11 @@ public abstract class ShulkerBulletEntityMixin extends Projectile {
 		this.noPhysics = true;
 	}
 
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"), method = "onHitEntity(Lnet/minecraft/world/phys/EntityHitResult;)V")
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"), method = "onHitEntity(Lnet/minecraft/world/phys/EntityHitResult;)V", cancellable = true)
 	protected void onEntityHit(EntityHitResult rayTraceResult, CallbackInfo callbackInfo) {
 		ShulkerBullet $this = (ShulkerBullet) (Object) this;
 		if ($this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
+			//if (Modules.dragon.minion.onBulletEntityHit())
 			((LivingEntity)rayTraceResult.getEntity()).addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 150));
 	}
 

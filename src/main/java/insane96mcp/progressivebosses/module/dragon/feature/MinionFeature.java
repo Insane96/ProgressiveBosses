@@ -253,6 +253,7 @@ public class MinionFeature extends Feature {
 		}
 	}
 
+	//TODO Not apply Levitation with Bliding Bullets
 	public void onBulletEntityHit(ShulkerBullet shulkerBulletEntity, EntityHitResult rayTraceResult) {
 		Entity entityHit = rayTraceResult.getEntity();
 		Entity entityOwner = shulkerBulletEntity.getOwner();
