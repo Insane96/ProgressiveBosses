@@ -1,6 +1,5 @@
 package insane96mcp.progressivebosses.mixin;
 
-import com.google.common.base.MoreObjects;
 import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -30,9 +29,9 @@ public abstract class ShulkerBulletEntityMixin extends Projectile {
 	@Redirect(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"))
 	private boolean onLevitationApply(LivingEntity livingEntity, MobEffectInstance mobEffectInstance, @Nullable Entity entity) {
 		if (this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-			return livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 150), MoreObjects.firstNonNull(entity, this));
+			return livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 150), entity);
 		else
-			return ???;
+			return livingEntity.addEffect(mobEffectInstance, entity);
 	}
 
 	/*@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"), method = "onHitEntity(Lnet/minecraft/world/phys/EntityHitResult;)V")

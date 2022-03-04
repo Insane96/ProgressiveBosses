@@ -3,7 +3,9 @@
 ## Upcoming
 * Increased InsaneLib version required (~~1.4.2~~ -> 1.4.3)
   * Update InsaneLib to 1.4.4 if you want fewer particles from 3D Area Effect Clouds
-* 
+* Dragon
+  * Minion
+    * Blinding Minions bullets now only blind and no longer give levitation too
 
 ## 3.5.2
 * Dragon
