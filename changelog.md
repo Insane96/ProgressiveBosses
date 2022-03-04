@@ -6,6 +6,8 @@
 * Dragon
   * Minion
     * Blinding Minions bullets now only blind and no longer give levitation too. The bliding duration can also be now configured
+  * Crystals
+    * Cages and More Crystals now generate starting from smaller towers and no longer randomly
 
 ## 3.5.2
 * Dragon

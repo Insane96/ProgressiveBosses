@@ -36,7 +36,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -187,14 +187,16 @@ public class CrystalFeature extends Feature {
 
 		List<EndCrystal> crystals = new ArrayList<>();
 
-		for(SpikeFeature.EndSpike endspikefeature$endspike : SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level)) {
-			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, endspikefeature$endspike.getTopBoundingBox()));
+		//Order from smaller towers to bigger ones
+		List<SpikeFeature.EndSpike> spikes = SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level);
+		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
+
+		for(SpikeFeature.EndSpike spike : spikes) {
+			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()));
 		}
 
 		//Remove all the crystals that already have cages around
 		crystals.removeIf(c -> c.level.getBlockState(c.blockPosition().above(2)).getBlock() == Blocks.IRON_BARS);
-		//Shuffle the list
-		Collections.shuffle(crystals);
 
 		int crystalsInvolved = Math.round(difficulty - this.moreCagesAtDifficulty + 1);
 		int cagesGenerated = 0;
@@ -223,12 +225,13 @@ public class CrystalFeature extends Feature {
 
 		List<EndCrystal> crystals = new ArrayList<>();
 
-		for(SpikeFeature.EndSpike endspikefeature$endspike : SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level)) {
-			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, endspikefeature$endspike.getTopBoundingBox(), EndCrystal::showsBottom));
-		}
+		//Order from smaller towers to bigger ones
+		List<SpikeFeature.EndSpike> spikes = SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level);
+		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 
-		//Shuffle the list
-		Collections.shuffle(crystals);
+		for(SpikeFeature.EndSpike spike : spikes) {
+			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox(), EndCrystal::showsBottom));
+		}
 
 		int crystalsMax = (int) Math.ceil((difficulty + 1 - this.moreCrystalsAtDifficulty) / this.moreCrystalsStep);
 		if (crystalsMax <= 0)
