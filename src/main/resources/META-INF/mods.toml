@@ -31,6 +31,6 @@ configBackground = "minecraft:textures/block/soul_sand.png"
 [[dependencies.progressivebosses]]
     modId = "insanelib"
     mandatory = true
-    versionRange = "[1.4.2,)"
+    versionRange = "[1.4.3,)"
     ordering = "NONE"
     side = "BOTH"

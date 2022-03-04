@@ -1,7 +1,9 @@
 # Changelog
 
 ## Upcoming
-* Reduced 
+* Increased InsaneLib version required (~~1.4.2~~ -> 1.4.3)
+  * Update InsaneLib to 1.4.4 if you want fewer particles from 3D Area Effect Clouds
+* 
 
 ## 3.5.2
 * Dragon
