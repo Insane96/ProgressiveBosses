@@ -4,19 +4,15 @@ import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import javax.annotation.Nullable;
 
 @Mixin(ShulkerBullet.class)
 public abstract class ShulkerBulletEntityMixin extends Projectile {
@@ -26,12 +22,12 @@ public abstract class ShulkerBulletEntityMixin extends Projectile {
 		this.noPhysics = true;
 	}
 
-	@Redirect(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"))
-	private boolean onLevitationApply(LivingEntity livingEntity, MobEffectInstance mobEffectInstance, @Nullable Entity entity) {
+	@ModifyArg(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"), index = 0)
+	private MobEffectInstance applyBlindness(MobEffectInstance mobEffectInstance) {
 		if (this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-			return livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, Modules.dragon.minion.blindingDuration), entity);
+			return new MobEffectInstance(MobEffects.BLINDNESS, Modules.dragon.minion.blindingDuration);
 		else
-			return livingEntity.addEffect(mobEffectInstance, entity);
+			return mobEffectInstance;
 	}
 
 	/*@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"), method = "onHitEntity(Lnet/minecraft/world/phys/EntityHitResult;)V")

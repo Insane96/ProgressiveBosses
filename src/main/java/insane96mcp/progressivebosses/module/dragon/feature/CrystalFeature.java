@@ -49,7 +49,7 @@ public class CrystalFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsStepConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsMaxConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> enableCrystalRespawnConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnMultiplierConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnPerDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
 
 	public int moreCagesAtDifficulty = 2;
@@ -58,7 +58,7 @@ public class CrystalFeature extends Feature {
 	public int moreCrystalsStep = 8;
 	public int moreCrystalsMax = 3;
 	public boolean enableCrystalRespawn = true;
-	public double crystalRespawnMultiplier = 0.2d;
+	public double crystalRespawnPerDifficulty = 0.2d;
 	public boolean explosionImmune = true;
 
 	public CrystalFeature(Module module) {
@@ -82,9 +82,9 @@ public class CrystalFeature extends Feature {
 		enableCrystalRespawnConfig = Config.builder
 				.comment("Everytime the dragon is hit (when below 50% of health) there's a chance to to trigger a Crystal respawn Phase. The chance is 0% when health >=50% and 100% when health <=30%, the health threshold decreases by 20% every time the dragon respawns crystals.")
 				.define("Enable crystal respawn", enableCrystalRespawn);
-		crystalRespawnMultiplierConfig = Config.builder
-				.comment("Difficulty multiplied by this number will output how many tries will the dragon take to respawn crystals. Tries are capped between 1 and 100.")
-				.defineInRange("Crystal Respawn Multiplier", crystalRespawnMultiplier, 0d, 100d);
+		crystalRespawnPerDifficultyConfig = Config.builder
+				.comment("Difficulty multiplied by this number will output how many crystals will the dragon respawn.")
+				.defineInRange("Crystal Respawn Per Difficulty", crystalRespawnPerDifficulty, 0d, 10d);
 		explosionImmuneConfig = Config.builder
 				.comment("Crystals can no longer be destroyed by other explosions.")
 				.define("Explosion Immune", explosionImmune);
@@ -100,7 +100,7 @@ public class CrystalFeature extends Feature {
 		this.moreCrystalsStep = this.moreCrystalsStepConfig.get();
 		this.moreCrystalsMax = this.moreCrystalsMaxConfig.get();
 		this.enableCrystalRespawn = this.enableCrystalRespawnConfig.get();
-		this.crystalRespawnMultiplier = this.crystalRespawnMultiplierConfig.get();
+		this.crystalRespawnPerDifficulty = this.crystalRespawnPerDifficultyConfig.get();
 		this.explosionImmune = this.explosionImmuneConfig.get();
 	}
 
@@ -129,7 +129,7 @@ public class CrystalFeature extends Feature {
 
 		byte crystalRespawn = dragonTags.getByte(Strings.Tags.CRYSTAL_RESPAWN);
 
-		//The first time, the chance is 0% at >=20% health and 100% at <=5% health. The health threshold decreases by 5% every time the enderdragon respawns the crystals
+		//The first time, the chance is 0% at >=50% health and 100% at <=20% health. The health threshold decreases by 20% every time the enderdragon respawns the crystals
 		float chance = getChanceAtValue(healthRatio, 0.50f - (crystalRespawn * 0.20f), 0.20f - (crystalRespawn * 0.20f));
 
 		if (dragon.getRandom().nextFloat() > chance)
@@ -138,10 +138,11 @@ public class CrystalFeature extends Feature {
 		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
 		CrystalRespawnPhase phase = (CrystalRespawnPhase) dragon.getPhaseManager().getCurrentPhase();
 
-		ArrayList<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level));
-		int maxTries = (int) Mth.clamp(difficulty * this.crystalRespawnMultiplier, 1, 100);
-		for (int i = 0; i < maxTries; i++) {
-			SpikeFeature.EndSpike targetSpike = spikes.get(RandomHelper.getInt(dragon.getRandom(), 0, spikes.size()));
+		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level));
+		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius).reversed());
+		int crystalsRespawned = (int) Mth.clamp(difficulty * this.crystalRespawnPerDifficulty, 1, SpikeFeature.NUMBER_OF_SPIKES);
+		for (int i = 0; i < crystalsRespawned; i++) {
+			SpikeFeature.EndSpike targetSpike = spikes.get(i);
 			phase.addCrystalRespawn(targetSpike);
 		}
 		dragonTags.putByte(Strings.Tags.CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));

@@ -8,6 +8,7 @@
     * Blinding Minions bullets now only blind and no longer give levitation too. The bliding duration can also be now configured
   * Crystals
     * Cages and More Crystals now generate starting from smaller towers and no longer randomly
+    * Crystals respawned by Dragon now always start from the bigger towers to the smaller ones instead of begin random. (0.2 ~~tries to respawn a crystal~~ crystals respawned per difficulty)
 
 ## 3.5.2
 * Dragon
