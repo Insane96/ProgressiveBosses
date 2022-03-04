@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.phys.AABB;
@@ -26,7 +27,7 @@ public class EndDragonFightMixin {
 	private void respawnDragon(List<EndCrystal> p_64092_, CallbackInfo callback) {
 		List<EndCrystal> endCrystals = this.level.getEntitiesOfClass(EndCrystal.class, new AABB(this.portalLocation).inflate(48d), EndCrystal::showsBottom);
 		for (EndCrystal endCrystal : endCrystals) {
-			endCrystal.discard();
+			endCrystal.hurt(DamageSource.GENERIC, 1f);
 		}
 	}
 }
