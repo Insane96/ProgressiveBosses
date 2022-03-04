@@ -188,7 +188,7 @@ public class CrystalFeature extends Feature {
 		List<EndCrystal> crystals = new ArrayList<>();
 
 		//Order from smaller towers to bigger ones
-		List<SpikeFeature.EndSpike> spikes = SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level);
+		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level));
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 
 		for(SpikeFeature.EndSpike spike : spikes) {
@@ -226,7 +226,7 @@ public class CrystalFeature extends Feature {
 		List<EndCrystal> crystals = new ArrayList<>();
 
 		//Order from smaller towers to bigger ones
-		List<SpikeFeature.EndSpike> spikes = SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level);
+		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level));
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 
 		for(SpikeFeature.EndSpike spike : spikes) {
