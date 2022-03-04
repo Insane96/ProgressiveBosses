@@ -29,7 +29,7 @@ public abstract class ShulkerBulletEntityMixin extends Projectile {
 	@Redirect(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"))
 	private boolean onLevitationApply(LivingEntity livingEntity, MobEffectInstance mobEffectInstance, @Nullable Entity entity) {
 		if (this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-			return livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 150), entity);
+			return livingEntity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, Modules.dragon.minion.blindingDuration), entity);
 		else
 			return livingEntity.addEffect(mobEffectInstance, entity);
 	}

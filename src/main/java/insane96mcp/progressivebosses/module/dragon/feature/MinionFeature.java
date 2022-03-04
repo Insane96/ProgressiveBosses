@@ -53,6 +53,7 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> maxCooldownConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> cooldownReductionConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> blindingChanceConfig;
+	private final ForgeConfigSpec.ConfigValue<Integer> blindingDurationConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> reducedDragonDamageConfig;
 
 	public int minionAtDifficulty = 1;
@@ -60,6 +61,7 @@ public class MinionFeature extends Feature {
 	public int maxCooldown = 2000;
 	public double cooldownReduction = 0.017d;
 	public double blindingChance = 0.015d;
+	public int blindingDuration = 150;
 	public boolean reducedDragonDamage = true;
 
 	public MinionFeature(Module module) {
@@ -80,6 +82,9 @@ public class MinionFeature extends Feature {
 		blindingChanceConfig = Config.builder
 				.comment("Percentage chance per difficulty for a Minion to spawn as a Blinding Minion.")
 				.defineInRange("Blinding Chance", blindingChance, 0d, 1d);
+		blindingDurationConfig = Config.builder
+				.comment("Time (in ticks) for the bliding effect when hit by a blinding bullet.")
+				.defineInRange("Blinding duration", blindingDuration, 0, 6000);
 		reducedDragonDamageConfig = Config.builder
 				.comment("If true, Dragon Minions will take only 10% damage from the Ender Dragon.")
 				.define("Reduced Dragon Damage", reducedDragonDamage);

@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
+import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.module.dragon.feature.CrystalFeature;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
@@ -38,6 +39,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		if (this.targetLocation == null) {
 			if (spikesToRespawn.isEmpty()) {
 				dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
+				LogHelper.warn("Canceling Crystal respawn phase because no spikes to respawn were found");
 				return;
 			}
 			this.targetLocation = new Vec3(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5.5, spikesToRespawn.get(0).getCenterZ() + 0.5);
