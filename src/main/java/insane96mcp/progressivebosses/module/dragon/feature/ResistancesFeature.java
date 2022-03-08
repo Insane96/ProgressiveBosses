@@ -26,7 +26,7 @@ public class ResistancesFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> damageRedutionWhenSittingConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
 
-	public double bonusCurHealthDirectDamage = 0.02d;
+	public double bonusCurHealthDirectDamage = 0.025d;
 	public double bonusCurHealthIndirectDamage = 0.009d;
 	public double damageRedutionWhenSitting = 0.0125d;
 	public double explosionDamageReduction = 0.667d;
