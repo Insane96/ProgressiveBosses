@@ -129,11 +129,11 @@ public class CrystalFeature extends Feature {
 
 		byte crystalRespawn = dragonTags.getByte(Strings.Tags.CRYSTAL_RESPAWN);
 
-		//The first time, the chance is 0% at >=50% health and 100% at <=15% health. The health threshold decreases by 30% every time the enderdragon respawns the crystals
-		//On 0 Respawns: 0% chance at health >=  75% and 100% at health <=  15%
+		//The first time, the chance is 0% at >=80% health and 100% at <=60% health. The health threshold decreases by 35% every time the enderdragon respawns the crystals
+		//On 0 Respawns: 0% chance at health >=  80% and 100% at health <=  20%
 		//On 1 Respawn : 0% chance at health >=  45% and  75% at health =    0%
-		//On 2 Respawns: 0% chance at health >=  15% and  25% at health =    0%
-		float chance = getChanceAtValue(healthRatio, 0.75f - (crystalRespawn * 0.30f), 0.15f - (crystalRespawn * 0.30f));
+		//On 2 Respawns: 0% chance at health >=  10% and  17% at health =    0%
+		float chance = getChanceAtValue(healthRatio, 0.80f - (crystalRespawn * 0.35f), 0.20f - (crystalRespawn * 0.35f));
 
 		if (dragon.getRandom().nextFloat() > chance)
 			return;
