@@ -9,6 +9,8 @@
   * Crystals
     * Cages and More Crystals now generate starting from smaller towers and no longer randomly
     * Crystals respawned by Dragon now always start from the bigger towers to the smaller ones instead of begin random. (0.2 ~~tries to respawn a crystal~~ crystals respawned per difficulty)
+  * Attack
+    * Dragon will no longer fireball the player if too near
 
 ## 3.5.2
 * Dragon

@@ -34,7 +34,12 @@ public abstract class StrafePlayerPhaseMixin extends AbstractDragonPhaseInstance
 		if (this.attackTarget == null) {
 			LogHelper.warn("Skipping player strafe phase because no player was found");
 			this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
-		} else {
+		}
+		else if (this.attackTarget.distanceToSqr(this.dragon) < 256d) {
+			LogHelper.warn("Skipping player strafe phase because too near the target");
+			this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
+		}
+		else {
 			if (this.currentPath != null && this.currentPath.isDone()) {
 				double d0 = this.attackTarget.getX();
 				double d1 = this.attackTarget.getZ();
