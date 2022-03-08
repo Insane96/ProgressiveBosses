@@ -2,8 +2,6 @@ package insane96mcp.progressivebosses.module.dragon.phase;
 
 import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.module.dragon.feature.CrystalFeature;
-import insane96mcp.progressivebosses.setup.Strings;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -33,8 +31,8 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	 * Called by dragon's onLivingUpdate. Only used when !worldObj.isClientSide.
 	 */
 	public void doServerTick() {
-		CompoundTag dragonTags = this.dragon.getPersistentData();
-		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
+		//CompoundTag dragonTags = this.dragon.getPersistentData();
+		//float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (this.targetLocation == null) {
 			if (spikesToRespawn.isEmpty()) {
@@ -44,10 +42,10 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			}
 			this.targetLocation = new Vec3(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5.5, spikesToRespawn.get(0).getCenterZ() + 0.5);
 		}
-		int tickSpawnCystal = (int) (50 - (difficulty / 4));
+		int tickSpawnCystal = 50;
 		if (!respawning) {
 			double d0 = this.targetLocation.distanceToSqr(dragon.getX(), dragon.getY(), dragon.getZ());
-			if (d0 < 16d) {
+			if (d0 < 9d) { //sqrt = 3
 				dragon.setDeltaMovement(Vec3.ZERO);
 				respawning = true;
 			}
@@ -58,11 +56,10 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			if (tick <= 25)
 				dragon.playSound(SoundEvents.ENDER_DRAGON_GROWL, 4F, 1.0F);
 			if (tick >= tickSpawnCystal) {
-				EndCrystal crystal;
 				double x = spikesToRespawn.get(0).getCenterX();
 				double y = spikesToRespawn.get(0).getHeight();
 				double z = spikesToRespawn.get(0).getCenterZ();
-				crystal = new EndCrystal(dragon.level, x + 0.5, y + 1, z + 0.5);
+				EndCrystal crystal = new EndCrystal(dragon.level, x + 0.5, y + 1, z + 0.5);
 				crystal.setShowBottom(true);
 				crystal.level.explode(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Explosion.BlockInteraction.NONE);
 				dragon.level.addFreshEntity(crystal);

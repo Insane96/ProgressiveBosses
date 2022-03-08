@@ -8,7 +8,9 @@
     * Blinding Minions bullets now only blind and no longer give levitation too. The bliding duration can also be now configured
   * Crystals
     * Cages and More Crystals now generate starting from smaller towers and no longer randomly
-    * Crystals respawned by Dragon now always start from the bigger towers to the smaller ones instead of begin random. (0.2 ~~tries to respawn a crystal~~ crystals respawned per difficulty)
+    * Crystals respawned by Dragon now always start from the bigger towers to the smaller ones instead of begin random. (0.2 ~~tries to respawn a crystal~~ crystals respawned per difficulty, rounded down)
+    * Changed crystal respawning health threshold (0% chance when health >= 50%; 100% chance when health <= ~~20%~~ -> 15%)
+    * Time to respawn a crystal is now fixed (~~50~44 ticks based off difficulty~~ -> 50 ticks)
   * Attack
     * Dragon will no longer fireball the player if too near
 
