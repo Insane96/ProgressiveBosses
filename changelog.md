@@ -14,7 +14,8 @@
   * Attack
     * Dragon will no longer fireball the player if too near
   * Resistances
-    * Increased Bonus direct damage when not in the center (~~2%~~ -> 2.5% of current health)
+    * Increased Bonus direct damage when not in the center (~~2%~~ -> 3% of current health)
+    * Increased bonus indirect damage (~~0.9%~~ -> 1% of current health)
 
 ## 3.5.2
 * Dragon
