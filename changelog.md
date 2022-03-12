@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.5.3
 * Increased InsaneLib version required (~~1.4.2~~ -> 1.4.3)
   * Update InsaneLib to 1.4.4 if you want fewer particles from 3D Area Effect Clouds
 * Dragon
@@ -15,7 +15,7 @@
     * Dragon will no longer fireball the player if too near
   * Resistances
     * Increased Bonus direct damage when not in the center (~~2%~~ -> 3% of current health)
-    * Increased bonus indirect damage (~~0.9%~~ -> 1% of current health)
+    * Increased bonus indirect damage when not in the center (~~0.9%~~ -> 1% of current health)
   * Health
     * Bonus crystal regen now scales with dragon missing health (+0.05 hp/s (per difficulty) when attached to a crystal [NEW] **when missing 100% health**)
 
