@@ -16,6 +16,8 @@
   * Resistances
     * Increased Bonus direct damage when not in the center (~~2%~~ -> 3% of current health)
     * Increased bonus indirect damage (~~0.9%~~ -> 1% of current health)
+  * Health
+    * Bonus crystal regen now scales with dragon missing health (+0.05 hp/s (per difficulty) when attached to a crystal [NEW] **when missing 100% health**)
 
 ## 3.5.2
 * Dragon

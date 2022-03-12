@@ -6,6 +6,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -42,7 +43,7 @@ public class HealthFeature extends Feature {
 				.comment("How much health will the Ender Dragon regen per difficulty. This is added to the noaml Crystal regeneration.")
 				.defineInRange("Bonus Regeneration per Difficulty", bonusRegenPerDifficulty, 0.0, Double.MAX_VALUE);
 		this.bonusCrystalRegenConfig = Config.builder
-				.comment("How much health will the Ender Dragon regen per difficulty each second whenever she's attached to a Crystal. This is added to the normal Crystal regen.")
+				.comment("How much health (when missing 100% health) will the Ender Dragon regen per difficulty each second whenever she's attached to a Crystal. So if she's missing 30% health, this will be 30% effective. This is added to the normal Crystal regen.")
 				.defineInRange("Bonus Crystal Regeneration", this.bonusCrystalRegen, 0.0, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
@@ -67,10 +68,8 @@ public class HealthFeature extends Feature {
 		if (this.bonusPerDifficulty == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon enderDragon))
 			return;
-
-		EnderDragon enderDragon = (EnderDragon) event.getEntity();
 
 		if (enderDragon.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
 			return;
@@ -103,6 +102,7 @@ public class HealthFeature extends Feature {
 
 		float flatBonusHeal = getFlatBonusHeal(difficulty);
 		float crystalBonusHeal = getCrystalBonusHeal(enderDragon, difficulty);
+		LogHelper.info("crystal Regen: %s", crystalBonusHeal);
 
 		float heal = flatBonusHeal + crystalBonusHeal;
 		if (heal == 0f)
@@ -126,6 +126,7 @@ public class HealthFeature extends Feature {
 		if (enderDragon.nearestCrystal == null || !enderDragon.nearestCrystal.isAlive())
 			return 0f;
 
-		return (float) (this.bonusCrystalRegen * difficulty);
+		double currHealthPerc = 1 - (enderDragon.getHealth() / enderDragon.getMaxHealth());
+		return (float) (this.bonusCrystalRegen * difficulty * currHealthPerc);
 	}
 }
