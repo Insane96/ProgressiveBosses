@@ -102,7 +102,6 @@ public class HealthFeature extends Feature {
 
 		float flatBonusHeal = getFlatBonusHeal(difficulty);
 		float crystalBonusHeal = getCrystalBonusHeal(enderDragon, difficulty);
-		LogHelper.info("crystal Regen: %s", crystalBonusHeal);
 
 		float heal = flatBonusHeal + crystalBonusHeal;
 		if (heal == 0f)
