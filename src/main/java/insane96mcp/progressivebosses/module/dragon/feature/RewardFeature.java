@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -40,18 +41,18 @@ public class RewardFeature extends Feature {
 				.comment("If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg ìì will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
 				.define("Dragon Egg per Player", dragonEggPerPlayer);
 		dropsListConfig = Config.builder
-				.comment("A list of drops for the Dragons. Entry format: item,amount,difficulty_required,chance,difficulty_mode,chance_mode\n" +
-						"item: item id\n" +
-						"amount: amount\n" +
-						"difficulty_required: the amount of difficulty required for the item to drop, works differently based on mode\n" +
-						"chance: chance for the drop to happen, between 0 and 1\n" +
-						"difficulty_mode:\n" +
-						"* MINIMUM: will try to drop the item when the difficulty matches or is higher\n" +
-						"* PER_DIFFICULTY: will try to drop the item once per difficulty (e.g. at difficulty 10, difficulty required 3, there is the chance to drop the item, trying 7 times)\n" +
-						"chance_mode:\n" +
-						"* FLAT: chance is the percentage chance for the item to drop if the difficulty criteria matches\n" +
-						"* SCALING: each point of difficulty >= 'difficulty to drop the item' will be multiplied by the chance (e.g. chance 2% and difficulty 10, difficulty required 5, chance to drop the item will be chance * (difficulty - difficulty_required + 1) = 2% * (10 - 5 + 1) = 12%)\n" +
-						"By default Withers have 2% chance per difficulty >= 2 to drop 1 shard + 4% chance per difficulty >= 4 to drop 2 shards + 8% chance per difficulty >= 8 to drop 4 shards.")
+				.comment("""
+						A list of drops for the Dragons. Entry format: item,amount,difficulty_required,chance,difficulty_mode,chance_mode
+						item: item id
+						amount: amount
+						difficulty_required: the amount of difficulty required for the item to drop, works differently based on mode
+						chance: chance for the drop to happen, between 0 and 1
+						difficulty_mode:
+						* MINIMUM: will try to drop the item when the difficulty matches or is higher
+						* PER_DIFFICULTY: will try to drop the item once per difficulty (e.g. at difficulty 10, difficulty required 3, there is the chance to drop the item, trying 7 times)
+						chance_mode:
+						* FLAT: chance is the percentage chance for the item to drop if the difficulty criteria matches
+						* SCALING: each point of difficulty >= 'difficulty to drop the item' will be multiplied by the chance (e.g. chance 2% and difficulty 10, difficulty required 5, chance to drop the item will be chance * (difficulty - difficulty_required + 1) = 2% * (10 - 5 + 1) = 12%)""")
 				.defineList("Drops", ArrayList::new, o -> o instanceof String);
 		Config.builder.pop();
 	}
@@ -69,42 +70,29 @@ public class RewardFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
-		EnderDragon dragon = (EnderDragon) event.getEntity();
-
-		dropExperience(dragon);
 		dropEgg(dragon);
 	}
 
-	//TODO Check (when https://github.com/MinecraftForge/MinecraftForge/pull/8388 is merged) if it's possible to use LivingExperienceDrop
-	private void dropExperience(EnderDragon dragon) {
+	@SubscribeEvent
+	public void onExpDrop(LivingExperienceDropEvent event) {
+		if (!this.isEnabled())
+			return;
+
+		if (!(event.getEntity() instanceof EnderDragon dragon))
+			return;
+
 		if (this.bonusExperience == 0d)
 			return;
 
-		if (dragon.dragonDeathTime <= 150 || dragon.dragonDeathTime % 5 != 0)
-			return;
-
-		if (dragon.getDragonFight() == null)
-			return;
-
 		CompoundTag dragonTags = dragon.getPersistentData();
-
 		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 		if (difficulty == 0d)
 			return;
 
-		//Drop 8% of experience each tick (for 10 ticks) + 20% at the last tick like vanilla
-		int bonusXP = (int) (500 * this.bonusExperience * difficulty * 0.08);
-		if (dragon.dragonDeathTime == 200)
-			bonusXP += (int) (500 * this.bonusExperience * difficulty * 0.2);
-
-		while (bonusXP > 0) {
-			int i = ExperienceOrb.getExperienceValue(bonusXP);
-			bonusXP -= i;
-			dragon.level.addFreshEntity(new ExperienceOrb(dragon.level, dragon.position().x(), dragon.position().y(), dragon.position().z(), i));
-		}
+		event.setDroppedExperience((int) (event.getDroppedExperience() * this.bonusExperience * difficulty));
 	}
 
 	private void dropEgg(EnderDragon dragon) {
@@ -135,10 +123,8 @@ public class RewardFeature extends Feature {
 		if (this.dropsList.isEmpty())
 			return;
 
-		if (!(event.getEntityLiving() instanceof EnderDragon))
+		if (!(event.getEntityLiving() instanceof EnderDragon dragon))
 			return;
-
-		EnderDragon dragon = (EnderDragon) event.getEntityLiving();
 
 		CompoundTag tags = dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
