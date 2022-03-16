@@ -9,6 +9,7 @@ import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Reflection;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.Utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -347,42 +348,41 @@ public class AttackFeature extends Feature {
 
 	public void fireFireball(EnderDragon dragon, LivingEntity attackTarget) {
 		Vec3 vector3d2 = dragon.getViewVector(1.0F);
-		double d6 = dragon.head.getX() - vector3d2.x;
-		double d7 = dragon.head.getY(0.5D) + 0.5D;
-		double d8 = dragon.head.getZ() - vector3d2.z;
-		double d9 = attackTarget.getX() - d6;
-		double d10 = attackTarget.getY(0.5D) - d7;
-		double d11 = attackTarget.getZ() - d8;
+		double x = dragon.head.getX() - vector3d2.x;
+		double y = dragon.head.getY(0.5D) + 0.5D;
+		double z = dragon.head.getZ() - vector3d2.z;
+		double xPower = attackTarget.getX() - x;
+		double yPower = attackTarget.getY(0.5D) - y;
+		double zPower = attackTarget.getZ() - z;
 		if (!dragon.isSilent()) {
 			dragon.level.levelEvent(null, 1017, dragon.blockPosition(), 0);
 		}
 
-		DragonFireball dragonfireballentity = new DragonFireball(dragon.level, dragon, d9, d10, d11);
-		dragonfireballentity.moveTo(d6, d7, d8, 0.0F, 0.0F);
+		DragonFireball dragonfireballentity = new DragonFireball(dragon.level, dragon, xPower, yPower, zPower);
+		dragonfireballentity.moveTo(x, y, z, 0.0F, 0.0F);
 		dragon.level.addFreshEntity(dragonfireballentity);
 
 		CompoundTag compoundNBT = dragon.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
-		//TODO check why difficulty 0 ender dragon shoots more fireballs
-		double fireballs = RandomHelper.getDouble(dragon.getRandom(), 1f, maxBonusFireball * difficulty);
-		double mod = fireballs - (int)fireballs;
-		fireballs -= mod;
-		if (dragon.getRandom().nextDouble() < mod)
-			fireballs++;
+
+		float fireballs = RandomHelper.getFloat(dragon.getRandom(), 0f, (float) (maxBonusFireball * difficulty));
+		fireballs = Utils.getAmountWithDecimalChance(dragon.getRandom(), fireballs);
+		if (fireballs == 0f)
+			return;
 
 		for (int i = 0; i < fireballs; i++) {
-			d6 = dragon.head.getX() - vector3d2.x;
-			d7 = dragon.head.getY(0.5D) + 0.5D;
-			d8 = dragon.head.getZ() - vector3d2.z;
-			d9 = attackTarget.getX() + RandomHelper.getDouble(dragon.getRandom(), -(fireballs), fireballs) - d6;
-			d10 = attackTarget.getY(0.5D) + RandomHelper.getDouble(dragon.getRandom(), -(fireballs), fireballs) - d7;
-			d11 = attackTarget.getZ() + RandomHelper.getDouble(dragon.getRandom(), -(fireballs), fireballs) - d8;
+			x = dragon.head.getX() - vector3d2.x;
+			y = dragon.head.getY(0.5D) + 0.5D;
+			z = dragon.head.getZ() - vector3d2.z;
+			xPower = attackTarget.getX() + RandomHelper.getDouble(dragon.getRandom(), -(fireballs), fireballs) - x;
+			yPower = attackTarget.getY(0.5D) + RandomHelper.getDouble(dragon.getRandom(), -(fireballs), fireballs) - y;
+			zPower = attackTarget.getZ() + RandomHelper.getDouble(dragon.getRandom(), -(fireballs), fireballs) - z;
 			if (!dragon.isSilent()) {
 				dragon.level.levelEvent(null, 1017, dragon.blockPosition(), 0);
 			}
 
-			dragonfireballentity = new DragonFireball(dragon.level, dragon, d9, d10, d11);
-			dragonfireballentity.moveTo(d6, d7, d8, 0.0F, 0.0F);
+			dragonfireballentity = new DragonFireball(dragon.level, dragon, xPower, yPower, zPower);
+			dragonfireballentity.moveTo(x, y, z, 0.0F, 0.0F);
 			dragon.level.addFreshEntity(dragonfireballentity);
 		}
 	}
