@@ -20,26 +20,15 @@ import java.util.List;
 @Label(name = "Resistances & Vulnerabilities", description = "Handles the Damage Resistances and Vulnerabilities")
 public class ResistancesFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Double> bonusCurHealthDirectDamageConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> bonusCurHealthIndirectDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> damageRedutionWhenSittingConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
 
-	public double bonusCurHealthDirectDamage = 0.03d;
-	//TODO Remove bonus damage
-	public double bonusCurHealthIndirectDamage = 0.01d;
 	public double damageRedutionWhenSitting = 0.035d;
 	public double explosionDamageReduction = 0.667d;
 
 	public ResistancesFeature(Module module) {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
-		bonusCurHealthDirectDamageConfig = Config.builder
-				.comment("Percentage of Dragon's current health dealth as Bonus damage when attacked directly (melee) and she's not at the center.")
-				.defineInRange("Bonus Current Health Direct Damage", bonusCurHealthDirectDamage, 0d, Double.MAX_VALUE);
-		bonusCurHealthIndirectDamageConfig = Config.builder
-				.comment("Percentage of Dragon's current health dealth as Bonus damage when attacked indirectly (e.g. arrows) and she's not at the center.")
-				.defineInRange("Bonus Current Health Indirect Damage", bonusCurHealthIndirectDamage, 0d, Double.MAX_VALUE);
 		damageRedutionWhenSittingConfig = Config.builder
 				.comment("Melee Damage reduction per difficulty while the Ender Dragon is at the center.")
 				.defineInRange("Melee Damage reduction while at the center", damageRedutionWhenSitting, 0d, Double.MAX_VALUE);
@@ -52,8 +41,6 @@ public class ResistancesFeature extends Feature {
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.bonusCurHealthDirectDamage = this.bonusCurHealthDirectDamageConfig.get();
-		this.bonusCurHealthIndirectDamage = this.bonusCurHealthIndirectDamageConfig.get();
 		this.damageRedutionWhenSitting = this.damageRedutionWhenSittingConfig.get();
 		this.explosionDamageReduction = this.explosionDamageReductionConfig.get();
 	}
@@ -66,31 +53,11 @@ public class ResistancesFeature extends Feature {
 		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
-		bonusDamageNotInCenter(event, dragon);
 		meleeDamageReduction(event, dragon);
 		explosionDamageReduction(event, dragon);
 	}
 
 	private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);
-
-	private void bonusDamageNotInCenter(LivingDamageEvent event, EnderDragon dragon) {
-		if (this.bonusCurHealthDirectDamage == 0d && this.bonusCurHealthIndirectDamage == 0d)
-			return;
-
-		if (event.getSource().isExplosion() && !event.getSource().getMsgId().equals("fireworks"))
-			return;
-
-		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
-			return;
-
-		float curHealth = dragon.getHealth();
-		if (event.getSource().getDirectEntity() instanceof Player) {
-			event.setAmount(event.getAmount() + (float) (curHealth * this.bonusCurHealthDirectDamage));
-		}
-		else if (event.getSource().getEntity() instanceof Player) {
-			event.setAmount(event.getAmount() + (float) (curHealth * this.bonusCurHealthIndirectDamage));
-		}
-	}
 
 	private void meleeDamageReduction(LivingDamageEvent event, EnderDragon dragon) {
 		if (this.damageRedutionWhenSitting == 0d)

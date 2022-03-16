@@ -3,12 +3,17 @@
 ## Upcoming
 * This version changes most of the config values, so it's advised to delete the old one if you're using the default one
 * Ender Dragon
-  * Maximum Difficulty is now 8, so the hardest Ender Dragon is at difficulty 8 and no longer 24. All the values have been scaled accordingly to reach the same value as before at maximum difficulty, except the ones listed below
+  * Maximum Difficulty is now 8, so the hardest Ender Dragon is at difficulty 8 and no longer 24. All the values have been scaled accordingly to reach the same value as before at maximum difficulty, except the ones listed below. The values in the changelog are scaled accordingly to the new max difficulty
     * Bonus fireballs per difficulty, crystal respawn per difficuly, blinding minion chance and damage reduction when in the center slightly decreased
     * More cages, more crystals and larvae spawn now start at earlier difficulties and one more crystal every difficulty spawn earlier (still 3 tower crystals at max difficulty)
+    * Reduced Bonus Regen per difficulty (0.15 -> 0.125 HP/s). Still max 1 HP/s.
   * Crystals
     * When respawning crystals the Ender Dragon now takes a flat amount of bonus damage (~~+25%~+125% damage based off current health~~ -> +33% damage)
     * If the crystal to respawn is a decimal value (e.g. 0.6) the dragon now takes the decimal part as a chance to spawn a +1 crystal (so 60% chance to respawn 1 and 40% chance to fail the respawn)
+  * Health
+    * Bonus health per difficulty reduced (~~103~~ -> 25 Health at max difficulty)
+  * Resistances and Vulnerabilities
+    * Removed bonus damage when not in center (~~+1% current health as bonus indirect damage~~ -> REMOVED; ~~+3% current health as bonus direct damage~~ -> REMOVED)
 * Fixed Ender Dragon respawning crystals even when crystal respawned should have been 0 (e.g. at difficulty 0)
 * Fixed Ender Dragon shooting more than one fireball the first fight
 * Fixed log spam when dragon was attached to crystal
