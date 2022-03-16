@@ -18,6 +18,7 @@
     * Greatly increased damage reduction when in the center (~~-3.5%~~ -> -8% damage taken when in the center; at max difficulty: -28% -> -64%)
   * Fixed Ender Dragon respawning crystals even when crystal respawned should have been 0 (e.g. at difficulty 0)
   * Fixed Ender Dragon shooting more than one fireball the first fight
+  * Fixed Dragon dying in place if killed while respawning a crystal
   * Fixed log spam when dragon was attached to crystal
 * Wither
   * Maximum Difficulty is now 8, so the hardest Wither is at difficulty 8 and no longer 24. All the values have been scaled accordingly to reach the same value as before at maximum difficulty, except the ones listed below. The values mentioned in the changelog are scaled accordingly to the new max difficulty.
