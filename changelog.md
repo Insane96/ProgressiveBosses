@@ -5,16 +5,14 @@
 * Ender Dragon
   * Maximum Difficulty is now 8, so the hardest Ender Dragon is at difficulty 8 and no longer 24. All the values have been scaled accordingly to reach the same value as before at maximum difficulty, except the ones listed below
     * Bonus fireballs per difficulty, crystal respawn per difficuly, blinding minion chance and damage reduction when in the center slightly decreased
-    * More cages now start at earlier difficulties (~~2~~ -> 1)
-    * More crystals now start at earlier difficulties (~~8~~ -> 2) and one more crystals spawn earlier (one more crystal every ~~8~~ -> 3 difficulty) (still 3 crystals at max difficulty)
-    * Larvae start spawning at earlier difficulties (~~2~~ -> 1)
+    * More cages, more crystals and larvae spawn now start at earlier difficulties and one more crystal every difficulty spawn earlier (still 3 tower crystals at max difficulty)
   * Crystals
     * When respawning crystals the Ender Dragon now takes a flat amount of bonus damage (~~+25%~+125% damage based off current health~~ -> +33% damage)
-    * If the crystal to respawn is a decimal value (e.g. 0.6) the dragon now takes the decimal part as a chance to spawn a +1 crystal (so 60% chance to respawn 1 and 40% chance to respawn none)
+    * If the crystal to respawn is a decimal value (e.g. 0.6) the dragon now takes the decimal part as a chance to spawn a +1 crystal (so 60% chance to respawn 1 and 40% chance to fail the respawn)
 * Fixed Ender Dragon respawning crystals even when crystal respawned should have been 0 (e.g. at difficulty 0)
 * Fixed Ender Dragon shooting more than one fireball the first fight
 * Fixed log spam when dragon was attached to crystal
-* Updated things to modern tecnologies
+* Updated things to modern tecnologies (using LivingExperienceDropEvent and onhurt of dragon phase)
 
 ## 3.5.3
 * Increased InsaneLib version required (~~1.4.2~~ -> 1.4.3)
