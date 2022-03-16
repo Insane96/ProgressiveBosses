@@ -27,7 +27,7 @@ public class HealthFeature extends Feature {
 	public double bonusPerDifficulty = 25d;
 	public double maxBonusRegen = 1.0d;
 	public double bonusRegenPerDifficulty = 0.125d;
-	public double bonusCrystalRegen = 0.15d;
+	public double bonusCrystalRegen = 0.1d;
 
 	public HealthFeature(Module module) {
 		super(Config.builder, module);

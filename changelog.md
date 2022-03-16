@@ -12,6 +12,7 @@
     * If the crystal to respawn is a decimal value (e.g. 0.6) the dragon now takes the decimal part as a chance to spawn a +1 crystal (so 60% chance to respawn 1 and 40% chance to fail the respawn)
   * Health
     * Bonus health per difficulty reduced (~~103~~ -> 25 Health at max difficulty)
+    * Decreased bonus health regen from crystals (~~0.15~~ -> 0.1 hp/s per difficulty; at max difficulty ~~12~~ -> 8)
   * Resistances and Vulnerabilities
     * Removed bonus damage when not in center (~~+1% current health as bonus indirect damage~~ -> REMOVED; ~~+3% current health as bonus direct damage~~ -> REMOVED)
     * Greatly increased damage reduction when in the center (~~-3.5%~~ -> -8% damage taken when in the center; at max difficulty: -28% -> -64%)
