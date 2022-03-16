@@ -22,9 +22,9 @@ public class HealthFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> maximumBonusRegenConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> bonusRegenPerDifficultyConfig;
 
-	public double bonusPerDifficulty = 30d;
+	public double bonusPerDifficulty = 90d;
 	public double maxBonusRegen = 2d;
-	public double bonusRegenPerDifficulty = 0.1d;
+	public double bonusRegenPerDifficulty = 0.3d;
 
 	public HealthFeature(Module module) {
 		super(Config.builder, module);

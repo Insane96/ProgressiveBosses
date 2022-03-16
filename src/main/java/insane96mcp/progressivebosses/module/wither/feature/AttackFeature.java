@@ -45,10 +45,10 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
 
 	public boolean applyToVanillaWither = true;
-	public double maxChargeAttackChance = 0.06;
-	public double increasedDamage = 0.04d;
+	public double maxChargeAttackChance = 0.06d;
+	public double increasedDamage = 0.12d;
 	//Barrage Attack
-	public double maxBarrageChancePerDiff = 0.0035d;
+	public double maxBarrageChancePerDiff = 0.011d;
 	public int minBarrageDuration = 20;
 	public int maxBarrageDuration = 150;
 	//Skulls
@@ -64,7 +64,7 @@ public class AttackFeature extends Feature {
 				.comment("If the AI changes should be applied to the first wither spawned too.")
 				.define("Apply to Vanilla Wither", applyToVanillaWither);
 		maxChargeAttackChanceConfig = Config.builder
-				.comment("Max Chance every time the Wither takes damage to start a charge attack. The actual chance is inversely proportional to Wither's health (100% health = 0% chance, 50% health = 2.5% chance, ...).")
+				.comment("Chance every time the Wither takes damage to start a charge attack. Less health = higher chance and more damage taken = more chance. This value is the chance at 0% health and when taking 10 damage.")
 				.defineInRange("Max Charge Attack Chance", maxChargeAttackChance, 0d, 1d);
 		increasedDamageConfig = Config.builder
 				.comment("Percentage bonus damage dealt by the Wither per difficulty.")
@@ -72,13 +72,13 @@ public class AttackFeature extends Feature {
 		//Barrage
 		Config.builder.push("Barrage Attack");
 		maxBarrageChancePerDiffConfig = Config.builder
-				.comment("Chance (per difficulty) every time the Wither takes damage to start a barrage attack. The actual chance is inversely proportional to Wither's health and damage taken (more damage and less health = higher chance).")
+				.comment("Chance (per difficulty) every time the Wither takes damage to start a barrage attack. Less health = higher chance and more damage taken = more chance. This value is the chance at 0% health and when taking 10 damage.")
 				.defineInRange("Max Barrage Attack Chance Per Difficulty", maxBarrageChancePerDiff, 0d, 1d);
 		minBarrageDurationConfig = Config.builder
-				.comment("Min time (in ticks) for the duration of the barrage attack. The actual duration is inversely proportional to Wither's health and damage taken (more damage and less health = higher chance)")
+				.comment("Min time (in ticks) for the duration of the barrage attack. Less health = longer barrage.")
 				.defineInRange("Min Barrage Duration", minBarrageDuration, 0, Integer.MAX_VALUE);
 		maxBarrageDurationConfig = Config.builder
-				.comment("Max time (in ticks) for the duration of the barrage attack. The actual duration is inversely proportional to Wither's health (100% health = min duration, 0% health = max duration)")
+				.comment("Max time (in ticks) for the duration of the barrage attack. Less health = longer barrage")
 				.defineInRange("Max Barrage Duration", maxBarrageDuration, 0, Integer.MAX_VALUE);
 		Config.builder.pop();
 		//Skulls
@@ -108,7 +108,6 @@ public class AttackFeature extends Feature {
 		this.increasedDamage = this.increasedDamageConfig.get();
 		//Barrage
 		this.maxBarrageChancePerDiff = this.maxBarrageChancePerDiffConfig.get();
-		//this.maxBarrageAttackChance = this.maxBarrageAttackChanceConfig.get();
 		this.minBarrageDuration = this.minBarrageDurationConfig.get();
 		this.maxBarrageDuration = this.maxBarrageDurationConfig.get();
 		//Skulls
@@ -189,8 +188,6 @@ public class AttackFeature extends Feature {
 	}
 
 	private void chargeUnseen(WitherBoss wither) {
-		if (this.maxChargeAttackChance == 0d)
-			return;
 		CompoundTag witherTags = wither.getPersistentData();
 
 		if (witherTags.getByte(Strings.Tags.CHARGE_ATTACK) <= 0 && wither.tickCount % 20 == 0) {

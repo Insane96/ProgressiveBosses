@@ -34,8 +34,8 @@ public class MiscFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> ignoreWitherProofBlocksConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> witherNetherOnlyConfig;
 
-	public double explosionPowerBonus = 0.5d;
-	public int explosionCausesFireAtDifficulty = 16;
+	public double explosionPowerBonus = 1d;
+	public int explosionCausesFireAtDifficulty = 5;
 	public boolean fasterBlockBreaking = true;
 	public boolean biggerBlockBreaking = true;
 	public boolean ignoreWitherProofBlocks = false;
@@ -51,7 +51,7 @@ public class MiscFeature extends Feature {
 				.comment("At this difficulty the Wither Explosion will cause fire. Set to -1 to disable.")
 				.defineInRange("Explosion Causes Fire at Difficulty", explosionCausesFireAtDifficulty, -1, Integer.MAX_VALUE);
 		fasterBlockBreakingConfig = Config.builder
-				.comment("The Wither will no longer wait 1 full second before breaking blocks when he's hit, instead just 0.5s")
+				.comment("The Wither will no longer wait 1.0 seconds before breaking blocks when he's hit, instead just 0.5s")
 				.define("Faster Breaking Blocks", fasterBlockBreaking);
 		biggerBlockBreakingConfig = Config.builder
 				.comment("The Wither will break even blocks below him when hit.")
@@ -60,9 +60,10 @@ public class MiscFeature extends Feature {
 				.comment("If true the Wither will break even blocks that are witherproof. Unbreakable blocks will still be unbreakable, so it's really useful with other mods as in vanilla Wither Proof Blocks are all the unbreakable blocks.")
 				.define("Ignore Witherproof Blocks", ignoreWitherProofBlocks);
 		witherNetherOnlyConfig = Config.builder
-				.comment("The wither can only be spawned in the Nether.\n" +
-						"Note that this feature completely disables Wither Skulls from begin placed nearby Soul Sand when not in the Nether or when on the Nether Roof.\n" +
-						"Requires Minecraft restart.")
+				.comment("""
+						The wither can only be spawned in the Nether.
+						Note that this feature completely disables Wither Skulls from begin placed nearby Soul Sand when not in the Nether or when on the Nether Roof.
+						Requires Minecraft restart.""")
 				.define("Wither Nether Only", witherNetherOnly);
 		Config.builder.pop();
 	}
@@ -76,6 +77,7 @@ public class MiscFeature extends Feature {
 		this.explosionCausesFireAtDifficulty = this.explosionCausesFireAtDifficultyConfig.get();
 		this.fasterBlockBreaking = this.fasterBlockBreakingConfig.get();
 		this.biggerBlockBreaking = this.biggerBlockBreakingConfig.get();
+		this.ignoreWitherProofBlocks = this.ignoreWitherProofBlocksConfig.get();
 		this.witherNetherOnly = this.witherNetherOnlyConfig.get();
 
 		if (this.witherNetherOnly && !behaviourRegistered) {

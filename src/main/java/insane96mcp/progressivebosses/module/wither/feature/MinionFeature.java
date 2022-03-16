@@ -60,21 +60,21 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> punchKnockbackChanceConfig;
 
 	public int minionAtDifficulty = 1;
-	public int bonusMinionEveryDifficulty = 2;
+	public int bonusMinionEveryDifficulty = 1;
 	public int maxSpawned = 6;
 	public int maxAround = 20;
 	public int minCooldown = 300;
 	public int maxCooldown = 600;
 	public double cooldownMultiplierBelowHalfHealth = 0.5d;
-	public double bonusSpeedPerDifficulty = 0.01d;
+	public double bonusSpeedPerDifficulty = 0.03d;
 	public double magicDamageMultiplier = 3.0d;
 	public boolean killMinionOnWitherDeath = true;
 	//Equipment
 	public boolean hasSword = true;
 	public double preHalfHealthBowChance = 0.6d;
 	public double halfHealthBowChance = 0.08d;
-	public double powerSharpnessChance = 0.2d;
-	public double punchKnockbackChance = 0.1d;
+	public double powerSharpnessChance = 0.6d;
+	public double punchKnockbackChance = 0.3d;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);

@@ -20,9 +20,9 @@ public class ResistancesFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> maxMeleeDamageReductionOnHalfHealthConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> magicDamageBonusConfig;
 
-	public double meleeDamageReductionBeforeHalfHealth = 0.01d;
+	public double meleeDamageReductionBeforeHalfHealth = 0.03d;
 	public double maxMeleeDamageReductionBeforeHalfHealth = 0.24d;
-	public double meleeDamageReductionOnHalfHealth = 0.02d;
+	public double meleeDamageReductionOnHalfHealth = 0.06d;
 	public double maxDamageReductionOnHalfHealth = 0.48d;
 	public double magicDamageBonus = 250d;
 

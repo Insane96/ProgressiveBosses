@@ -42,7 +42,7 @@ public class DifficultyFeature extends Feature {
 	public int spawnRadiusPlayerCheck = 128;
 	public boolean sumSpawnedWitherDifficulty = false;
 	public double bonusDifficultyPerPlayer = 0.25d;
-	public int maxDifficulty = 24;
+	public int maxDifficulty = 8;
 	public int startingDifficulty = 0;
 	public boolean showFirstSummonedWitherMessage = true;
 	public List<String> entityBlacklist = defaultEntityBlacklist;
