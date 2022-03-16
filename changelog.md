@@ -14,6 +14,7 @@
     * Bonus health per difficulty reduced (~~103~~ -> 25 Health at max difficulty)
   * Resistances and Vulnerabilities
     * Removed bonus damage when not in center (~~+1% current health as bonus indirect damage~~ -> REMOVED; ~~+3% current health as bonus direct damage~~ -> REMOVED)
+    * Greatly increased damage reduction when in the center (~~-3.5%~~ -> -8% damage taken when in the center; at max difficulty: -28% -> -64%)
   * Fixed Ender Dragon respawning crystals even when crystal respawned should have been 0 (e.g. at difficulty 0)
   * Fixed Ender Dragon shooting more than one fireball the first fight
   * Fixed log spam when dragon was attached to crystal
