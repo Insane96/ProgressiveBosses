@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.phase;
 import insane96mcp.insanelib.utils.LogHelper;
 import insane96mcp.progressivebosses.module.dragon.feature.CrystalFeature;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
@@ -102,6 +103,14 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	public void addCrystalRespawn(SpikeFeature.EndSpike spike) {
 		if (!this.spikesToRespawn.contains(spike))
 			this.spikesToRespawn.add(spike);
+	}
+
+	@Override
+	public float onHurt(DamageSource source, float amount) {
+		if (source.isExplosion() && !source.getMsgId().equals("fireworks"))
+			return amount;
+
+		return amount * 1.33f;
 	}
 
 	public EnderDragonPhase<CrystalRespawnPhase> getPhase() {

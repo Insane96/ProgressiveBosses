@@ -8,7 +8,6 @@ import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -27,7 +26,7 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> dragonEggPerPlayerConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> dropsListConfig;
 
-	public double bonusExperience = 1.5d;
+	public double bonusExperience = 4.5d;
 	public boolean dragonEggPerPlayer = true;
 	public ArrayList<Drop> dropsList;
 

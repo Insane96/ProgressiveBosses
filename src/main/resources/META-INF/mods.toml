@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[36,)"
+loaderVersion="[39,)"
 license="MIT License"
 issueTrackerURL="https://github.com/Insane96/ProgressiveBosses/issues/"
 [[mods]]
@@ -19,13 +19,13 @@ configBackground = "minecraft:textures/block/soul_sand.png"
 [[dependencies.progressivebosses]]
     modId="forge"
     mandatory=true
-    versionRange="[36,)"
+    versionRange="[39,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.progressivebosses]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.5,)"
+    versionRange="[1.18.1,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.progressivebosses]]

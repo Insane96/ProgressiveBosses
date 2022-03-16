@@ -36,7 +36,7 @@ public class DifficultyFeature extends Feature {
 
 	public boolean sumKilledDragonDifficulty = false;
 	public double bonusDifficultyPerPlayer = 0.25d;
-	public int maxDifficulty = 24;
+	public int maxDifficulty = 8;
 	public int startingDifficulty = 0;
 	public boolean showFirstKilledDragonMessage = true;
 
@@ -48,7 +48,7 @@ public class DifficultyFeature extends Feature {
 				.define("Sum Killed Dragons Difficulty", sumKilledDragonDifficulty);
 		bonusDifficultyPerPlayerConfig = Config.builder
 				.comment("Percentage bonus difficulty added to the Dragon when more than one player is present. Each player past the first one will add this percentage to the difficulty.")
-				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, 24d);
+				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, 1d);
 		maxDifficultyConfig = Config.builder
 				.comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 24 because it's the last spawning end gate.")
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
@@ -82,10 +82,8 @@ public class DifficultyFeature extends Feature {
 		if (!event.getWorld().dimension().location().equals(DimensionType.END_LOCATION.location()))
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
-
-		EnderDragon dragon = (EnderDragon) event.getEntity();
 
 		if (dragon.getDragonFight() == null)
 			return;
@@ -137,10 +135,8 @@ public class DifficultyFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof EnderDragon))
+		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
-
-		EnderDragon dragon = (EnderDragon) event.getEntity();
 
 		int radius = 256;
 		BlockPos pos1 = new BlockPos(-radius, -radius, -radius);

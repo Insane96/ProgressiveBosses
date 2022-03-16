@@ -50,15 +50,15 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBonusFireballConfig;
 
-	public double increasedDirectDamage = 0.1d;
-	public double increasedAcidPoolDamage = 0.1d;
+	public double increasedDirectDamage = 0.3d;
+	public double increasedAcidPoolDamage = 0.3d;
 	public double chargePlayerMaxChance = 0.45d; //Chance at max difficulty
 	public double fireballMaxChance = 0.35d; //Chance at max difficulty
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
 	public boolean fireball3DEffectCloud = true;
 	public double fireballVelocityMultiplier = 2.5d;
-	public double maxBonusFireball = 0.7d;
+	public double maxBonusFireball = 2d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -69,23 +69,21 @@ public class AttackFeature extends Feature {
 		increasedAcidPoolDamageConfig = Config.builder
 				.comment("How much more damage per difficulty (percentage) does the Ender Dragon's Acid Pool deal per difficulty?")
 				.defineInRange("Bonus Acid Pool Damage", increasedAcidPoolDamage, 0.0, Double.MAX_VALUE);
-
 		chargePlayerMaxChanceConfig = Config.builder
 				.comment("""
 						Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to charge the player.
-						This is the chance to start a charge attack when the difficulty is at max (24 by default). Otherwise it scales accordingly.
+						This is the chance to start a charge attack when the difficulty is at max. Otherwise it scales accordingly.
 						The actual chance is: (this_value * (difficulty / max difficulty)).""")
 				.defineInRange("Charge Player Max Chance", chargePlayerMaxChance, 0.0, Double.MAX_VALUE);
 		fireballMaxChanceConfig = Config.builder
 				.comment("""
 						Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to spit a fireball.
-						This is the chance to start a fireball attack when the difficulty is at max (24 by default). Otherwise it scales accordingly.
+						This is the chance to start a fireball attack when the difficulty is at max. Otherwise it scales accordingly.
 						The actual chance is: (this_value * (difficulty / max difficulty)).""")
 				.defineInRange("Fireball Max Chance", fireballMaxChance, 0.0, Double.MAX_VALUE);
 		increaseMaxRiseAndFallConfig = Config.builder
 				.comment("Since around 1.13/1.14 the Ender Dragon can no longer dive for more than about 3 blocks so she takes a lot to rise / fall. With this active the dragon will be able to rise and fall many more blocks, making easier to hit the player and approach the center.")
 				.define("Increase Max Rise and Fall", increaseMaxRiseAndFall);
-
 		fireballExplosionDamagesConfig = Config.builder
 				.comment("On impact the Acid Fireball will deal magic damage in an area.")
 				.define("Fireball Explosion Magic Damage", fireballExplosionDamages);
@@ -365,13 +363,12 @@ public class AttackFeature extends Feature {
 
 		CompoundTag compoundNBT = dragon.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+		//TODO check why difficulty 0 ender dragon shoots more fireballs
 		double fireballs = RandomHelper.getDouble(dragon.getRandom(), 1f, maxBonusFireball * difficulty);
 		double mod = fireballs - (int)fireballs;
 		fireballs -= mod;
 		if (dragon.getRandom().nextDouble() < mod)
 			fireballs++;
-
-		//LogHelper.info("fireballs: %f", fireballs);
 
 		for (int i = 0; i < fireballs; i++) {
 			d6 = dragon.head.getX() - vector3d2.x;

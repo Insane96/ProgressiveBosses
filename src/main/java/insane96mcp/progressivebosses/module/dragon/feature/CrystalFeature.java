@@ -52,13 +52,13 @@ public class CrystalFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnPerDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
 
-	public int moreCagesAtDifficulty = 2;
+	public int moreCagesAtDifficulty = 1;
 	public int maxBonusCages = 6;
-	public int moreCrystalsAtDifficulty = 8;
-	public int moreCrystalsStep = 8;
+	public int moreCrystalsAtDifficulty = 2;
+	public int moreCrystalsStep = 3;
 	public int moreCrystalsMax = 3;
 	public boolean enableCrystalRespawn = true;
-	public double crystalRespawnPerDifficulty = 0.2d;
+	public double crystalRespawnPerDifficulty = 0.5d;
 	public boolean explosionImmune = true;
 
 	public CrystalFeature(Module module) {
@@ -138,17 +138,23 @@ public class CrystalFeature extends Feature {
 		if (dragon.getRandom().nextFloat() > chance)
 			return;
 
+		dragonTags.putByte(Strings.Tags.CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
+
+		//TODO Change to make the decimal part count as chance (so 1.2 would make the Ender Dragon have 20% chance to respawn 2 crystals and 80% chance to respawn one)
+		int crystalsRespawned = (int) Mth.clamp(difficulty * this.crystalRespawnPerDifficulty, 0, SpikeFeature.NUMBER_OF_SPIKES);
+		if (crystalsRespawned == 0) {
+			return;
+		}
+
 		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
 		CrystalRespawnPhase phase = (CrystalRespawnPhase) dragon.getPhaseManager().getCurrentPhase();
 
 		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level));
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius).reversed());
-		int crystalsRespawned = (int) Mth.clamp(difficulty * this.crystalRespawnPerDifficulty, 1, SpikeFeature.NUMBER_OF_SPIKES);
 		for (int i = 0; i < crystalsRespawned; i++) {
 			SpikeFeature.EndSpike targetSpike = spikes.get(i);
 			phase.addCrystalRespawn(targetSpike);
 		}
-		dragonTags.putByte(Strings.Tags.CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
 	}
 
 	/**

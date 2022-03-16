@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
@@ -27,8 +26,9 @@ public class ResistancesFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
 
 	public double bonusCurHealthDirectDamage = 0.03d;
+	//TODO Remove bonus damage
 	public double bonusCurHealthIndirectDamage = 0.01d;
-	public double damageRedutionWhenSitting = 0.0125d;
+	public double damageRedutionWhenSitting = 0.035d;
 	public double explosionDamageReduction = 0.667d;
 
 	public ResistancesFeature(Module module) {
@@ -44,7 +44,7 @@ public class ResistancesFeature extends Feature {
 				.comment("Melee Damage reduction per difficulty while the Ender Dragon is at the center.")
 				.defineInRange("Melee Damage reduction while at the center", damageRedutionWhenSitting, 0d, Double.MAX_VALUE);
 		explosionDamageReductionConfig = Config.builder
-				.comment("Damage reduction when hit by explosions.")
+				.comment("Damage reduction when hit by explosions (firework rockets excluded).")
 				.defineInRange("Explosion Damage reduction", explosionDamageReduction, 0d, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
@@ -66,24 +66,9 @@ public class ResistancesFeature extends Feature {
 		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
-		bonusDamageWhenRespawningCrystals(event, dragon);
 		bonusDamageNotInCenter(event, dragon);
 		meleeDamageReduction(event, dragon);
 		explosionDamageReduction(event, dragon);
-	}
-
-	private void bonusDamageWhenRespawningCrystals(LivingDamageEvent event, EnderDragon dragon) {
-		if (this.bonusCurHealthDirectDamage == 0d && this.bonusCurHealthIndirectDamage == 0d)
-			return;
-
-		if (event.getSource().isExplosion() && !event.getSource().getMsgId().equals("fireworks"))
-			return;
-
-		if (!dragon.getPhaseManager().getCurrentPhase().getPhase().equals(CrystalRespawnPhase.getPhaseType()))
-			return;
-
-		float curHealthPerc = dragon.getHealth() / dragon.getMaxHealth();
-		event.setAmount(event.getAmount() * (1.25f + curHealthPerc));
 	}
 
 	private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);

@@ -42,7 +42,6 @@ public class WitherChargeAttackGoal extends Goal {
 	 * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
 	 * method as well.
 	 */
-	//TODO Maybe rework this to no longer use InvulnTicks
 	public boolean canUse() {
 		byte chargeTick = this.wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK);
 		return chargeTick > 0;

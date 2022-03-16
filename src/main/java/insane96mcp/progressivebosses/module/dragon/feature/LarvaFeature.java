@@ -39,7 +39,7 @@ public class LarvaFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> reducedDragonDamageConfig;
 
 	public int larvaAtDifficulty = 1;
-	public int bonusLarvaEveryDifficulty = 2;
+	public int bonusLarvaEveryDifficulty = 1;
 	public int maxSpawned = 7;
 	public int minCooldown = 800;
 	public int maxCooldown = 1400;
@@ -58,10 +58,10 @@ public class LarvaFeature extends Feature {
 				.comment("Maximum Larva spawned by the Ender Dragon")
 				.defineInRange("Max Larvae Spawned", maxSpawned, 0, Integer.MAX_VALUE);
 		minCooldownConfig = Config.builder
-				.comment("Minimum ticks (20 ticks = 1 seconds) after Minions can spwan.")
+				.comment("Minimum ticks (20 ticks = 1 seconds) after Minions can spawn.")
 				.defineInRange("Minimum Cooldown", minCooldown, 0, Integer.MAX_VALUE);
 		maxCooldownConfig = Config.builder
-				.comment("Maximum ticks (20 ticks = 1 seconds) after Minions can spwan.")
+				.comment("Maximum ticks (20 ticks = 1 seconds) after Minions can spawn.")
 				.defineInRange("Maximum Cooldown", maxCooldown, 0, Integer.MAX_VALUE);
 		reducedDragonDamageConfig = Config.builder
 				.comment("If true, Larvae will take only 10% damage from the Ender Dragon.")

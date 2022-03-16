@@ -6,7 +6,6 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.utils.MCUtils;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
-import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -25,10 +24,10 @@ public class HealthFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusRegenPerDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> bonusCrystalRegenConfig;
 
-	public double bonusPerDifficulty = 34.4d;
+	public double bonusPerDifficulty = 103d;
 	public double maxBonusRegen = 1.0d;
-	public double bonusRegenPerDifficulty = 0.05d;
-	public double bonusCrystalRegen = 0.05d;
+	public double bonusRegenPerDifficulty = 0.15d;
+	public double bonusCrystalRegen = 0.15d;
 
 	public HealthFeature(Module module) {
 		super(Config.builder, module);

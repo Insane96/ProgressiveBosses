@@ -1,5 +1,19 @@
 # Changelog
 
+## 3.5.4
+* This version changes most of the config values, so it's advised to delete the old one if you're using the default one
+* Ender Dragon
+  * Maximum Difficulty is now 8, so the hardest Ender Dragon is at difficulty 8 and no longer 24. All the values have been scaled accordingly to reach the same value as before at maximum difficulty, except the ones listed below
+    * Bonus fireballs per difficulty, crystal respawn per difficuly, blinding minion chance and damage reduction when in the center slightly decreased
+    * More cages now start at earlier difficulties (~~2~~ -> 1)
+    * More crystals now start at earlier difficulties (~~8~~ -> 2) and one more crystals spawn earlier (one more crystal every ~~8~~ -> 3 difficulty) (still 3 crystals at max difficulty)
+    * Larvae start spawning at earlier difficulties (~~2~~ -> 1)
+  * Crystals
+    * When respawning crystals the Ender Dragon now takes a flat amount of bonus damage (~~+25%~+125% damage based off current health~~ -> +33% damage)
+* Fixed Ender Dragon respawning crystals even when crystal respawned should have been 0 (e.g. at difficulty 0)
+* Fixed log spam when dragon was attached to crystal
+* Updated things to modern tecnologies
+
 ## 3.5.3
 * Increased InsaneLib version required (~~1.4.2~~ -> 1.4.3)
   * Update InsaneLib to 1.4.4 if you want fewer particles from 3D Area Effect Clouds

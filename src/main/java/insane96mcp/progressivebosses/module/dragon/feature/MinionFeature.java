@@ -16,12 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -35,7 +30,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -59,8 +53,8 @@ public class MinionFeature extends Feature {
 	public int minionAtDifficulty = 1;
 	public int minCooldown = 1400;
 	public int maxCooldown = 2000;
-	public double cooldownReduction = 0.017d;
-	public double blindingChance = 0.015d;
+	public double cooldownReduction = 0.05d;
+	public double blindingChance = 0.04d;
 	public int blindingDuration = 150;
 	public boolean reducedDragonDamage = true;
 
@@ -101,6 +95,7 @@ public class MinionFeature extends Feature {
 			this.minCooldown = this.maxCooldown;
 		this.cooldownReduction = this.cooldownReductionConfig.get();
 		this.blindingChance = this.blindingChanceConfig.get();
+		this.blindingDuration = this.blindingDurationConfig.get();
 		this.reducedDragonDamage = this.reducedDragonDamageConfig.get();
 	}
 
@@ -255,22 +250,6 @@ public class MinionFeature extends Feature {
 	public void onBulletTick(ShulkerBullet shulkerBulletEntity) {
 		if (!shulkerBulletEntity.level.isClientSide && shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET)) {
 			((ServerLevel)shulkerBulletEntity.level).sendParticles(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getX(), shulkerBulletEntity.getY(), shulkerBulletEntity.getZ(), 1, 0d, 0d, 0d, 0d);
-		}
-	}
-
-	//TODO Not apply Levitation with Bliding Bullets
-	public void onBulletEntityHit(ShulkerBullet shulkerBulletEntity, EntityHitResult rayTraceResult) {
-		Entity entityHit = rayTraceResult.getEntity();
-		Entity entityOwner = shulkerBulletEntity.getOwner();
-		LivingEntity livingEntityOwner = entityOwner instanceof LivingEntity ? (LivingEntity)entityOwner : null;
-		boolean flag = entityHit.hurt(DamageSource.indirectMobAttack(shulkerBulletEntity, livingEntityOwner).setProjectile(), 4.0F);
-		if (flag) {
-			shulkerBulletEntity.doEnchantDamageEffects(livingEntityOwner, entityHit);
-			if (entityHit instanceof LivingEntity) {
-				((LivingEntity)entityHit).addEffect(new MobEffectInstance(MobEffects.LEVITATION, 200));
-				if (shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-					((LivingEntity)entityHit).addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 150));
-			}
 		}
 	}
 }
