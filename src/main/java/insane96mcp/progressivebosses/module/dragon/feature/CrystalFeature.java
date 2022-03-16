@@ -8,6 +8,7 @@ import insane96mcp.insanelib.utils.RandomHelper;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.Utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -140,11 +141,10 @@ public class CrystalFeature extends Feature {
 
 		dragonTags.putByte(Strings.Tags.CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
 
-		//TODO Change to make the decimal part count as chance (so 1.2 would make the Ender Dragon have 20% chance to respawn 2 crystals and 80% chance to respawn one)
-		int crystalsRespawned = (int) Mth.clamp(difficulty * this.crystalRespawnPerDifficulty, 0, SpikeFeature.NUMBER_OF_SPIKES);
-		if (crystalsRespawned == 0) {
+		double crystalsRespawned = Mth.clamp(difficulty * this.crystalRespawnPerDifficulty, 0, SpikeFeature.NUMBER_OF_SPIKES);
+		crystalsRespawned = Utils.getAmountWithDecimalChance(dragon.getRandom(), crystalsRespawned);
+		if (crystalsRespawned == 0d)
 			return;
-		}
 
 		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
 		CrystalRespawnPhase phase = (CrystalRespawnPhase) dragon.getPhaseManager().getCurrentPhase();
