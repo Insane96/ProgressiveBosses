@@ -11,10 +11,10 @@
     * When respawning crystals the Ender Dragon now takes a flat amount of bonus damage (~~+25%~+125% damage based off current health~~ -> +33% damage)
     * If the crystal to respawn is a decimal value (e.g. 0.6) the dragon now takes the decimal part as a chance to spawn a +1 crystal (so 60% chance to respawn 1 and 40% chance to fail the respawn)
   * Health
-    * Bonus health per difficulty reduced (~~103~~ -> 30 Health at max difficulty)
-    * Removed bonus health regen from crystals (~~0.15 hp/s per difficulty~~ -> REMOVED)
+    * Bonus health per difficulty reduced (~~103~~ -> 25 Health at max difficulty)
+    * Removed bonus health regen from crystals (~~0.15 hp/s per difficulty~~ -> REMOVED) (kept config option)
   * Resistances and Vulnerabilities
-    * Removed bonus damage when not in center (~~+1% current health as bonus indirect damage~~ -> REMOVED; ~~+3% current health as bonus direct damage~~ -> REMOVED)
+    * Removed bonus damage when not in center (~~+1% current health as bonus indirect damage~~ -> REMOVED; ~~+3% current health as bonus direct damage~~ -> REMOVED) (removed config option)
     * Greatly increased damage reduction when in the center (~~-3.5%~~ -> -8% damage taken when in the center; at max difficulty: -28% -> -64%)
   * Fixed Ender Dragon respawning crystals even when crystal respawned should have been 0 (e.g. at difficulty 0)
   * Fixed Ender Dragon shooting more than one fireball the first fight
