@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.5.5
+* Port to 1.18.2
+
 ## 3.5.4
 * This version changes most of the config values, so it's advised to delete the old one if you're using the default one
 * Ender Dragon

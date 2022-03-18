@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
+import com.mojang.logging.LogUtils;
 import insane96mcp.progressivebosses.module.Modules;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
@@ -7,8 +8,7 @@ import net.minecraft.world.entity.boss.enderdragon.phases.DragonChargePlayerPhas
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.phys.Vec3;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -21,7 +21,7 @@ public abstract class ChargingPlayerPhaseMixin extends AbstractDragonPhaseInstan
 
 	@Shadow
 	@Final
-	private static Logger LOGGER = LogManager.getLogger();
+	private static Logger LOGGER = LogUtils.getLogger();
 	@Shadow
 	private int timeSinceCharge;
 	@Shadow
