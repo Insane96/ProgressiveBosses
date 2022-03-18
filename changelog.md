@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.5.4
 * This version changes most of the config values, so it's advised to delete the old one if you're using the default one
 * Ender Dragon
   * Maximum Difficulty is now 8, so the hardest Ender Dragon is at difficulty 8 and no longer 24. All the values have been scaled accordingly to reach the same value as before at maximum difficulty, except the ones listed below. The values mentioned in the changelog are scaled accordingly to the new max difficulty
