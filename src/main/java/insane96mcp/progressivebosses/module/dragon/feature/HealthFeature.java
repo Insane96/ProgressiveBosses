@@ -24,7 +24,7 @@ public class HealthFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusRegenPerDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> bonusCrystalRegenConfig;
 
-	public double bonusPerDifficulty = 30d;
+	public double bonusPerDifficulty = 25d;
 	public double maxBonusRegen = 1.0d;
 	public double bonusRegenPerDifficulty = 0.125d;
 	public double bonusCrystalRegen = 0d;

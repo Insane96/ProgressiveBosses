@@ -59,7 +59,7 @@ public class CrystalFeature extends Feature {
 	public int moreCrystalsStep = 3;
 	public int moreCrystalsMax = 3;
 	public boolean enableCrystalRespawn = true;
-	public double crystalRespawnPerDifficulty = 0.5d;
+	public double crystalRespawnPerDifficulty = 0.375d;
 	public boolean explosionImmune = true;
 
 	public CrystalFeature(Module module) {
@@ -125,7 +125,7 @@ public class CrystalFeature extends Feature {
 			return;
 
 		float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
-		if (healthRatio >= 0.25d)
+		if (healthRatio >= 0.80d)
 			return;
 
 		byte crystalRespawn = dragonTags.getByte(Strings.Tags.CRYSTAL_RESPAWN);

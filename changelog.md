@@ -2,6 +2,9 @@
 
 ## Upcoming
 * Now working with InsaneLib 1.4.6
+* Reduced crystals respawned (4 -> 3 at max difficulty)
+* Fixed Ender Dragon not charging until she had health < 25%
+* Fixed Ender Dragon Bonus health begin too high (30 -> 25 bonus hp per difficulty)
 
 ## 3.5.5
 * Port to 1.18.2

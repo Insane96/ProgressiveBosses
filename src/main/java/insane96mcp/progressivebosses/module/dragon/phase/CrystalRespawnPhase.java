@@ -64,6 +64,8 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 				dragon.level.addFreshEntity(crystal);
 				CrystalFeature.generateCage(crystal.level, crystal.blockPosition());
 				spikesToRespawn.remove(0);
+				if (this.spikesToRespawn.size() == 0)
+				LogHelper.info("No more crystals to respawn left");
 				tick = 0;
 				respawning = false;
 				this.targetLocation = null;
