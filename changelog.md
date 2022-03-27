@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.5.6
 * Now working with InsaneLib 1.4.6
 * Reduced crystals respawned (4 -> 3 at max difficulty)
 * Fixed Ender Dragon not charging until she had health < 25%
