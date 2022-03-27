@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
-import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.progressivebosses.module.dragon.feature.CrystalFeature;
+import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
@@ -23,6 +23,8 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	private boolean respawning = false;
 	private final ArrayList<SpikeFeature.EndSpike> spikesToRespawn = new ArrayList<>();
 
+	private final int TICK_RESPAWN_CRYSTAL = 50;
+
 	public CrystalRespawnPhase(EnderDragon dragonIn) {
 		super(dragonIn);
 	}
@@ -32,9 +34,6 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	 * Called by dragon's onLivingUpdate. Only used when !worldObj.isClientSide.
 	 */
 	public void doServerTick() {
-		//CompoundTag dragonTags = this.dragon.getPersistentData();
-		//float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
-
 		if (this.targetLocation == null) {
 			if (spikesToRespawn.isEmpty()) {
 				dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
@@ -43,7 +42,6 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			}
 			this.targetLocation = new Vec3(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5.5, spikesToRespawn.get(0).getCenterZ() + 0.5);
 		}
-		int tickSpawnCystal = 50;
 		if (!respawning) {
 			double d0 = this.targetLocation.distanceToSqr(dragon.getX(), dragon.getY(), dragon.getZ());
 			if (d0 < 9d) { //sqrt = 3
@@ -56,7 +54,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			dragon.setDeltaMovement(Vec3.ZERO);
 			if (tick <= 25)
 				dragon.playSound(SoundEvents.ENDER_DRAGON_GROWL, 4F, 1.0F);
-			if (tick >= tickSpawnCystal) {
+			if (tick >= TICK_RESPAWN_CRYSTAL) {
 				double x = spikesToRespawn.get(0).getCenterX();
 				double y = spikesToRespawn.get(0).getHeight();
 				double z = spikesToRespawn.get(0).getCenterZ();

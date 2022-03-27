@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;

@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.5.6
+## Upcoming
 * Now working with InsaneLib 1.4.6
 
 ## 3.5.5
