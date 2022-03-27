@@ -4,7 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
-import insane96mcp.insanelib.utils.RandomHelper;
+import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Reflection;

@@ -4,7 +4,7 @@ import com.google.common.util.concurrent.AtomicDouble;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.utils.LogHelper;
+import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;

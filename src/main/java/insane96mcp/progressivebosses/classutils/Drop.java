@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses.classutils;
 
-import insane96mcp.insanelib.utils.LogHelper;
-import insane96mcp.insanelib.utils.RandomHelper;
+import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.setup.PBItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;

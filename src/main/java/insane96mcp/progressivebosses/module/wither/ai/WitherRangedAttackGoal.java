@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
-import insane96mcp.insanelib.utils.RandomHelper;
+import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.Entity;

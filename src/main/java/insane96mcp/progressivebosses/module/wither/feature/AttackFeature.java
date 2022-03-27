@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.utils.MCUtils;
+import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.network.MessageWitherSync;

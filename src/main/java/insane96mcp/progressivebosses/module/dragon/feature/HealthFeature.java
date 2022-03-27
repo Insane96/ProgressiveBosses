@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.utils.MCUtils;
+import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;

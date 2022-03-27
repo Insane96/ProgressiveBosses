@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.insanelib.utils.LogHelper;
+import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.progressivebosses.module.Modules;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
