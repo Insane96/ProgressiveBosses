@@ -1,9 +1,23 @@
 # Changelog
 
+## Upcoming
+* Wither
+  * Minion
+    * Increased cooldown (~~15-30~~ -> 20-35 seconds)
+    * Decreased cooldown reduction when Wither's below half health (~~-50%~~ -> -40% cooldown)
+    * Reduced max minions around the Wither (~~20~~ -> 18)
+  * Health
+    * Remove Bonus Health Regen when health between 45% and 50% (test how much )
+  * Attack
+    * Wither no longer charges creative players
+  * Rewards
+    * Increased shards dropped (~~1~~ -> 2 shards, ~~60%~~ -> 75% per difficulty)
+    * More rewards? Enchanted Golden Apple (11% at 6 and scaling 33% at 8). Ancient debris?
+
 ## 3.5.6
 * Now working with InsaneLib 1.4.6
 * Reduced crystals respawned (4 -> 3 at max difficulty)
-* Fixed Ender Dragon not charging until she had health < 25%
+* Fixed Ender Dragon not respawning crystals until she had health < 25%
 * Fixed Ender Dragon Bonus health begin too high (30 -> 25 bonus hp per difficulty)
 
 ## 3.5.5
