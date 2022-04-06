@@ -7,12 +7,15 @@
     * Decreased cooldown reduction when Wither's below half health (~~-50%~~ -> -40% cooldown)
     * Reduced max minions around the Wither (~~20~~ -> 18)
   * Health
-    * Remove Bonus Health Regen when health between 45% and 50% (test how much )
+    * Bonus Health Regen is disabled when health between 49% and 50%
   * Attack
     * Wither no longer charges creative players
   * Rewards
-    * Increased shards dropped (~~1~~ -> 2 shards, ~~60%~~ -> 75% per difficulty)
-    * More rewards? Enchanted Golden Apple (11% at 6 and scaling 33% at 8). Ancient debris?
+    * Added a new reward. 75% chance per difficulty to drop an Ancient Debris
+    * Increased shards dropped (~~1~~ -> 2 shards, ~~60%~~ -> 75% chance per difficulty)
+* Ender Dragon
+  * Rewards
+    * More rewards? Enchanted Golden Apple (11% at 6 and scaling 33% at 8).
 
 ## 3.5.6
 * Now working with InsaneLib 1.4.6

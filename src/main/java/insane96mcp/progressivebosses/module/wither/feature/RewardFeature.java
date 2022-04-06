@@ -23,7 +23,7 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> dropsListConfig;
 
-	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,2,1,0.75,PER_DIFFICULTY,FLAT");
+	private static final List<String> dropsListDefault = Arrays.asList("progressivebosses:nether_star_shard,2,1,0.75,PER_DIFFICULTY,FLAT", "minecraft:ancient_debris,2,1,0.75,PER_DIFFICULTY,FLAT");
 
 	public double bonusExperience = 7.5d;
 	public ArrayList<Drop> dropsList;
@@ -47,7 +47,7 @@ public class RewardFeature extends Feature {
 						chance_mode:
 						* FLAT: chance is the percentage chance for the item to drop if the difficulty criteria matches
 						* SCALING: each point of difficulty >= 'difficulty to drop the item' will be multiplied by the chance (e.g. chance 2% and difficulty 10, difficulty required 5, chance to drop the item will be chance * (difficulty - difficulty_required + 1) = 2% * (10 - 5 + 1) = 12%)
-						By default Withers have 90% chance per difficulty to drop 2 shard (So at difficulty 8, up to 16 shards can be dropped, 90% chance each 2).""")
+						By default Withers have 75% chance per difficulty to drop 2 shard (So at difficulty 8, up to 16 shards can be dropped, 75% chance each 2).""")
 				.defineList("Drops", dropsListDefault, o -> o instanceof String);
 		Config.builder.pop();
 	}

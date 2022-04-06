@@ -33,10 +33,13 @@ public class HealthFeature extends Feature {
 				.comment("Increase Wither's Health by this value per difficulty")
 				.defineInRange("Health Bonus per Difficulty", bonusPerDifficulty, 0.0, Double.MAX_VALUE);
 		maximumBonusRegenConfig = Config.builder
-				.comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the natural regeneration of the Wither (1 Health per Second).")
+				.comment("""
+						Maximum bonus regeneration per second given by "Bonus Regeneration per Difficulty".
+						Set to 0 to disable bonus health regeneration. This doesn't affect the natural regeneration of the Wither (1 Health per Second).
+						Note that the health regen is disabled when Wither's health is between 49% and 50% to prevent making it impossible to approach when half health.""")
 				.defineInRange("Maximum Bonus Regeneration", maxBonusRegen, 0.0, Double.MAX_VALUE);
 		bonusRegenPerDifficultyConfig = Config.builder
-				.comment("How many half hearts will the Wither regen more per difficulty. This doesn't affect the natural regeneration of the Wither (1 Health per Second). (E.g. By default, with 6 Withers spawned, the Wither will heal 1.3 health per second).")
+				.comment("How many half hearts will the Wither regen per difficulty. This is added to the natural regeneration of the Wither (1 Health per Second).")
 				.defineInRange("Bonus Regeneration per Difficulty", bonusRegenPerDifficulty, 0.0, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
@@ -92,7 +95,11 @@ public class HealthFeature extends Feature {
 
 		//fixInvulBossBar(wither);
 
-		if (wither.getInvulnerableTicks() > 0)
+		if (wither.getInvulnerableTicks() > 0 || !wither.isAlive())
+			return;
+
+		//Disable bonus health regen when health between 49% and 50%
+		if (wither.getHealth() / wither.getMaxHealth() > 0.49f && wither.getHealth() / wither.getMaxHealth() < 0.50f)
 			return;
 
 		CompoundTag tags = wither.getPersistentData();
@@ -100,9 +107,6 @@ public class HealthFeature extends Feature {
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (difficulty <= 0)
-			return;
-
-		if (wither.getHealth() <= 0f)
 			return;
 
 		float heal = (float) Math.min(difficulty * this.bonusRegenPerDifficulty, this.maxBonusRegen);
