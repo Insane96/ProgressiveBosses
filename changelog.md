@@ -15,7 +15,7 @@
     * Increased shards dropped (~~1~~ -> 2 shards, ~~60%~~ -> 75% chance per difficulty)
 * Ender Dragon
   * Rewards
-    * More rewards? Enchanted Golden Apple (11% at 6 and scaling 33% at 8).
+    * Added a new reward. 10%/20%/30%/40% chance to drop an Enchanted Golden Apple at difficulties 5/6/7/8
 
 ## 3.5.6
 * Now working with InsaneLib 1.4.6

@@ -17,6 +17,7 @@ import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Label(name = "Rewards", description = "Bonus Experience and Dragon Egg per player")
@@ -25,6 +26,8 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> dragonEggPerPlayerConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> dropsListConfig;
+
+	private static final List<String> dropsListDefault = Arrays.asList("minecraft:enchanted_golden_apple,1,5,0.10,MINIMUM,SCALING");
 
 	public double bonusExperience = 4.5d;
 	public boolean dragonEggPerPlayer = true;
@@ -48,10 +51,10 @@ public class RewardFeature extends Feature {
 						chance: chance for the drop to happen, between 0 and 1
 						difficulty_mode:
 						* MINIMUM: will try to drop the item when the difficulty matches or is higher
-						* PER_DIFFICULTY: will try to drop the item once per difficulty (e.g. at difficulty 10, difficulty required 3, there is the chance to drop the item, trying 7 times)
+						* PER_DIFFICULTY: will try to drop the item once per difficulty (e.g. at difficulty 10, difficulty required 3, the chance to drop the item is tried 7 times)
 						chance_mode:
 						* FLAT: chance is the percentage chance for the item to drop if the difficulty criteria matches
-						* SCALING: each point of difficulty >= 'difficulty to drop the item' will be multiplied by the chance (e.g. chance 2% and difficulty 10, difficulty required 5, chance to drop the item will be chance * (difficulty - difficulty_required + 1) = 2% * (10 - 5 + 1) = 12%)""")
+						* SCALING: each point of difficulty >= 'difficulty to drop the item' will be multiplied by the chance (e.g. difficulty 10, chance 2% and difficulty required 5, chance to drop the item will be chance * (difficulty - difficulty_required + 1) = 2% * (10 - 5 + 1) = 12%)""")
 				.defineList("Drops", ArrayList::new, o -> o instanceof String);
 		Config.builder.pop();
 	}
