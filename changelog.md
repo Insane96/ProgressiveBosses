@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.5.7
 * Wither
   * Minion
     * Increased cooldown (~~15-30~~ -> 20-35 seconds)
@@ -11,7 +11,7 @@
   * Attack
     * Wither no longer charges creative players
   * Rewards
-    * Added a new reward. 75% chance per difficulty to drop an Ancient Debris
+    * Added a new reward. 75% chance per difficulty to drop 2 Ancient Debris
     * Increased shards dropped (~~1~~ -> 2 shards, ~~60%~~ -> 75% chance per difficulty)
 * Ender Dragon
   * Rewards
