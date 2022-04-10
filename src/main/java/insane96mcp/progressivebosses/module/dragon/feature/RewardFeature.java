@@ -55,7 +55,7 @@ public class RewardFeature extends Feature {
 						chance_mode:
 						* FLAT: chance is the percentage chance for the item to drop if the difficulty criteria matches
 						* SCALING: each point of difficulty >= 'difficulty to drop the item' will be multiplied by the chance (e.g. difficulty 10, chance 2% and difficulty required 5, chance to drop the item will be chance * (difficulty - difficulty_required + 1) = 2% * (10 - 5 + 1) = 12%)""")
-				.defineList("Drops", ArrayList::new, o -> o instanceof String);
+				.defineList("Drops", dropsListDefault, o -> o instanceof String);
 		Config.builder.pop();
 	}
 

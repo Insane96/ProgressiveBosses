@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Fixed missing Enchanted Golden Apple drop for Ender Dragon
+
 ## 3.5.7
 * Wither
   * Minion
