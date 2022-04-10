@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Fixed missing Enchanted Golden Apple drop for Ender Dragon
+* Fixed Wither Minions dropping their equipment
 
 ## 3.5.7
 * Wither

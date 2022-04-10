@@ -377,6 +377,7 @@ public class MinionFeature extends Feature {
 		witherMinion.setPos(pos.x, pos.y, pos.z);
 		//witherMinion.setCustomName(new TranslationTextComponent(Strings.Translatable.WITHER_MINION));
 		setEquipment(witherMinion, difficulty, isCharged);
+		witherMinion.setDropChance(EquipmentSlot.MAINHAND, -0.04f);
 		//witherMinion.deathLootTable = LootTables.EMPTY;
 		witherMinion.setPersistenceRequired();
 
