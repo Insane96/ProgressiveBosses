@@ -1,6 +1,7 @@
 # Changelog
 
 ## Upcoming
+* Increased chance to summon a Blinding Minion (~~4%~~ -> 5% per difficulty)
 * Fixed missing Enchanted Golden Apple drop for Ender Dragon
 * Fixed Wither Minions dropping their equipment
 

@@ -54,7 +54,7 @@ public class MinionFeature extends Feature {
 	public int minCooldown = 1400;
 	public int maxCooldown = 2000;
 	public double cooldownReduction = 0.05d;
-	public double blindingChance = 0.04d;
+	public double blindingChance = 0.05d;
 	public int blindingDuration = 150;
 	public boolean reducedDragonDamage = true;
 
