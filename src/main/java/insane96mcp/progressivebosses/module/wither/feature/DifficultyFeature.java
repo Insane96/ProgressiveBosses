@@ -4,10 +4,10 @@ import com.google.common.util.concurrent.AtomicDouble;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -58,7 +58,7 @@ public class DifficultyFeature extends Feature {
 				.define("Sum Spawned Wither Difficulty", sumSpawnedWitherDifficulty);
 		bonusDifficultyPerPlayerConfig = Config.builder
 				.comment("Percentage bonus difficulty added to the Wither when more than one player is present. Each player past the first one will add this percentage to the difficulty.")
-				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, 24d);
+				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, Double.MAX_VALUE);
 		maxDifficultyConfig = Config.builder
 				.comment("The Maximum difficulty (times spawned) reachable by Wither.")
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
@@ -126,7 +126,7 @@ public class DifficultyFeature extends Feature {
 				witherDifficulty.addAndGet(difficulty.getSpawnedWithers());
 				if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
 					return;
-				if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
+				if (difficulty.getSpawnedWithers() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
 					player.sendMessage(new TranslatableComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.NIL_UUID);
 				difficulty.addSpawnedWithers(1);
 			});

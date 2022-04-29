@@ -48,7 +48,7 @@ public class DifficultyFeature extends Feature {
 				.define("Sum Killed Dragons Difficulty", sumKilledDragonDifficulty);
 		bonusDifficultyPerPlayerConfig = Config.builder
 				.comment("Percentage bonus difficulty added to the Dragon when more than one player is present. Each player past the first one will add this percentage to the difficulty.")
-				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, 1d);
+				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, Double.MAX_VALUE);
 		maxDifficultyConfig = Config.builder
 				.comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 24 because it's the last spawning end gate.")
 				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
