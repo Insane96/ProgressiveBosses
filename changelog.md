@@ -2,6 +2,8 @@
 
 ## Upcoming
 * Increased chance to summon a Blinding Minion (~~4%~~ -> 5% per difficulty)
+* Reverted Wither Minion cooldown reduction (~~40%~~ -> 50% cooldown reduction on wither half health)
+* Increased Wither Minion cooldown (~~20-35~~ -> 20-40 seconds)
 * Fixed missing Enchanted Golden Apple drop for Ender Dragon
 * Fixed Wither Minions dropping their equipment
 
