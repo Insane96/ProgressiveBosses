@@ -149,10 +149,8 @@ public class DifficultyFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ServerPlayer))
+		if (!(event.getEntity() instanceof ServerPlayer player))
 			return;
-
-		ServerPlayer player = (ServerPlayer) event.getEntity();
 
 		player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
 			if (difficulty.getSpawnedWithers() < this.startingDifficulty) {
