@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses.module.dragon.entity;
 
 import insane96mcp.progressivebosses.module.Modules;
-import insane96mcp.progressivebosses.module.dragon.ai.PBNearestAttackableTargetGoal;
+import insane96mcp.progressivebosses.module.dragon.ai.XRayNearestAttackableTarget;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -29,7 +29,7 @@ public class Larva extends Monster {
 		this.goalSelector.addGoal(3, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 		this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
 		this.goalSelector.addGoal(8, new RandomLookAroundGoal(this));
-		this.targetSelector.addGoal(1, new PBNearestAttackableTargetGoal(this));
+		this.targetSelector.addGoal(1, new XRayNearestAttackableTarget(this));
 	}
 
 	protected float getStandingEyeHeight(Pose p_32604_, EntityDimensions p_32605_) {

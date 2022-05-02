@@ -6,7 +6,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
-import insane96mcp.progressivebosses.module.dragon.ai.PBNearestAttackableTargetGoal;
+import insane96mcp.progressivebosses.module.dragon.ai.XRayNearestAttackableTarget;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DragonMinionHelper;
@@ -202,12 +202,12 @@ public class MinionFeature extends Feature {
 		});
 		toRemove.forEach(shulker.targetSelector::removeGoal);
 
-		shulker.targetSelector.addGoal(2, new PBNearestAttackableTargetGoal(shulker));
+		shulker.targetSelector.addGoal(2, new XRayNearestAttackableTarget(shulker));
 		shulker.targetSelector.addGoal(1, new HurtByTargetGoal(shulker, Shulker.class, EnderDragon.class));
 	}
 
 	public Shulker summonMinion(Level world, Vec3 pos, float difficulty) {
-		Shulker shulker = new Shulker(EntityType.SHULKER, world);
+		Shulker shulker = EntityType.SHULKER.create(world);
 		CompoundTag minionTags = shulker.getPersistentData();
 		minionTags.putBoolean(Strings.Tags.DRAGON_MINION, true);
 
