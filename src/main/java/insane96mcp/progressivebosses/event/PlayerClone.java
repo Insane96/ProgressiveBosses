@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.events;
+package insane96mcp.progressivebosses.event;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.capability.Difficulty;
