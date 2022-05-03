@@ -17,12 +17,10 @@
             "conditions": {
                 "entity": [
                     {
-                        "condition": "minecraft:entity_properties",
+                        "condition": "progressivebosses:difficulty",
                         "entity": "this",
-                        "predicate": {
-                            "type": "minecraft:wither",
-                            "nbt": "{ForgeData:{\"progressivebosses:difficulty\":8}}"
-                        }
+                        "boss": "wither",
+                        "difficulty": 8
                     }
                 ]
             }
