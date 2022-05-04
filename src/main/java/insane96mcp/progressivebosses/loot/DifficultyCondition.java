@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.loot;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSyntaxException;
 import insane96mcp.progressivebosses.setup.PBLootConditions;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.util.GsonHelper;
@@ -62,6 +63,9 @@ public class DifficultyCondition implements LootItemCondition {
         @Override
         public DifficultyCondition deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
             IntRange intRange = GsonHelper.getAsObject(jsonObject, "difficulty", jsonDeserializationContext, IntRange.class);
+            String boss = GsonHelper.getAsString(jsonObject, "boss");
+            if (!"wither".equals(boss) && !"dragon".equals(boss))
+                throw new JsonSyntaxException("boss string is required to be either \"wither\" or \"dragon\"");
             return new DifficultyCondition(GsonHelper.getAsObject(jsonObject, "entity", jsonDeserializationContext, LootContext.EntityTarget.class), GsonHelper.getAsString(jsonObject, "boss"), intRange);
         }
     }
