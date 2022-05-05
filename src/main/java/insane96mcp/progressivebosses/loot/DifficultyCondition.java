@@ -4,7 +4,7 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
-import insane96mcp.progressivebosses.setup.PBLootConditions;
+import insane96mcp.progressivebosses.setup.PBLoot;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
@@ -30,7 +30,7 @@ public class DifficultyCondition implements LootItemCondition {
 
     @Override
     public LootItemConditionType getType() {
-        return PBLootConditions.DIFFICULTY.get();
+        return PBLoot.DIFFICULTY.get();
     }
 
     @Override

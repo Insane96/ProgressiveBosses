@@ -35,7 +35,8 @@ public class ProgressiveBosses {
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		PBItems.ITEMS.register(modEventBus);
 		PBEntities.ENTITIES.register(modEventBus);
-		PBLootConditions.LOOT_CONDITIONS.register(modEventBus);
+		PBLoot.LOOT_CONDITIONS.register(modEventBus);
+		PBLoot.LOOT_FUNCTION.register(modEventBus);
 		Reflection.init();
 
 		CrystalRespawnPhase.init();
