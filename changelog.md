@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.5.9
 * Wither
   * Attack
     * Removed the 3 skull rare attack
