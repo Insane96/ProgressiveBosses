@@ -110,12 +110,7 @@ public class WitherRangedAttackGoal extends Goal {
 		else if (--this.attackTime <= 0) {
 			if (!canSee)
 				return;
-			if (RandomHelper.getFloat(this.wither.getRandom(), 0f, 1f) < .1f)
-				for (int h = 0; h < 3; h++) {
-					this.wither.performRangedAttack(h, this.target.getX() + RandomHelper.getDouble(this.wither.getRandom(), -1.25d, 1.25d), this.target.getY() + RandomHelper.getDouble(this.wither.getRandom(), -1.25d, 1.25d) + (double)this.target.getEyeHeight() * 0.5D, target.getZ() + RandomHelper.getDouble(this.wither.getRandom(), -1.25d, 1.25d), RandomHelper.getDouble(this.wither.getRandom(), 0d, 1d) < 0.001F);
-				}
-			else
-				this.wither.performRangedAttack(0, this.target.getX(), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D, target.getZ(), RandomHelper.getDouble(this.wither.getRandom(), 0d, 1d) < 0.001F);
+			this.wither.performRangedAttack(0, this.target.getX(), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D, target.getZ(), RandomHelper.getDouble(this.wither.getRandom(), 0d, 1d) < 0.001F);
 			this.attackTime = this.attackInterval;
 
 			if (this.increaseASOnNear) {
