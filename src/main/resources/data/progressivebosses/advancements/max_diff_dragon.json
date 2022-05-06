@@ -19,8 +19,14 @@
                     {
                         "condition": "progressivebosses:difficulty",
                         "entity": "this",
-                        "boss": "dragon",
                         "difficulty": 8
+                    },
+                    {
+                        "condition": "minecraft:entity_properties",
+                        "entity": "this",
+                        "predicate": {
+                            "type": "minecraft:ender_dragon"
+                        }
                     }
                 ]
             }
