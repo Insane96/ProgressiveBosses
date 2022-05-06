@@ -1,0 +1,73 @@
+{
+    "type": "minecraft:entity",
+    "pools": [
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "progressivebosses:elder_guardian_spike"
+                }
+            ]
+        },
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:wet_sponge",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:wet_sponge",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": 2
+                        }
+                    ]
+                }
+            ],
+            "conditions": [
+                {
+                    "condition": "progressivebosses:difficulty",
+                    "difficulty": 1,
+                    "entity": "this"
+                }
+            ]
+        },
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:wet_sponge",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": 2
+                        }
+                    ]
+                }
+            ],
+            "conditions": [
+                {
+                    "condition": "progressivebosses:difficulty",
+                    "difficulty": 2,
+                    "entity": "this"
+                }
+            ]
+        }
+    ]
+}

@@ -68,14 +68,12 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardian))
+		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
-		ElderGuardian elderGuardian = (ElderGuardian) event.getEntity();
+		CompoundTag nbt = elderGuardian.getPersistentData();
 
-		CompoundTag witherTags = elderGuardian.getPersistentData();
-
-		witherTags.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, this.baseCooldown);
+		nbt.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, this.baseCooldown);
 	}
 
 	@SubscribeEvent
@@ -101,7 +99,8 @@ public class MinionFeature extends Feature {
 			elderGuardianTags.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, cooldown - 1);
 			return;
 		}
-		elderGuardianTags.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, this.baseCooldown - (this.cooldownReductionPerMissingGuardian * BaseFeature.getDeadElderGuardians(elderGuardian)));
+		cooldown = this.baseCooldown - (this.cooldownReductionPerMissingGuardian * elderGuardian.getPersistentData().getInt(Strings.Tags.DIFFICULTY));
+		elderGuardianTags.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, cooldown);
 
 		//If there is no player in a radius from the elderGuardian, don't spawn minions
 		int radius = 24;

@@ -64,10 +64,8 @@ public class HealthFeature extends Feature {
 			return;
 
 		CompoundTag nbt = elderGuardian.getPersistentData();
-		if (nbt.getBoolean(Strings.Tags.DIFFICULTY))
+		if (nbt.contains(Strings.Tags.DIFFICULTY))
 			return;
-
-		nbt.putBoolean(Strings.Tags.DIFFICULTY, true);
 
 		if (this.bonusHealth > 0d) {
 			if (elderGuardian.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)

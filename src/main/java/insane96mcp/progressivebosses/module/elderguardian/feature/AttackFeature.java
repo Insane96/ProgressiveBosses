@@ -4,6 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.setup.Config;
+import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -51,7 +52,7 @@ public class AttackFeature extends Feature {
 		if (!(event.getSource().getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
-		float bonusDamage = (float) (this.bonusDamage * BaseFeature.getDeadElderGuardians(elderGuardian));
+		float bonusDamage = (float) (this.bonusDamage * elderGuardian.getPersistentData().getInt(Strings.Tags.DIFFICULTY));
 
 		event.setAmount(event.getAmount() * (1f + bonusDamage));
 	}

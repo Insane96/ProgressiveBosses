@@ -4,6 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.setup.Config;
+import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -42,7 +43,7 @@ public class ResistancesFeature extends Feature {
 		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
-		float damageReduction = (float) (BaseFeature.getDeadElderGuardians(elderGuardian) * this.resistancePerElderGuardianDefeated);
+		float damageReduction = (float) (this.resistancePerElderGuardianDefeated * elderGuardian.getPersistentData().getInt(Strings.Tags.DIFFICULTY));
 
 		event.setAmount(event.getAmount() * (1f - damageReduction));
 	}
