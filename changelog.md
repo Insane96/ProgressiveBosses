@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Ender Dragon difficulty now applies in any dimension (fixes incompatiblity with https://www.planetminecraft.com/data-pack/nullscape/)
+
 ## 3.5.9
 * Wither
   * Attack

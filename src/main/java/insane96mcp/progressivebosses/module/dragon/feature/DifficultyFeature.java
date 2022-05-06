@@ -14,7 +14,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -79,8 +78,9 @@ public class DifficultyFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!event.getWorld().dimension().location().equals(DimensionType.END_LOCATION.location()))
-			return;
+		//What could go wrong?
+		//if (!event.getWorld().dimension().location().equals(DimensionType.END_LOCATION.location()))
+		//	return;
 
 		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
