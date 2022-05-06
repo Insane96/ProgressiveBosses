@@ -142,7 +142,7 @@ public class WitherMinion extends AbstractSkeleton {
 				.add(Attributes.ATTACK_DAMAGE, 3.0d)
 				.add(Attributes.MAX_HEALTH, 20.0d)
 				.add(Attributes.FOLLOW_RANGE, 40.0d)
-				.add(Attributes.MOVEMENT_SPEED, 0.2d)
+				.add(Attributes.MOVEMENT_SPEED, 0.25d)
 				.add(Attributes.ATTACK_KNOCKBACK, 1.5d);
 	}
 }

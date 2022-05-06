@@ -73,7 +73,7 @@ public class MinionFeature extends Feature {
 	public boolean hasSword = true;
 	public double preHalfHealthBowChance = 0.6d;
 	public double halfHealthBowChance = 0.08d;
-	public double powerSharpnessChance = 0.6d;
+	public double powerSharpnessChance = 0.60d;
 	public double punchKnockbackChance = 0.3d;
 
 	public MinionFeature(Module module) {

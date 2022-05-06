@@ -112,7 +112,7 @@ public class WitherChargeAttackGoal extends Goal {
 				return;
 			}
 			//So it goes faster and faster
-			double mult = 50d / chargeTick;
+			double mult = 60d / chargeTick;
 			Vec3 diff = this.targetPos.subtract(this.wither.position()).normalize().multiply(mult, mult, mult);
 			this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
 			this.wither.getLookControl().setLookAt(this.targetPos);

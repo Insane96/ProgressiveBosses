@@ -3,18 +3,13 @@
 ## Upcoming
 * Wither
   * Attack
-    * Reduced bonus damage per difficulty (~~12%~~ -> 11%)
-    * Charge speed is slightly slower
     * Removed the 3 skull rare attack
-  * Minion
-    * Reduced base speed (~~0.25~~ -> 0.20)
-    * Reduced chance for power/sharpness (60% -> 45%)
 * Added advancements for killing a maximum difficulty Wither and Elder Dragon
 * Bosses loot is now defined in loot tables (progressivebosses:entities is injected into vanilla loot table)
   * This means that the drops are no longer defined in the config file, the option is gone
 
 ## 3.5.8
-* Increased chance to summon a Blinding Minion (~~4%~~ -> 5% per difficulty)
+* Increased chance to summon a Blinding Dragon Minion (~~4%~~ -> 5% per difficulty)
 * Reverted Wither Minion cooldown reduction (~~40%~~ -> 50% cooldown reduction on wither half health)
 * Increased Wither Minion cooldown (~~20-35~~ -> 20-40 seconds)
 * Fixed missing Enchanted Golden Apple drop for Ender Dragon
