@@ -4,7 +4,12 @@
 * Wither
   * Attack
     * Removed the 3 skull rare attack
-* Added advancements for killing a maximum difficulty Wither and Elder Dragon
+    * Barrage attack is slower (~~6.67~~ -> 5 skulls/second)
+    * Charging texture is slightly darker
+  * Minions
+    * Wither minions no longer apply Wither on attack
+    * Fixed not having damage reduction against Wither
+* Added advancements for killing a maximum difficulty Wither and Ender Dragon
 * Bosses loot is now defined in loot tables (progressivebosses:entities is injected into vanilla loot table)
   * This means that the drops are no longer defined in the config file, the option is gone
 

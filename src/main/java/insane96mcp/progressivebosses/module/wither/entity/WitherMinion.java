@@ -20,17 +20,12 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Predicate;
 
 public class WitherMinion extends AbstractSkeleton {
@@ -109,28 +104,13 @@ public class WitherMinion extends AbstractSkeleton {
 	}
 
 	public boolean hurt(DamageSource source, float amount) {
-		if (source.getEntity() instanceof WitherMinion)
+		if (source.getEntity() instanceof WitherMinion || source.getEntity() instanceof WitherBoss)
 			amount *= 0.2f;
 		return !this.isInvulnerableTo(source) && super.hurt(source, amount);
 	}
 
 	public boolean canBeAffected(MobEffectInstance potioneffectIn) {
 		return potioneffectIn.getEffect() != MobEffects.WITHER && super.canBeAffected(potioneffectIn);
-	}
-
-	private static final List<MobEffectInstance> ARROW_EFFECTS = Arrays.asList(new MobEffectInstance(MobEffects.WITHER, 200));
-
-	/**
-	 * Fires an arrow
-	 */
-	protected AbstractArrow getArrow(ItemStack arrowStack, float distanceFactor) {
-		AbstractArrow abstractarrowentity = super.getArrow(arrowStack, distanceFactor);
-		if (abstractarrowentity instanceof Arrow) {
-			ItemStack witherArrow = new ItemStack(Items.TIPPED_ARROW, 1);
-			PotionUtils.setCustomEffects(witherArrow, ARROW_EFFECTS);
-			((Arrow)abstractarrowentity).setEffectsFromItem(witherArrow);
-		}
-		return abstractarrowentity;
 	}
 
 	//Do not generate Wither Roses
