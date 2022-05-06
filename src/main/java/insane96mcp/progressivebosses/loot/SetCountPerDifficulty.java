@@ -33,10 +33,6 @@ public class SetCountPerDifficulty extends LootItemConditionalFunction {
         this.difficultyModifier = difficultyModifier;
     }
 
-    SetCountPerDifficulty(LootItemCondition[] lootItemConditions, NumberProvider count) {
-        this(lootItemConditions, count, 1f, 0);
-    }
-
     public LootItemFunctionType getType() {
         return PBLoot.SET_COUNT_PER_DIFFICULTY.get();
     }
@@ -67,6 +63,14 @@ public class SetCountPerDifficulty extends LootItemConditionalFunction {
         return itemStack;
     }
 
+    public static LootItemConditionalFunction.Builder<?> setCountPerDifficulty(NumberProvider count, float perDifficultyChance, int difficultyModifier) {
+        return simpleBuilder((lootItemConditions) -> new SetCountPerDifficulty(lootItemConditions, count, perDifficultyChance, difficultyModifier));
+    }
+
+    public static LootItemConditionalFunction.Builder<?> setCountPerDifficulty(NumberProvider count, float perDifficultyChance) {
+        return simpleBuilder((lootItemConditions) -> new SetCountPerDifficulty(lootItemConditions, count, perDifficultyChance, 0));
+    }
+
     public static class Serializer extends LootItemConditionalFunction.Serializer<SetCountPerDifficulty> {
         public void serialize(JsonObject jsonObject, SetCountPerDifficulty setCountPerDifficulty, JsonSerializationContext jsonSerializationContext) {
             super.serialize(jsonObject, setCountPerDifficulty, jsonSerializationContext);
@@ -77,7 +81,7 @@ public class SetCountPerDifficulty extends LootItemConditionalFunction {
 
         public SetCountPerDifficulty deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootItemCondition[] lootItemConditions) {
             NumberProvider numberprovider = GsonHelper.getAsObject(jsonObject, "count", jsonDeserializationContext, NumberProvider.class);
-            return new SetCountPerDifficulty(lootItemConditions, numberprovider, Mth.clamp(GsonHelper.getAsFloat(jsonObject, "per_difficulty_chance", 1f), 0f, 1f), GsonHelper.getAsInt(jsonObject, "difficulty_modifier", 0));
+            return new SetCountPerDifficulty(lootItemConditions, numberprovider, Mth.clamp(GsonHelper.getAsFloat(jsonObject, "per_difficulty_chance"), 0f, 1f), GsonHelper.getAsInt(jsonObject, "difficulty_modifier", 0));
         }
     }
 }

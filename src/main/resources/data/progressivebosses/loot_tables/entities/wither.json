@@ -3,7 +3,6 @@
     "pools": [
         {
             "rolls": 1,
-            "bonus_rolls": 0,
             "entries": [
                 {
                     "type": "minecraft:item",
@@ -15,7 +14,12 @@
                             "per_difficulty_chance": 0.75
                         }
                     ]
-                },
+                }
+            ]
+        },
+        {
+            "rolls": 1,
+            "entries": [
                 {
                     "type": "minecraft:item",
                     "name": "minecraft:ancient_debris",

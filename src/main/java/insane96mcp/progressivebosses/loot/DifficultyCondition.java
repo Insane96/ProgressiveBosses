@@ -51,8 +51,11 @@ public class DifficultyCondition implements LootItemCondition {
         return this.difficulty.test(lootContext, (int) difficulty);
     }
 
-    public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<DifficultyCondition> {
+    public static LootItemCondition.Builder withDifficulty(LootContext.EntityTarget entityTarget, String boss, IntRange difficulty) {
+        return () -> new DifficultyCondition(entityTarget, boss, difficulty);
+    }
 
+    public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<DifficultyCondition> {
         @Override
         public void serialize(JsonObject jsonObject, DifficultyCondition difficultyCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.add("entity", jsonSerializationContext.serialize(difficultyCondition.entityTarget));

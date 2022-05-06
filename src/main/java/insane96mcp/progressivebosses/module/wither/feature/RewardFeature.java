@@ -3,12 +3,18 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.classutils.Drop;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.entries.LootTableReference;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -92,8 +98,21 @@ public class RewardFeature extends Feature {
 
 		CompoundTag tags = wither.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
-		for (Drop drop : this.dropsList) {
-			drop.drop(wither.level, wither.position(), difficulty);
-		}
+		//for (Drop drop : this.dropsList) {
+		//	drop.drop(wither.level, wither.position(), difficulty);
+		//}
+	}
+
+	@SubscribeEvent
+	public void onLootTableLoad(LootTableLoadEvent event) {
+		if (!this.isEnabled())
+			return;
+
+		ResourceLocation name = event.getName();
+		if (!"minecraft".equals(name.getNamespace()) || !"entities/wither".equals(name.getPath()))
+			return;
+
+		LootPool pool = new LootPool.Builder().setRolls(ConstantValue.exactly(1)).add(LootTableReference.lootTableReference(new ResourceLocation(ProgressiveBosses.MOD_ID, "entities/wither"))).build();
+		event.getTable().addPool(pool);
 	}
 }

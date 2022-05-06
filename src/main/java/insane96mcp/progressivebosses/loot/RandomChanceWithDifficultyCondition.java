@@ -37,6 +37,14 @@ public class RandomChanceWithDifficultyCondition implements LootItemCondition {
         return lootContext.getRandom().nextFloat() < this.chance * (difficulty + this.difficultyModifier);
     }
 
+    public static LootItemCondition.Builder randomChanceWithDifficulty(float chance, int difficultyModifier) {
+        return () -> new RandomChanceWithDifficultyCondition(chance, difficultyModifier);
+    }
+
+    public static LootItemCondition.Builder randomChanceWithDifficulty(float chance) {
+        return () -> new RandomChanceWithDifficultyCondition(chance, 0);
+    }
+
     public static class Serializer implements net.minecraft.world.level.storage.loot.Serializer<RandomChanceWithDifficultyCondition> {
         public void serialize(JsonObject jsonObject, RandomChanceWithDifficultyCondition randomChanceWithDifficultyCondition, JsonSerializationContext jsonSerializationContext) {
             jsonObject.addProperty("chance", randomChanceWithDifficultyCondition.chance);
