@@ -46,7 +46,7 @@ public class AttackFeature extends Feature {
 
 	public boolean applyToVanillaWither = true;
 	public double maxChargeAttackChance = 0.06d;
-	public double increasedDamage = 0.12d;
+	public double increasedDamage = 0.11d;
 	//Barrage Attack
 	public double maxBarrageChancePerDiff = 0.011d;
 	public int minBarrageDuration = 20;
