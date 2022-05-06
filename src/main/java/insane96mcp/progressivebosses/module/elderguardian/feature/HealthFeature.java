@@ -60,10 +60,9 @@ public class HealthFeature extends Feature {
 		if (this.bonusHealth == 0d && this.absorptionHealth == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardian))
+		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
-		ElderGuardian elderGuardian = (ElderGuardian) event.getEntity();
 		CompoundTag nbt = elderGuardian.getPersistentData();
 		if (nbt.getBoolean(Strings.Tags.DIFFICULTY))
 			return;
@@ -88,13 +87,11 @@ public class HealthFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardian))
+		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
 		if (this.healthRegen == 0d)
 			return;
-
-		ElderGuardian elderGuardian = (ElderGuardian) event.getEntity();
 
 		if (!elderGuardian.isAlive())
 			return;

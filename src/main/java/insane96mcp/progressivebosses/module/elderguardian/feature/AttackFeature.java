@@ -48,10 +48,8 @@ public class AttackFeature extends Feature {
 		if (this.bonusDamage == 0d)
 			return;
 
-		if (!(event.getSource().getEntity() instanceof ElderGuardian))
+		if (!(event.getSource().getEntity() instanceof ElderGuardian elderGuardian))
 			return;
-
-		ElderGuardian elderGuardian = (ElderGuardian) event.getSource().getEntity();
 
 		float bonusDamage = (float) (this.bonusDamage * BaseFeature.getDeadElderGuardians(elderGuardian));
 

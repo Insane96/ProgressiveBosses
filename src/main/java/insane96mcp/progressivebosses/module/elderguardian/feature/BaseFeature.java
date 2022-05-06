@@ -92,10 +92,8 @@ public class BaseFeature extends Feature {
 		if (!this.adventure)
 			return;
 
-		if (!(event.getEntity() instanceof ServerPlayer))
+		if (!(event.getEntity() instanceof ServerPlayer serverPlayer))
 			return;
-
-		ServerPlayer serverPlayer = (ServerPlayer) event.getEntity();
 
 		CompoundTag nbt = serverPlayer.getPersistentData();
 		boolean previouslyNearElderGuardian = nbt.getBoolean(Strings.Tags.PREVIOUSLY_NEAR_ELDER_GUARDIAN);
@@ -132,10 +130,8 @@ public class BaseFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardian))
+		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
-
-		ElderGuardian elderGuardian = (ElderGuardian) event.getEntity();
 
 		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardian).size();
 		if (elderGuardiansNearby == 0)

@@ -39,10 +39,8 @@ public class ResistancesFeature extends Feature {
 		if (this.resistancePerElderGuardianDefeated == 0d)
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardian))
+		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
-
-		ElderGuardian elderGuardian = (ElderGuardian) event.getEntity();
 
 		float damageReduction = (float) (BaseFeature.getDeadElderGuardians(elderGuardian) * this.resistancePerElderGuardianDefeated);
 
