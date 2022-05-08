@@ -29,7 +29,9 @@ public class RandomChanceWithDifficultyCondition implements LootItemCondition {
     public boolean test(LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
 
-        Mob mob = (Mob) entity;
+        if (!(entity instanceof Mob mob))
+            return false;
+
         if (!mob.getPersistentData().contains(Strings.Tags.DIFFICULTY))
             return false;
 

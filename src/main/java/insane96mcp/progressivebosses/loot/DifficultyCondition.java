@@ -31,8 +31,9 @@ public class DifficultyCondition implements LootItemCondition {
     @Override
     public boolean test(LootContext lootContext) {
         Entity entity = lootContext.getParamOrNull(this.entityTarget.getParam());
+        if (!(entity instanceof Mob mob))
+            return false;
 
-        Mob mob = (Mob) entity;
         if (!mob.getPersistentData().contains(Strings.Tags.DIFFICULTY))
             return false;
 

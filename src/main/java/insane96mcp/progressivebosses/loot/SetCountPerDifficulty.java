@@ -46,7 +46,9 @@ public class SetCountPerDifficulty extends LootItemConditionalFunction {
     public ItemStack run(ItemStack itemStack, LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
 
-        Mob mob = (Mob) entity;
+        if (!(entity instanceof Mob mob))
+            return itemStack;
+
         if (!mob.getPersistentData().contains(Strings.Tags.DIFFICULTY))
             return itemStack;
 
@@ -56,7 +58,6 @@ public class SetCountPerDifficulty extends LootItemConditionalFunction {
             float r = lootContext.getRandom().nextFloat();
             if (r < this.perDifficultyChance)
                 itemStack.grow(this.count.getInt(lootContext));
-            //LogHelper.info("r: %s, perDiff: %s, stack: %s", r, this.perDifficultyChance, itemStack);
         }
         //Remove one as the loot table starts with 1 item
         itemStack.shrink(1);

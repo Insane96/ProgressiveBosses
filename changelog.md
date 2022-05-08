@@ -1,7 +1,8 @@
 # Changelog
 
-## Upcoming
+## 3.5.10
 * Ender Dragon difficulty now applies in any dimension (fixes incompatiblity with https://www.planetminecraft.com/data-pack/nullscape/)
+* Fixed crash when player kills another player
 
 ## 3.5.9
 * Wither
