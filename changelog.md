@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+* Ender Dragon now will now land on the exact center of the podium, to prevent begin too low and hitting players *in* the podium
+* Fixed larvae dropping ancient debris and nether star shard
+
 ## 3.5.10
 * Ender Dragon difficulty now applies in any dimension (fixes incompatiblity with https://www.planetminecraft.com/data-pack/nullscape/)
 * Fixed crash when player kills another player
