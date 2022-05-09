@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EndCrystal.class)
-public class EnderCrystalEntityMixin {
+public class EndCrystalMixin {
 
 	@Inject(at = @At("HEAD"), method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", cancellable = true)
 	private void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {

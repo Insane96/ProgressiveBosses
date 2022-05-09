@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EnderDragon.class)
-public class EnderDragonEntityMixin extends Mob {
-	protected EnderDragonEntityMixin(EntityType<? extends Mob> type, Level worldIn) {
+public class EnderDragonMixin extends Mob {
+	protected EnderDragonMixin(EntityType<? extends Mob> type, Level worldIn) {
 		super(type, worldIn);
 	}
 

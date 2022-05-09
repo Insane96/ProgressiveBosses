@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DragonHoldingPatternPhase.class)
-public class HoldingPatternPhaseMixin {
+public class DragonHoldingPatternPhaseMixin {
 
 	@Shadow
 	public Path currentPath;

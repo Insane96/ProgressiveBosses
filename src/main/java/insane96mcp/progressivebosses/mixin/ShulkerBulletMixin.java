@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ShulkerBullet.class)
-public abstract class ShulkerBulletEntityMixin extends Projectile {
+public abstract class ShulkerBulletMixin extends Projectile {
 
-	public ShulkerBulletEntityMixin(EntityType<? extends Projectile> entityType, Level world) {
+	public ShulkerBulletMixin(EntityType<? extends Projectile> entityType, Level world) {
 		super(entityType, world);
 		this.noPhysics = true;
 	}

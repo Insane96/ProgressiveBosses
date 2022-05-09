@@ -4,16 +4,16 @@
 	"compatibilityLevel": "JAVA_8",
 	"refmap": "progressivebosses.refmap.json",
 	"mixins": [
-		"ChargingPlayerPhaseMixin",
-		"DragonFireballEntityMixin",
-		"ElderGuardianEntityMixin",
+		"DragonChargrPlayerPhaseMixin",
+		"DragonFireballMixin",
+		"DragonHoldingPatternPhaseMixin",
+		"DragonLandingPhaseMixin",
+		"DragonStrafePlayerPhaseMixin",
+		"ElderGuardianMixin",
+		"EndCrystalMixin",
 		"EndDragonFightMixin",
-		"EnderCrystalEntityMixin",
-		"EnderDragonEntityMixin",
-		"HoldingPatternPhaseMixin",
-		"LandingPhaseMixin",
-		"ShulkerBulletEntityMixin",
-		"StrafePlayerPhaseMixin"
+		"EnderDragonMixin",
+		"ShulkerBulletMixin"
 	],
 	"client": [
 		"client.WitherBossRendererMixin"

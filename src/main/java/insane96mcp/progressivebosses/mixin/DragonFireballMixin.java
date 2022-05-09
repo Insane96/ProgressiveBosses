@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DragonFireball.class)
-public class DragonFireballEntityMixin extends AbstractHurtingProjectile {
+public class DragonFireballMixin extends AbstractHurtingProjectile {
 
-	protected DragonFireballEntityMixin(EntityType<? extends AbstractHurtingProjectile> p_i50173_1_, Level p_i50173_2_) {
+	protected DragonFireballMixin(EntityType<? extends AbstractHurtingProjectile> p_i50173_1_, Level p_i50173_2_) {
 		super(p_i50173_1_, p_i50173_2_);
 	}
 

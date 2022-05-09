@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ElderGuardian.class)
-public class ElderGuardianEntityMixin {
+public class ElderGuardianMixin {
 
 	@Inject(at = @At("HEAD"), method = "getAttackDuration()I", cancellable = true)
 	private void getAttackDuration(CallbackInfoReturnable<Integer> callback) {
