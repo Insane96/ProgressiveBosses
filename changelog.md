@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Ender Dragon now will now land on the exact center of the podium, to prevent begin too low and hitting players *in* the podium
+* Wither Charge attack damage is now configurable
 * Fixed larvae dropping ancient debris and nether star shard
 
 ## 3.5.10

@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
 import com.mojang.datafixers.util.Pair;
+import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.module.wither.feature.AttackFeature;
 import insane96mcp.progressivebosses.setup.Strings;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -142,7 +143,7 @@ public class WitherChargeAttackGoal extends Goal {
 			this.wither.level.getEntitiesOfClass(LivingEntity.class, axisAlignedBB).forEach(entity -> {
 				if (entity == this.wither)
 					return;
-				entity.hurt(new EntityDamageSource(Strings.Translatable.WITHER_CHARGE_ATTACK, this.wither), 16f);
+				entity.hurt(new EntityDamageSource(Strings.Translatable.WITHER_CHARGE_ATTACK, this.wither), (float) Modules.wither.attack.chargeAttackBaseDamage);
 				double d2 = entity.getX() - this.wither.getX();
 				double d3 = entity.getZ() - this.wither.getZ();
 				double d4 = Math.max(d2 * d2 + d3 * d3, 0.1D);

@@ -36,6 +36,7 @@ public class AttackFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> applyToVanillaWitherConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxChargeAttackChanceConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackBaseDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> increasedDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageChancePerDiffConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> minBarrageDurationConfig;
@@ -46,6 +47,7 @@ public class AttackFeature extends Feature {
 
 	public boolean applyToVanillaWither = true;
 	public double maxChargeAttackChance = 0.06d;
+	public double chargeAttackBaseDamage = 16d;
 	public double increasedDamage = 0.12d;
 	//Barrage Attack
 	public double maxBarrageChancePerDiff = 0.011d;
@@ -66,6 +68,9 @@ public class AttackFeature extends Feature {
 		maxChargeAttackChanceConfig = Config.builder
 				.comment("Chance every time the Wither takes damage to start a charge attack. Less health = higher chance and more damage taken = more chance. This value is the chance at 0% health and when taking 10 damage.")
 				.defineInRange("Max Charge Attack Chance", maxChargeAttackChance, 0d, 1d);
+		chargeAttackBaseDamageConfig = Config.builder
+				.comment("Base damage of the charge attack. Increased by 'Increased Damage'.")
+				.defineInRange("Charge Attack Base Damage", this.chargeAttackBaseDamage, 0d, 50d);
 		increasedDamageConfig = Config.builder
 				.comment("Percentage bonus damage dealt by the Wither per difficulty.")
 				.defineInRange("Increased Damage", increasedDamage, 0d, Double.MAX_VALUE);
