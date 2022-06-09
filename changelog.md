@@ -3,6 +3,7 @@
 ## Beta 3.5.12
 * Requires InsaneLib 1.5.0
 * Dragon Minions will no longer duplicate like normal shulkers
+* Russian Translation
 
 ## 3.5.11
 * Ender Dragon now will now land on the exact center of the podium, to prevent begin too low and hitting players *in* the podium
