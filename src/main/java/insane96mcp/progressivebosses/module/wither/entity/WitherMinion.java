@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
-import insane96mcp.progressivebosses.module.wither.ai.minion.MinionNearestAttackableTargetGoal;
+import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -49,7 +49,7 @@ public class WitherMinion extends AbstractSkeleton {
 		this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 
 		this.targetSelector.addGoal(1, new HurtByTargetGoal(this, WitherBoss.class, WitherMinion.class));
-		this.targetSelector.addGoal(2, new MinionNearestAttackableTargetGoal(this, Player.class, 0, false, false, null));
+		this.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(this, Player.class, false).setIgnoreLineOfSight());
 		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, NOT_UNDEAD));
 	}
 

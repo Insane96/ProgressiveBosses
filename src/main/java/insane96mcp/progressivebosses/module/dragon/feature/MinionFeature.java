@@ -1,12 +1,12 @@
 package insane96mcp.progressivebosses.module.dragon.feature;
 
+import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
-import insane96mcp.progressivebosses.module.dragon.ai.XRayNearestAttackableTarget;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DragonMinionHelper;
@@ -24,6 +24,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -202,7 +203,7 @@ public class MinionFeature extends Feature {
 		});
 		toRemove.forEach(shulker.targetSelector::removeGoal);
 
-		shulker.targetSelector.addGoal(2, new XRayNearestAttackableTarget(shulker));
+		shulker.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(shulker, Player.class, false).setIgnoreLineOfSight());
 		shulker.targetSelector.addGoal(1, new HurtByTargetGoal(shulker, Shulker.class, EnderDragon.class));
 	}
 

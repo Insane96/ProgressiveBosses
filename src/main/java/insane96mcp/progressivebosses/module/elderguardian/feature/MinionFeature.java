@@ -1,10 +1,10 @@
 package insane96mcp.progressivebosses.module.elderguardian.feature;
 
+import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.util.MCUtils;
-import insane96mcp.progressivebosses.module.elderguardian.ai.ElderMinionNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.core.BlockPos;
@@ -145,7 +145,7 @@ public class MinionFeature extends Feature {
 		}
 
 		goalsToRemove.forEach(elderMinion.goalSelector::removeGoal);
-		elderMinion.targetSelector.addGoal(1, new ElderMinionNearestAttackableTargetGoal<>(elderMinion, Player.class, true));
+		elderMinion.targetSelector.addGoal(1, new ILNearestAttackableTargetGoal<>(elderMinion, Player.class, false).setIgnoreLineOfSight());
 
 		world.addFreshEntity(elderMinion);
 		return elderMinion;

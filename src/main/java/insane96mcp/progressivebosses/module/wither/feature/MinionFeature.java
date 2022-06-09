@@ -17,7 +17,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -234,7 +233,7 @@ public class MinionFeature extends Feature {
 				y = (int) (wither.getY() + 3);
 				z = (int) (wither.getZ() + (RandomHelper.getInt(world.random, -3, 3)));
 
-				y = getYSpawn(PBEntities.WITHER_MINION.get(), new BlockPos(x, y, z), world, 8);
+				y = MCUtils.getFittingY(PBEntities.WITHER_MINION.get(), new BlockPos(x, y, z), world, 8);
 				if (y != -1)
 					break;
 			}
@@ -340,31 +339,6 @@ public class MinionFeature extends Feature {
 				witherMinion.setItemSlot(EquipmentSlot.MAINHAND, bow);
 			}
 		}
-	}
-
-	/**
-	 * Returns -1 when no spawn spots are found, otherwise the Y coord
-	 */
-	private static int getYSpawn(EntityType<WitherMinion> entityType, BlockPos pos, Level world, int minRelativeY) {
-		int height = (int) Math.ceil(entityType.getHeight());
-		int fittingYPos = -1;
-		for (int y = pos.getY(); y > pos.getY() - minRelativeY; y--) {
-			boolean viable = true;
-			BlockPos p = new BlockPos(pos.getX(), y, pos.getZ());
-			for (int i = 0; i < height; i++) {
-				if (world.getBlockState(p.above(i)).getMaterial().blocksMotion()) {
-					viable = false;
-					break;
-				}
-			}
-			if (!viable)
-				continue;
-			fittingYPos = y;
-			if (!world.getBlockState(p.below()).getMaterial().blocksMotion())
-				continue;
-			return y;
-		}
-		return fittingYPos;
 	}
 
 	public WitherMinion summonMinion(Level world, Vec3 pos, float difficulty, boolean isCharged) {

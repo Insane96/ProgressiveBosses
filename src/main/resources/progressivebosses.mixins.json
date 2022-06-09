@@ -1,22 +1,23 @@
 {
-	"required": true,
-	"package": "insane96mcp.progressivebosses.mixin",
-	"compatibilityLevel": "JAVA_8",
-	"refmap": "progressivebosses.refmap.json",
-	"mixins": [
-		"DragonChargrPlayerPhaseMixin",
-		"DragonFireballMixin",
-		"DragonHoldingPatternPhaseMixin",
-		"DragonLandingPhaseMixin",
-		"DragonStrafePlayerPhaseMixin",
-		"ElderGuardianMixin",
-		"EndCrystalMixin",
-		"EndDragonFightMixin",
-		"EnderDragonMixin",
-		"ShulkerBulletMixin"
-	],
-	"client": [
-		"client.WitherBossRendererMixin"
-	],
-	"minVersion": "0.8"
+    "required": true,
+    "package": "insane96mcp.progressivebosses.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "refmap": "progressivebosses.refmap.json",
+    "mixins": [
+        "DragonChargrPlayerPhaseMixin",
+        "DragonFireballMixin",
+        "DragonHoldingPatternPhaseMixin",
+        "DragonLandingPhaseMixin",
+        "DragonStrafePlayerPhaseMixin",
+        "ElderGuardianMixin",
+        "EndCrystalMixin",
+        "EndDragonFightMixin",
+        "EnderDragonMixin",
+        "ShulkerBulletMixin",
+        "ShulkerMixin"
+    ],
+    "client": [
+        "client.WitherBossRendererMixin"
+    ],
+    "minVersion": "0.8"
 }

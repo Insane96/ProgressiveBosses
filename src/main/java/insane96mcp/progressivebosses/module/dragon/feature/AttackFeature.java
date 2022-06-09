@@ -4,12 +4,12 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
+import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Reflection;
 import insane96mcp.progressivebosses.setup.Strings;
-import insane96mcp.progressivebosses.utils.Utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -366,7 +366,7 @@ public class AttackFeature extends Feature {
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
 		float fireballs = RandomHelper.getFloat(dragon.getRandom(), 0f, (float) (maxBonusFireball * difficulty));
-		fireballs = Utils.getAmountWithDecimalChance(dragon.getRandom(), fireballs);
+		fireballs = MathHelper.getAmountWithDecimalChance(dragon.getRandom(), fireballs);
 		if (fireballs == 0f)
 			return;
 
