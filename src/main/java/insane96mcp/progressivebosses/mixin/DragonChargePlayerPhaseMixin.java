@@ -17,17 +17,17 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(DragonChargePlayerPhase.class)
-public abstract class DragonChargrPlayerPhaseMixin extends AbstractDragonPhaseInstance {
+public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseInstance {
 
 	@Shadow
 	@Final
-	private static Logger LOGGER = LogUtils.getLogger();
+	private static final Logger LOGGER = LogUtils.getLogger();
 	@Shadow
 	private int timeSinceCharge;
 	@Shadow
 	private Vec3 targetLocation;
 
-	public DragonChargrPlayerPhaseMixin(EnderDragon dragonIn) {
+	public DragonChargePlayerPhaseMixin(EnderDragon dragonIn) {
 		super(dragonIn);
 	}
 

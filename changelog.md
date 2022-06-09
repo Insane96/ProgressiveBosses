@@ -1,5 +1,8 @@
 # Changelog
 
+## Beta 3.5.13
+* Hopefully fixed a startup crash
+
 ## Beta 3.5.12
 * Requires InsaneLib 1.5.0
 * Dragon Minions will no longer duplicate like normal shulkers
