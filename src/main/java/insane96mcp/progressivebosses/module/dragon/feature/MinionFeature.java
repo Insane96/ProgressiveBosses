@@ -5,7 +5,6 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.util.MCUtils;
-import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
@@ -16,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -66,10 +66,10 @@ public class MinionFeature extends Feature {
 				.comment("At which difficulty the Ender Dragon starts spawning Minions")
 				.defineInRange("Minion at Difficulty", minionAtDifficulty, 0, Integer.MAX_VALUE);
 		minCooldownConfig = Config.builder
-				.comment("Minimum ticks (20 ticks = 1 seconds) after Minions can spwan.")
+				.comment("Minimum ticks (20 ticks = 1 seconds) after Minions can spawn.")
 				.defineInRange("Minimum Cooldown", minCooldown, 0, Integer.MAX_VALUE);
 		maxCooldownConfig = Config.builder
-				.comment("Maximum ticks (20 ticks = 1 seconds) after Minions can spwan.")
+				.comment("Maximum ticks (20 ticks = 1 seconds) after Minions can spawn.")
 				.defineInRange("Maximum Cooldown", maxCooldown, 0, Integer.MAX_VALUE);
 		cooldownReductionConfig = Config.builder
 				.comment("Percentage cooldown reduction per difficulty for the cooldown of Minion spawning.")
@@ -113,7 +113,7 @@ public class MinionFeature extends Feature {
 
 		CompoundTag dragonTags = dragon.getPersistentData();
 
-		int cooldown = (int) (RandomHelper.getInt(dragon.getRandom(), this.minCooldown, this.maxCooldown) * 0.5d);
+		int cooldown = (int) (Mth.nextInt(dragon.getRandom(), this.minCooldown, this.maxCooldown) * 0.5d);
 		dragonTags.putInt(Strings.Tags.DRAGON_MINION_COOLDOWN, cooldown);
 	}
 
@@ -174,13 +174,13 @@ public class MinionFeature extends Feature {
 		int minCooldown = this.minCooldown;
 		int maxCooldown = this.maxCooldown;
 
-		cooldown = RandomHelper.getInt(world.random, minCooldown, maxCooldown);
+		cooldown = Mth.nextInt(world.random, minCooldown, maxCooldown);
 		cooldown *= 1 - this.cooldownReduction * difficulty;
 		dragonTags.putInt(Strings.Tags.DRAGON_MINION_COOLDOWN, cooldown - 1);
 
 		float angle = world.random.nextFloat() * (float) Math.PI * 2f;
-		float x = (float) (Math.cos(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 45f)));
-		float z = (float) (Math.sin(angle) * (RandomHelper.getFloat(dragon.getRandom(), 16f, 45f)));
+		float x = (float) (Math.cos(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 45f)));
+		float z = (float) (Math.sin(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 45f)));
 		float y = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
 		Shulker shulker = summonMinion(world, new Vec3(x, y, z), difficulty);
 	}

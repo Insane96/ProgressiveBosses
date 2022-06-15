@@ -5,7 +5,6 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import insane96mcp.insanelib.util.MathHelper;
-import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Reflection;
@@ -14,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -365,7 +365,7 @@ public class AttackFeature extends Feature {
 		CompoundTag compoundNBT = dragon.getPersistentData();
 		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
 
-		float fireballs = RandomHelper.getFloat(dragon.getRandom(), 0f, (float) (maxBonusFireball * difficulty));
+		float fireballs = Mth.nextFloat(dragon.getRandom(), 0f, (float) (maxBonusFireball * difficulty));
 		fireballs = MathHelper.getAmountWithDecimalChance(dragon.getRandom(), fireballs);
 		if (fireballs == 0f)
 			return;
@@ -374,9 +374,9 @@ public class AttackFeature extends Feature {
 			x = dragon.head.getX() - vector3d2.x;
 			y = dragon.head.getY(0.5D) + 0.5D;
 			z = dragon.head.getZ() - vector3d2.z;
-			xPower = attackTarget.getX() + RandomHelper.getDouble(dragon.getRandom(), -(fireballs), fireballs) - x;
-			yPower = attackTarget.getY(0.5D) + RandomHelper.getDouble(dragon.getRandom(), -(fireballs), fireballs) - y;
-			zPower = attackTarget.getZ() + RandomHelper.getDouble(dragon.getRandom(), -(fireballs), fireballs) - z;
+			xPower = attackTarget.getX() + Mth.nextDouble(dragon.getRandom(), -(fireballs), fireballs) - x;
+			yPower = attackTarget.getY(0.5D) + Mth.nextDouble(dragon.getRandom(), -(fireballs), fireballs) - y;
+			zPower = attackTarget.getZ() + Mth.nextDouble(dragon.getRandom(), -(fireballs), fireballs) - z;
 			if (!dragon.isSilent()) {
 				dragon.level.levelEvent(null, 1017, dragon.blockPosition(), 0);
 			}
@@ -393,7 +393,7 @@ public class AttackFeature extends Feature {
 		if (players.isEmpty())
 			return null;
 
-		int r = RandomHelper.getInt(world.random, 0, players.size());
+		int r = Mth.nextInt(world.random, 0, players.size() - 1);
 		return players.get(r);
 	}
 
@@ -414,11 +414,11 @@ public class AttackFeature extends Feature {
 
  		int r;
  		if (playersNearCrystals.isEmpty()) {
-			r = RandomHelper.getInt(world.random, 0, players.size());
+			r = Mth.nextInt(world.random, 0, players.size() - 1);
 			return players.get(r);
 		}
 
-		r = RandomHelper.getInt(world.random, 0, playersNearCrystals.size());
+		r = Mth.nextInt(world.random, 0, playersNearCrystals.size() - 1);
 		return playersNearCrystals.get(r);
 	}
 }

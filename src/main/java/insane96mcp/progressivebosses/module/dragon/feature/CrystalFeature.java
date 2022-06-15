@@ -5,7 +5,6 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.insanelib.util.MathHelper;
-import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
@@ -272,7 +271,7 @@ public class CrystalFeature extends Feature {
 	public static EndCrystal generateCrystalInTower(Level world, double x, double y, double z) {
 		Vec3 centerPodium = Vec3.atBottomCenterOf(world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
 
-		int spawnY = (int) (y - RandomHelper.getInt(world.getRandom(), 12, 24));
+		int spawnY = (int) (y - Mth.nextInt(world.getRandom(), 12, 24));
 		if (spawnY < centerPodium.y())
 			spawnY = (int) centerPodium.y();
 		BlockPos crystalPos = new BlockPos(x, spawnY, z);

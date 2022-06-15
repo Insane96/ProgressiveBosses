@@ -4,7 +4,6 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.util.MCUtils;
-import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.module.wither.entity.WitherMinion;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
@@ -15,6 +14,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -165,7 +165,7 @@ public class MinionFeature extends Feature {
 			return;
 		CompoundTag witherTags = wither.getPersistentData();
 
-		int cooldown = (int) (RandomHelper.getInt(wither.level.random, this.minCooldown, this.maxCooldown) * this.cooldownMultiplierBelowHalfHealth);
+		int cooldown = (int) (Mth.nextInt(wither.level.random, this.minCooldown, this.maxCooldown) * this.cooldownMultiplierBelowHalfHealth);
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown);
 	}
 
@@ -218,7 +218,7 @@ public class MinionFeature extends Feature {
 		int minCooldown = this.minCooldown;
 		int maxCooldown = this.maxCooldown;
 
-		cooldown = RandomHelper.getInt(world.random, minCooldown, maxCooldown);
+		cooldown = Mth.nextInt(world.random, minCooldown, maxCooldown);
 		if (wither.isPowered())
 			cooldown *= this.cooldownMultiplierBelowHalfHealth;
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown - 1);
@@ -229,9 +229,9 @@ public class MinionFeature extends Feature {
 			int x = 0, y = 0, z = 0;
 			//Tries to spawn the Minion up to 5 times
 			for (int t = 0; t < 5; t++) {
-				x = (int) (wither.getX() + (RandomHelper.getInt(world.random, -3, 3)));
+				x = (int) (wither.getX() + (Mth.nextInt(world.random, -3, 3)));
 				y = (int) (wither.getY() + 3);
-				z = (int) (wither.getZ() + (RandomHelper.getInt(world.random, -3, 3)));
+				z = (int) (wither.getZ() + (Mth.nextInt(world.random, -3, 3)));
 
 				y = MCUtils.getFittingY(PBEntities.WITHER_MINION.get(), new BlockPos(x, y, z), world, 8);
 				if (y != -1)
@@ -309,11 +309,11 @@ public class MinionFeature extends Feature {
 		witherMinion.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
 
 		int powerSharpnessLevel = (int) (this.powerSharpnessChance * difficulty);
-		if (RandomHelper.getDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - powerSharpnessLevel)
+		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - powerSharpnessLevel)
 			powerSharpnessLevel++;
 
 		int punchKnockbackLevel = (int) (this.punchKnockbackChance * difficulty);
-		if (RandomHelper.getDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.punchKnockbackChance * difficulty) - punchKnockbackLevel)
+		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.punchKnockbackChance * difficulty) - punchKnockbackLevel)
 			punchKnockbackLevel++;
 
 		ItemStack sword = new ItemStack(Items.STONE_SWORD);
@@ -330,12 +330,12 @@ public class MinionFeature extends Feature {
 		if (punchKnockbackLevel > 0)
 			bow.enchant(Enchantments.POWER_ARROWS, punchKnockbackLevel);
 		if (isCharged) {
-			if (RandomHelper.getDouble(witherMinion.level.getRandom(), 0d, 1d) < this.halfHealthBowChance) {
+			if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < this.halfHealthBowChance) {
 				witherMinion.setItemSlot(EquipmentSlot.MAINHAND, bow);
 			}
 		}
 		else {
-			if (RandomHelper.getDouble(witherMinion.level.getRandom(), 0d, 1d) < this.preHalfHealthBowChance) {
+			if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < this.preHalfHealthBowChance) {
 				witherMinion.setItemSlot(EquipmentSlot.MAINHAND, bow);
 			}
 		}

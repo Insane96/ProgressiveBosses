@@ -1,8 +1,8 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
-import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -104,13 +104,13 @@ public class WitherRangedAttackGoal extends Goal {
 				return;
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
 			if (barrageAttackTick % 4 == 0) {
-				this.wither.performRangedAttack(RandomHelper.getInt(this.wither.getRandom(), 0, 3), this.target.getX() + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), this.target.getZ() + RandomHelper.getDouble(this.wither.getRandom(), -2d, 2d), false);
+				this.wither.performRangedAttack(Mth.nextInt(this.wither.getRandom(), 0, 2), this.target.getX() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), this.target.getZ() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), false);
 			}
 		}
 		else if (--this.attackTime <= 0) {
 			if (!canSee)
 				return;
-			this.wither.performRangedAttack(0, this.target.getX(), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D, target.getZ(), RandomHelper.getDouble(this.wither.getRandom(), 0d, 1d) < 0.001F);
+			this.wither.performRangedAttack(0, this.target.getX(), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D, target.getZ(), this.wither.getRandom().nextDouble() < 0.001d);
 			this.attackTime = this.attackInterval;
 
 			if (this.increaseASOnNear) {

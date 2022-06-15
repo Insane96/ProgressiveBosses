@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.5.14
+* Requires InsaneLib 1.5.1
+
 ## Beta 3.5.13
 * Hopefully fixed a startup crash
 
