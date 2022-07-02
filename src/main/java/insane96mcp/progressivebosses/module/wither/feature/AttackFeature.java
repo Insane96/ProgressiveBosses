@@ -43,7 +43,7 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> maxBarrageDurationConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> increaseAttackSpeedWhenNearConfig;
+	private final ForgeConfigSpec.DoubleValue bonusAttackSpeedWhenNearConfig;
 
 	public boolean applyToVanillaWither = true;
 	public double maxChargeAttackChance = 0.06d;
@@ -57,7 +57,7 @@ public class AttackFeature extends Feature {
 	public double skullVelocityMultiplier = 2.5d;
 	//Attack Speed
 	public int attackInterval = 40;
-	public boolean increaseAttackSpeedWhenNear = true;
+	public double bonusAttackSpeedWhenNear = 0.667d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
@@ -97,9 +97,9 @@ public class AttackFeature extends Feature {
 		attackIntervalConfig = Config.builder
 				.comment("Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
 				.defineInRange("Attack Interval", attackInterval, 0, Integer.MAX_VALUE);
-		increaseAttackSpeedWhenNearConfig = Config.builder
-				.comment("The middle head will attack faster (up to 40% of the attack speed) the nearer the target is to the Wither.")
-				.define("Increase Attack Speed when Near", increaseAttackSpeedWhenNear);
+		this.bonusAttackSpeedWhenNearConfig = Config.builder
+				.comment("The middle head will attack faster (up to this bonus percentage) the nearer the target is to the Wither.")
+				.defineInRange("Bonus Attack Speed when Near", this.bonusAttackSpeedWhenNear, 0, 1);
 		Config.builder.pop();
 
 		Config.builder.pop();
@@ -119,7 +119,7 @@ public class AttackFeature extends Feature {
 		this.skullVelocityMultiplier = this.skullVelocityMultiplierConfig.get();
 		//Attack Speed
 		this.attackInterval = this.attackIntervalConfig.get();
-		this.increaseAttackSpeedWhenNear = this.increaseAttackSpeedWhenNearConfig.get();
+		this.bonusAttackSpeedWhenNear = this.bonusAttackSpeedWhenNearConfig.get();
 	}
 
 	@SubscribeEvent
@@ -290,7 +290,7 @@ public class AttackFeature extends Feature {
 		toRemove.forEach(wither.goalSelector::removeGoal);
 
 		wither.goalSelector.addGoal(1, new WitherChargeAttackGoal(wither));
-		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.increaseAttackSpeedWhenNear));
+		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.bonusAttackSpeedWhenNear));
 
 		MCUtils.applyModifier(wither, Attributes.FOLLOW_RANGE, UUID.randomUUID(), "Wither Glasses", 48d, AttributeModifier.Operation.ADDITION);
 	}

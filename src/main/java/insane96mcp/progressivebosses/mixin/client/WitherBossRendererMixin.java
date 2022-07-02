@@ -30,7 +30,7 @@ public class WitherBossRendererMixin {
 		if (chargeTick > 0)
 		{
 			float scale = 1f;
-			scale += (AttackFeature.Consts.CHARGE_ATTACK_TICK_START - ((float)chargeTick - partialTick)) * 0.004f;
+			scale += (AttackFeature.Consts.CHARGE_ATTACK_TICK_START - ((float)chargeTick - partialTick)) * 0.003f;
 			poseStack.scale(scale, scale, scale);
 		}
 	}

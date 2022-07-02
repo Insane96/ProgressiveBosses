@@ -20,14 +20,14 @@ public class WitherRangedAttackGoal extends Goal {
 	private final float attackRadius;
 	private final float attackRadiusSqr;
 	//Increases the rate of attack of the middle head the closer the player is to the wither
-	private final boolean increaseASOnNear;
+	private final double bonusASWhenNear;
 
-	public WitherRangedAttackGoal(WitherBoss wither, int attackInterval, float attackRadius, boolean increaseASOnNear) {
+	public WitherRangedAttackGoal(WitherBoss wither, int attackInterval, float attackRadius, double bonusASWhenNear) {
 		this.wither = wither;
 		this.attackInterval = attackInterval;
 		this.attackRadius = attackRadius;
 		this.attackRadiusSqr = attackRadius * attackRadius;
-		this.increaseASOnNear = increaseASOnNear;
+		this.bonusASWhenNear = bonusASWhenNear;
 		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 	}
 
@@ -113,10 +113,11 @@ public class WitherRangedAttackGoal extends Goal {
 			this.wither.performRangedAttack(0, this.target.getX(), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D, target.getZ(), this.wither.getRandom().nextDouble() < 0.001d);
 			this.attackTime = this.attackInterval;
 
-			if (this.increaseASOnNear) {
+			if (this.bonusASWhenNear > 0d) {
 				float distance = this.wither.distanceTo(this.target);
 				if (distance < this.attackRadius) {
-					int nearBonusAS = (int) Math.round((this.attackInterval * 0.75d) * (1d - (distance / this.attackRadius)));
+					int nearBonusAS = (int) Math.round((this.attackInterval * this.bonusASWhenNear) * (1d - (distance / this.attackRadius)));
+					//int nearBonusAS = (int) Math.round((this.attackInterval * 0.75d) * (1d - (distance / this.attackRadius)));
 					this.attackTime -= nearBonusAS;
 				}
 			}

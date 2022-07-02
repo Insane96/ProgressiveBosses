@@ -1,7 +1,8 @@
 # Changelog
 
-## Upcoming
-* Reduced Skull Speed Multiplier (2.75x -> 2.5x)
+## 3.5.15
+* Reduced bonus attack speed when near (~~75%~~ -> 66.7% faster) and made it configurable
+* Reduced Skull Speed Multiplier (~~2.75x~~ -> 2.5x)
 * Fixed not begin able to spawn the wither in the Nether with dispensers even if wither nether only was disabled
 
 ## 3.5.14
