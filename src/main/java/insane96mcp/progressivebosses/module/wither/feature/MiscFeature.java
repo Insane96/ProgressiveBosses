@@ -200,10 +200,7 @@ public class MiscFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!this.witherNetherOnly)
-			return;
-
-		if (event.getItemStack().getItem() == Items.WITHER_SKELETON_SKULL && !canPlaceSkull(event.getWorld(), event.getPos().offset(event.getFace().getNormal()))) {
+		if (event.getItemStack().getItem() == Items.WITHER_SKELETON_SKULL && !this.canPlaceSkull(event.getWorld(), event.getPos().offset(event.getFace().getNormal()))) {
 			event.setCanceled(true);
 		}
 	}
@@ -211,7 +208,10 @@ public class MiscFeature extends Feature {
 	/**
 	 * Returns true if at the specified position a Wither Skull can be placed
 	 */
-	public static boolean canPlaceSkull(Level world, BlockPos pos) {
+	public boolean canPlaceSkull(Level world, BlockPos pos) {
+		if (!this.witherNetherOnly)
+			return true;
+
 		boolean isNether = world.dimension().location().equals(DimensionType.NETHER_LOCATION.location());
 
 		boolean hasSoulSandNearby = false;
