@@ -54,7 +54,7 @@ public class AttackFeature extends Feature {
 	public int minBarrageDuration = 20;
 	public int maxBarrageDuration = 150;
 	//Skulls
-	public double skullVelocityMultiplier = 2.75d;
+	public double skullVelocityMultiplier = 2.5d;
 	//Attack Speed
 	public int attackInterval = 40;
 	public boolean increaseAttackSpeedWhenNear = true;
