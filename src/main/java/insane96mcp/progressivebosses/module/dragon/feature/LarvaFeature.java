@@ -4,7 +4,6 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.util.MCUtils;
-import insane96mcp.insanelib.util.RandomHelper;
 import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
@@ -12,6 +11,7 @@ import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -94,7 +94,7 @@ public class LarvaFeature extends Feature {
 			return;
 		CompoundTag dragonTags = dragon.getPersistentData();
 
-		int cooldown = (int) (RandomHelper.getInt(dragon.getRandom(), this.minCooldown, this.maxCooldown) * 0.5d);
+		int cooldown = (int) (Mth.nextInt(dragon.getRandom(), this.minCooldown, this.maxCooldown) * 0.5d);
 		dragonTags.putInt(Strings.Tags.DRAGON_LARVA_COOLDOWN, cooldown);
 	}
 
@@ -137,7 +137,7 @@ public class LarvaFeature extends Feature {
 		int minCooldown = this.minCooldown;
 		int maxCooldown = this.maxCooldown;
 
-		cooldown = RandomHelper.getInt(world.random, minCooldown, maxCooldown);
+		cooldown = Mth.nextInt(world.random, minCooldown, maxCooldown);
 		dragonTags.putInt(Strings.Tags.DRAGON_LARVA_COOLDOWN, cooldown - 1);
 
 		int larvaSpawnedCount = 0;

@@ -4,6 +4,9 @@
 * Reduced Skull Speed Multiplier (2.75x -> 2.5x)
 * Fixed not begin able to spawn the wither in the Nether with dispensers even if wither nether only was disabled
 
+## 3.5.14
+* Requires InsaneLib 1.5.1
+
 ## Beta 3.5.13
 * Hopefully fixed a startup crash
 
