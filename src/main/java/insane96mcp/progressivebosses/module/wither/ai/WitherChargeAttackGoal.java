@@ -54,6 +54,7 @@ public class WitherChargeAttackGoal extends Goal {
 			this.wither.setAlternativeTarget(h, 0);
 
 		this.wither.level.playSound(null, this.wither.blockPosition(), SoundEvents.WITHER_DEATH, SoundSource.HOSTILE, 5.0f, 2.0f);
+		blocksToDrop.clear();
 	}
 
 	/**

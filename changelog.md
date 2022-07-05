@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.5.16
+* Fixed dupe bug with Wither charge attack
+
 ## 3.5.15
 * Reduced bonus attack speed when near (~~75%~~ -> 66.7% faster) and made it configurable
 * Reduced Skull Speed Multiplier (~~2.75x~~ -> 2.5x)
