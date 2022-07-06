@@ -1,35 +1,23 @@
 ---
 name: Bug report
-about: Got a problem? Use this template. But I recommend joining Discord and talking
-  there before fileing an issue.
+about: Got a problem? Use this template. But I recommend joining Discord and talking there before filing an issue.
 title: ''
 labels: bug
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
-
-**Versions:**
+## Versions
  - Minecraft: 
  - Forge: 
  - Progressive Bosses: 
  - InsaneLib: 
 
-**Steps to reproduce**
-1. 
-2. 
-3. 
+## Describe the bug
+A clear and concise description of what the bug is.
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+## Logs
+Use a paste site (https://gist.github.com, https://paste.gemwire.uk) to send the game logs (both logs and crash if applicable)
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
-
-**Logs**
-Use a paste site (pastebin, gist) to send the game logs (both logs and crash if applicable)
-
-**Can the issue be reproduced with a mininal set of mods? (E.g. Progressive Bosses + InsaneLib + Tinkers' Construct)**
-Yes/No
+## Tried reproducing with just Progressive Bosses?
+Please test with Progressive Bosses + InsaneLib only (+ any other mod that might be causing the issue)
