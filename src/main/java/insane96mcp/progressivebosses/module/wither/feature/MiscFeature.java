@@ -16,12 +16,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Misc", description = "Handles various small features, such as the explosion")
@@ -87,7 +86,7 @@ public class MiscFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+	public void onUpdate(LivingEvent.LivingTickEvent event) {
 		if (event.getEntity().level.isClientSide)
 			return;
 
@@ -189,7 +188,7 @@ public class MiscFeature extends Feature {
 		if (!event.getEntity().isAlive())
 			return;
 
-		if (!(event.getEntityLiving() instanceof WitherBoss wither))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
 		wither.destroyBlocksTick = 10;
@@ -200,7 +199,7 @@ public class MiscFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (event.getItemStack().getItem() == Items.WITHER_SKELETON_SKULL && !this.canPlaceSkull(event.getWorld(), event.getPos().offset(event.getFace().getNormal()))) {
+		if (event.getItemStack().getItem() == Items.WITHER_SKELETON_SKULL && !this.canPlaceSkull(event.getLevel(), event.getPos().offset(event.getFace().getNormal()))) {
 			event.setCanceled(true);
 		}
 	}
@@ -212,7 +211,7 @@ public class MiscFeature extends Feature {
 		if (!this.witherNetherOnly)
 			return true;
 
-		boolean isNether = world.dimension().location().equals(DimensionType.NETHER_LOCATION.location());
+		boolean isNether = world.dimension() == Level.NETHER;
 
 		boolean hasSoulSandNearby = false;
 		for (Direction dir : Direction.values()) {

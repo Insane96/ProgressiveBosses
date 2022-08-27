@@ -14,7 +14,7 @@ import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Rewards", description = "Bonus Experience and Drops")
@@ -47,8 +47,8 @@ public class RewardFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void onSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())

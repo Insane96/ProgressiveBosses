@@ -4,11 +4,11 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
-import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Reflection;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.MathHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -31,7 +31,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -115,7 +115,7 @@ public class AttackFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onSpawn(EntityJoinWorldEvent event) {
+	public void onSpawn(EntityJoinLevelEvent event) {
 		fireballSpeed(event.getEntity());
 	}
 
@@ -149,7 +149,7 @@ public class AttackFeature extends Feature {
 	}
 
 	private void onDirectDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getDirectEntity() instanceof EnderDragon dragon) || event.getEntityLiving() instanceof EnderDragon)
+		if (!(event.getSource().getDirectEntity() instanceof EnderDragon dragon) || event.getEntity() instanceof EnderDragon)
 			return;
 
 		CompoundTag compoundNBT = dragon.getPersistentData();

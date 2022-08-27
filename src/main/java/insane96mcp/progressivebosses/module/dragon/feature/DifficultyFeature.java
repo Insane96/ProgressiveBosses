@@ -8,15 +8,14 @@ import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -71,8 +70,8 @@ public class DifficultyFeature extends Feature {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
-	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void onSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -97,7 +96,7 @@ public class DifficultyFeature extends Feature {
 		BlockPos pos2 = new BlockPos(radius, radius, radius);
 		AABB bb = new AABB(pos1, pos2);
 
-		List<ServerPlayer> players = event.getWorld().getEntitiesOfClass(ServerPlayer.class, bb);
+		List<ServerPlayer> players = event.getLevel().getEntitiesOfClass(ServerPlayer.class, bb);
 
 		if (players.size() == 0)
 			return;
@@ -153,7 +152,7 @@ public class DifficultyFeature extends Feature {
 		for (ServerPlayer player : players) {
 			player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
 				if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstKilledDragonMessage)
-					player.sendMessage(new TranslatableComponent(Strings.Translatable.FIRST_DRAGON_KILL), Util.NIL_UUID);
+					player.sendSystemMessage(Component.translatable(Strings.Translatable.FIRST_DRAGON_KILL));
 				if (difficulty.getKilledDragons() < this.maxDifficulty)
 					difficulty.addKilledDragons(1);
 			});
@@ -161,8 +160,8 @@ public class DifficultyFeature extends Feature {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void setPlayerData(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void setPlayerData(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())

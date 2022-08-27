@@ -8,16 +8,15 @@ import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LogHelper;
-import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -87,15 +86,15 @@ public class DifficultyFeature extends Feature {
 		//entityBlacklist
 		this.entityBlacklist = new ArrayList<>();
 		for (String string : this.entityBlacklistConfig.get()) {
-			if (!ForgeRegistries.ENTITIES.containsKey(new ResourceLocation(string)))
+			if (!ForgeRegistries.ENTITY_TYPES.containsKey(new ResourceLocation(string)))
 				LogHelper.warn("Entity %s for Wither's Difficulty Feature entityBlacklist doesn't exist, will be ignored.", string);
 			this.entityBlacklist.add(string);
 		}
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
-	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void onSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -104,7 +103,7 @@ public class DifficultyFeature extends Feature {
 		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		if (this.entityBlacklist.contains(event.getEntity().getType().getRegistryName().toString()))
+		if (this.entityBlacklist.contains(ForgeRegistries.ENTITY_TYPES.getKey(event.getEntity().getType()).toString()))
 			return;
 
 		CompoundTag witherTags = wither.getPersistentData();
@@ -115,7 +114,7 @@ public class DifficultyFeature extends Feature {
 		BlockPos pos2 = wither.blockPosition().offset(this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck);
 		AABB bb = new AABB(pos1, pos2);
 
-		List<ServerPlayer> players = event.getWorld().getEntitiesOfClass(ServerPlayer.class, bb);
+		List<ServerPlayer> players = event.getLevel().getEntitiesOfClass(ServerPlayer.class, bb);
 		if (players.size() == 0)
 			return;
 
@@ -127,7 +126,7 @@ public class DifficultyFeature extends Feature {
 				if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
 					return;
 				if (difficulty.getSpawnedWithers() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
-					player.sendMessage(new TranslatableComponent(Strings.Translatable.FIRST_WITHER_SUMMON), Util.NIL_UUID);
+					player.sendSystemMessage(Component.translatable(Strings.Translatable.FIRST_WITHER_SUMMON));
 				difficulty.addSpawnedWithers(1);
 			});
 		}
@@ -142,8 +141,8 @@ public class DifficultyFeature extends Feature {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void setPlayerData(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void setPlayerData(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())

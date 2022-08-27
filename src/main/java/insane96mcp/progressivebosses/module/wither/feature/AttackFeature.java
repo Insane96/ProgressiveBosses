@@ -21,7 +21,7 @@ import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -123,10 +123,10 @@ public class AttackFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onSpawn(EntityJoinWorldEvent event) {
+	public void onSpawn(EntityJoinLevelEvent event) {
 		witherSkullSpeed(event.getEntity());
 
-		if (event.getWorld().isClientSide)
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -159,7 +159,7 @@ public class AttackFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+	public void onUpdate(LivingEvent.LivingTickEvent event) {
 		if (!this.isEnabled())
 			return;
 
@@ -238,7 +238,7 @@ public class AttackFeature extends Feature {
 		if (!event.getEntity().isAlive())
 			return;
 
-		if (!(event.getEntityLiving() instanceof WitherBoss wither))
+		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
 		doBarrage(wither, event.getAmount());

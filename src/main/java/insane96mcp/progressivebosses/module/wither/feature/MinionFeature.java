@@ -29,7 +29,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -154,8 +154,8 @@ public class MinionFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onWitherSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void onWitherSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -170,7 +170,7 @@ public class MinionFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void update(LivingEvent.LivingUpdateEvent event) {
+	public void update(LivingEvent.LivingTickEvent event) {
 		if (event.getEntity().level.isClientSide)
 			return;
 

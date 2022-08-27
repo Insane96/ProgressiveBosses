@@ -5,9 +5,8 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
-import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,9 +17,9 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -79,7 +78,7 @@ public class BaseFeature extends Feature {
 			serverPlayer.gameMode.changeGameModeForPlayer(GameType.ADVENTURE);
 			serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.CHANGE_GAME_MODE, (float)GameType.ADVENTURE.getId()));
 			if (!adventureMessage) {
-				serverPlayer.sendMessage(new TranslatableComponent(Strings.Translatable.APPROACHING_ELDER_GUARDIAN), Util.NIL_UUID);
+				serverPlayer.sendSystemMessage(Component.translatable(Strings.Translatable.APPROACHING_ELDER_GUARDIAN));
 				nbt.putBoolean(Strings.Tags.ADVENTURE_MESSAGE, true);
 			}
 		}
@@ -123,10 +122,10 @@ public class BaseFeature extends Feature {
 		if (event.getExplosion().blockInteraction == Explosion.BlockInteraction.NONE)
 			return;
 
-		boolean nearElderGuardian = !event.getWorld().getEntitiesOfClass(ElderGuardian.class, event.getExplosion().getExploder().getBoundingBox().inflate(32d)).isEmpty();
+		boolean nearElderGuardian = !event.getLevel().getEntitiesOfClass(ElderGuardian.class, event.getExplosion().getExploder().getBoundingBox().inflate(32d)).isEmpty();
 		if (nearElderGuardian) {
 			event.setCanceled(true);
-			event.getWorld().explode(event.getExplosion().getExploder(), event.getExplosion().getPosition().x, event.getExplosion().getPosition().y, event.getExplosion().getPosition().z, event.getExplosion().radius, event.getExplosion().fire, Explosion.BlockInteraction.NONE);
+			event.getLevel().explode(event.getExplosion().getExploder(), event.getExplosion().getPosition().x, event.getExplosion().getPosition().y, event.getExplosion().getPosition().z, event.getExplosion().radius, event.getExplosion().fire, Explosion.BlockInteraction.NONE);
 		}
 	}
 
@@ -152,8 +151,8 @@ public class BaseFeature extends Feature {
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
-	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void onSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())

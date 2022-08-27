@@ -56,7 +56,7 @@ public class RewardFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+	public void onUpdate(LivingEvent.LivingTickEvent event) {
 		if (!this.isEnabled())
 			return;
 
