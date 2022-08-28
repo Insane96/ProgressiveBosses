@@ -34,10 +34,9 @@ import java.util.UUID;
 @Label(name = "Attack", description = "Makes the Wither smarter (will no longer try to stand on the player's head ...), attack faster and hit harder")
 public class AttackFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Boolean> applyToVanillaWitherConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> increasedDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxChargeAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackBaseDamageConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> increasedDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageChancePerDiffConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> minBarrageDurationConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxBarrageDurationConfig;
@@ -45,10 +44,9 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
 	private final ForgeConfigSpec.DoubleValue bonusAttackSpeedWhenNearConfig;
 
-	public boolean applyToVanillaWither = true;
+	public double increasedDamage = 0.12d;
 	public double maxChargeAttackChance = 0.06d;
 	public double chargeAttackBaseDamage = 16d;
-	public double increasedDamage = 0.12d;
 	//Barrage Attack
 	public double maxBarrageChancePerDiff = 0.011d;
 	public int minBarrageDuration = 20;
@@ -62,18 +60,15 @@ public class AttackFeature extends Feature {
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
-		applyToVanillaWitherConfig = Config.builder
-				.comment("If the AI changes should be applied to the first wither spawned too.")
-				.define("Apply to Vanilla Wither", applyToVanillaWither);
+		increasedDamageConfig = Config.builder
+				.comment("Percentage bonus damage dealt by the Wither per difficulty.")
+				.defineInRange("Increased Damage", increasedDamage, 0d, Double.MAX_VALUE);
 		maxChargeAttackChanceConfig = Config.builder
 				.comment("Chance every time the Wither takes damage to start a charge attack. Less health = higher chance and more damage taken = more chance. This value is the chance at 0% health and when taking 10 damage.")
 				.defineInRange("Max Charge Attack Chance", maxChargeAttackChance, 0d, 1d);
 		chargeAttackBaseDamageConfig = Config.builder
 				.comment("Base damage of the charge attack. Increased by 'Increased Damage'.")
 				.defineInRange("Charge Attack Base Damage", this.chargeAttackBaseDamage, 0d, 50d);
-		increasedDamageConfig = Config.builder
-				.comment("Percentage bonus damage dealt by the Wither per difficulty.")
-				.defineInRange("Increased Damage", increasedDamage, 0d, Double.MAX_VALUE);
 		//Barrage
 		Config.builder.push("Barrage Attack");
 		maxBarrageChancePerDiffConfig = Config.builder
@@ -89,8 +84,8 @@ public class AttackFeature extends Feature {
 		//Skulls
 		Config.builder.comment("Wither Skull Changes").push("Skulls");
 		skullVelocityMultiplierConfig = Config.builder
-				.comment("Wither Skull Projectiles speed will be multiplied by this value.")
-				.defineInRange("Skull Velocity Multiplier", skullVelocityMultiplier, 0d, Double.MAX_VALUE);
+				.comment("Wither Skull Projectiles speed will be multiplied by this value. Set to 1 to not change the speed.")
+				.defineInRange("Skull Velocity Multiplier", skullVelocityMultiplier, 1d, Double.MAX_VALUE);
 		Config.builder.pop();
 		//Attack Speed
 		Config.builder.comment("Attack Speed Changes").push("Attack Speed");
@@ -108,8 +103,8 @@ public class AttackFeature extends Feature {
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.applyToVanillaWither = this.applyToVanillaWitherConfig.get();
 		this.maxChargeAttackChance = this.maxChargeAttackChanceConfig.get();
+		this.chargeAttackBaseDamage = this.chargeAttackBaseDamageConfig.get();
 		this.increasedDamage = this.increasedDamageConfig.get();
 		//Barrage
 		this.maxBarrageChancePerDiff = this.maxBarrageChancePerDiffConfig.get();
@@ -125,29 +120,16 @@ public class AttackFeature extends Feature {
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
 		witherSkullSpeed(event.getEntity());
-
-		if (event.getWorld().isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof WitherBoss wither))
-			return;
-		CompoundTag compoundNBT = wither.getPersistentData();
-		if ((!compoundNBT.contains(Strings.Tags.DIFFICULTY) || compoundNBT.getFloat(Strings.Tags.DIFFICULTY) == 0f) && !this.applyToVanillaWither)
-			return;
-
-		setWitherAI(wither);
+		setWitherAI(event.getEntity());
 	}
 
+	//TODO Scale skulls speed with difficulty (requires client sync)
 	private void witherSkullSpeed(Entity entity) {
-		if (!(entity instanceof WitherSkull witherSkullEntity))
+		if (!(entity instanceof WitherSkull witherSkullEntity)
+				|| !this.isEnabled())
 			return;
 
-		if (!this.isEnabled() || this.skullVelocityMultiplier == 0d)
-			return;
-
+		//Prevent ultra-fast wither skulls from breaking the game
 		if (Math.abs(witherSkullEntity.xPower) > 10 || Math.abs(witherSkullEntity.yPower) > 10 || Math.abs(witherSkullEntity.zPower) > 10) {
 			entity.kill();
 			return;
@@ -278,7 +260,12 @@ public class AttackFeature extends Feature {
 		}
 	}
 
-	public void setWitherAI(WitherBoss wither) {
+	public void setWitherAI(Entity entity) {
+		if (entity.level.isClientSide
+				|| !this.isEnabled()
+				|| !(entity instanceof WitherBoss wither))
+			return;
+
 		ArrayList<Goal> toRemove = new ArrayList<>();
 		wither.goalSelector.availableGoals.forEach(goal -> {
 			if (goal.getGoal() instanceof RangedAttackGoal)
@@ -292,7 +279,7 @@ public class AttackFeature extends Feature {
 		wither.goalSelector.addGoal(1, new WitherChargeAttackGoal(wither));
 		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.bonusAttackSpeedWhenNear));
 
-		MCUtils.applyModifier(wither, Attributes.FOLLOW_RANGE, UUID.randomUUID(), "Wither Glasses", 48d, AttributeModifier.Operation.ADDITION);
+		MCUtils.applyModifier(wither, Attributes.FOLLOW_RANGE, UUID.randomUUID(), "Wither Sexy Glasses", 48d, AttributeModifier.Operation.ADDITION);
 	}
 
 	public static class Consts {
