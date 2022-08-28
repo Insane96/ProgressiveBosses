@@ -1,7 +1,7 @@
 # Changelog
 
 ## Upcoming
-* 
+* Changed Ender Dragon enchanted golden apple drop (~~10%/20%/30%/40%~~ -> 10%/20%/30%/40%/50% chance at difficulties ~~5/6/7/8~~ -> 4/5/6/7/8)
 
 ## 3.5.16
 * Fixed dupe bug with Wither charge attack
