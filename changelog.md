@@ -5,6 +5,7 @@
   * Wither and Dragon config options now scale with max difficulty instead of current difficulty
     * E.g. Dragon bonus health was 25 per difficulty, now is 200 at max difficulty
 * Changed Ender Dragon enchanted golden apple drop (~~10%/20%/30%/40%~~ -> 10%/20%/30%/40%/50% chance at difficulties ~~5/6/7/8~~ -> 4/5/6/7/8)
+* Removed "Apply to Vanilla Wither" config option
 
 ## 3.5.16
 * Fixed dupe bug with Wither charge attack
