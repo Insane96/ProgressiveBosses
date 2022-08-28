@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
+import insane96mcp.progressivebosses.module.wither.ai.RangedMinionAttackGoal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -20,6 +21,7 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.AbstractSkeleton;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -30,10 +32,13 @@ import java.util.function.Predicate;
 
 public class WitherMinion extends AbstractSkeleton {
 
+	protected final RangedMinionAttackGoal minionBowGoal = new RangedMinionAttackGoal(this, 1.0D, 20, 15.0F);
+
 	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
 
 	public WitherMinion(EntityType<? extends AbstractSkeleton> type, Level worldIn) {
 		super(type, worldIn);
+		this.reassesMinionWeapon();
 	}
 
 	@Override
@@ -86,9 +91,31 @@ public class WitherMinion extends AbstractSkeleton {
 	@Nullable
 	public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
 		SpawnGroupData ilivingentitydata = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
-		this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(4.0D);
 		this.reassessWeaponGoal();
 		return ilivingentitydata;
+	}
+
+	@Override
+	public void reassessWeaponGoal() {
+		super.reassessWeaponGoal();
+		if (this.minionBowGoal != null)
+			this.reassesMinionWeapon();
+	}
+
+	private void reassesMinionWeapon() {
+		if (!this.level.isClientSide) {
+			this.goalSelector.removeGoal(this.meleeGoal);
+			this.goalSelector.removeGoal(this.bowGoal);
+			this.goalSelector.removeGoal(this.minionBowGoal);
+			ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
+			if (itemstack.is(Items.BOW)) {
+				this.minionBowGoal.setMinAttackInterval(30);
+				this.goalSelector.addGoal(4, this.minionBowGoal);
+			} else {
+				this.goalSelector.addGoal(4, this.meleeGoal);
+			}
+
+		}
 	}
 
 	public boolean doHurtTarget(Entity entityIn) {
@@ -120,7 +147,7 @@ public class WitherMinion extends AbstractSkeleton {
 	public static AttributeSupplier.Builder prepareAttributes() {
 		return LivingEntity.createLivingAttributes()
 				.add(Attributes.ATTACK_DAMAGE, 3.0d)
-				.add(Attributes.MAX_HEALTH, 20.0d)
+				.add(Attributes.MAX_HEALTH, 16.0d)
 				.add(Attributes.FOLLOW_RANGE, 64.0d)
 				.add(Attributes.MOVEMENT_SPEED, 0.25d)
 				.add(Attributes.ATTACK_KNOCKBACK, 1.5d);

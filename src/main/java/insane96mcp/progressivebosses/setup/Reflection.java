@@ -13,22 +13,22 @@ import java.lang.reflect.Method;
 public class Reflection {
 	static MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-	static Method onEntityHitMethod;
-	public static MethodHandle onEntityHitMH;
-	public static void ProjectileEntity_onEntityHit(Projectile projectileEntity, EntityHitResult p_213868_1_) {
+	static Method onHitEntityMethod;
+	static MethodHandle onHitEntityHandler;
+	public static void Projectile_onHitEntity(Projectile projectileEntity, EntityHitResult p_213868_1_) {
 		try {
-			onEntityHitMH.invoke(projectileEntity, p_213868_1_);
+			onHitEntityHandler.invoke(projectileEntity, p_213868_1_);
 		}
 		catch (Throwable throwable) {
 			throwable.printStackTrace();
 		}
 	}
 
-	static Method onBlockHitMethod;
-	public static MethodHandle onBlockHitMH;
-	public static void ProjectileEntity_onBlockHit(Projectile projectileEntity, BlockHitResult p_213868_1_) {
+	static Method onHitBlockMethod;
+	static MethodHandle onHitBlockHandler;
+	public static void Projectile_onHitBlock(Projectile projectileEntity, BlockHitResult p_213868_1_) {
 		try {
-			onBlockHitMH.invoke(projectileEntity, p_213868_1_);
+			onHitBlockHandler.invoke(projectileEntity, p_213868_1_);
 		}
 		catch (Throwable throwable) {
 			throwable.printStackTrace();
@@ -37,11 +37,11 @@ public class Reflection {
 
 	public static void init() {
 		try {
-			onEntityHitMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "m_5790_", EntityHitResult.class);
-			onEntityHitMH = lookup.unreflect(onEntityHitMethod);
+			onHitEntityMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "m_5790_", EntityHitResult.class);
+			onHitEntityHandler = lookup.unreflect(onHitEntityMethod);
 
-			onBlockHitMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "m_8060_", BlockHitResult.class);
-			onBlockHitMH = lookup.unreflect(onBlockHitMethod);
+			onHitBlockMethod = ObfuscationReflectionHelper.findMethod(Projectile.class, "m_8060_", BlockHitResult.class);
+			onHitBlockHandler = lookup.unreflect(onHitBlockMethod);
 		} catch (IllegalAccessException e) {
 			ProgressiveBosses.LOGGER.error(e.toString());
 		}

@@ -49,7 +49,7 @@ public class AttackFeature extends Feature {
 	public double maxChargeAttackChance = 0.06d;
 	public double chargeAttackBaseDamage = 16d;
 	//Barrage Attack
-	public double maxBarrageChance = 0.09d;
+	public double maxBarrageChance = 0.075d;
 	public int minBarrageDuration = 20;
 	public int maxBarrageDuration = 150;
 	//Skulls
@@ -76,8 +76,8 @@ public class AttackFeature extends Feature {
 		//Barrage
 		Config.builder.push("Barrage Attack");
 		maxBarrageChanceConfig = Config.builder
-				.comment("Chance (at max difficulty) every time the Wither takes damage to start a barrage attack. Lower health and more damage taken increases the chance.\n" +
-						"This value is the chance at 0% health and when taking 10 damage.")
+				.comment("Chance (at max difficulty) every time the Wither takes damage to start a barrage attack. More damage taken increases the chance.\n" +
+						"This value is the chance when taking 10 damage.")
 				.defineInRange("Barrage Attack Chance", maxBarrageChance, 0d, 1d);
 		minBarrageDurationConfig = Config.builder
 				.comment("Min time (in ticks) for the duration of the barrage attack. Less health = longer barrage.")
@@ -218,7 +218,7 @@ public class AttackFeature extends Feature {
 		CompoundTag witherTags = wither.getPersistentData();
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
 
-		double chance = (this.maxBarrageChance * DifficultyHelper.getScalingDifficulty(wither)) * missingHealthPerc;
+		double chance = (this.maxBarrageChance * DifficultyHelper.getScalingDifficulty(wither));
 		chance *= (damageTaken / 10f);
 		double r = wither.getRandom().nextDouble();
 		if (r < chance) {

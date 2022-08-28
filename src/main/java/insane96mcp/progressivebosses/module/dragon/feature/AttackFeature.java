@@ -296,10 +296,10 @@ public class AttackFeature extends Feature {
 
 		HitResult.Type raytraceresult$type = result.getType();
 		if (raytraceresult$type == HitResult.Type.ENTITY) {
-			Reflection.ProjectileEntity_onEntityHit(fireball, (EntityHitResult)result);
+			Reflection.Projectile_onHitEntity(fireball, (EntityHitResult)result);
 		}
 		else if (raytraceresult$type == HitResult.Type.BLOCK) {
-			Reflection.ProjectileEntity_onBlockHit(fireball, (BlockHitResult)result);
+			Reflection.Projectile_onHitBlock(fireball, (BlockHitResult)result);
 		}
 		Entity entity = fireball.getOwner();
 		if (entity != null && (result.getType() != HitResult.Type.ENTITY || !((EntityHitResult)result).getEntity().is(entity))) {
