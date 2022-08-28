@@ -6,6 +6,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -19,30 +20,30 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 @Label(name = "Health", description = "Bonus Health and Bonus regeneration.")
 public class HealthFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Double> bonusPerDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> bonusHealthConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> bonusRegenConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maximumBonusRegenConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> bonusRegenPerDifficultyConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> bonusCrystalRegenConfig;
 
-	public double bonusPerDifficulty = 25d;
+	public double bonusHealth = 200d;
+	public double bonusRegen = 1.0d;
 	public double maxBonusRegen = 1.0d;
-	public double bonusRegenPerDifficulty = 0.125d;
 	public double bonusCrystalRegen = 0d;
 
 	public HealthFeature(Module module) {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
-		bonusPerDifficultyConfig = Config.builder
-				.comment("Increase Ender Dragon's Health by this value per difficulty")
-				.defineInRange("Health Bonus per Difficulty", bonusPerDifficulty, 0.0, Double.MAX_VALUE);
+		bonusHealthConfig = Config.builder
+				.comment("Ender Dragon health will be increased by this value at max difficulty (scaling accordingly at lower difficulties)")
+				.defineInRange("Health Bonus at Max Difficulty", bonusHealth, 0.0, Double.MAX_VALUE);
+		bonusRegenConfig = Config.builder
+				.comment("How much health will the Ender Dragon regen at max difficulty (scaling accordingly at lower difficulties). This doesn't affect the health regen given by crystals.")
+				.defineInRange("Bonus Regeneration", bonusRegen, 0.0, Double.MAX_VALUE);
 		maximumBonusRegenConfig = Config.builder
-				.comment("Maximum bonus regeneration per second given by \"Bonus Regeneration per Difficulty\". Set to 0 to disable bonus health regeneration. This doesn't affect the crystal regeneration of the Ender Dragon.")
+				.comment("Maximum bonus regeneration per second given by \"Bonus Regeneration\". Set to 0 to disable bonus health regeneration. Can be lower than \"Bonus Regeneration\". This doesn't affect the health regen given by crystals.")
 				.defineInRange("Maximum Bonus Regeneration", maxBonusRegen, 0.0, Double.MAX_VALUE);
-		bonusRegenPerDifficultyConfig = Config.builder
-				.comment("How much health will the Ender Dragon regen per difficulty. This is added to the noaml Crystal regeneration.")
-				.defineInRange("Bonus Regeneration per Difficulty", bonusRegenPerDifficulty, 0.0, Double.MAX_VALUE);
 		this.bonusCrystalRegenConfig = Config.builder
-				.comment("How much health (when missing 100% health) will the Ender Dragon regen per difficulty each second whenever she's attached to a Crystal. So if she's missing 30% health, this will be 30% effective. This is added to the normal Crystal regen.")
+				.comment("How much health (when missing 100% health) will the Ender Dragon regen at max difficulty each second whenever she's attached to a Crystal. So if she's missing 30% health, this will be 30% effective. This is added to the normal Crystal regen.")
 				.defineInRange("Bonus Crystal Regeneration", this.bonusCrystalRegen, 0.0, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
@@ -50,57 +51,42 @@ public class HealthFeature extends Feature {
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.bonusPerDifficulty = this.bonusPerDifficultyConfig.get();
+		this.bonusHealth = this.bonusHealthConfig.get();
 		this.maxBonusRegen = this.maximumBonusRegenConfig.get();
-		this.bonusRegenPerDifficulty = this.bonusRegenPerDifficultyConfig.get();
+		this.bonusRegen = this.bonusRegenConfig.get();
 		this.bonusCrystalRegen = this.bonusCrystalRegenConfig.get();
 	}
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+		//noinspection ConstantConditions
+		if (event.getWorld().isClientSide
+				|| !this.isEnabled()
+				|| this.bonusHealth == 0d
+				|| !(event.getEntity() instanceof EnderDragon dragon)
+				|| dragon.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
 			return;
 
-		if (!this.isEnabled())
-			return;
-
-		if (this.bonusPerDifficulty == 0d)
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragon enderDragon))
-			return;
-
-		if (enderDragon.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
-			return;
-
-		CompoundTag dragonTags = enderDragon.getPersistentData();
-		double difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
-		MCUtils.applyModifier(enderDragon, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, difficulty * this.bonusPerDifficulty, AttributeModifier.Operation.ADDITION);
+		MCUtils.applyModifier(dragon, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, this.bonusHealth * DifficultyHelper.getScalingDifficulty(dragon), AttributeModifier.Operation.ADDITION);
 	}
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().level.isClientSide)
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof EnderDragon dragon)
+				|| !dragon.isAlive()
+				|| dragon.getPhaseManager().getCurrentPhase().getPhase() == EnderDragonPhase.DYING)
 			return;
 
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragon enderDragon))
-			return;
-
-		if (!enderDragon.isAlive() || enderDragon.getPhaseManager().getCurrentPhase().getPhase() == EnderDragonPhase.DYING)
-			return;
-
-		CompoundTag tags = enderDragon.getPersistentData();
-
+		CompoundTag tags = dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (difficulty <= 0)
 			return;
 
-		float flatBonusHeal = getFlatBonusHeal(difficulty);
-		float crystalBonusHeal = getCrystalBonusHeal(enderDragon, difficulty);
+		float flatBonusHeal = (float) Math.min(this.bonusRegen * DifficultyHelper.getScalingDifficulty(dragon), this.maxBonusRegen);
+		float crystalBonusHeal = getCrystalBonusHeal(dragon);
 
 		float heal = flatBonusHeal + crystalBonusHeal;
 		if (heal == 0f)
@@ -108,23 +94,15 @@ public class HealthFeature extends Feature {
 
 		heal /= 20f;
 
-		enderDragon.heal(heal);
+		dragon.heal(heal);
 	}
 
-	private float getFlatBonusHeal(float difficulty) {
-		if (this.bonusRegenPerDifficulty == 0d || this.maxBonusRegen == 0d)
-			return 0f;
-		return (float) Math.min(difficulty * this.bonusRegenPerDifficulty, this.maxBonusRegen);
-	}
-
-	private float getCrystalBonusHeal(EnderDragon enderDragon, float difficulty) {
-		if (this.bonusCrystalRegen == 0d)
+	private float getCrystalBonusHeal(EnderDragon dragon) {
+		if (this.bonusCrystalRegen == 0d
+				|| dragon.nearestCrystal == null || !dragon.nearestCrystal.isAlive())
 			return 0f;
 
-		if (enderDragon.nearestCrystal == null || !enderDragon.nearestCrystal.isAlive())
-			return 0f;
-
-		double currHealthPerc = 1 - (enderDragon.getHealth() / enderDragon.getMaxHealth());
-		return (float) (this.bonusCrystalRegen * difficulty * currHealthPerc);
+		double currHealthPerc = 1 - (dragon.getHealth() / dragon.getMaxHealth());
+		return (float) (this.bonusCrystalRegen * DifficultyHelper.getScalingDifficulty(dragon) * currHealthPerc);
 	}
 }

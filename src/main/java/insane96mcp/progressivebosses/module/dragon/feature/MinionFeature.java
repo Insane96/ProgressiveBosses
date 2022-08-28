@@ -8,6 +8,7 @@ import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import insane96mcp.progressivebosses.utils.DragonMinionHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -54,8 +55,8 @@ public class MinionFeature extends Feature {
 	public int minionAtDifficulty = 1;
 	public int minCooldown = 1400;
 	public int maxCooldown = 2000;
-	public double cooldownReduction = 0.05d;
-	public double blindingChance = 0.05d;
+	public double cooldownReduction = 0.40d;
+	public double blindingChance = 0.40d;
 	public int blindingDuration = 150;
 	public boolean reducedDragonDamage = true;
 
@@ -72,10 +73,10 @@ public class MinionFeature extends Feature {
 				.comment("Maximum ticks (20 ticks = 1 seconds) after Minions can spawn.")
 				.defineInRange("Maximum Cooldown", maxCooldown, 0, Integer.MAX_VALUE);
 		cooldownReductionConfig = Config.builder
-				.comment("Percentage cooldown reduction per difficulty for the cooldown of Minion spawning.")
+				.comment("Percentage cooldown reduction at max difficulty for the cooldown of Minion spawning.")
 				.defineInRange("Cooldown Reduction", cooldownReduction, 0d, 1d);
 		blindingChanceConfig = Config.builder
-				.comment("Percentage chance per difficulty for a Minion to spawn as a Blinding Minion.")
+				.comment("Percentage chance at max difficulty for a Minion to spawn as a Blinding Minion.")
 				.defineInRange("Blinding Chance", blindingChance, 0d, 1d);
 		blindingDurationConfig = Config.builder
 				.comment("Time (in ticks) for the bliding effect when hit by a blinding bullet.")
@@ -175,14 +176,14 @@ public class MinionFeature extends Feature {
 		int maxCooldown = this.maxCooldown;
 
 		cooldown = Mth.nextInt(world.random, minCooldown, maxCooldown);
-		cooldown *= 1 - this.cooldownReduction * difficulty;
+		cooldown *= 1 - this.cooldownReduction * DifficultyHelper.getScalingDifficulty(dragon);
 		dragonTags.putInt(Strings.Tags.DRAGON_MINION_COOLDOWN, cooldown - 1);
 
 		float angle = world.random.nextFloat() * (float) Math.PI * 2f;
 		float x = (float) (Math.cos(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 45f)));
 		float z = (float) (Math.sin(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 45f)));
 		float y = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
-		Shulker shulker = summonMinion(world, new Vec3(x, y, z), difficulty);
+		summonMinion(world, new Vec3(x, y, z), DifficultyHelper.getScalingDifficulty(dragon));
 	}
 
 	private static void setMinionAI(Shulker shulker) {
@@ -207,7 +208,7 @@ public class MinionFeature extends Feature {
 		shulker.targetSelector.addGoal(1, new HurtByTargetGoal(shulker, Shulker.class, EnderDragon.class));
 	}
 
-	public Shulker summonMinion(Level world, Vec3 pos, float difficulty) {
+	public void summonMinion(Level world, Vec3 pos, float scalingDifficulty) {
 		Shulker shulker = EntityType.SHULKER.create(world);
 		CompoundTag minionTags = shulker.getPersistentData();
 		minionTags.putBoolean(Strings.Tags.DRAGON_MINION, true);
@@ -215,7 +216,7 @@ public class MinionFeature extends Feature {
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 		//TODO Scaling health
 
-		boolean isBlindingMinion = world.getRandom().nextDouble() < this.blindingChance * difficulty;
+		boolean isBlindingMinion = world.getRandom().nextDouble() < this.blindingChance * scalingDifficulty;
 
 		shulker.setPos(pos.x, pos.y, pos.z);
 		shulker.setCustomName(new TranslatableComponent(Strings.Translatable.DRAGON_MINION));
@@ -226,7 +227,6 @@ public class MinionFeature extends Feature {
 		MCUtils.applyModifier(shulker, Attributes.FOLLOW_RANGE, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 64, AttributeModifier.Operation.ADDITION);
 
 		world.addFreshEntity(shulker);
-		return shulker;
 	}
 
 	@SubscribeEvent

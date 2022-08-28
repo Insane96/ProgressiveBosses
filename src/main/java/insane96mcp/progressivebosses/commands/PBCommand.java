@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -138,17 +139,17 @@ public class PBCommand {
     private static int summon(CommandSourceStack source, String entity, int difficulty) {
         switch (entity) {
             case Strings.Tags.WITHER_MINION -> {
-                Modules.wither.minion.summonMinion(source.getLevel(), source.getPosition(), difficulty, false);
+                Modules.wither.minion.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, Modules.wither.difficulty.maxDifficulty), false);
                 source.sendSuccess(new TranslatableComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslatableComponent(entity), difficulty), true);
                 return 1;
             }
             case Strings.Tags.DRAGON_MINION -> {
-                Modules.dragon.minion.summonMinion(source.getLevel(), source.getPosition(), difficulty);
+                Modules.dragon.minion.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, Modules.dragon.difficulty.maxDifficulty));
                 source.sendSuccess(new TranslatableComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslatableComponent(entity), difficulty), true);
                 return 1;
             }
             case Strings.Tags.DRAGON_LARVA -> {
-                Modules.dragon.larva.summonLarva(source.getLevel(), source.getPosition(), difficulty);
+                Modules.dragon.larva.summonLarva(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, Modules.dragon.difficulty.maxDifficulty));
                 source.sendSuccess(new TranslatableComponent(Strings.Translatable.SUMMONED_ENTITY, new TranslatableComponent(entity), difficulty), true);
                 return 1;
             }

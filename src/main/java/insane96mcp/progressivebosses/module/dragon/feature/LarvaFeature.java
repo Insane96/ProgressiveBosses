@@ -84,29 +84,22 @@ public class LarvaFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDragonSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragon dragon))
+		if (event.getWorld().isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
 		CompoundTag dragonTags = dragon.getPersistentData();
 
+		//The first cooldown is halved
 		int cooldown = (int) (Mth.nextInt(dragon.getRandom(), this.minCooldown, this.maxCooldown) * 0.5d);
 		dragonTags.putInt(Strings.Tags.DRAGON_LARVA_COOLDOWN, cooldown);
 	}
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingUpdateEvent event) {
-		if (event.getEntity().level.isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragon dragon))
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
 		Level world = event.getEntity().level;
@@ -153,7 +146,7 @@ public class LarvaFeature extends Feature {
 		}
 	}
 
-	public Larva summonLarva(Level world, Vec3 pos, float difficulty) {
+	public void summonLarva(Level world, Vec3 pos, float difficulty) {
 		Larva larva = new Larva(PBEntities.LARVA.get(), world);
 		CompoundTag minionTags = larva.getPersistentData();
 
@@ -167,6 +160,5 @@ public class LarvaFeature extends Feature {
 		MCUtils.applyModifier(larva, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2.5d, AttributeModifier.Operation.MULTIPLY_BASE);
 
 		world.addFreshEntity(larva);
-		return larva;
 	}
 }

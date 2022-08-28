@@ -9,6 +9,7 @@ import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Reflection;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -51,26 +52,27 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBonusFireballConfig;
 
-	public double increasedDirectDamage = 0.3d;
-	public double increasedAcidPoolDamage = 0.3d;
+	public double increasedDirectDamage = 2.4d;
+	public double increasedAcidPoolDamage = 2.4d;
 	public double chargePlayerMaxChance = 0.45d; //Chance at max difficulty
 	public double fireballMaxChance = 0.35d; //Chance at max difficulty
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
 	public boolean fireball3DEffectCloud = true;
 	public double fireballVelocityMultiplier = 2.5d;
-	public double maxBonusFireball = 2d;
+	public double maxBonusFireball = 15d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
 		increasedDirectDamageConfig = Config.builder
-				.comment("How much more damage per difficulty (percentage) does the Ender Dragon (directly) deal per difficulty?")
+				.comment("How much more damage at max difficulty (percentage) does the Ender Dragon deal per difficulty?")
 				.defineInRange("Bonus Direct Damage", increasedDirectDamage, 0.0, Double.MAX_VALUE);
 		increasedAcidPoolDamageConfig = Config.builder
-				.comment("How much more damage per difficulty (percentage) does the Ender Dragon's Acid Pool deal per difficulty?")
+				.comment("How much more damage at max difficulty (percentage) does the Ender Dragon's Acid fireball and pool deal per difficulty?")
 				.defineInRange("Bonus Acid Pool Damage", increasedAcidPoolDamage, 0.0, Double.MAX_VALUE);
 		chargePlayerMaxChanceConfig = Config.builder
+				//TODO check if remove 'before checking if she should land in the center'
 				.comment("""
 						Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to charge the player.
 						This is the chance to start a charge attack when the difficulty is at max. Otherwise it scales accordingly.
@@ -95,7 +97,7 @@ public class AttackFeature extends Feature {
 				.comment("Speed multiplier for the Dragon Fireball.")
 				.defineInRange("Fireball Velocity Multiplier", fireballVelocityMultiplier, 0d, Double.MAX_VALUE);
 		maxBonusFireballConfig = Config.builder
-				.comment("The dragon will fire (up to) this more fireballs per difficulty. A decimal number dictates the chance to shot 1 more fireball, e.g. at difficulty 2 this value is 1.4, meaning that the dragon will can shot up to 2 fireballs and has 40% chance to shot up to 3. The bonus fireballs aren't directly aimed at the player but have.")
+				.comment("The dragon will fire (up to) this more fireballs at max difficulty. The bonus fireballs have a slight shotting error so aren't all directly aimed at the player.")
 				.defineInRange("Bonus Fireballs", maxBonusFireball, 0d, Double.MAX_VALUE);
 		Config.builder.pop();
 	}
@@ -138,10 +140,8 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDamageDealt(LivingHurtEvent event) {
-		if (event.getEntity().getCommandSenderWorld().isClientSide)
-			return;
-
-		if (!this.isEnabled())
+		if (!this.isEnabled()
+				|| event.getEntity().getCommandSenderWorld().isClientSide)
 			return;
 
 		onDirectDamage(event);
@@ -149,29 +149,19 @@ public class AttackFeature extends Feature {
 	}
 
 	private void onDirectDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getDirectEntity() instanceof EnderDragon dragon) || event.getEntityLiving() instanceof EnderDragon)
+		if (!(event.getSource().getDirectEntity() instanceof EnderDragon dragon)
+				|| event.getEntityLiving() instanceof EnderDragon)
 			return;
 
-		CompoundTag compoundNBT = dragon.getPersistentData();
-		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
-
-		if (difficulty == 0f)
-			return;
-
-		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDirectDamage * difficulty)));
+		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDirectDamage * DifficultyHelper.getScalingDifficulty(dragon))));
 	}
 
 	private void onAcidDamage(LivingHurtEvent event) {
-		if (!(event.getSource().getEntity() instanceof EnderDragon dragon) || !(event.getSource().getDirectEntity() instanceof AreaEffectCloud))
+		if (!(event.getSource().getEntity() instanceof EnderDragon dragon)
+				|| !(event.getSource().getDirectEntity() instanceof AreaEffectCloud))
 			return;
 
-		CompoundTag compoundNBT = dragon.getPersistentData();
-		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
-
-		if (difficulty == 0f)
-			return;
-
-		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAcidPoolDamage * difficulty)));
+		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAcidPoolDamage * DifficultyHelper.getScalingDifficulty(dragon))));
 	}
 
 	public boolean onPhaseEnd(EnderDragon dragon) {
@@ -282,13 +272,12 @@ public class AttackFeature extends Feature {
 		if (!this.fireballExplosionDamages)
 			return;
 
-		float difficulty = 0;
-		if (shooter != null) {
-			CompoundTag compoundNBT = shooter.getPersistentData();
-			difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
+		float difficultyScaling = 0;
+		if (shooter instanceof LivingEntity livingEntity) {
+			difficultyScaling = DifficultyHelper.getScalingDifficulty(livingEntity);
 		}
 
-		float damage = 6 * (1f + (float) (this.increasedAcidPoolDamage * difficulty));
+		float damage = 6 * (1f + (float) (this.increasedAcidPoolDamage * difficultyScaling));
 
 		AABB axisAlignedBB = new AABB(result.getLocation(), result.getLocation()).inflate(4d);
 		List<LivingEntity> livingEntities = fireball.level.getEntitiesOfClass(LivingEntity.class, axisAlignedBB);
@@ -313,7 +302,7 @@ public class AttackFeature extends Feature {
 			Reflection.ProjectileEntity_onBlockHit(fireball, (BlockHitResult)result);
 		}
 		Entity entity = fireball.getOwner();
-		if (result.getType() != HitResult.Type.ENTITY || !((EntityHitResult)result).getEntity().is(entity)) {
+		if (entity != null && (result.getType() != HitResult.Type.ENTITY || !((EntityHitResult)result).getEntity().is(entity))) {
 			if (!fireball.level.isClientSide) {
 				List<LivingEntity> list = fireball.level.getEntitiesOfClass(LivingEntity.class, fireball.getBoundingBox().inflate(4.0D, 2.0D, 4.0D));
 				AreaEffectCloud3DEntity areaeffectcloudentity = new AreaEffectCloud3DEntity(fireball.level, fireball.getX(), fireball.getY(), fireball.getZ());
@@ -362,10 +351,7 @@ public class AttackFeature extends Feature {
 		dragonfireballentity.moveTo(x, y, z, 0.0F, 0.0F);
 		dragon.level.addFreshEntity(dragonfireballentity);
 
-		CompoundTag compoundNBT = dragon.getPersistentData();
-		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
-
-		float fireballs = Mth.nextFloat(dragon.getRandom(), 0f, (float) (maxBonusFireball * difficulty));
+		float fireballs = Mth.nextFloat(dragon.getRandom(), 0f, (float) (maxBonusFireball * DifficultyHelper.getScalingDifficulty(dragon)));
 		fireballs = MathHelper.getAmountWithDecimalChance(dragon.getRandom(), fireballs);
 		if (fireballs == 0f)
 			return;

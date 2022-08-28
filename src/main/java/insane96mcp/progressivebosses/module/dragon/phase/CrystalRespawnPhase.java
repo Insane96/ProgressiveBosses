@@ -37,7 +37,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		if (this.targetLocation == null) {
 			if (spikesToRespawn.isEmpty()) {
 				dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
-				LogHelper.warn("Canceling Crystal respawn phase because no spikes to respawn were found");
+				//LogHelper.warn("Canceling Crystal respawn phase because no spikes to respawn were found");
 				return;
 			}
 			this.targetLocation = new Vec3(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5.5, spikesToRespawn.get(0).getCenterZ() + 0.5);

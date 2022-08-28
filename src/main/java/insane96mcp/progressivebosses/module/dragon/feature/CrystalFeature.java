@@ -8,6 +8,7 @@ import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -49,7 +50,7 @@ public class CrystalFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsStepConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsMaxConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> enableCrystalRespawnConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> crystalRespawnPerDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> crystalsRespawnedConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
 
 	public int moreCagesAtDifficulty = 1;
@@ -58,7 +59,7 @@ public class CrystalFeature extends Feature {
 	public int moreCrystalsStep = 3;
 	public int moreCrystalsMax = 3;
 	public boolean enableCrystalRespawn = true;
-	public double crystalRespawnPerDifficulty = 0.375d;
+	public double crystalsRespawned = 3d;
 	public boolean explosionImmune = true;
 
 	public CrystalFeature(Module module) {
@@ -68,7 +69,7 @@ public class CrystalFeature extends Feature {
 				.comment("At this difficulty cages will start to appear around other crystals too. -1 will disable this feature.")
 				.defineInRange("More Cages at Difficulty", moreCagesAtDifficulty, -1, Integer.MAX_VALUE);
 		maxBonusCagesConfig = Config.builder
-				.comment("Max number of bonus cages that can spawn around the crystals.")
+				.comment("Max number of bonus cages that can spawn around the crystals. (Vanilla already has 2 cages)")
 				.defineInRange("Max Bonus Cages", maxBonusCages, 0, 8);
 		moreCrystalsAtDifficultyConfig = Config.builder
 				.comment("At this difficulty one crystal will start to appear inside obsidian towers. -1 will disable this feature.")
@@ -82,9 +83,9 @@ public class CrystalFeature extends Feature {
 		enableCrystalRespawnConfig = Config.builder
 				.comment("Everytime the dragon is hit (when below 50% of health) there's a chance to to trigger a Crystal respawn Phase. The chance is 0% when health >=50% and 100% when health <=30%, the health threshold decreases by 20% every time the dragon respawns crystals.")
 				.define("Enable crystal respawn", enableCrystalRespawn);
-		crystalRespawnPerDifficultyConfig = Config.builder
-				.comment("Difficulty multiplied by this number will output how many crystals will the dragon respawn.")
-				.defineInRange("Crystal Respawn Per Difficulty", crystalRespawnPerDifficulty, 0d, 10d);
+		crystalsRespawnedConfig = Config.builder
+				.comment("At max Difficulty how many crystals will the dragon respawn.")
+				.defineInRange("Crystal Respawn Per Difficulty", crystalsRespawned, 0d, 10d);
 		explosionImmuneConfig = Config.builder
 				.comment("Crystals can no longer be destroyed by other explosions.")
 				.define("Explosion Immune", explosionImmune);
@@ -100,7 +101,7 @@ public class CrystalFeature extends Feature {
 		this.moreCrystalsStep = this.moreCrystalsStepConfig.get();
 		this.moreCrystalsMax = this.moreCrystalsMaxConfig.get();
 		this.enableCrystalRespawn = this.enableCrystalRespawnConfig.get();
-		this.crystalRespawnPerDifficulty = this.crystalRespawnPerDifficultyConfig.get();
+		this.crystalsRespawned = this.crystalsRespawnedConfig.get();
 		this.explosionImmune = this.explosionImmuneConfig.get();
 	}
 
@@ -118,7 +119,6 @@ public class CrystalFeature extends Feature {
 			return;
 
 		CompoundTag dragonTags = dragon.getPersistentData();
-		float difficulty = dragonTags.getFloat(Strings.Tags.DIFFICULTY);
 
 		if (!VALID_CRYSTAL_RESPAWN_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
 			return;
@@ -140,7 +140,7 @@ public class CrystalFeature extends Feature {
 
 		dragonTags.putByte(Strings.Tags.CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
 
-		double crystalsRespawned = Mth.clamp(difficulty * this.crystalRespawnPerDifficulty, 0, SpikeFeature.NUMBER_OF_SPIKES);
+		double crystalsRespawned = Mth.clamp(this.crystalsRespawned * DifficultyHelper.getScalingDifficulty(dragon), 0, SpikeFeature.NUMBER_OF_SPIKES);
 		crystalsRespawned = MathHelper.getAmountWithDecimalChance(dragon.getRandom(), crystalsRespawned);
 		if (crystalsRespawned == 0d)
 			return;

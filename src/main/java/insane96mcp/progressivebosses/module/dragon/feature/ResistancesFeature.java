@@ -4,8 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.setup.Config;
-import insane96mcp.progressivebosses.setup.Strings;
-import net.minecraft.nbt.CompoundTag;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
@@ -23,14 +22,14 @@ public class ResistancesFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> damageRedutionWhenSittingConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
 
-	public double damageRedutionWhenSitting = 0.08d;
+	public double damageRedutionWhenSitting = 0.60d;
 	public double explosionDamageReduction = 0.667d;
 
 	public ResistancesFeature(Module module) {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
 		damageRedutionWhenSittingConfig = Config.builder
-				.comment("Melee Damage reduction per difficulty while the Ender Dragon is at the center.")
+				.comment("Melee Damage reduction at max difficulty while the Ender Dragon is at the center.")
 				.defineInRange("Melee Damage reduction while at the center", damageRedutionWhenSitting, 0d, Double.MAX_VALUE);
 		explosionDamageReductionConfig = Config.builder
 				.comment("Damage reduction when hit by explosions (firework rockets excluded).")
@@ -47,10 +46,8 @@ public class ResistancesFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDragonDamage(LivingDamageEvent event) {
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragon dragon))
+		if (!this.isEnabled()
+				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
 		meleeDamageReduction(event, dragon);
@@ -62,12 +59,8 @@ public class ResistancesFeature extends Feature {
 	private void meleeDamageReduction(LivingDamageEvent event, EnderDragon dragon) {
 		if (this.damageRedutionWhenSitting == 0d)
 			return;
-
-		CompoundTag compoundNBT = dragon.getPersistentData();
-		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
-
 		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()) && event.getSource().getDirectEntity() instanceof Player) {
-			event.setAmount((event.getAmount() - (float) (event.getAmount() * (this.damageRedutionWhenSitting * difficulty))));
+			event.setAmount((event.getAmount() - (float) (event.getAmount() * (this.damageRedutionWhenSitting * DifficultyHelper.getScalingDifficulty(dragon)))));
 		}
 	}
 
