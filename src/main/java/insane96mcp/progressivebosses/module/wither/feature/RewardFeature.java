@@ -5,8 +5,7 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Config;
-import insane96mcp.progressivebosses.setup.Strings;
-import net.minecraft.nbt.CompoundTag;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -23,15 +22,15 @@ public class RewardFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> injectDefaultRewardsConfig;
 
-	public double bonusExperience = 7.5d;
+	public double bonusExperience = 60d;
 	public boolean injectDefaultRewards = true;
 
 	public RewardFeature(Module module) {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
 		bonusExperienceConfig = Config.builder
-				.comment("How much more experience (percentage) will Wither drop per Difficulty. The percentage is additive (e.g. with this set to 200%, 7 withers spawned = 1400% more experience)")
-				.defineInRange("Bonus Experience per Difficulty", bonusExperience, 0.0, Double.MAX_VALUE);
+				.comment("How much more experience (percentage, 60 means +6000%) will Wither drop at max Difficulty.")
+				.defineInRange("Bonus Experience ", bonusExperience, 0.0, Double.MAX_VALUE);
 		injectDefaultRewardsConfig = Config.builder
 				.comment("If true default mod drops are added to the Wither.\n" +
 						"Note that replacing the Wither loot table (e.g. via DataPack) will automatically remove the Injected loot.")
@@ -48,22 +47,13 @@ public class RewardFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+		if (event.getWorld().isClientSide
+				|| !this.isEnabled()
+				|| this.bonusExperience == 0d
+				|| !(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		if (!this.isEnabled())
-			return;
-
-		if (this.bonusExperience == 0d)
-			return;
-
-		if (!(event.getEntity() instanceof WitherBoss wither))
-			return;
-
-		CompoundTag witherTags = wither.getPersistentData();
-		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
-
-		wither.xpReward = 50 + (int) (50 * (this.bonusExperience * difficulty));
+		wither.xpReward = 50 + (int) (50 * (this.bonusExperience * DifficultyHelper.getScalingDifficulty(wither)));
 	}
 
 	@SubscribeEvent

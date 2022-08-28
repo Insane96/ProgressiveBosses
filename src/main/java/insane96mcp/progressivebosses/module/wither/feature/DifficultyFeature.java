@@ -23,7 +23,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Label(name = "Difficulty Settings", description = "How difficulty is handled for the Wither.")
@@ -37,7 +36,7 @@ public class DifficultyFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> showFirstSummonedWitherMessageConfig;
 	private final ForgeConfigSpec.ConfigValue<List<? extends String>> entityBlacklistConfig;
 
-	private static final List<String> defaultEntityBlacklist = Arrays.asList("botania:pink_wither");
+	private static final List<String> defaultEntityBlacklist = List.of("botania:pink_wither");
 
 	public int spawnRadiusPlayerCheck = 128;
 	public boolean sumSpawnedWitherDifficulty = false;

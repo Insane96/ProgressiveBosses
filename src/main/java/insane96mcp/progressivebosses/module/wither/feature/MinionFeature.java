@@ -8,6 +8,7 @@ import insane96mcp.progressivebosses.module.wither.entity.WitherMinion;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -48,7 +49,7 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Integer> minCooldownConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxCooldownConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> cooldownMultiplierBelowHalfHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> bonusSpeedPerDifficultyConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> bonusSpeedConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> magicDamageMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> killMinionOnWitherDeathConfig;
 	//Equipment
@@ -64,16 +65,16 @@ public class MinionFeature extends Feature {
 	public int maxAround = 18;
 	public int minCooldown = 400;
 	public int maxCooldown = 800;
-	public double cooldownMultiplierBelowHalfHealth = 0.5d;
-	public double bonusSpeedPerDifficulty = 0.03d;
+	public double cooldownMultiplierBelowHalfHealth = 0.50d;
+	public double bonusSpeed = 0.25d;
 	public double magicDamageMultiplier = 3.0d;
 	public boolean killMinionOnWitherDeath = true;
 	//Equipment
 	public boolean hasSword = true;
-	public double preHalfHealthBowChance = 0.6d;
+	public double preHalfHealthBowChance = 0.60d;
 	public double halfHealthBowChance = 0.08d;
-	public double powerSharpnessChance = 0.60d;
-	public double punchKnockbackChance = 0.3d;
+	public double powerSharpnessChance = 4.80d;
+	public double punchKnockbackChance = 2.40d;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);
@@ -99,9 +100,9 @@ public class MinionFeature extends Feature {
 		cooldownMultiplierBelowHalfHealthConfig = Config.builder
 				.comment("Min and Max cooldowns are multiplied by this value when the Wither drops below half health. Set to 1 to not change the cooldown when the wither's health drops below half.")
 				.defineInRange("Cooldown Multiplier Below Half Health", cooldownMultiplierBelowHalfHealth, 0d, Double.MAX_VALUE);
-		bonusSpeedPerDifficultyConfig = Config.builder
-				.comment("Percentage bonus speed per difficulty. (0.01 means 1%)")
-				.defineInRange("Bonus Movement Speed Per Difficulty", bonusSpeedPerDifficulty, 0d, Double.MAX_VALUE);
+		bonusSpeedConfig = Config.builder
+				.comment("Percentage bonus speed at max difficulty.")
+				.defineInRange("Bonus Movement Speed Per Difficulty", bonusSpeed, 0d, Double.MAX_VALUE);
 		magicDamageMultiplierConfig = Config.builder
 				.comment("Wither Minions will take magic damage multiplied by this value.")
 				.defineInRange("Magic Damage Multiplier", magicDamageMultiplier, 0, Double.MAX_VALUE);
@@ -120,10 +121,10 @@ public class MinionFeature extends Feature {
 				.comment("Chance for the Wither Minion to spawn with a bow when Wither's below Half Health")
 				.defineInRange("Bow Chance Below Half Health", halfHealthBowChance, 0d, 1d);
 		powerSharpnessChanceConfig = Config.builder
-				.comment("Chance (per difficulty) for the Wither Minion Sword / Bow to be enchanted with Sharpness / Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
+				.comment("Chance (at max difficulty) for the Wither Minion Sword / Bow to be enchanted with Sharpness / Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
 				.defineInRange("Power / Sharpness Chance", powerSharpnessChance, 0d, Double.MAX_VALUE);
 		punchKnockbackChanceConfig = Config.builder
-				.comment("Chance (per difficulty) for the Wither Minion Sword / Bow to be enchanted with Knockback / Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
+				.comment("Chance (at max difficulty) for the Wither Minion Sword / Bow to be enchanted with Knockback / Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
 				.defineInRange("Punch / Knockback Chance", punchKnockbackChance, 0d, Double.MAX_VALUE);
 		Config.builder.pop();
 
@@ -142,7 +143,7 @@ public class MinionFeature extends Feature {
 		if (this.minCooldown > this.maxCooldown)
 			this.minCooldown = this.maxCooldown;
 		this.cooldownMultiplierBelowHalfHealth = this.cooldownMultiplierBelowHalfHealthConfig.get();
-		this.bonusSpeedPerDifficulty = this.bonusSpeedPerDifficultyConfig.get();
+		this.bonusSpeed = this.bonusSpeedConfig.get();
 		this.magicDamageMultiplier = this.magicDamageMultiplierConfig.get();
 		this.killMinionOnWitherDeath = this.killMinionOnWitherDeathConfig.get();
 		//Equipment
@@ -240,10 +241,7 @@ public class MinionFeature extends Feature {
 			if (y <= wither.level.getMinBuildHeight())
 				continue;
 
-			WitherMinion witherMinion = summonMinion(world, new Vec3(x + 0.5, y + 0.5, z + 0.5), difficulty, wither.isPowered());
-
-			//No need since EntityJoinWorldEvent is triggered
-			//setMinionAI(witherMinion);
+			WitherMinion witherMinion = summonMinion(world, new Vec3(x + 0.5, y + 0.5, z + 0.5), DifficultyHelper.getScalingDifficulty(wither), wither.isPowered());
 
 			ListTag minionsList = witherTags.getList(Strings.Tags.MINIONS, Tag.TAG_COMPOUND);
 			CompoundTag uuid = new CompoundTag();
@@ -305,15 +303,15 @@ public class MinionFeature extends Feature {
 		}
 	}
 
-	private void setEquipment(WitherMinion witherMinion, float difficulty, boolean isCharged) {
+	private void setEquipment(WitherMinion witherMinion, float scalingDifficulty, boolean isCharged) {
 		witherMinion.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
 
-		int powerSharpnessLevel = (int) (this.powerSharpnessChance * difficulty);
-		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.powerSharpnessChance * difficulty) - powerSharpnessLevel)
+		int powerSharpnessLevel = (int) (this.powerSharpnessChance * scalingDifficulty);
+		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.powerSharpnessChance * scalingDifficulty) - powerSharpnessLevel)
 			powerSharpnessLevel++;
 
-		int punchKnockbackLevel = (int) (this.punchKnockbackChance * difficulty);
-		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.punchKnockbackChance * difficulty) - punchKnockbackLevel)
+		int punchKnockbackLevel = (int) (this.punchKnockbackChance * scalingDifficulty);
+		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.punchKnockbackChance * scalingDifficulty) - punchKnockbackLevel)
 			punchKnockbackLevel++;
 
 		ItemStack sword = new ItemStack(Items.STONE_SWORD);
@@ -341,7 +339,7 @@ public class MinionFeature extends Feature {
 		}
 	}
 
-	public WitherMinion summonMinion(Level world, Vec3 pos, float difficulty, boolean isCharged) {
+	public WitherMinion summonMinion(Level world, Vec3 pos, float scalingDifficulty, boolean isCharged) {
 		WitherMinion witherMinion = new WitherMinion(PBEntities.WITHER_MINION.get(), world);
 		CompoundTag minionTags = witherMinion.getPersistentData();
 
@@ -349,11 +347,12 @@ public class MinionFeature extends Feature {
 		//TODO Scaling health
 
 		witherMinion.setPos(pos.x, pos.y, pos.z);
-		setEquipment(witherMinion, difficulty, isCharged);
-		witherMinion.setDropChance(EquipmentSlot.MAINHAND, -0.04f);
+		setEquipment(witherMinion, scalingDifficulty, isCharged);
+		witherMinion.setDropChance(EquipmentSlot.MAINHAND, -0.1f);
+		witherMinion.setCanPickUpLoot(false);
 		witherMinion.setPersistenceRequired();
 
-		double speedBonus = this.bonusSpeedPerDifficulty * difficulty;
+		double speedBonus = this.bonusSpeed * scalingDifficulty;
 		MCUtils.applyModifier(witherMinion, Attributes.MOVEMENT_SPEED, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
 		MCUtils.applyModifier(witherMinion, Attributes.FOLLOW_RANGE, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 16, AttributeModifier.Operation.ADDITION);
 		MCUtils.applyModifier(witherMinion, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);

@@ -10,6 +10,7 @@ import insane96mcp.progressivebosses.network.MessageWitherSync;
 import insane96mcp.progressivebosses.network.PacketManager;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -37,18 +38,18 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> increasedDamageConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxChargeAttackChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackBaseDamageConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageChancePerDiffConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageChanceConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> minBarrageDurationConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> maxBarrageDurationConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
 	private final ForgeConfigSpec.DoubleValue bonusAttackSpeedWhenNearConfig;
 
-	public double increasedDamage = 0.12d;
+	public double increasedDamage = 0.96d;
 	public double maxChargeAttackChance = 0.06d;
 	public double chargeAttackBaseDamage = 16d;
 	//Barrage Attack
-	public double maxBarrageChancePerDiff = 0.011d;
+	public double maxBarrageChance = 0.09d;
 	public int minBarrageDuration = 20;
 	public int maxBarrageDuration = 150;
 	//Skulls
@@ -61,19 +62,23 @@ public class AttackFeature extends Feature {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
 		increasedDamageConfig = Config.builder
-				.comment("Percentage bonus damage dealt by the Wither per difficulty.")
+				.comment("Percentage bonus damage dealt by the Wither at max difficulty.")
 				.defineInRange("Increased Damage", increasedDamage, 0d, Double.MAX_VALUE);
+		Config.builder.push("Charge Attack");
 		maxChargeAttackChanceConfig = Config.builder
-				.comment("Chance every time the Wither takes damage to start a charge attack. Less health = higher chance and more damage taken = more chance. This value is the chance at 0% health and when taking 10 damage.")
-				.defineInRange("Max Charge Attack Chance", maxChargeAttackChance, 0d, 1d);
+				.comment("Chance every time the Wither takes damage to start a charge attack. Lower health and more damage taken increases the chance.\n" +
+						"This value is the chance at 0% health and when taking 10 damage.")
+				.defineInRange("Charge chance", maxChargeAttackChance, 0d, 1d);
 		chargeAttackBaseDamageConfig = Config.builder
-				.comment("Base damage of the charge attack. Increased by 'Increased Damage'.")
+				.comment("Base damage of the charge attack. Increased by 'Increased Damage' config option.")
 				.defineInRange("Charge Attack Base Damage", this.chargeAttackBaseDamage, 0d, 50d);
+		Config.builder.pop();
 		//Barrage
 		Config.builder.push("Barrage Attack");
-		maxBarrageChancePerDiffConfig = Config.builder
-				.comment("Chance (per difficulty) every time the Wither takes damage to start a barrage attack. Less health = higher chance and more damage taken = more chance. This value is the chance at 0% health and when taking 10 damage.")
-				.defineInRange("Max Barrage Attack Chance Per Difficulty", maxBarrageChancePerDiff, 0d, 1d);
+		maxBarrageChanceConfig = Config.builder
+				.comment("Chance (at max difficulty) every time the Wither takes damage to start a barrage attack. Lower health and more damage taken increases the chance.\n" +
+						"This value is the chance at 0% health and when taking 10 damage.")
+				.defineInRange("Barrage Attack Chance", maxBarrageChance, 0d, 1d);
 		minBarrageDurationConfig = Config.builder
 				.comment("Min time (in ticks) for the duration of the barrage attack. Less health = longer barrage.")
 				.defineInRange("Min Barrage Duration", minBarrageDuration, 0, Integer.MAX_VALUE);
@@ -103,11 +108,11 @@ public class AttackFeature extends Feature {
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
+		this.increasedDamage = this.increasedDamageConfig.get();
 		this.maxChargeAttackChance = this.maxChargeAttackChanceConfig.get();
 		this.chargeAttackBaseDamage = this.chargeAttackBaseDamageConfig.get();
-		this.increasedDamage = this.increasedDamageConfig.get();
 		//Barrage
-		this.maxBarrageChancePerDiff = this.maxBarrageChancePerDiffConfig.get();
+		this.maxBarrageChance = this.maxBarrageChanceConfig.get();
 		this.minBarrageDuration = this.minBarrageDurationConfig.get();
 		this.maxBarrageDuration = this.maxBarrageDurationConfig.get();
 		//Skulls
@@ -184,43 +189,22 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDamageDealt(LivingHurtEvent event) {
-		if (event.getEntity().level.isClientSide)
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| this.increasedDamage == 0d
+				|| !(event.getSource().getEntity() instanceof WitherBoss wither))
 			return;
 
-		if (!this.isEnabled())
-			return;
-
-		if (this.increasedDamage == 0d)
-			return;
-
-
-		WitherBoss wither;
-		if (event.getSource().getDirectEntity() instanceof WitherBoss)
-			wither = (WitherBoss) event.getSource().getDirectEntity();
-		else if (event.getSource().getEntity() instanceof WitherBoss)
-			wither = (WitherBoss) event.getSource().getEntity();
-		else
-			return;
-
-		CompoundTag compoundNBT = wither.getPersistentData();
-		float difficulty = compoundNBT.getFloat(Strings.Tags.DIFFICULTY);
-
-		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDamage * difficulty)));
+		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDamage * DifficultyHelper.getScalingDifficulty(wither))));
 	}
 
 	//High priority so runs before the damage reduction
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onDamaged(LivingHurtEvent event) {
-		if (event.getEntity().level.isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!event.getEntity().isAlive())
-			return;
-
-		if (!(event.getEntityLiving() instanceof WitherBoss wither))
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !event.getEntity().isAlive()
+				|| !(event.getEntityLiving() instanceof WitherBoss wither))
 			return;
 
 		doBarrage(wither, event.getAmount());
@@ -228,15 +212,13 @@ public class AttackFeature extends Feature {
 	}
 
 	private void doBarrage(WitherBoss wither, float damageTaken) {
-		if (this.maxBarrageChancePerDiff == 0d)
+		if (this.maxBarrageChance == 0d)
 			return;
 
 		CompoundTag witherTags = wither.getPersistentData();
-		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
-
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
 
-		double chance = (this.maxBarrageChancePerDiff * difficulty) * missingHealthPerc;
+		double chance = (this.maxBarrageChance * DifficultyHelper.getScalingDifficulty(wither)) * missingHealthPerc;
 		chance *= (damageTaken / 10f);
 		double r = wither.getRandom().nextDouble();
 		if (r < chance) {

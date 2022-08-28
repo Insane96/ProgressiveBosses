@@ -6,6 +6,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -34,7 +35,7 @@ public class MiscFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> ignoreWitherProofBlocksConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> witherNetherOnlyConfig;
 
-	public double explosionPowerBonus = 1d;
+	public double explosionPowerBonus = 8d;
 	public int explosionCausesFireAtDifficulty = 5;
 	public boolean fasterBlockBreaking = true;
 	public boolean biggerBlockBreaking = true;
@@ -45,7 +46,7 @@ public class MiscFeature extends Feature {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
 		explosionPowerBonusConfig = Config.builder
-				.comment("How much explosion power (after the invulnerability) will the Wither gain for each difficulty point. Explosion Radius is capped to 13. Base Wither Explosion Power is 7.0. Setting this to 0 will not increase the Wither Explosion Power.")
+				.comment("How much explosion power (after the invulnerability) will the Wither have at max difficulty. Explosion Radius is capped to 13. Base Wither Explosion Power is 7.0. Setting this to 0 will not increase the Wither Explosion Power.")
 				.defineInRange("Explosion Power Bonus", explosionPowerBonus, 0d, 4d);
 		explosionCausesFireAtDifficultyConfig = Config.builder
 				.comment("At this difficulty the Wither Explosion will cause fire. Set to -1 to disable.")
@@ -165,7 +166,7 @@ public class MiscFeature extends Feature {
 		if (difficulty <= 0f)
 			return;
 
-		float explosionPower = (float) (event.getExplosion().radius + (this.explosionPowerBonus * difficulty));
+		float explosionPower = (float) (event.getExplosion().radius + (this.explosionPowerBonus * DifficultyHelper.getScalingDifficulty(wither)));
 
 		if (explosionPower > 13f)
 			explosionPower = 13f;
@@ -222,10 +223,7 @@ public class MiscFeature extends Feature {
 			}
 		}
 
-		//If it's not the nether or if it is but it's on the Nether roof and there's soulsand nearby
-		if ((!isNether || pos.getY() > 127) && hasSoulSandNearby)
-			return false;
-
-		return true;
+		//If it's the nether, and it's below the Nether roof or there's no soulsand nearby can place the skull
+		return (isNether && pos.getY() <= 127) || !hasSoulSandNearby;
 	}
 }
