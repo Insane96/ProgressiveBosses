@@ -261,7 +261,7 @@ public class AttackFeature extends Feature {
 		wither.goalSelector.addGoal(1, new WitherChargeAttackGoal(wither));
 		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.bonusAttackSpeedWhenNear));
 
-		MCUtils.applyModifier(wither, Attributes.FOLLOW_RANGE, UUID.randomUUID(), "Wither Sexy Glasses", 48d, AttributeModifier.Operation.ADDITION);
+		MCUtils.applyModifier(wither, Attributes.FOLLOW_RANGE, UUID.randomUUID(), "Wither Sexy Glasses", 56d, AttributeModifier.Operation.ADDITION);
 	}
 
 	public static class Consts {
