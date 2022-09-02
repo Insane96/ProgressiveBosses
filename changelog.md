@@ -1,11 +1,11 @@
 # Changelog
 
-## Upcoming
+## 3.6.0
 * REGENERATE THE CONFIG
   * Wither and Dragon config options now scale with max difficulty instead of current difficulty
     * E.g. Dragon bonus health was 25 per difficulty, now is 200 at max difficulty
 * Wither Minion
-  * Shoot every 1.5 seconds instead of 2 (1 in hard)
+  * Shoot every 1.5 seconds instead of 2 (or 1 in hard)
   * No longer strafe when attacking
 * Changed Ender Dragon enchanted golden apple drop (~~10%/20%/30%/40%~~ -> 10%/20%/30%/40%/50% chance at difficulties ~~5/6/7/8~~ -> 4/5/6/7/8)
 * Removed "Apply to Vanilla Wither" config option
@@ -30,7 +30,7 @@
 * Russian Translation
 
 ## 3.5.11
-* Ender Dragon now will now land on the exact center of the podium, to prevent begin too low and hitting players *in* the podium
+* Ender Dragon now will now land on the exact center of the podium, to prevent begin too low and hitting players **in** the podium
 * Wither Charge attack damage is now configurable
 * Fixed larvae dropping ancient debris and nether star shard
 
