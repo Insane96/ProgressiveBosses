@@ -23,7 +23,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	private boolean respawning = false;
 	private final ArrayList<SpikeFeature.EndSpike> spikesToRespawn = new ArrayList<>();
 
-	private final int TICK_RESPAWN_CRYSTAL = 50;
+	private final int TICK_RESPAWN_CRYSTAL = 100;
 
 	public CrystalRespawnPhase(EnderDragon dragonIn) {
 		super(dragonIn);
@@ -52,7 +52,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		else {
 			tick++;
 			dragon.setDeltaMovement(Vec3.ZERO);
-			if (tick <= 25)
+			if (tick <= 75 && tick % 5 == 0)
 				dragon.playSound(SoundEvents.ENDER_DRAGON_GROWL, 4F, 1.0F);
 			if (tick >= TICK_RESPAWN_CRYSTAL) {
 				double x = spikesToRespawn.get(0).getCenterX();
@@ -64,8 +64,8 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 				dragon.level.addFreshEntity(crystal);
 				CrystalFeature.generateCage(crystal.level, crystal.blockPosition());
 				spikesToRespawn.remove(0);
-				if (this.spikesToRespawn.size() == 0)
-				LogHelper.info("No more crystals to respawn left");
+				if (this.spikesToRespawn.isEmpty())
+					LogHelper.info("No more crystals to respawn left");
 				tick = 0;
 				respawning = false;
 				this.targetLocation = null;
@@ -89,7 +89,14 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	 * Returns the maximum amount dragon may rise or fall during this phase
 	 */
 	public float getFlySpeed() {
-		return 24F;
+		return 12F;
+	}
+
+	@Override
+	public float getTurnSpeed() {
+		float f = (float) this.dragon.getDeltaMovement().horizontalDistance() + 1.0F;
+		float f1 = Math.min(f, 40.0F);
+		return 0.875f / f1 / f;
 	}
 
 	/**
@@ -110,7 +117,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		if (source.isExplosion() && !source.getMsgId().equals("fireworks"))
 			return amount;
 
-		return amount * 1.33f;
+		return amount * 1.5f;
 	}
 
 	public EnderDragonPhase<CrystalRespawnPhase> getPhase() {

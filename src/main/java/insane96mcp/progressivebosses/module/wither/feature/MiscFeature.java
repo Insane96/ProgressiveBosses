@@ -17,7 +17,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.dimension.DimensionType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -47,7 +46,7 @@ public class MiscFeature extends Feature {
 		this.pushConfig(Config.builder);
 		explosionPowerBonusConfig = Config.builder
 				.comment("How much explosion power (after the invulnerability) will the Wither have at max difficulty. Explosion Radius is capped to 13. Base Wither Explosion Power is 7.0. Setting this to 0 will not increase the Wither Explosion Power.")
-				.defineInRange("Explosion Power Bonus", explosionPowerBonus, 0d, 4d);
+				.defineInRange("Explosion Power Bonus", explosionPowerBonus, 0d, 8d);
 		explosionCausesFireAtDifficultyConfig = Config.builder
 				.comment("At this difficulty the Wither Explosion will cause fire. Set to -1 to disable.")
 				.defineInRange("Explosion Causes Fire at Difficulty", explosionCausesFireAtDifficulty, -1, Integer.MAX_VALUE);
@@ -213,7 +212,7 @@ public class MiscFeature extends Feature {
 		if (!this.witherNetherOnly)
 			return true;
 
-		boolean isNether = world.dimension().location().equals(DimensionType.NETHER_LOCATION.location());
+		boolean isNether = world.dimension() == Level.NETHER;
 
 		boolean hasSoulSandNearby = false;
 		for (Direction dir : Direction.values()) {

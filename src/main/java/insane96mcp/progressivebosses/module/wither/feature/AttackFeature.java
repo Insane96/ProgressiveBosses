@@ -55,8 +55,8 @@ public class AttackFeature extends Feature {
 	//Skulls
 	public double skullVelocityMultiplier = 2.5d;
 	//Attack Speed
-	public int attackInterval = 40;
-	public double bonusAttackSpeedWhenNear = 0.667d;
+	public int attackInterval = 35;
+	public double bonusAttackSpeedWhenNear = 0.6d;
 
 	public AttackFeature(Module module) {
 		super(Config.builder, module);
