@@ -52,10 +52,10 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> maxBonusFireballConfig;
 
-	public double increasedDirectDamage = 2.4d;
+	public double increasedDirectDamage = 2.25d;
 	public double increasedAcidPoolDamage = 2.4d;
-	public double chargePlayerMaxChance = 0.45d; //Chance at max difficulty
-	public double fireballMaxChance = 0.35d; //Chance at max difficulty
+	public double chargePlayerMaxChance = 0.45d;
+	public double fireballMaxChance = 0.35d;
 	public boolean increaseMaxRiseAndFall = true;
 	public boolean fireballExplosionDamages = true;
 	public boolean fireball3DEffectCloud = true;
@@ -72,7 +72,6 @@ public class AttackFeature extends Feature {
 				.comment("How much more damage at max difficulty (percentage) does the Ender Dragon's Acid fireball and pool deal per difficulty?")
 				.defineInRange("Bonus Acid Pool Damage", increasedAcidPoolDamage, 0.0, Double.MAX_VALUE);
 		chargePlayerMaxChanceConfig = Config.builder
-				//TODO check if remove 'before checking if she should land in the center'
 				.comment("""
 						Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to charge the player.
 						This is the chance to start a charge attack when the difficulty is at max. Otherwise it scales accordingly.

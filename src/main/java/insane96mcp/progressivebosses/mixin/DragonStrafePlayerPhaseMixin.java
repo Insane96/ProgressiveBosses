@@ -36,7 +36,6 @@ public abstract class DragonStrafePlayerPhaseMixin extends AbstractDragonPhaseIn
 			this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
 		}
 		else if (this.attackTarget.distanceToSqr(this.dragon) < 256d) {
-			LogHelper.warn("Skipping player strafe phase because too near the target");
 			this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
 		}
 		else {
