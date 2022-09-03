@@ -46,7 +46,7 @@ public class MiscFeature extends Feature {
 		this.pushConfig(Config.builder);
 		explosionPowerBonusConfig = Config.builder
 				.comment("How much explosion power (after the invulnerability) will the Wither have at max difficulty. Explosion Radius is capped to 13. Base Wither Explosion Power is 7.0. Setting this to 0 will not increase the Wither Explosion Power.")
-				.defineInRange("Explosion Power Bonus", explosionPowerBonus, 0d, 4d);
+				.defineInRange("Explosion Power Bonus", explosionPowerBonus, 0d, 8d);
 		explosionCausesFireAtDifficultyConfig = Config.builder
 				.comment("At this difficulty the Wither Explosion will cause fire. Set to -1 to disable.")
 				.defineInRange("Explosion Causes Fire at Difficulty", explosionCausesFireAtDifficulty, -1, Integer.MAX_VALUE);
