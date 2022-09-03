@@ -19,18 +19,18 @@ import java.util.List;
 @Label(name = "Resistances & Vulnerabilities", description = "Handles the Damage Resistances and Vulnerabilities")
 public class ResistancesFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Double> damageRedutionWhenSittingConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> damageReductionWhenSittingConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
 
-	public double damageRedutionWhenSitting = 0.60d;
+	public double damageReductionWhenSitting = 0.45d;
 	public double explosionDamageReduction = 0.667d;
 
 	public ResistancesFeature(Module module) {
 		super(Config.builder, module);
 		this.pushConfig(Config.builder);
-		damageRedutionWhenSittingConfig = Config.builder
+		damageReductionWhenSittingConfig = Config.builder
 				.comment("Melee Damage reduction at max difficulty while the Ender Dragon is at the center.")
-				.defineInRange("Melee Damage reduction while at the center", damageRedutionWhenSitting, 0d, Double.MAX_VALUE);
+				.defineInRange("Melee Damage reduction while at the center", damageReductionWhenSitting, 0d, Double.MAX_VALUE);
 		explosionDamageReductionConfig = Config.builder
 				.comment("Damage reduction when hit by explosions (firework rockets excluded).")
 				.defineInRange("Explosion Damage reduction", explosionDamageReduction, 0d, Double.MAX_VALUE);
@@ -40,7 +40,7 @@ public class ResistancesFeature extends Feature {
 	@Override
 	public void loadConfig() {
 		super.loadConfig();
-		this.damageRedutionWhenSitting = this.damageRedutionWhenSittingConfig.get();
+		this.damageReductionWhenSitting = this.damageReductionWhenSittingConfig.get();
 		this.explosionDamageReduction = this.explosionDamageReductionConfig.get();
 	}
 
@@ -57,10 +57,10 @@ public class ResistancesFeature extends Feature {
 	private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);
 
 	private void meleeDamageReduction(LivingDamageEvent event, EnderDragon dragon) {
-		if (this.damageRedutionWhenSitting == 0d)
+		if (this.damageReductionWhenSitting == 0d)
 			return;
 		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()) && event.getSource().getDirectEntity() instanceof Player) {
-			event.setAmount((event.getAmount() - (float) (event.getAmount() * (this.damageRedutionWhenSitting * DifficultyHelper.getScalingDifficulty(dragon)))));
+			event.setAmount((event.getAmount() - (float) (event.getAmount() * (this.damageReductionWhenSitting * DifficultyHelper.getScalingDifficulty(dragon)))));
 		}
 	}
 
