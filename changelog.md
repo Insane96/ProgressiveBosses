@@ -1,7 +1,7 @@
 # Changelog
 
 ## 3.6.1
-Backported 3.7.1 changes:
+Backported 3.7.0 changes:
 * Ender Dragon
   * Reduced bonus damage (~~+240%~~ -> +225% at max difficulty)
   * Reduced damage reduction when sitting (~~-60%~~ -> -45% at max difficulty)
