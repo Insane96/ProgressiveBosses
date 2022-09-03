@@ -13,7 +13,7 @@ import insane96mcp.progressivebosses.utils.DragonMinionHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -34,7 +34,7 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -102,8 +102,8 @@ public class MinionFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onDragonSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void onDragonSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -119,8 +119,8 @@ public class MinionFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onShulkerSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void onShulkerSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -137,7 +137,7 @@ public class MinionFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void update(LivingEvent.LivingUpdateEvent event) {
+	public void update(LivingEvent.LivingTickEvent event) {
 		if (event.getEntity().level.isClientSide)
 			return;
 
@@ -219,7 +219,7 @@ public class MinionFeature extends Feature {
 		boolean isBlindingMinion = world.getRandom().nextDouble() < this.blindingChance * scalingDifficulty;
 
 		shulker.setPos(pos.x, pos.y, pos.z);
-		shulker.setCustomName(new TranslatableComponent(Strings.Translatable.DRAGON_MINION));
+		shulker.setCustomName(Component.translatable(Strings.Translatable.DRAGON_MINION));
 		shulker.lootTable = BuiltInLootTables.EMPTY;
 		shulker.setPersistenceRequired();
 		DragonMinionHelper.setMinionColor(shulker, isBlindingMinion);

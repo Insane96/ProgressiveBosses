@@ -11,7 +11,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -53,8 +53,8 @@ public class HealthFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide
+	public void onSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide
 				|| !this.isEnabled()
 				|| this.bonusHealth == 0d
 				|| !(event.getEntity() instanceof WitherBoss wither)
@@ -65,7 +65,7 @@ public class HealthFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onUpdate(LivingEvent.LivingUpdateEvent event) {
+	public void onUpdate(LivingEvent.LivingTickEvent event) {
 		if (event.getEntity().level.isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof WitherBoss wither)

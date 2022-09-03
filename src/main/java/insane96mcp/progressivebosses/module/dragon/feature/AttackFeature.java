@@ -32,7 +32,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.phys.*;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -117,7 +117,7 @@ public class AttackFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onSpawn(EntityJoinWorldEvent event) {
+	public void onSpawn(EntityJoinLevelEvent event) {
 		fireballSpeed(event.getEntity());
 	}
 
@@ -150,7 +150,7 @@ public class AttackFeature extends Feature {
 
 	private void onDirectDamage(LivingHurtEvent event) {
 		if (!(event.getSource().getDirectEntity() instanceof EnderDragon dragon)
-				|| event.getEntityLiving() instanceof EnderDragon)
+				|| event.getEntity() instanceof EnderDragon)
 			return;
 
 		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDirectDamage * DifficultyHelper.getScalingDifficulty(dragon))));

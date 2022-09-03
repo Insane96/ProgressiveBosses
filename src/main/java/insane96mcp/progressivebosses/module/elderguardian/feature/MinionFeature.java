@@ -9,7 +9,7 @@ import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -25,7 +25,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -61,8 +61,8 @@ public class MinionFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onElderGuardianSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
+	public void onElderGuardianSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -77,19 +77,18 @@ public class MinionFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void update(LivingEvent.LivingUpdateEvent event) {
+	public void update(LivingEvent.LivingTickEvent event) {
 		if (event.getEntity().level.isClientSide)
 			return;
 
 		if (!this.isEnabled())
 			return;
 
-		if (!(event.getEntity() instanceof ElderGuardian))
+		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
 		Level world = event.getEntity().level;
 
-		ElderGuardian elderGuardian = (ElderGuardian) event.getEntity();
 		CompoundTag elderGuardianTags = elderGuardian.getPersistentData();
 
 		if (elderGuardian.getHealth() <= 0)
@@ -131,7 +130,7 @@ public class MinionFeature extends Feature {
 		minionTags.putBoolean(Strings.Tags.ELDER_MINION, true);
 
 		elderMinion.setPos(pos.x, pos.y, pos.z);
-		elderMinion.setCustomName(new TranslatableComponent(Strings.Translatable.ELDER_MINION));
+		elderMinion.setCustomName(Component.translatable(Strings.Translatable.ELDER_MINION));
 		elderMinion.lootTable = BuiltInLootTables.EMPTY;
 
 		MCUtils.applyModifier(elderMinion, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);

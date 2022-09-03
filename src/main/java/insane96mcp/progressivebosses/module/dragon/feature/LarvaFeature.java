@@ -22,7 +22,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -83,8 +83,8 @@ public class LarvaFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onDragonSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide
+	public void onDragonSpawn(EntityJoinLevelEvent event) {
+		if (event.getLevel().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
@@ -96,7 +96,7 @@ public class LarvaFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void update(LivingEvent.LivingUpdateEvent event) {
+	public void update(LivingEvent.LivingTickEvent event) {
 		if (event.getEntity().level.isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof EnderDragon dragon))

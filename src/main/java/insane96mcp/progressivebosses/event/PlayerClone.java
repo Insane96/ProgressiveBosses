@@ -13,7 +13,7 @@ public class PlayerClone {
     @SubscribeEvent
     public static void eventPlayerClone(PlayerEvent.Clone event) {
         Player oldPlayer = event.getOriginal();
-        Player newPlayer = event.getPlayer();
+        Player newPlayer = event.getEntity();
 
         oldPlayer.reviveCaps();
         oldPlayer.getCapability(Difficulty.INSTANCE).ifPresent(oldDifficulty -> newPlayer.getCapability(Difficulty.INSTANCE).ifPresent(newDifficulty -> {
