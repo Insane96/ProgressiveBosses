@@ -4,6 +4,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.util.MCUtils;
+import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.module.wither.entity.WitherMinion;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
@@ -29,7 +30,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -52,12 +52,12 @@ public class MinionFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> bonusSpeedConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> magicDamageMultiplierConfig;
 	private final ForgeConfigSpec.ConfigValue<Boolean> killMinionOnWitherDeathConfig;
-	//Equipment
-	private final ForgeConfigSpec.ConfigValue<Boolean> hasSwordConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> preHalfHealthBowChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> halfHealthBowChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> powerSharpnessChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> punchKnockbackChanceConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> aboveHalfHealthBowChanceConfig;
+	private final ForgeConfigSpec.ConfigValue<Double> belowHalfHealthBowChanceConfig;
+	private final ForgeConfigSpec.DoubleValue sharpnessChanceConfig;
+	private final ForgeConfigSpec.DoubleValue powerChanceConfig;
+	private final ForgeConfigSpec.DoubleValue knockbackChanceConfig;
+	private final ForgeConfigSpec.DoubleValue punchChanceConfig;
 
 	public int minionAtDifficulty = 1;
 	public int bonusMinionEveryDifficulty = 1;
@@ -70,11 +70,13 @@ public class MinionFeature extends Feature {
 	public double magicDamageMultiplier = 3.0d;
 	public boolean killMinionOnWitherDeath = true;
 	//Equipment
-	public boolean hasSword = true;
-	public double preHalfHealthBowChance = 0.60d;
-	public double halfHealthBowChance = 0.08d;
-	public double powerSharpnessChance = 4.80d;
-	public double punchKnockbackChance = 2.40d;
+	public double aboveHalfHealthBowChance = 0.60d;
+	public double belowHalfHealthBowChance = 0.08d;
+	//Enchantments
+	public double sharpnessChance = 4.80d;
+	public double powerChance = 1.50d;
+	public double knockbackChance = 2.40d;
+	public double punchChance = 1.50d;
 
 	public MinionFeature(Module module) {
 		super(Config.builder, module);
@@ -111,22 +113,27 @@ public class MinionFeature extends Feature {
 				.define("Kill Minions on Wither Death", killMinionOnWitherDeath);
 
 		Config.builder.push("Equipment");
-		hasSwordConfig = Config.builder
-				.comment("Wither Minions will spawn with a Stone Sword")
-				.define("Has Sword", hasSword);
-		preHalfHealthBowChanceConfig = Config.builder
-				.comment("Chance for the Wither Minion to spawn with a bow when Wither's above Half Health")
-				.defineInRange("Bow Chance Over Half Health", preHalfHealthBowChance, 0d, 1d);
-		halfHealthBowChanceConfig = Config.builder
-				.comment("Chance for the Wither Minion to spawn with a bow when Wither's below Half Health")
-				.defineInRange("Bow Chance Below Half Health", halfHealthBowChance, 0d, 1d);
-		powerSharpnessChanceConfig = Config.builder
-				.comment("Chance (at max difficulty) for the Wither Minion Sword / Bow to be enchanted with Sharpness / Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
-				.defineInRange("Power / Sharpness Chance", powerSharpnessChance, 0d, Double.MAX_VALUE);
-		punchKnockbackChanceConfig = Config.builder
-				.comment("Chance (at max difficulty) for the Wither Minion Sword / Bow to be enchanted with Knockback / Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining chance dictates if one more level will be added.")
-				.defineInRange("Punch / Knockback Chance", punchKnockbackChance, 0d, Double.MAX_VALUE);
-		Config.builder.pop();
+		aboveHalfHealthBowChanceConfig = Config.builder
+				.comment("Chance for the Wither Minion to spawn with a bow instead of a Stone Sword when Wither's above Half Health")
+				.defineInRange("Bow Chance Above Half Health", aboveHalfHealthBowChance, 0d, 1d);
+		belowHalfHealthBowChanceConfig = Config.builder
+				.comment("Chance for the Wither Minion to spawn with a bow instead of a Stone Sword when Wither's below Half Health")
+				.defineInRange("Bow Chance Below Half Health", belowHalfHealthBowChance, 0d, 1d);
+
+		Config.builder.push("Enchantments");
+		sharpnessChanceConfig = Config.builder
+				.comment("Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Sharpness. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
+				.defineInRange("Sharpness Chance", this.sharpnessChance, 0d, 255d);
+		powerChanceConfig = Config.builder
+				.comment("Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
+				.defineInRange("Power Chance", this.powerChance, 0d, 255d);
+		knockbackChanceConfig = Config.builder
+				.comment("Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Knockback. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
+				.defineInRange("Knockback Chance", this.knockbackChance, 0d, 255d);
+		punchChanceConfig = Config.builder
+				.comment("Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
+				.defineInRange("Punch Chance", this.punchChance, 0d, 255d);
+		Config.builder.pop(2);
 
 		Config.builder.pop();
 	}
@@ -147,11 +154,12 @@ public class MinionFeature extends Feature {
 		this.magicDamageMultiplier = this.magicDamageMultiplierConfig.get();
 		this.killMinionOnWitherDeath = this.killMinionOnWitherDeathConfig.get();
 		//Equipment
-		this.hasSword = this.hasSwordConfig.get();
-		this.preHalfHealthBowChance = this.preHalfHealthBowChanceConfig.get();
-		this.halfHealthBowChance = this.halfHealthBowChanceConfig.get();
-		this.powerSharpnessChance = this.powerSharpnessChanceConfig.get();
-		this.punchKnockbackChance = this.punchKnockbackChanceConfig.get();
+		this.aboveHalfHealthBowChance = this.aboveHalfHealthBowChanceConfig.get();
+		this.belowHalfHealthBowChance = this.belowHalfHealthBowChanceConfig.get();
+		this.sharpnessChance = this.sharpnessChanceConfig.get();
+		this.powerChance = this.powerChanceConfig.get();
+		this.knockbackChance = this.knockbackChanceConfig.get();
+		this.punchChance = this.punchChanceConfig.get();
 	}
 
 	@SubscribeEvent
@@ -306,37 +314,28 @@ public class MinionFeature extends Feature {
 	private void setEquipment(WitherMinion witherMinion, float scalingDifficulty, boolean isCharged) {
 		witherMinion.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
 
-		int powerSharpnessLevel = (int) (this.powerSharpnessChance * scalingDifficulty);
-		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.powerSharpnessChance * scalingDifficulty) - powerSharpnessLevel)
-			powerSharpnessLevel++;
+		double bowChance = isCharged ? this.belowHalfHealthBowChance : this.aboveHalfHealthBowChance;
+		ItemStack item;
 
-		int punchKnockbackLevel = (int) (this.punchKnockbackChance * scalingDifficulty);
-		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < (this.punchKnockbackChance * scalingDifficulty) - punchKnockbackLevel)
-			punchKnockbackLevel++;
-
-		ItemStack sword = new ItemStack(Items.STONE_SWORD);
-		if (powerSharpnessLevel > 0)
-			sword.enchant(Enchantments.SHARPNESS, powerSharpnessLevel);
-		if (punchKnockbackLevel > 0)
-			sword.enchant(Enchantments.KNOCKBACK, punchKnockbackLevel);
-		if (this.hasSword)
-			witherMinion.setItemSlot(EquipmentSlot.MAINHAND, sword);
-
-		ItemStack bow = new ItemStack(Items.BOW);
-		if (powerSharpnessLevel > 0)
-			bow.enchant(Enchantments.POWER_ARROWS, powerSharpnessLevel);
-		if (punchKnockbackLevel > 0)
-			bow.enchant(Enchantments.PUNCH_ARROWS, punchKnockbackLevel);
-		if (isCharged) {
-			if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < this.halfHealthBowChance) {
-				witherMinion.setItemSlot(EquipmentSlot.MAINHAND, bow);
-			}
+		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < bowChance) {
+			item = new ItemStack(Items.BOW);
+			int powerLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), this.powerChance * scalingDifficulty);
+			if (powerLevel > 0)
+				item.enchant(Enchantments.POWER_ARROWS, powerLevel);
+			int punchLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), this.punchChance * scalingDifficulty);
+			if (punchLevel > 0)
+				item.enchant(Enchantments.PUNCH_ARROWS, punchLevel);
 		}
 		else {
-			if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < this.preHalfHealthBowChance) {
-				witherMinion.setItemSlot(EquipmentSlot.MAINHAND, bow);
-			}
+			item = new ItemStack(Items.STONE_SWORD);
+			int sharpnessLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), this.sharpnessChance * scalingDifficulty);
+			if (sharpnessLevel > 0)
+				item.enchant(Enchantments.SHARPNESS, sharpnessLevel);
+			int knockbackLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), this.knockbackChance * scalingDifficulty);
+			if (knockbackLevel > 0)
+				item.enchant(Enchantments.KNOCKBACK, knockbackLevel);
 		}
+		witherMinion.setItemSlot(EquipmentSlot.MAINHAND, item);
 	}
 
 	public WitherMinion summonMinion(Level world, Vec3 pos, float scalingDifficulty, boolean isCharged) {
@@ -354,8 +353,6 @@ public class MinionFeature extends Feature {
 
 		double speedBonus = this.bonusSpeed * scalingDifficulty;
 		MCUtils.applyModifier(witherMinion, Attributes.MOVEMENT_SPEED, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
-		MCUtils.applyModifier(witherMinion, Attributes.FOLLOW_RANGE, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 16, AttributeModifier.Operation.ADDITION);
-		MCUtils.applyModifier(witherMinion, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);
 
 		world.addFreshEntity(witherMinion);
 		return witherMinion;

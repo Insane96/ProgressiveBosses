@@ -1,7 +1,12 @@
 # Changelog
 
 ## Upcoming
-* Fixed Wither minions not generating with Punch (but with 2 power enchantments)
+* Wither Minions
+  * Equipment chances can now be configured separately
+      * Reduced Power level (Power ~~IV~~ -> I at max difficulty, ~~80%~~ -> 50% chance to be Power ~~V~~ -> II)
+      * Reduced Punch level (Punch ~~II~~ -> I at max difficulty, ~~80%~~ -> 50% chance to be Punch ~~III~~ -> II)
+  * Reduced base attack knockback
+  * Fixed Wither minions not generating with Punch (but with 2 power enchantments)
 * Internally changed how Wither drops work
 
 ## 3.6.1
