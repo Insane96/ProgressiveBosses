@@ -1,6 +1,7 @@
 # Changelog
 
 ## Upcoming
+* Fixed Wither minions not generating with Punch (but with 2 power enchantments)
 * Internally changed how Wither drops work
 
 ## 3.6.1

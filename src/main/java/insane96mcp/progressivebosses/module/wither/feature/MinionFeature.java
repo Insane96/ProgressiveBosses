@@ -326,7 +326,7 @@ public class MinionFeature extends Feature {
 		if (powerSharpnessLevel > 0)
 			bow.enchant(Enchantments.POWER_ARROWS, powerSharpnessLevel);
 		if (punchKnockbackLevel > 0)
-			bow.enchant(Enchantments.POWER_ARROWS, punchKnockbackLevel);
+			bow.enchant(Enchantments.PUNCH_ARROWS, punchKnockbackLevel);
 		if (isCharged) {
 			if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < this.halfHealthBowChance) {
 				witherMinion.setItemSlot(EquipmentSlot.MAINHAND, bow);
