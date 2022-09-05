@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Internally changed how Wither drops work
+
 ## 3.6.1
 Backported 3.7.0 changes:
 * Ender Dragon
@@ -46,7 +49,7 @@ Backported 3.7.0 changes:
 * Fixed larvae dropping ancient debris and nether star shard
 
 ## 3.5.10
-* Ender Dragon difficulty now applies in any dimension (fixes incompatiblity with https://www.planetminecraft.com/data-pack/nullscape/)
+* Ender Dragon difficulty now applies in any dimension (fixes incompatibility with https://www.planetminecraft.com/data-pack/nullscape/)
 * Fixed crash when player kills another player
 
 ## 3.5.9
