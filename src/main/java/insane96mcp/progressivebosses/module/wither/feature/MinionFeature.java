@@ -311,6 +311,7 @@ public class MinionFeature extends Feature {
 		}
 	}
 
+	//TODO Check why sword wither minion deals so much damage
 	private void setEquipment(WitherMinion witherMinion, float scalingDifficulty, boolean isCharged) {
 		witherMinion.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
 
