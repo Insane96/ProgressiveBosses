@@ -73,8 +73,8 @@ public class MinionFeature extends Feature {
 	public double aboveHalfHealthBowChance = 0.60d;
 	public double belowHalfHealthBowChance = 0.08d;
 	//Enchantments
-	public double sharpnessChance = 4.80d;
-	public double powerChance = 1.50d;
+	public double sharpnessChance = 2.40d;
+	public double powerChance = 3.20d;
 	public double knockbackChance = 2.40d;
 	public double punchChance = 1.50d;
 
@@ -124,12 +124,12 @@ public class MinionFeature extends Feature {
 		sharpnessChanceConfig = Config.builder
 				.comment("Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Sharpness. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
 				.defineInRange("Sharpness Chance", this.sharpnessChance, 0d, 255d);
-		powerChanceConfig = Config.builder
-				.comment("Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
-				.defineInRange("Power Chance", this.powerChance, 0d, 255d);
 		knockbackChanceConfig = Config.builder
 				.comment("Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Knockback. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
 				.defineInRange("Knockback Chance", this.knockbackChance, 0d, 255d);
+		powerChanceConfig = Config.builder
+				.comment("Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
+				.defineInRange("Power Chance", this.powerChance, 0d, 255d);
 		punchChanceConfig = Config.builder
 				.comment("Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
 				.defineInRange("Punch Chance", this.punchChance, 0d, 255d);
@@ -157,8 +157,8 @@ public class MinionFeature extends Feature {
 		this.aboveHalfHealthBowChance = this.aboveHalfHealthBowChanceConfig.get();
 		this.belowHalfHealthBowChance = this.belowHalfHealthBowChanceConfig.get();
 		this.sharpnessChance = this.sharpnessChanceConfig.get();
-		this.powerChance = this.powerChanceConfig.get();
 		this.knockbackChance = this.knockbackChanceConfig.get();
+		this.powerChance = this.powerChanceConfig.get();
 		this.punchChance = this.punchChanceConfig.get();
 	}
 
@@ -311,7 +311,6 @@ public class MinionFeature extends Feature {
 		}
 	}
 
-	//TODO Check why sword wither minion deals so much damage
 	private void setEquipment(WitherMinion witherMinion, float scalingDifficulty, boolean isCharged) {
 		witherMinion.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.6.3
+* Wither Minions
+  * Reduced Sharpness Chance (Sharpness ~~IV~~ -> II at max difficulty, ~~80%~~ -> 40% chance to be Sharpness ~~V~~ -> III)
+  * Increased Power Chance (Power ~~I~~ -> III at max difficulty, ~~50%~~ -> 20% chance to be Power ~~II~~ -> IV)
+  * Reduced base damage (~~3~~ -> 1)
+
 ## 3.6.2
 * Wither Minions
   * Equipment chances can now be configured separately
