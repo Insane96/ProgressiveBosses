@@ -34,7 +34,7 @@ public class RewardFeature extends Feature {
 		injectDefaultRewardsConfig = Config.builder
 				.comment("If true default mod drops are added to the Wither.\n" +
 						"Note that replacing the Wither loot table (e.g. via DataPack) will automatically remove the Injected loot.")
-				.define("Injecet Default Loot", this.injectDefaultRewards);
+				.define("Inject Default Loot", this.injectDefaultRewards);
 		Config.builder.pop();
 	}
 
