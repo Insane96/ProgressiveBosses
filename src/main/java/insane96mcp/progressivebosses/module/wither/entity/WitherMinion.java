@@ -26,6 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.function.Predicate;
@@ -146,10 +147,11 @@ public class WitherMinion extends AbstractSkeleton {
 
 	public static AttributeSupplier.Builder prepareAttributes() {
 		return LivingEntity.createLivingAttributes()
-				.add(Attributes.ATTACK_DAMAGE, 3.0d)
+				.add(Attributes.ATTACK_DAMAGE, 1.0d)
 				.add(Attributes.MAX_HEALTH, 16.0d)
 				.add(Attributes.FOLLOW_RANGE, 64.0d)
 				.add(Attributes.MOVEMENT_SPEED, 0.25d)
-				.add(Attributes.ATTACK_KNOCKBACK, 1.5d);
+				.add(Attributes.ATTACK_KNOCKBACK, 1d)
+				.add(ForgeMod.SWIM_SPEED.get(), 3d);
 	}
 }

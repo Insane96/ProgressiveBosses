@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.7.1
+* Wither Minions
+  * Equipment chances can now be configured separately
+    * Reduced Power level (Power ~~IV~~ -> III at max difficulty, ~~80%~~ -> 20% chance to be Power ~~V~~ -> IV)
+    * Reduced Punch level (Punch ~~II~~ -> I at max difficulty, ~~40%~~ -> 50% chance to be Punch ~~III~~ -> II)
+    * Reduced Sharpness Chance (Sharpness ~~IV~~ -> II at max difficulty, ~~80%~~ -> 40% chance to be Sharpness ~~V~~ -> III)
+  * Reduced base damage (~~3~~ -> 1)
+  * Reduced base attack knockback
+  * Fixed Wither minions not generating with Punch (but with 2 power enchantments)
+* Internally changed how Wither drops work
+
 ## Beta 3.7.0
 * Port to 1.19.2
 * Ender Dragon
