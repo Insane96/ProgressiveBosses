@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Wither Minions now make entities they kill drop Wither Roses
+* Wither no longer generates fire on the starting Explosion
 
 ## 3.6.3
 * Wither Minions
