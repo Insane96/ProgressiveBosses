@@ -20,13 +20,17 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -286,13 +290,9 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
-		if (event.getEntity().level.isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!this.killMinionOnWitherDeath)
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !this.killMinionOnWitherDeath)
 			return;
 
 		if (!(event.getEntity() instanceof WitherBoss wither))
@@ -308,6 +308,31 @@ public class MinionFeature extends Feature {
 			if (witherMinion == null)
 				continue;
 			witherMinion.addEffect(new MobEffectInstance(MobEffects.HEAL, 10000, 0, false, false));
+		}
+	}
+
+	@SubscribeEvent
+	public void onEntityDeath(LivingDeathEvent event) {
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !(event.getSource().getEntity() instanceof WitherMinion witherMinion))
+			return;
+
+		LivingEntity livingEntity = event.getEntityLiving();
+
+		boolean hasPlantedRose = false;
+		if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(witherMinion.level, witherMinion)) {
+			BlockPos blockpos = livingEntity.blockPosition();
+			BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
+			if (livingEntity.level.isEmptyBlock(blockpos) && blockstate.canSurvive(livingEntity.level, blockpos)) {
+				livingEntity.level.setBlock(blockpos, blockstate, 3);
+				hasPlantedRose = true;
+			}
+		}
+
+		if (!hasPlantedRose) {
+			ItemEntity itementity = new ItemEntity(livingEntity.level, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), new ItemStack(Items.WITHER_ROSE));
+			livingEntity.level.addFreshEntity(itementity);
 		}
 	}
 

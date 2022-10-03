@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Wither Minions now make entities they kill drop Wither Roses
+
 ## 3.6.3
 * Wither Minions
   * Reduced Sharpness Chance (Sharpness ~~IV~~ -> II at max difficulty, ~~80%~~ -> 40% chance to be Sharpness ~~V~~ -> III)

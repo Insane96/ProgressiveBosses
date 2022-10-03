@@ -35,7 +35,7 @@ public class MiscFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> witherNetherOnlyConfig;
 
 	public double explosionPowerBonus = 8d;
-	public int explosionCausesFireAtDifficulty = 5;
+	public int explosionCausesFireAtDifficulty = -1;
 	public boolean fasterBlockBreaking = true;
 	public boolean biggerBlockBreaking = true;
 	public boolean ignoreWitherProofBlocks = false;
@@ -146,18 +146,13 @@ public class MiscFeature extends Feature {
 
 	@SubscribeEvent
 	public void onExplosion(ExplosionEvent.Start event) {
-		if (!this.isEnabled())
+		if (!this.isEnabled()
+				|| (this.explosionCausesFireAtDifficulty == -1 && this.explosionPowerBonus == 0d)
+				|| !(event.getExplosion().getExploder() instanceof WitherBoss wither)
+				//Check if the explosion is the one from the wither
+				|| event.getExplosion().radius != 7f)
 			return;
 
-		if (this.explosionCausesFireAtDifficulty == -1 && this.explosionPowerBonus == 0d)
-			return;
-
-		if (!(event.getExplosion().getExploder() instanceof WitherBoss wither))
-			return;
-
-		//Check if the explosion is the one from the wither
-		if (event.getExplosion().radius != 7f)
-			return;
 		CompoundTag tags = wither.getPersistentData();
 
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
