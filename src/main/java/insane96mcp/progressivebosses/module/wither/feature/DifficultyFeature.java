@@ -47,7 +47,7 @@ public class DifficultyFeature extends Feature {
 	public static Boolean showFirstSummonedWitherMessage = true;
 	@Config
 	@Label(name = "Entity Blacklist", description = "Entities that extend the vanilla Wither but shouldn't be taken into account by the mod (e.g. Botania's Pink Wither).")
-	public Blacklist entityBlacklist = new Blacklist(List.of(
+	public static Blacklist entityBlacklist = new Blacklist(List.of(
 			new IdTagMatcher(IdTagMatcher.Type.ID, "botania:pink_wither")
 	), false);
 

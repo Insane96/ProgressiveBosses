@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses;
 
 import insane96mcp.progressivebosses.capability.DifficultyProvider;
 import insane96mcp.progressivebosses.commands.PBCommand;
-import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.network.PacketManager;
 import insane96mcp.progressivebosses.setup.*;
@@ -29,7 +28,6 @@ public class ProgressiveBosses {
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	public ProgressiveBosses() {
-		Modules.init();
 		ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);

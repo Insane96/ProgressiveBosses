@@ -21,14 +21,14 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 public class RewardFeature extends Feature {
 	@Config(min = -1, max = 1024)
 	@Label(name = "Base Experience", description = "How much experience will an Elder Guardian drop. -1 will make the Elder Guardian drop vanilla experience.")
-	public int baseExperience = 40;
+	public static Integer baseExperience = 40;
 	@Config(min = 0f)
 	@Label(name = "Bonus Experience", description = "How much more experience (percentage) will Elder Guardian drop per killed Elder Guardian. The percentage is additive (e.g. with this set to 100%, the last Elder will drop 200% more experience)")
-	public double bonusExperience = 1.0d;
+	public static Double bonusExperience = 1.0d;
 	@Config(min = -1, max = 1024)
 	@Label(name = "Inject Default Loot", description = "If true default mod drops are added to the Elder Guardian.\n" +
 			"Note that replacing the Elder Guardian loot table (e.g. via DataPack) will automatically remove the Injected loot.")
-	public boolean injectDefaultRewards = true;
+	public static Boolean injectDefaultRewards = true;
 
 	public RewardFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
@@ -38,28 +38,28 @@ public class RewardFeature extends Feature {
 	public void onSpawn(EntityJoinLevelEvent event) {
 		if (event.getLevel().isClientSide
 				|| !this.isEnabled()
-				|| this.baseExperience == -1d
+				|| baseExperience == -1d
 				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
-		elderGuardian.xpReward = this.baseExperience;
+		elderGuardian.xpReward = baseExperience;
 	}
 
 	@SubscribeEvent
 	public void onExperienceDrop(LivingExperienceDropEvent event) {
 		if (!this.isEnabled()
-				|| this.bonusExperience == 0d
+				|| bonusExperience == 0d
 				|| !(event.getEntity() instanceof ElderGuardian))
 			return;
 
-		int bonusExperience = (int) (event.getOriginalExperience() * (this.bonusExperience));
-		event.setDroppedExperience(event.getOriginalExperience() + bonusExperience);
+		int bonusXp = (int) (event.getOriginalExperience() * (bonusExperience));
+		event.setDroppedExperience(event.getOriginalExperience() + bonusXp);
 	}
 
 	@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
 		if (!this.isEnabled()
-				|| !this.injectDefaultRewards)
+				|| !injectDefaultRewards)
 			return;
 
 		ResourceLocation name = event.getName();

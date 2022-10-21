@@ -76,7 +76,7 @@ public class MinionFeature extends Feature {
 	@Label(name = "Magic Damage Taken Multiplier", description = "Wither Minions will take magic damage multiplied by this value.")
 	public static Double magicDamageMultiplier = 3.0d;
 	@Config
-	@Label(name = "Magic Damage Taken Multiplier", description = "Wither Minions will take magic damage multiplied by this value.")
+	@Label(name = "Kill Minions on Wither Death", description = "Wither Minions will die when the Wither that summoned them dies.")
 	public static Boolean killMinionOnWitherDeath = true;
 	@Config(min = 0d, max = 1d)
 	@Label(name = "Equipment.Bow Chance Above Half Health", description = "Chance for the Wither Minion to spawn with a bow instead of a Stone Sword when Wither's above Half Health.")

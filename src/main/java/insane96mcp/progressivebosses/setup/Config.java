@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.setup;
 
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.Modules;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,7 +23,8 @@ public class Config {
 
     public static class CommonConfig {
         public CommonConfig(final ForgeConfigSpec.Builder builder) {
-            Module.loadFeatures(ProgressiveBosses.MOD_ID, this.getClass().getClassLoader(), builder);
+            Modules.init();
+            Module.loadFeatures(ProgressiveBosses.MOD_ID, this.getClass().getClassLoader());
         }
     }
 }
