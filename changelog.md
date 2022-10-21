@@ -2,7 +2,10 @@
 
 ## Upcoming
 * Ported 3.6.4 changes
-* Reduced melee damage reduction when at center (~~-45%~~ -> -20% damage)
+* Ender Dragon
+  * Reduced melee damage reduction when at center (~~-45%~~ -> -24% damage)
+  * Added bonus melee damage when not at center. +24%
+  * Dragon Minions will now no longer spawn on towers
 
 ## 3.7.1
 * Wither Minions
