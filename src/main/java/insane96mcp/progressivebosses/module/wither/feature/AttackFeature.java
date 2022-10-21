@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
@@ -10,7 +11,6 @@ import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.network.MessageWitherSync;
 import insane96mcp.progressivebosses.network.PacketManager;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.nbt.CompoundTag;
@@ -23,7 +23,6 @@ import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.WitherSkull;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -37,33 +36,27 @@ import java.util.UUID;
 @Label(name = "Attack", description = "Makes the Wither smarter (will no longer try to stand on the player's head ...), attack faster and hit harder")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class AttackFeature extends Feature {
-
-	private final ForgeConfigSpec.ConfigValue<Double> increasedDamageConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> maxChargeAttackChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> chargeAttackBaseDamageConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> maxBarrageChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> minBarrageDurationConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> maxBarrageDurationConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> skullVelocityMultiplierConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> attackIntervalConfig;
-	private final ForgeConfigSpec.DoubleValue bonusAttackSpeedWhenNearConfig;
-
-	public double increasedDamage = 0.96d;
-	public double maxChargeAttackChance = 0.06d;
-	public double chargeAttackBaseDamage = 16d;
+	@Config(min = 0d)
+	@Label(name = "Increased Damage", description = "How much experience will an Elder Guardian drop. -1 will make the Elder Guardian drop vanilla experience.")
+	public static Double increasedDamage = 0.96d;
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Charge attack.Charge chance", description = "Chance every time the Wither takes damage to start a charge attack. Lower health and more damage taken increases the chance.\n" +
+			"This value is the chance at 0% health and when taking 10 damage.")
+	public static Double maxChargeAttackChance = 0.06d;
+	public static Double chargeAttackBaseDamage = 16d;
 	//Barrage Attack
-	public double maxBarrageChance = 0.075d;
-	public int minBarrageDuration = 20;
-	public int maxBarrageDuration = 150;
+	public static Double maxBarrageChance = 0.075d;
+	public static Integer minBarrageDuration = 20;
+	public static Integer maxBarrageDuration = 150;
 	//Skulls
-	public double skullVelocityMultiplier = 2.5d;
+	public static Double skullVelocityMultiplier = 2.5d;
 	//Attack Speed
-	public int attackInterval = 35;
-	public double bonusAttackSpeedWhenNear = 0.6d;
+	public static Integer attackInterval = 35;
+
+	public static Double bonusAttackSpeedWhenNear = 0.6d;
 
 	public AttackFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-		this.pushConfig(Config.builder);
 		increasedDamageConfig = Config.builder
 				.comment("Percentage bonus damage dealt by the Wither at max difficulty.")
 				.defineInRange("Increased Damage", increasedDamage, 0d, Double.MAX_VALUE);
@@ -104,25 +97,6 @@ public class AttackFeature extends Feature {
 				.comment("The middle head will attack faster (up to this bonus percentage) the nearer the target is to the Wither.")
 				.defineInRange("Bonus Attack Speed when Near", this.bonusAttackSpeedWhenNear, 0, 1);
 		Config.builder.pop();
-
-		Config.builder.pop();
-	}
-
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.increasedDamage = this.increasedDamageConfig.get();
-		this.maxChargeAttackChance = this.maxChargeAttackChanceConfig.get();
-		this.chargeAttackBaseDamage = this.chargeAttackBaseDamageConfig.get();
-		//Barrage
-		this.maxBarrageChance = this.maxBarrageChanceConfig.get();
-		this.minBarrageDuration = this.minBarrageDurationConfig.get();
-		this.maxBarrageDuration = this.maxBarrageDurationConfig.get();
-		//Skulls
-		this.skullVelocityMultiplier = this.skullVelocityMultiplierConfig.get();
-		//Attack Speed
-		this.attackInterval = this.attackIntervalConfig.get();
-		this.bonusAttackSpeedWhenNear = this.bonusAttackSpeedWhenNearConfig.get();
 	}
 
 	@SubscribeEvent
@@ -150,13 +124,9 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingTickEvent event) {
-		if (!this.isEnabled())
-			return;
-
-		if (!event.getEntity().isAlive())
-			return;
-
-		if (!(event.getEntity() instanceof WitherBoss wither))
+		if (!this.isEnabled()
+				|| !event.getEntity().isAlive()
+				|| !(event.getEntity() instanceof WitherBoss wither))
 			return;
 
 		tickCharge(wither);
@@ -231,9 +201,8 @@ public class AttackFeature extends Feature {
 	}
 
 	private void doCharge(WitherBoss wither, float damageTaken) {
-		if (this.maxChargeAttackChance == 0d)
-			return;
-		if (wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK) > 0)
+		if (this.maxChargeAttackChance == 0d
+				|| wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK) > 0)
 			return;
 
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();

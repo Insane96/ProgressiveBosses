@@ -3,15 +3,14 @@ package insane96mcp.progressivebosses.module.elderguardian.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
@@ -20,51 +19,27 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 @Label(name = "Rewards", description = "Bonus Experience and Dragon Egg per player")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian")
 public class RewardFeature extends Feature {
-
-	private final ForgeConfigSpec.ConfigValue<Integer> baseExperienceConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> injectDefaultRewardsConfig;
-
+	@Config(min = -1, max = 1024)
+	@Label(name = "Base Experience", description = "How much experience will an Elder Guardian drop. -1 will make the Elder Guardian drop vanilla experience.")
 	public int baseExperience = 40;
+	@Config(min = 0f)
+	@Label(name = "Bonus Experience", description = "How much more experience (percentage) will Elder Guardian drop per killed Elder Guardian. The percentage is additive (e.g. with this set to 100%, the last Elder will drop 200% more experience)")
 	public double bonusExperience = 1.0d;
+	@Config(min = -1, max = 1024)
+	@Label(name = "Inject Default Loot", description = "If true default mod drops are added to the Elder Guardian.\n" +
+			"Note that replacing the Elder Guardian loot table (e.g. via DataPack) will automatically remove the Injected loot.")
 	public boolean injectDefaultRewards = true;
 
 	public RewardFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-		this.pushConfig(Config.builder);
-		baseExperienceConfig = Config.builder
-				.comment("How much experience will an Elder Guardian drop. -1 will make the Elder Guardian drop vanilla experience.")
-				.defineInRange("Base Experience", this.baseExperience, -1, 1024);
-		bonusExperienceConfig = Config.builder
-				.comment("How much more experience (percentage) will Elder Guardian drop per killed Elder Guardian. The percentage is additive (e.g. with this set to 100%, the last Elder will drop 200% more experience)")
-				.defineInRange("Bonus Experience", bonusExperience, 0.0, Double.MAX_VALUE);
-		injectDefaultRewardsConfig = Config.builder
-				.comment("If true default mod drops are added to the Elder Guardian.\n" +
-						"Note that replacing the Elder Guardian loot table (e.g. via DataPack) will automatically remove the Injected loot.")
-				.define("Injecet Default Loot", this.injectDefaultRewards);
-		Config.builder.pop();
-	}
-
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.baseExperience = this.baseExperienceConfig.get();
-		this.bonusExperience = this.bonusExperienceConfig.get();
-		this.injectDefaultRewards = this.injectDefaultRewardsConfig.get();
 	}
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinLevelEvent event) {
-		if (event.getLevel().isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (this.baseExperience == -1d)
-			return;
-
-		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
+		if (event.getLevel().isClientSide
+				|| !this.isEnabled()
+				|| this.baseExperience == -1d
+				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
 		elderGuardian.xpReward = this.baseExperience;
@@ -72,13 +47,9 @@ public class RewardFeature extends Feature {
 
 	@SubscribeEvent
 	public void onExperienceDrop(LivingExperienceDropEvent event) {
-		if (!this.isEnabled())
-			return;
-
-		if (this.bonusExperience == 0d)
-			return;
-
-		if (!(event.getEntity() instanceof ElderGuardian))
+		if (!this.isEnabled()
+				|| this.bonusExperience == 0d
+				|| !(event.getEntity() instanceof ElderGuardian))
 			return;
 
 		int bonusExperience = (int) (event.getOriginalExperience() * (this.bonusExperience));
@@ -87,7 +58,8 @@ public class RewardFeature extends Feature {
 
 	@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
-		if (!this.isEnabled() || !this.injectDefaultRewards)
+		if (!this.isEnabled()
+				|| !this.injectDefaultRewards)
 			return;
 
 		ResourceLocation name = event.getName();

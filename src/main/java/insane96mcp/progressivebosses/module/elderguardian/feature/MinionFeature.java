@@ -4,10 +4,10 @@ import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +25,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -37,57 +36,34 @@ import java.util.List;
 @Label(name = "Minions", description = "Elder Guardians will spawn Elder Minions.")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian")
 public class MinionFeature extends Feature {
-
-	private final ForgeConfigSpec.ConfigValue<Integer> baseCooldownConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> cooldownReductionPerMissingGuardianConfig;
-
-	public int baseCooldown = 200;
-	public int cooldownReductionPerMissingGuardian = 60;
+	@Config(min = 0)
+	@Label(name = "Base Cooldown", description = "Elder Guardians will spawn Elder Minions every this tick value (20 ticks = 1 sec).")
+	public static Integer baseCooldown = 200;
+	@Config(min = 0)
+	@Label(name = "Cooldown Reduction per Missing Elder", description = "The base cooldown is reduced by this value for each missing Elder Guardian.")
+	public static Integer cooldownReductionPerMissingElder = 60;
 
 	public MinionFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-		this.pushConfig(Config.builder);
-		baseCooldownConfig = Config.builder
-				.comment("Elder Guardians will spawn Elder Minions every this tick value (20 ticks = 1 sec).")
-				.defineInRange("Base Cooldown", this.baseCooldown, 0, Integer.MAX_VALUE);
-		cooldownReductionPerMissingGuardianConfig = Config.builder
-				.comment("The base cooldown is reduced by this value for each missing Elder Guardian.")
-				.defineInRange("Cooldown Reduction per Missing Elder", this.cooldownReductionPerMissingGuardian, 0, Integer.MAX_VALUE);
-		Config.builder.pop();
-	}
-
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.baseCooldown = this.baseCooldownConfig.get();
-		this.cooldownReductionPerMissingGuardian = this.cooldownReductionPerMissingGuardianConfig.get();
 	}
 
 	@SubscribeEvent
 	public void onElderGuardianSpawn(EntityJoinLevelEvent event) {
-		if (event.getLevel().isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
+		if (event.getLevel().isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
 		CompoundTag nbt = elderGuardian.getPersistentData();
 
-		nbt.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, this.baseCooldown);
+		nbt.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, baseCooldown);
 	}
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingTickEvent event) {
-		if (event.getEntity().level.isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
 		Level world = event.getEntity().level;
@@ -101,7 +77,7 @@ public class MinionFeature extends Feature {
 			elderGuardianTags.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, cooldown - 1);
 			return;
 		}
-		cooldown = this.baseCooldown - (this.cooldownReductionPerMissingGuardian * elderGuardian.getPersistentData().getInt(Strings.Tags.DIFFICULTY));
+		cooldown = baseCooldown - (cooldownReductionPerMissingElder * elderGuardian.getPersistentData().getInt(Strings.Tags.DIFFICULTY));
 		elderGuardianTags.putInt(Strings.Tags.ELDER_MINION_COOLDOWN, cooldown);
 
 		//If there is no player in a radius from the elderGuardian, don't spawn minions
@@ -123,7 +99,7 @@ public class MinionFeature extends Feature {
 		summonMinion(world, new Vec3(elderGuardian.getX(), elderGuardian.getY(), elderGuardian.getZ()));
 	}
 
-	public Guardian summonMinion(Level world, Vec3 pos) {
+	public static void summonMinion(Level world, Vec3 pos) {
 		Guardian elderMinion = new Guardian(EntityType.GUARDIAN, world);
 		CompoundTag minionTags = elderMinion.getPersistentData();
 
@@ -150,6 +126,5 @@ public class MinionFeature extends Feature {
 		elderMinion.targetSelector.addGoal(1, new ILNearestAttackableTargetGoal<>(elderMinion, Player.class, false).setIgnoreLineOfSight());
 
 		world.addFreshEntity(elderMinion);
-		return elderMinion;
 	}
 }

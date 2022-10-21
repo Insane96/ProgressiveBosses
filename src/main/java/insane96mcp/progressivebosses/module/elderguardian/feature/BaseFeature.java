@@ -3,9 +3,9 @@ package insane96mcp.progressivebosses.module.elderguardian.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -17,7 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameType;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -31,40 +30,21 @@ import java.util.List;
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian", canBeDisabled = false)
 public class BaseFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Boolean> adventureConfig;
-
-	public boolean adventure = true;
+	@Config
+	@Label(name = "Adventure mode", description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby.")
+	public static Boolean adventure = true;
 
 	public BaseFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-		this.pushConfig(Config.builder);
-		this.adventureConfig = Config.builder
-				.comment("If true, the player will not be able to break blocks when an Elder Guardian is nearby.")
-				.define("Adventure mode", this.adventure);
-		Config.builder.pop();
-	}
-
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.adventure = this.adventureConfig.get();
 	}
 
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-		if (event.player.level.isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!this.adventure)
-			return;
-
-		if (event.player.tickCount % 20 != 0)
-			return;
-
-		if (!event.player.isAlive())
+		if (event.player.level.isClientSide
+				|| !this.isEnabled()
+				|| !adventure
+				|| event.player.tickCount % 20 != 0
+				|| !event.player.isAlive())
 			return;
 
 		ServerPlayer serverPlayer = (ServerPlayer) event.player;
@@ -93,13 +73,9 @@ public class BaseFeature extends Feature {
 
 	@SubscribeEvent
 	public void onPlayerDeath(LivingDeathEvent event) {
-		if (!this.isEnabled())
-			return;
-
-		if (!this.adventure)
-			return;
-
-		if (!(event.getEntity() instanceof ServerPlayer serverPlayer))
+		if (!this.isEnabled()
+				|| !adventure
+				|| !(event.getEntity() instanceof ServerPlayer serverPlayer))
 			return;
 
 		CompoundTag nbt = serverPlayer.getPersistentData();
@@ -113,16 +89,10 @@ public class BaseFeature extends Feature {
 
 	@SubscribeEvent
 	public void onExplosionDetonate(ExplosionEvent.Start event) {
-		if (!this.isEnabled())
-			return;
-
-		if (!this.adventure)
-			return;
-
-		if (event.getExplosion().getExploder() == null)
-			return;
-
-		if (event.getExplosion().blockInteraction == Explosion.BlockInteraction.NONE)
+		if (!this.isEnabled()
+				|| !adventure
+				|| event.getExplosion().getExploder() == null
+				|| event.getExplosion().blockInteraction == Explosion.BlockInteraction.NONE)
 			return;
 
 		boolean nearElderGuardian = !event.getLevel().getEntitiesOfClass(ElderGuardian.class, event.getExplosion().getExploder().getBoundingBox().inflate(32d)).isEmpty();
@@ -134,10 +104,8 @@ public class BaseFeature extends Feature {
 
 	@SubscribeEvent
 	public void onElderGuardianDeath(LivingDeathEvent event) {
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
+		if (!this.isEnabled()
+				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
 		List<Entity> elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardian);
@@ -155,13 +123,9 @@ public class BaseFeature extends Feature {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onSpawn(EntityJoinLevelEvent event) {
-		if (event.getLevel().isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof ElderGuardian elderGuardian))
+		if (event.getLevel().isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
 		CompoundTag nbt = elderGuardian.getPersistentData();
