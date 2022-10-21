@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.6.4
 * Wither Minions now make entities they kill drop Wither Roses
 * Wither no longer generates fire on the starting Explosion
 

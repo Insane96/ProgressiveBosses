@@ -72,20 +72,10 @@ public class DifficultyFeature extends Feature {
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onSpawn(EntityJoinWorldEvent event) {
-		if (event.getWorld().isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		//What could go wrong?
-		//if (!event.getWorld().dimension().location().equals(DimensionType.END_LOCATION.location()))
-		//	return;
-
-		if (!(event.getEntity() instanceof EnderDragon dragon))
-			return;
-
-		if (dragon.getDragonFight() == null)
+		if (event.getWorld().isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof EnderDragon dragon)
+				|| dragon.getDragonFight() == null)
 			return;
 
 		CompoundTag dragonTags = dragon.getPersistentData();
@@ -129,13 +119,9 @@ public class DifficultyFeature extends Feature {
 	//Increase Player Difficulty
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
-		if (event.getEntity().level.isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragon dragon))
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
 		int radius = 256;
