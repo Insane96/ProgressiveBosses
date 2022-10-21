@@ -40,63 +40,37 @@ public class AttackFeature extends Feature {
 	@Label(name = "Increased Damage", description = "How much experience will an Elder Guardian drop. -1 will make the Elder Guardian drop vanilla experience.")
 	public static Double increasedDamage = 0.96d;
 	@Config(min = 0d, max = 1d)
-	@Label(name = "Charge attack.Charge chance", description = "Chance every time the Wither takes damage to start a charge attack. Lower health and more damage taken increases the chance.\n" +
+	@Label(name = "Charge attack.Chance", description = "Chance every time the Wither takes damage to start a charge attack. Lower health and more damage taken increases the chance.\n" +
 			"This value is the chance at 0% health and when taking 10 damage.")
 	public static Double maxChargeAttackChance = 0.06d;
+	@Config(min = 0d, max = 50d)
+	@Label(name = "Charge attack.Base Damage", description = "Base damage of the charge attack. Increased by 'Increased Damage' config option.")
 	public static Double chargeAttackBaseDamage = 16d;
 	//Barrage Attack
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Barrage Attack.Chance", description = "Chance (at max difficulty) every time the Wither takes damage to start a barrage attack. More damage taken increases the chance.\n" +
+			"This value is the chance when taking 10 damage.")
 	public static Double maxBarrageChance = 0.075d;
+	@Config(min = 0)
+	@Label(name = "Barrage Attack.Min Duration", description = "Min time (in ticks) for the duration of the barrage attack. Less health = longer barrage.")
 	public static Integer minBarrageDuration = 20;
+	@Config(min = 0)
+	@Label(name = "Barrage Attack.Max Duration", description = "Max time (in ticks) for the duration of the barrage attack. Less health = longer barrage")
 	public static Integer maxBarrageDuration = 150;
+	@Config(min = 1d)
+	@Label(name = "Skull Velocity Multiplier", description = "Wither Skull Projectiles speed will be multiplied by this value. Set to 1 to not change the speed.")
 	//Skulls
 	public static Double skullVelocityMultiplier = 2.5d;
 	//Attack Speed
+	@Config(min = 1)
+	@Label(name = "Attack Speed.Interval", description = "Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
 	public static Integer attackInterval = 35;
-
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Attack Speed.Bonus when near", description = "The middle head will attack faster (up to this bonus percentage) the nearer the target is to the Wither.")
 	public static Double bonusAttackSpeedWhenNear = 0.6d;
 
 	public AttackFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-		increasedDamageConfig = Config.builder
-				.comment("Percentage bonus damage dealt by the Wither at max difficulty.")
-				.defineInRange("Increased Damage", increasedDamage, 0d, Double.MAX_VALUE);
-		Config.builder.push("Charge Attack");
-		maxChargeAttackChanceConfig = Config.builder
-				.comment("Chance every time the Wither takes damage to start a charge attack. Lower health and more damage taken increases the chance.\n" +
-						"This value is the chance at 0% health and when taking 10 damage.")
-				.defineInRange("Charge chance", maxChargeAttackChance, 0d, 1d);
-		chargeAttackBaseDamageConfig = Config.builder
-				.comment("Base damage of the charge attack. Increased by 'Increased Damage' config option.")
-				.defineInRange("Charge Attack Base Damage", this.chargeAttackBaseDamage, 0d, 50d);
-		Config.builder.pop();
-		//Barrage
-		Config.builder.push("Barrage Attack");
-		maxBarrageChanceConfig = Config.builder
-				.comment("Chance (at max difficulty) every time the Wither takes damage to start a barrage attack. More damage taken increases the chance.\n" +
-						"This value is the chance when taking 10 damage.")
-				.defineInRange("Barrage Attack Chance", maxBarrageChance, 0d, 1d);
-		minBarrageDurationConfig = Config.builder
-				.comment("Min time (in ticks) for the duration of the barrage attack. Less health = longer barrage.")
-				.defineInRange("Min Barrage Duration", minBarrageDuration, 0, Integer.MAX_VALUE);
-		maxBarrageDurationConfig = Config.builder
-				.comment("Max time (in ticks) for the duration of the barrage attack. Less health = longer barrage")
-				.defineInRange("Max Barrage Duration", maxBarrageDuration, 0, Integer.MAX_VALUE);
-		Config.builder.pop();
-		//Skulls
-		Config.builder.comment("Wither Skull Changes").push("Skulls");
-		skullVelocityMultiplierConfig = Config.builder
-				.comment("Wither Skull Projectiles speed will be multiplied by this value. Set to 1 to not change the speed.")
-				.defineInRange("Skull Velocity Multiplier", skullVelocityMultiplier, 1d, Double.MAX_VALUE);
-		Config.builder.pop();
-		//Attack Speed
-		Config.builder.comment("Attack Speed Changes").push("Attack Speed");
-		attackIntervalConfig = Config.builder
-				.comment("Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
-				.defineInRange("Attack Interval", attackInterval, 0, Integer.MAX_VALUE);
-		this.bonusAttackSpeedWhenNearConfig = Config.builder
-				.comment("The middle head will attack faster (up to this bonus percentage) the nearer the target is to the Wither.")
-				.defineInRange("Bonus Attack Speed when Near", this.bonusAttackSpeedWhenNear, 0, 1);
-		Config.builder.pop();
 	}
 
 	@SubscribeEvent
@@ -117,9 +91,9 @@ public class AttackFeature extends Feature {
 			return;
 		}
 
-		witherSkullEntity.xPower *= this.skullVelocityMultiplier;
-		witherSkullEntity.yPower *= this.skullVelocityMultiplier;
-		witherSkullEntity.zPower *= this.skullVelocityMultiplier;
+		witherSkullEntity.xPower *= skullVelocityMultiplier;
+		witherSkullEntity.yPower *= skullVelocityMultiplier;
+		witherSkullEntity.zPower *= skullVelocityMultiplier;
 	}
 
 	@SubscribeEvent
@@ -138,7 +112,7 @@ public class AttackFeature extends Feature {
 	}
 
 	private void tickCharge(WitherBoss wither) {
-		if (this.maxChargeAttackChance == 0d)
+		if (maxChargeAttackChance == 0d)
 			return;
 		byte chargeTick = wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK);
 
@@ -164,11 +138,11 @@ public class AttackFeature extends Feature {
 	public void onDamageDealt(LivingHurtEvent event) {
 		if (event.getEntity().level.isClientSide
 				|| !this.isEnabled()
-				|| this.increasedDamage == 0d
+				|| increasedDamage == 0d
 				|| !(event.getSource().getEntity() instanceof WitherBoss wither))
 			return;
 
-		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDamage * DifficultyHelper.getScalingDifficulty(wither))));
+		event.setAmount(event.getAmount() * (float)(1d + (increasedDamage * DifficultyHelper.getScalingDifficulty(wither))));
 	}
 
 	//High priority so runs before the damage reduction
@@ -185,28 +159,28 @@ public class AttackFeature extends Feature {
 	}
 
 	private void doBarrage(WitherBoss wither, float damageTaken) {
-		if (this.maxBarrageChance == 0d)
+		if (maxBarrageChance == 0d)
 			return;
 
 		CompoundTag witherTags = wither.getPersistentData();
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
 
-		double chance = (this.maxBarrageChance * DifficultyHelper.getScalingDifficulty(wither));
+		double chance = (maxBarrageChance * DifficultyHelper.getScalingDifficulty(wither));
 		chance *= (damageTaken / 10f);
 		double r = wither.getRandom().nextDouble();
 		if (r < chance) {
-			int duration = (int) (((this.maxBarrageDuration - this.minBarrageDuration) * missingHealthPerc) + this.minBarrageDuration);
+			int duration = (int) (((maxBarrageDuration - minBarrageDuration) * missingHealthPerc) + minBarrageDuration);
 			witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, duration);
 		}
 	}
 
 	private void doCharge(WitherBoss wither, float damageTaken) {
-		if (this.maxChargeAttackChance == 0d
+		if (maxChargeAttackChance == 0d
 				|| wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK) > 0)
 			return;
 
 		double missingHealthPerc = 1d - wither.getHealth() / wither.getMaxHealth();
-		double chance = this.maxChargeAttackChance * missingHealthPerc;
+		double chance = maxChargeAttackChance * missingHealthPerc;
 		chance *= (damageTaken / 10f);
 		double r = wither.getRandom().nextDouble();
 		if (r < chance) {
@@ -231,7 +205,7 @@ public class AttackFeature extends Feature {
 		toRemove.forEach(wither.goalSelector::removeGoal);
 
 		wither.goalSelector.addGoal(1, new WitherChargeAttackGoal(wither));
-		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  this.attackInterval, 24.0f, this.bonusAttackSpeedWhenNear));
+		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  attackInterval, 24.0f, bonusAttackSpeedWhenNear));
 
 		MCUtils.applyModifier(wither, Attributes.FOLLOW_RANGE, UUID.randomUUID(), "Wither Sexy Glasses", 56d, AttributeModifier.Operation.ADDITION);
 	}

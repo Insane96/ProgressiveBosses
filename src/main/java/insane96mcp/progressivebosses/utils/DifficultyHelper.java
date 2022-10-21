@@ -1,6 +1,5 @@
 package insane96mcp.progressivebosses.utils;
 
-import insane96mcp.progressivebosses.module.Modules;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,15 +12,14 @@ public class DifficultyHelper {
         CompoundTag persistentData = entity.getPersistentData();
         float maxDifficulty = 0;
         if (entity instanceof EnderDragon)
-            maxDifficulty = Modules.dragon.difficulty.maxDifficulty;
+            maxDifficulty = insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty;
         else if (entity instanceof WitherBoss)
-            maxDifficulty = Modules.wither.difficulty.maxDifficulty;
+            maxDifficulty = insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty;
         else if (entity instanceof ElderGuardian)
             maxDifficulty = 3;
 
         if (maxDifficulty == 0)
             return 0;
-        //throw new UnsupportedOperationException("%s is not a valid entity".formatted(entity));
 
         float difficulty = persistentData.getFloat(Strings.Tags.DIFFICULTY);
         return difficulty / maxDifficulty;

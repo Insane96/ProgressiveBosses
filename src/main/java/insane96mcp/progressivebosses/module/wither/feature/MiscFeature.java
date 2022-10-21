@@ -3,10 +3,10 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
@@ -19,71 +19,47 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 @Label(name = "Misc", description = "Handles various small features, such as the explosion")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class MiscFeature extends Feature {
-
-	private final ForgeConfigSpec.ConfigValue<Double> explosionPowerBonusConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> explosionCausesFireAtDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> fasterBlockBreakingConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> biggerBlockBreakingConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> ignoreWitherProofBlocksConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> witherNetherOnlyConfig;
-
-	public double explosionPowerBonus = 8d;
-	public int explosionCausesFireAtDifficulty = -1;
-	public boolean fasterBlockBreaking = true;
-	public boolean biggerBlockBreaking = true;
-	public boolean ignoreWitherProofBlocks = false;
-	public boolean witherNetherOnly = false;
-
-	public MiscFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-		super(module, enabledByDefault, canBeDisabled);
-		this.pushConfig(Config.builder);
-		explosionPowerBonusConfig = Config.builder
-				.comment("How much explosion power (after the invulnerability) will the Wither have at max difficulty. Explosion Radius is capped to 13. Base Wither Explosion Power is 7.0. Setting this to 0 will not increase the Wither Explosion Power.")
-				.defineInRange("Explosion Power Bonus", explosionPowerBonus, 0d, 8d);
-		explosionCausesFireAtDifficultyConfig = Config.builder
-				.comment("At this difficulty the Wither Explosion will cause fire. Set to -1 to disable.")
-				.defineInRange("Explosion Causes Fire at Difficulty", explosionCausesFireAtDifficulty, -1, Integer.MAX_VALUE);
-		fasterBlockBreakingConfig = Config.builder
-				.comment("The Wither will no longer wait 1.0 seconds before breaking blocks when he's hit, instead just 0.5s")
-				.define("Faster Breaking Blocks", fasterBlockBreaking);
-		biggerBlockBreakingConfig = Config.builder
-				.comment("The Wither will break even blocks below him when hit.")
-				.define("Bigger Breaking Blocks", biggerBlockBreaking);
-		ignoreWitherProofBlocksConfig = Config.builder
-				.comment("If true the Wither will break even blocks that are witherproof. Unbreakable blocks will still be unbreakable, so it's really useful with other mods as in vanilla Wither Proof Blocks are all the unbreakable blocks.")
-				.define("Ignore Witherproof Blocks", ignoreWitherProofBlocks);
-		witherNetherOnlyConfig = Config.builder
-				.comment("""
+	@Config(min = 0d, max = 8d)
+	@Label(name = "Explosion Power Bonus", description = "How much explosion power (after the invulnerability) will the Wither have at max difficulty. Explosion Radius is capped to 13. Base Wither Explosion Power is 7.0. Setting this to 0 will not increase the Wither Explosion Power")
+	public static Double explosionPowerBonus = 8d;
+	@Config(min = -1)
+	@Label(name = "Explosion Causes Fire at Difficulty", description = "At this difficulty the Wither Explosion will cause fire. Set to -1 to disable.")
+	public static Integer explosionCausesFireAtDifficulty = -1;
+	@Config
+	@Label(name = "Faster Breaking Blocks", description = "The Wither will no longer wait 1.0 seconds before breaking blocks when he's hit, instead just 0.5s")
+	public static Boolean fasterBlockBreaking = true;
+	@Config
+	@Label(name = "Bigger Breaking Blocks", description = "The Wither will break even blocks below him when hit.")
+	public static Boolean biggerBlockBreaking = true;
+	@Config
+	@Label(name = "Ignore Wither-proof Blocks", description = "If true the Wither will break even blocks that are wither-proof. Unbreakable blocks will still be unbreakable, so it's really useful with other mods as in vanilla Wither Proof Blocks are all the unbreakable blocks.")
+	public static Boolean ignoreWitherProofBlocks = false;
+	@Config
+	@Label(name = "Wither Nether Only", description = """
 						The wither can only be spawned in the Nether.
 						Note that this feature completely disables Wither Skulls from begin placed nearby Soul Sand when not in the Nether or when on the Nether Roof.
 						Requires Minecraft restart.""")
-				.define("Wither Nether Only", witherNetherOnly);
-		Config.builder.pop();
-	}
+	public static Boolean witherNetherOnly = false;
+
+	public MiscFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);	}
 
 	private boolean behaviourRegistered = false;
 
 	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.explosionPowerBonus = this.explosionPowerBonusConfig.get();
-		this.explosionCausesFireAtDifficulty = this.explosionCausesFireAtDifficultyConfig.get();
-		this.fasterBlockBreaking = this.fasterBlockBreakingConfig.get();
-		this.biggerBlockBreaking = this.biggerBlockBreakingConfig.get();
-		this.ignoreWitherProofBlocks = this.ignoreWitherProofBlocksConfig.get();
-		this.witherNetherOnly = this.witherNetherOnlyConfig.get();
-
-		if (this.witherNetherOnly && !behaviourRegistered) {
+	public void readConfig(final ModConfigEvent event) {
+		super.readConfig(event);
+		if (witherNetherOnly && !behaviourRegistered) {
 			DispenserBlock.registerBehavior(Items.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());
 			behaviourRegistered = true;
 		}
@@ -97,7 +73,7 @@ public class MiscFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
-		if (!this.biggerBlockBreaking)
+		if (!biggerBlockBreaking)
 			return;
 
 		if (!(event.getEntity() instanceof WitherBoss wither))
@@ -141,7 +117,7 @@ public class MiscFeature extends Feature {
 	}
 
 	private boolean canWitherDestroy(WitherBoss wither, BlockPos pos, BlockState state) {
-		if (this.ignoreWitherProofBlocks)
+		if (ignoreWitherProofBlocks)
 			return !state.isAir() && state.getDestroySpeed(wither.level, pos) >= 0f;
 		else
 			return state.canEntityDestroy(wither.level, pos, wither);
@@ -150,7 +126,7 @@ public class MiscFeature extends Feature {
 	@SubscribeEvent
 	public void onExplosion(ExplosionEvent.Start event) {
 		if (!this.isEnabled()
-			|| (this.explosionCausesFireAtDifficulty == -1 && this.explosionPowerBonus == 0d)
+			|| (explosionCausesFireAtDifficulty == -1 && explosionPowerBonus == 0d)
 			|| !(event.getExplosion().getExploder() instanceof WitherBoss wither)
 			//Check if the explosion is the one from the wither
 			|| event.getExplosion().radius != 7f)
@@ -162,21 +138,21 @@ public class MiscFeature extends Feature {
 		if (difficulty <= 0f)
 			return;
 
-		float explosionPower = (float) (event.getExplosion().radius + (this.explosionPowerBonus * DifficultyHelper.getScalingDifficulty(wither)));
+		float explosionPower = (float) (event.getExplosion().radius + (explosionPowerBonus * DifficultyHelper.getScalingDifficulty(wither)));
 
 		if (explosionPower > 13f)
 			explosionPower = 13f;
 
 		event.getExplosion().radius = explosionPower;
 
-		event.getExplosion().fire = difficulty >= this.explosionCausesFireAtDifficulty;
+		event.getExplosion().fire = difficulty >= explosionCausesFireAtDifficulty;
 	}
 
 	@SubscribeEvent
 	public void onWitherDamage(LivingHurtEvent event) {
 		if (event.getEntity().level.isClientSide
 				|| !this.isEnabled()
-				|| !this.fasterBlockBreaking
+				|| !fasterBlockBreaking
 				|| !event.getEntity().isAlive()
 				|| !(event.getEntity() instanceof WitherBoss wither))
 			return;
@@ -189,6 +165,7 @@ public class MiscFeature extends Feature {
 		if (!this.isEnabled())
 			return;
 
+		//noinspection ConstantConditions
 		if (event.getItemStack().getItem() == Items.WITHER_SKELETON_SKULL && !this.canPlaceSkull(event.getLevel(), event.getPos().offset(event.getFace().getNormal()))) {
 			event.setCanceled(true);
 		}
@@ -197,8 +174,8 @@ public class MiscFeature extends Feature {
 	/**
 	 * Returns true if at the specified position a Wither Skull can be placed
 	 */
-	public boolean canPlaceSkull(Level world, BlockPos pos) {
-		if (!this.witherNetherOnly)
+	public static boolean canPlaceSkull(Level world, BlockPos pos) {
+		if (!witherNetherOnly)
 			return true;
 
 		boolean isNether = world.dimension().equals(Level.NETHER);

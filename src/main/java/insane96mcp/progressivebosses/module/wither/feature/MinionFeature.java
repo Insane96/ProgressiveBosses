@@ -3,12 +3,12 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.entity.WitherMinion;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
@@ -35,12 +35,12 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.List;
 import java.util.UUID;
@@ -48,165 +48,94 @@ import java.util.UUID;
 @Label(name = "Minions", description = "Wither will spawn deadly Minions")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class MinionFeature extends Feature {
-
-	private final ForgeConfigSpec.ConfigValue<Integer> minionAtDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> bonusMinionEveryDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> maxSpawnedConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> maxAroundConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> minCooldownConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> maxCooldownConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> cooldownMultiplierBelowHalfHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> bonusSpeedConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> magicDamageMultiplierConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> killMinionOnWitherDeathConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> aboveHalfHealthBowChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> belowHalfHealthBowChanceConfig;
-	private final ForgeConfigSpec.DoubleValue sharpnessChanceConfig;
-	private final ForgeConfigSpec.DoubleValue powerChanceConfig;
-	private final ForgeConfigSpec.DoubleValue knockbackChanceConfig;
-	private final ForgeConfigSpec.DoubleValue punchChanceConfig;
-
-	public int minionAtDifficulty = 1;
-	public int bonusMinionEveryDifficulty = 1;
-	public int maxSpawned = 6;
-	public int maxAround = 18;
-	public int minCooldown = 400;
-	public int maxCooldown = 800;
-	public double cooldownMultiplierBelowHalfHealth = 0.50d;
-	public double bonusSpeed = 0.25d;
-	public double magicDamageMultiplier = 3.0d;
-	public boolean killMinionOnWitherDeath = true;
-	//Equipment
-	public double aboveHalfHealthBowChance = 0.60d;
-	public double belowHalfHealthBowChance = 0.08d;
-	//Enchantments
-	public double sharpnessChance = 2.40d;
-	public double powerChance = 3.20d;
-	public double knockbackChance = 2.40d;
-	public double punchChance = 1.50d;
+	@Config(min = 0)
+	@Label(name = "Minion at Difficulty", description = "At which difficulty the Wither starts spawning Minions")
+	public static Integer minionAtDifficulty = 1;
+	@Config(min = 0)
+	@Label(name = "Bonus Minion Every Difficulty", description = "As the Wither starts spawning Minions, every how much difficulty the Wither will spawn one more Minion")
+	public static Integer bonusMinionEveryDifficulty = 1;
+	@Config(min = 0)
+	@Label(name = "Max Minions Spawned", description = "Maximum Minions spawned by the Wither")
+	public static Integer maxSpawned = 6;
+	@Config(min = 0)
+	@Label(name = "Max Minions Around", description = "Maximum amount of Minions that can be around the Wither in a 16 block radius. After this number is reached the Wither will stop spawning minions. Set to 0 to disable this check")
+	public static Integer maxAround = 18;
+	@Config(min = 0)
+	@Label(name = "Minimum Cooldown", description = "Minimum ticks (20 ticks = 1 seconds) after Minions can spawn.")
+	public static Integer minCooldown = 400;
+	@Config(min = 0)
+	@Label(name = "Maximum Cooldown", description = "Maximum ticks (20 ticks = 1 seconds) after Minions can spawn.")
+	public static Integer maxCooldown = 800;
+	@Config(min = 0d)
+	@Label(name = "Cooldown Multiplier Below Half Health", description = "Min and Max cooldowns are multiplied by this value when the Wither drops below half health. Set to 1 to not change the cooldown when the wither's health drops below half.")
+	public static Double cooldownMultiplierBelowHalfHealth = 0.50d;
+	@Config(min = 0d)
+	@Label(name = "Bonus Movement Speed Per Difficulty", description = "Percentage bonus speed at max difficulty.")
+	public static Double bonusSpeed = 0.25d;
+	@Config(min = 0d)
+	@Label(name = "Magic Damage Taken Multiplier", description = "Wither Minions will take magic damage multiplied by this value.")
+	public static Double magicDamageMultiplier = 3.0d;
+	@Config
+	@Label(name = "Magic Damage Taken Multiplier", description = "Wither Minions will take magic damage multiplied by this value.")
+	public static Boolean killMinionOnWitherDeath = true;
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Equipment.Bow Chance Above Half Health", description = "Chance for the Wither Minion to spawn with a bow instead of a Stone Sword when Wither's above Half Health.")
+	public static Double aboveHalfHealthBowChance = 0.60d;
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Equipment.Bow Chance Below Half Health", description = "Chance for the Wither Minion to spawn with a bow instead of a Stone Sword when Wither's below Half Health.")
+	public static Double belowHalfHealthBowChance = 0.08d;
+	//TODO Make a list of enchantments instead of making one config option per enchantment
+	@Config(min = 0d, max = 255d)
+	@Label(name = "Equipment.Enchantments.Sharpness Chance", description = "Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Sharpness. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
+	public static Double sharpnessChance = 2.40d;
+	@Config(min = 0d, max = 255d)
+	@Label(name = "Equipment.Enchantments.Knockback Chance", description = "Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Knockback. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
+	public static Double knockbackChance = 2.40d;
+	@Config(min = 0d, max = 255d)
+	@Label(name = "Equipment.Enchantments.Power Chance", description = "Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
+	public static Double powerChance = 3.20d;
+	@Config(min = 0d, max = 255d)
+	@Label(name = "Equipment.Enchantments.Punch Chance", description = "Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
+	public static Double punchChance = 1.50d;
 
 	public MinionFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-		this.pushConfig(Config.builder);
-		minionAtDifficultyConfig = Config.builder
-				.comment("At which difficulty the Wither starts spawning Minions")
-				.defineInRange("Minion at Difficulty", minionAtDifficulty, 0, Integer.MAX_VALUE);
-		bonusMinionEveryDifficultyConfig = Config.builder
-				.comment("As the Wither starts spawning Minions, every how much difficulty the Wither will spawn one more Minion")
-				.defineInRange("Bonus Minion Every Difficulty", bonusMinionEveryDifficulty, 0, Integer.MAX_VALUE);
-		maxSpawnedConfig = Config.builder
-				.comment("Maximum Minions spawned by the Wither")
-				.defineInRange("Max Minions Spawned", maxSpawned, 0, Integer.MAX_VALUE);
-		maxAroundConfig = Config.builder
-				.comment("Maximum amount of Minions that can be around the Wither in a 16 block radius. After this number is reached the Wither will stop spawning minions. Set to 0 to disable this check")
-				.defineInRange("Max Minions Around", maxAround, 0, Integer.MAX_VALUE);
-		minCooldownConfig = Config.builder
-				.comment("Minimum ticks (20 ticks = 1 seconds) after Minions can spwan.")
-				.defineInRange("Minimum Cooldown", minCooldown, 0, Integer.MAX_VALUE);
-		maxCooldownConfig = Config.builder
-				.comment("Maximum ticks (20 ticks = 1 seconds) after Minions can spwan.")
-				.defineInRange("Maximum Cooldown", maxCooldown, 0, Integer.MAX_VALUE);
-		cooldownMultiplierBelowHalfHealthConfig = Config.builder
-				.comment("Min and Max cooldowns are multiplied by this value when the Wither drops below half health. Set to 1 to not change the cooldown when the wither's health drops below half.")
-				.defineInRange("Cooldown Multiplier Below Half Health", cooldownMultiplierBelowHalfHealth, 0d, Double.MAX_VALUE);
-		bonusSpeedConfig = Config.builder
-				.comment("Percentage bonus speed at max difficulty.")
-				.defineInRange("Bonus Movement Speed Per Difficulty", bonusSpeed, 0d, Double.MAX_VALUE);
-		magicDamageMultiplierConfig = Config.builder
-				.comment("Wither Minions will take magic damage multiplied by this value.")
-				.defineInRange("Magic Damage Multiplier", magicDamageMultiplier, 0, Double.MAX_VALUE);
-		killMinionOnWitherDeathConfig = Config.builder
-				.comment("Wither Minions will die when the Wither that spawned them dies.")
-				.define("Kill Minions on Wither Death", killMinionOnWitherDeath);
-
-		Config.builder.push("Equipment");
-		aboveHalfHealthBowChanceConfig = Config.builder
-				.comment("Chance for the Wither Minion to spawn with a bow instead of a Stone Sword when Wither's above Half Health")
-				.defineInRange("Bow Chance Above Half Health", aboveHalfHealthBowChance, 0d, 1d);
-		belowHalfHealthBowChanceConfig = Config.builder
-				.comment("Chance for the Wither Minion to spawn with a bow instead of a Stone Sword when Wither's below Half Health")
-				.defineInRange("Bow Chance Below Half Health", belowHalfHealthBowChance, 0d, 1d);
-
-		Config.builder.push("Enchantments");
-		sharpnessChanceConfig = Config.builder
-				.comment("Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Sharpness. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
-				.defineInRange("Sharpness Chance", this.sharpnessChance, 0d, 255d);
-		knockbackChanceConfig = Config.builder
-				.comment("Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Knockback. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
-				.defineInRange("Knockback Chance", this.knockbackChance, 0d, 255d);
-		powerChanceConfig = Config.builder
-				.comment("Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
-				.defineInRange("Power Chance", this.powerChance, 0d, 255d);
-		punchChanceConfig = Config.builder
-				.comment("Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
-				.defineInRange("Punch Chance", this.punchChance, 0d, 255d);
-		Config.builder.pop(2);
-
-		Config.builder.pop();
 	}
 
 	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.minionAtDifficulty = this.minionAtDifficultyConfig.get();
-		this.bonusMinionEveryDifficulty = this.bonusMinionEveryDifficultyConfig.get();
-		this.maxSpawned = this.maxSpawnedConfig.get();
-		this.maxAround = this.maxAroundConfig.get();
-		this.minCooldown = this.minCooldownConfig.get();
-		this.maxCooldown = this.maxCooldownConfig.get();
-		if (this.minCooldown > this.maxCooldown)
-			this.minCooldown = this.maxCooldown;
-		this.cooldownMultiplierBelowHalfHealth = this.cooldownMultiplierBelowHalfHealthConfig.get();
-		this.bonusSpeed = this.bonusSpeedConfig.get();
-		this.magicDamageMultiplier = this.magicDamageMultiplierConfig.get();
-		this.killMinionOnWitherDeath = this.killMinionOnWitherDeathConfig.get();
-		//Equipment
-		this.aboveHalfHealthBowChance = this.aboveHalfHealthBowChanceConfig.get();
-		this.belowHalfHealthBowChance = this.belowHalfHealthBowChanceConfig.get();
-		this.sharpnessChance = this.sharpnessChanceConfig.get();
-		this.knockbackChance = this.knockbackChanceConfig.get();
-		this.powerChance = this.powerChanceConfig.get();
-		this.punchChance = this.punchChanceConfig.get();
+	public void readConfig(final ModConfigEvent event) {
+		super.readConfig(event);
+		if (minCooldown > maxCooldown)
+			minCooldown = maxCooldown;
 	}
 
 	@SubscribeEvent
 	public void onWitherSpawn(EntityJoinLevelEvent event) {
-		if (event.getLevel().isClientSide)
+		if (event.getLevel().isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof WitherBoss wither))
-			return;
 		CompoundTag witherTags = wither.getPersistentData();
 
-		int cooldown = (int) (Mth.nextInt(wither.level.random, this.minCooldown, this.maxCooldown) * this.cooldownMultiplierBelowHalfHealth);
+		int cooldown = (int) (Mth.nextInt(wither.level.random, minCooldown, maxCooldown) * cooldownMultiplierBelowHalfHealth);
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown);
 	}
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingTickEvent event) {
-		if (event.getEntity().level.isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof WitherBoss wither))
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof WitherBoss wither))
 			return;
 
 		Level world = event.getEntity().level;
 		CompoundTag witherTags = wither.getPersistentData();
 
 		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
-		if (difficulty < this.minionAtDifficulty)
-			return;
-
-		if (wither.getHealth() <= 0)
-			return;
-
-		if (wither.getInvulnerableTicks() > 0)
+		if (difficulty < minionAtDifficulty
+				|| wither.getHealth() <= 0
+				|| wither.getInvulnerableTicks() > 0)
 			return;
 
 		int cooldown = witherTags.getInt(Strings.Tags.WITHER_MINION_COOLDOWN);
@@ -228,19 +157,16 @@ public class MinionFeature extends Feature {
 		List<WitherMinion> minionsInAABB = world.getEntitiesOfClass(WitherMinion.class, wither.getBoundingBox().inflate(16));
 		int minionsCountInAABB = minionsInAABB.size();
 
-		if (minionsCountInAABB >= this.maxAround)
+		if (minionsCountInAABB >= maxAround)
 			return;
-
-		int minCooldown = this.minCooldown;
-		int maxCooldown = this.maxCooldown;
 
 		cooldown = Mth.nextInt(world.random, minCooldown, maxCooldown);
 		if (wither.isPowered())
-			cooldown *= this.cooldownMultiplierBelowHalfHealth;
+			cooldown *= cooldownMultiplierBelowHalfHealth;
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown - 1);
 
 		int minionSpawnedCount = 0;
-		for (int i = this.minionAtDifficulty; i <= difficulty; i += this.bonusMinionEveryDifficulty) {
+		for (int i = minionAtDifficulty; i <= difficulty; i += bonusMinionEveryDifficulty) {
 
 			int x = 0, y = 0, z = 0;
 			//Tries to spawn the Minion up to 5 times
@@ -265,45 +191,34 @@ public class MinionFeature extends Feature {
 			witherTags.put(Strings.Tags.MINIONS, minionsList);
 
 			minionSpawnedCount++;
-			if (minionSpawnedCount >= this.maxSpawned)
+			if (minionSpawnedCount >= maxSpawned)
 				break;
 
 			minionsCountInAABB++;
-			if (minionsCountInAABB >= this.maxAround)
+			if (minionsCountInAABB >= maxAround)
 				break;
 		}
 	}
 
 	@SubscribeEvent
 	public void onMinionDamage(LivingDamageEvent event) {
-		if (!this.isEnabled())
+		if (!this.isEnabled()
+				|| magicDamageMultiplier == 0d
+				|| !(event.getEntity() instanceof WitherMinion)
+				|| !event.getSource().isMagic())
 			return;
 
-		if (this.magicDamageMultiplier == 0d)
-			return;
-
-		if (!(event.getEntity() instanceof WitherMinion))
-			return;
-
-		//Handle Magic Damage
-		if (event.getSource().isMagic()) {
-			event.setAmount((float) (event.getAmount() * this.magicDamageMultiplier));
-		}
+		event.setAmount((float) (event.getAmount() * magicDamageMultiplier));
 	}
 
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
-		if (event.getEntity().level.isClientSide)
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !killMinionOnWitherDeath
+				|| !(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		if (!this.isEnabled())
-			return;
-
-		if (!this.killMinionOnWitherDeath)
-			return;
-
-		if (!(event.getEntity() instanceof WitherBoss wither))
-			return;
 		ServerLevel world = (ServerLevel) wither.level;
 
 		CompoundTag tags = wither.getPersistentData();
@@ -343,34 +258,34 @@ public class MinionFeature extends Feature {
 		}
 	}
 
-	private void setEquipment(WitherMinion witherMinion, float scalingDifficulty, boolean isCharged) {
+	private static void setEquipment(WitherMinion witherMinion, float scalingDifficulty, boolean isCharged) {
 		witherMinion.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
 
-		double bowChance = isCharged ? this.belowHalfHealthBowChance : this.aboveHalfHealthBowChance;
+		double bowChance = isCharged ? belowHalfHealthBowChance : aboveHalfHealthBowChance;
 		ItemStack item;
 
 		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < bowChance) {
 			item = new ItemStack(Items.BOW);
-			int powerLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), this.powerChance * scalingDifficulty);
+			int powerLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), powerChance * scalingDifficulty);
 			if (powerLevel > 0)
 				item.enchant(Enchantments.POWER_ARROWS, powerLevel);
-			int punchLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), this.punchChance * scalingDifficulty);
+			int punchLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), punchChance * scalingDifficulty);
 			if (punchLevel > 0)
 				item.enchant(Enchantments.PUNCH_ARROWS, punchLevel);
 		}
 		else {
 			item = new ItemStack(Items.STONE_SWORD);
-			int sharpnessLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), this.sharpnessChance * scalingDifficulty);
+			int sharpnessLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), sharpnessChance * scalingDifficulty);
 			if (sharpnessLevel > 0)
 				item.enchant(Enchantments.SHARPNESS, sharpnessLevel);
-			int knockbackLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), this.knockbackChance * scalingDifficulty);
+			int knockbackLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), knockbackChance * scalingDifficulty);
 			if (knockbackLevel > 0)
 				item.enchant(Enchantments.KNOCKBACK, knockbackLevel);
 		}
 		witherMinion.setItemSlot(EquipmentSlot.MAINHAND, item);
 	}
 
-	public WitherMinion summonMinion(Level world, Vec3 pos, float scalingDifficulty, boolean isCharged) {
+	public static WitherMinion summonMinion(Level world, Vec3 pos, float scalingDifficulty, boolean isCharged) {
 		WitherMinion witherMinion = new WitherMinion(PBEntities.WITHER_MINION.get(), world);
 		CompoundTag minionTags = witherMinion.getPersistentData();
 
@@ -383,7 +298,7 @@ public class MinionFeature extends Feature {
 		witherMinion.setCanPickUpLoot(false);
 		witherMinion.setPersistenceRequired();
 
-		double speedBonus = this.bonusSpeed * scalingDifficulty;
+		double speedBonus = bonusSpeed * scalingDifficulty;
 		MCUtils.applyModifier(witherMinion, Attributes.MOVEMENT_SPEED, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, speedBonus, AttributeModifier.Operation.MULTIPLY_BASE);
 
 		world.addFreshEntity(witherMinion);

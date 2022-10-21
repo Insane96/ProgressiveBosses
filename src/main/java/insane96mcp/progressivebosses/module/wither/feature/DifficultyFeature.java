@@ -4,11 +4,12 @@ import com.google.common.util.concurrent.AtomicDouble;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Blacklist;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
-import insane96mcp.insanelib.config.Blacklist;
+import insane96mcp.insanelib.util.IdTagMatcher;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.capability.Difficulty;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
@@ -17,7 +18,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -27,63 +27,33 @@ import java.util.List;
 @Label(name = "Difficulty Settings", description = "How difficulty is handled for the Wither.")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class DifficultyFeature extends Feature {
-
-	private final ForgeConfigSpec.ConfigValue<Integer> spawnRadiusPlayerCheckConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> sumSpawnedWitherDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> bonusDifficultyPerPlayerConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> maxDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> startingDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> showFirstSummonedWitherMessageConfig;
-	private final Blacklist.Config entityBlacklistConfig;
-
-	private static final List<String> defaultEntityBlacklist = List.of("botania:pink_wither");
-
-	public int spawnRadiusPlayerCheck = 128;
-	public boolean sumSpawnedWitherDifficulty = false;
-	public double bonusDifficultyPerPlayer = 0.25d;
-	public int maxDifficulty = 8;
-	public int startingDifficulty = 0;
-	public boolean showFirstSummonedWitherMessage = true;
-	public Blacklist entityBlacklist;
+	@Config(min = 1)
+	@Label(name = "Max Difficulty", description = "The Maximum difficulty (times spawned) reachable by Wither.")
+	public static Integer maxDifficulty = 8;
+	@Config(min = 0)
+	@Label(name = "Starting Difficulty", description = "How much difficulty will players start with when joining a world? Note that this will apply when the first Wither is spawned so if the player has already spawned one this will not apply.")
+	public static Integer startingDifficulty = 0;
+	@Config(min = 16)
+	@Label(name = "Spawn Radius Player Check", description = "How much blocks from wither will be scanned for players to check for difficulty")
+	public static Integer spawnRadiusPlayerCheck = 128;
+	@Config
+	@Label(name = "Sum Spawned Wither Difficulty", description = "If false and there's more than 1 player around the Wither, difficulty will be the average of all the players' difficulty instead of summing them.")
+	public static Boolean sumSpawnedWitherDifficulty = false;
+	@Config(min = 0d)
+	@Label(name = "Bonus Difficulty per Player", description = "Percentage bonus difficulty added to the Wither when more than one player is present. Each player past the first one will add this percentage to the difficulty.")
+	public static Double bonusDifficultyPerPlayer = 0.25d;
+	@Config(min = 16)
+	@Label(name = "Show First Summoned Wither Message", description = "Set to false to disable the first Wither summoned message.")
+	public static Boolean showFirstSummonedWitherMessage = true;
+	@Config
+	@Label(name = "Entity Blacklist", description = "Entities that extend the vanilla Wither but shouldn't be taken into account by the mod (e.g. Botania's Pink Wither).")
+	public Blacklist entityBlacklist = new Blacklist(List.of(
+			new IdTagMatcher(IdTagMatcher.Type.ID, "botania:pink_wither")
+	), false);
 
 	public DifficultyFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-		this.pushConfig(Config.builder);
-		spawnRadiusPlayerCheckConfig = Config.builder
-				.comment("How much blocks from wither will be scanned for players to check for difficulty")
-				.defineInRange("Spawn Radius Player Check", spawnRadiusPlayerCheck, 16, Integer.MAX_VALUE);
-		sumSpawnedWitherDifficultyConfig = Config.builder
-				.comment("If false and there's more than 1 player around the Wither, difficulty will be the average of all the players' difficulty instead of summing them.")
-				.define("Sum Spawned Wither Difficulty", sumSpawnedWitherDifficulty);
-		bonusDifficultyPerPlayerConfig = Config.builder
-				.comment("Percentage bonus difficulty added to the Wither when more than one player is present. Each player past the first one will add this percentage to the difficulty.")
-				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, Double.MAX_VALUE);
-		maxDifficultyConfig = Config.builder
-				.comment("The Maximum difficulty (times spawned) reachable by Wither.")
-				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
-		startingDifficultyConfig = Config.builder
-				.comment("How much difficulty will players start with when joining a world? Note that this will apply when the first Wither is spawned so if the player has already spawned one this will not apply.")
-				.defineInRange("Starting Difficulty", startingDifficulty, 0, Integer.MAX_VALUE);
-		this.showFirstSummonedWitherMessageConfig = Config.builder
-				.comment("Set to false to disable the first Wither summoned message.")
-				.define("Show First Summoned Wither Message", this.showFirstSummonedWitherMessage);
-		entityBlacklistConfig = new Blacklist.Config(Config.builder, "Entity Blacklist", "Entities that extend the vanilla Wither but shouldn't be taken into account by the mod (e.g. Botania's Pink Wither).")
-				.setIsDefaultWhitelist(false)
-				.setDefaultList(defaultEntityBlacklist)
-				.build();
-		Config.builder.pop();
-	}
 
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.spawnRadiusPlayerCheck = this.spawnRadiusPlayerCheckConfig.get();
-		this.sumSpawnedWitherDifficulty = this.sumSpawnedWitherDifficultyConfig.get();
-		this.bonusDifficultyPerPlayer = this.bonusDifficultyPerPlayerConfig.get();
-		this.maxDifficulty = this.maxDifficultyConfig.get();
-		this.startingDifficulty = this.startingDifficultyConfig.get();
-		this.showFirstSummonedWitherMessage = this.showFirstSummonedWitherMessageConfig.get();
-		this.entityBlacklist = this.entityBlacklistConfig.get();
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
@@ -98,8 +68,8 @@ public class DifficultyFeature extends Feature {
 		if (witherTags.contains(Strings.Tags.DIFFICULTY))
 			return;
 
-		BlockPos pos1 = wither.blockPosition().offset(-this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck, -this.spawnRadiusPlayerCheck);
-		BlockPos pos2 = wither.blockPosition().offset(this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck, this.spawnRadiusPlayerCheck);
+		BlockPos pos1 = wither.blockPosition().offset(-spawnRadiusPlayerCheck, -spawnRadiusPlayerCheck, -spawnRadiusPlayerCheck);
+		BlockPos pos2 = wither.blockPosition().offset(spawnRadiusPlayerCheck, spawnRadiusPlayerCheck, spawnRadiusPlayerCheck);
 		AABB bb = new AABB(pos1, pos2);
 
 		List<ServerPlayer> players = event.getLevel().getEntitiesOfClass(ServerPlayer.class, bb);
@@ -111,19 +81,19 @@ public class DifficultyFeature extends Feature {
 		for (ServerPlayer player : players) {
 			player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
 				witherDifficulty.addAndGet(difficulty.getSpawnedWithers());
-				if (difficulty.getSpawnedWithers() >= this.maxDifficulty)
+				if (difficulty.getSpawnedWithers() >= maxDifficulty)
 					return;
-				if (difficulty.getSpawnedWithers() <= this.startingDifficulty && this.showFirstSummonedWitherMessage)
+				if (difficulty.getSpawnedWithers() <= startingDifficulty && showFirstSummonedWitherMessage)
 					player.sendSystemMessage(Component.translatable(Strings.Translatable.FIRST_WITHER_SUMMON));
 				difficulty.addSpawnedWithers(1);
 			});
 		}
 
-		if (!this.sumSpawnedWitherDifficulty)
+		if (!sumSpawnedWitherDifficulty)
 			witherDifficulty.set(witherDifficulty.get() / players.size());
 
 		if (players.size() > 1)
-			witherDifficulty.set(witherDifficulty.get() * (1d + ((players.size() - 1) * this.bonusDifficultyPerPlayer)));
+			witherDifficulty.set(witherDifficulty.get() * (1d + ((players.size() - 1) * bonusDifficultyPerPlayer)));
 
 		witherTags.putFloat(Strings.Tags.DIFFICULTY, (float) witherDifficulty.get());
 	}
@@ -140,8 +110,8 @@ public class DifficultyFeature extends Feature {
 			return;
 
 		player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
-			if (difficulty.getSpawnedWithers() < this.startingDifficulty) {
-				difficulty.setSpawnedWithers(this.startingDifficulty);
+			if (difficulty.getSpawnedWithers() < startingDifficulty) {
+				difficulty.setSpawnedWithers(startingDifficulty);
 				LogHelper.info("[Progressive Bosses] %s spawned withers counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
 			}
 		});

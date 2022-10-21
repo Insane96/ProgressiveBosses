@@ -3,12 +3,11 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -16,47 +15,24 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class ResistancesFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Double> meleeDamageReductionAboveHalfHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> maxMeleeDamageReductionAboveHalfHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> meleeDamageReductionBelowHalfHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> maxMeleeDamageReductionBelowHalfHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> magicDamageBonusConfig;
-
-	public double meleeDamageReductionAboveHalfHealth = 0.24d;
-	public double maxMeleeDamageReductionAboveHalfHealth = 0.24d;
-	public double meleeDamageReductionBelowHalfHealth = 0.48d;
-	public double maxMeleeDamageReductionBelowHalfHealth = 0.48d;
-	public double magicDamageBonus = 250d;
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Melee Damage reduction above half health", description = "Percentage Melee Damage Reduction (at max difficulty) while the Wither is above half health.")
+	public static Double meleeDamageReductionAboveHalfHealth = 0.24d;
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Max Melee Damage reduction before half health", description = "Cap for 'Melee Damage reduction above half health'")
+	public static Double maxMeleeDamageReductionAboveHalfHealth = 0.24d;
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Melee Damage reduction below half health", description = "Percentage Melee Damage Reduction (at max difficulty) as the Wither drops below half health.")
+	public static Double meleeDamageReductionBelowHalfHealth = 0.48d;
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Max Melee Damage reduction below half health", description = "Cap for 'Melee Damage Reduction below half health'")
+	public static Double maxMeleeDamageReductionBelowHalfHealth = 0.48d;
+	@Config(min = 0d, max = 1024d)
+	@Label(name = "Magic Damage Bonus", description = "Bonus magic damage based off missing health. 250 means that every 250 missing health the damage will be amplified by 100%. E.g. The first Wither (with 300 max health) is at 50 health (so it's missing 250hp), on magic damage he will receive 'magic_damage * (missing_health / magic_damage_bonus + 1)' = 'magic_damage * (250 / 250 + 1)' = 'magic_damage * 2'.")
+	public static Double magicDamageBonus = 250d;
 
 	public ResistancesFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-		this.pushConfig(Config.builder);
-		meleeDamageReductionAboveHalfHealthConfig = Config.builder
-				.comment("Percentage Melee Damage Reduction (at max difficulty) while the Wither is above half health.")
-				.defineInRange("Melee Damage reduction above half health", meleeDamageReductionAboveHalfHealth, 0d, 1d);
-		maxMeleeDamageReductionAboveHalfHealthConfig = Config.builder
-				.comment("Cap for 'Melee Damage reduction above half health'")
-				.defineInRange("Max Melee Damage reduction before half health", maxMeleeDamageReductionAboveHalfHealth, 0d, 1d);
-		meleeDamageReductionBelowHalfHealthConfig = Config.builder
-				.comment("Percentage Melee Damage Reduction (at max difficulty) as the Wither drops below half health.")
-				.defineInRange("Melee Damage reduction below half health", meleeDamageReductionBelowHalfHealth, 0d, 1d);
-		maxMeleeDamageReductionBelowHalfHealthConfig = Config.builder
-				.comment("Cap for 'Melee Damage Reduction below half health'")
-				.defineInRange("Max Melee Damage reduction below half health", maxMeleeDamageReductionBelowHalfHealth, 0d, 1d);
-		magicDamageBonusConfig = Config.builder
-				.comment("Bonus magic damage based off missing health. 250 means that every 250 missing health the damage will be amplified by 100%. E.g. The first Wither (with 300 max health) is at 50 health (so it's missing 250hp), on magic damage he will receive 'magic_damage * (missing_health / magic_damage_bonus + 1)' = 'magic_damage * (250 / 250 + 1)' = 'magic_damage * 2'.")
-				.defineInRange("Magic Damage Bonus", magicDamageBonus, 0d, 1024f);
-		Config.builder.pop();
-	}
-
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.meleeDamageReductionAboveHalfHealth = this.meleeDamageReductionAboveHalfHealthConfig.get();
-		this.maxMeleeDamageReductionAboveHalfHealth = this.maxMeleeDamageReductionAboveHalfHealthConfig.get();
-		this.meleeDamageReductionBelowHalfHealth = this.meleeDamageReductionBelowHalfHealthConfig.get();
-		this.maxMeleeDamageReductionBelowHalfHealth = this.maxMeleeDamageReductionBelowHalfHealthConfig.get();
-		this.magicDamageBonus = this.magicDamageBonusConfig.get();
 	}
 
 	@SubscribeEvent
@@ -67,15 +43,15 @@ public class ResistancesFeature extends Feature {
 		if (!(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		if ((this.meleeDamageReductionBelowHalfHealth == 0d || this.maxMeleeDamageReductionBelowHalfHealth == 0d)
-				&& (this.meleeDamageReductionAboveHalfHealth == 0d || this.maxMeleeDamageReductionAboveHalfHealth == 0d)
-				&& this.magicDamageBonus == 0d)
+		if ((meleeDamageReductionBelowHalfHealth == 0d || maxMeleeDamageReductionBelowHalfHealth == 0d)
+				&& (meleeDamageReductionAboveHalfHealth == 0d || maxMeleeDamageReductionAboveHalfHealth == 0d)
+				&& magicDamageBonus == 0d)
 			return;
 
 		//Handle Magic Damage
-		if (event.getSource().isMagic() && this.magicDamageBonus > 0d) {
+		if (event.getSource().isMagic() && magicDamageBonus > 0d) {
 			double missingHealth = wither.getMaxHealth() - wither.getHealth();
-			event.setAmount((event.getAmount() * (float) (missingHealth / (this.magicDamageBonus) + 1)));
+			event.setAmount((event.getAmount() * (float) (missingHealth / (magicDamageBonus) + 1)));
 		}
 
 		if (event.getSource().getDirectEntity() != event.getSource().getEntity())
@@ -84,9 +60,9 @@ public class ResistancesFeature extends Feature {
 		//Handle Damage Reduction
 		float damageReduction;
 		if (!wither.isPowered())
-			damageReduction = (float) Math.min(this.maxMeleeDamageReductionAboveHalfHealth, this.meleeDamageReductionAboveHalfHealth * DifficultyHelper.getScalingDifficulty(wither));
+			damageReduction = (float) Math.min(maxMeleeDamageReductionAboveHalfHealth, meleeDamageReductionAboveHalfHealth * DifficultyHelper.getScalingDifficulty(wither));
 		else
-			damageReduction = (float) Math.min(this.maxMeleeDamageReductionBelowHalfHealth, this.meleeDamageReductionBelowHalfHealth * DifficultyHelper.getScalingDifficulty(wither));
+			damageReduction = (float) Math.min(maxMeleeDamageReductionBelowHalfHealth, meleeDamageReductionBelowHalfHealth * DifficultyHelper.getScalingDifficulty(wither));
 
 		if (damageReduction == 0d)
 			return;

@@ -3,16 +3,15 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -20,51 +19,34 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 @Label(name = "Health", description = "Bonus Health and Bonus regeneration. The feature even fixes the Wither health bar not updating on spawn.")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class HealthFeature extends Feature {
-
-	private final ForgeConfigSpec.ConfigValue<Double> bonusHealthConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> maximumBonusRegenConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> bonusRegenConfig;
-
-	public double bonusHealth = 720d;
-	public double maxBonusRegen = 2d;
-	public double bonusRegen = 2.4d;
-
-	public HealthFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-		super(module, enabledByDefault, canBeDisabled);
-		this.pushConfig(Config.builder);
-		this.bonusHealthConfig = Config.builder
-				.comment("Increase Wither's Health by this value at max difficulty (scales accordingly at lower difficulties)")
-				.defineInRange("Health Bonus per Difficulty", bonusHealth, 0.0, Double.MAX_VALUE);
-		this.maximumBonusRegenConfig = Config.builder
-				.comment("""
+	@Config(min = 0d)
+	@Label(name = "Health Bonus per Difficulty", description = "Increase Wither's Health by this value at max difficulty (scales accordingly at lower difficulties)")
+	public static Double bonusHealth = 720d;
+	@Config(min = 0d)
+	@Label(name = "Maximum Bonus Regeneration", description = """
 						Maximum bonus regeneration per second given by "Bonus Regeneration".
 						Set to 0 to disable bonus health regeneration. This doesn't affect the natural regeneration of the Wither (1 Health per Second).
 						Note that this bonus health regen is disabled when Wither's health is between 49% and 50% to prevent making it impossible to approach when reaches half health.""")
-				.defineInRange("Maximum Bonus Regeneration", maxBonusRegen, 0.0, Double.MAX_VALUE);
-		this.bonusRegenConfig = Config.builder
-				.comment("How many half hearts will the Wither regen at max difficulty. This is added to the natural regeneration of the Wither (1 Health per Second).")
-				.defineInRange("Bonus Regeneration", bonusRegen, 0.0, Double.MAX_VALUE);
-		Config.builder.pop();
-	}
+	public static Double maxBonusRegen = 2d;
+	@Config(min = 0d)
+	@Label(name = "Bonus Regeneration", description = "How many half hearts will the Wither regen at max difficulty. This is added to the natural regeneration of the Wither (1 Health per Second).")
+	public static Double bonusRegen = 2.4d;
 
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.bonusHealth = this.bonusHealthConfig.get();
-		this.maxBonusRegen = this.maximumBonusRegenConfig.get();
-		this.bonusRegen = this.bonusRegenConfig.get();
+	public HealthFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 	}
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinLevelEvent event) {
+		//noinspection ConstantConditions
 		if (event.getLevel().isClientSide
 				|| !this.isEnabled()
-				|| this.bonusHealth == 0d
+				|| bonusHealth == 0d
 				|| !(event.getEntity() instanceof WitherBoss wither)
 				|| wither.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
 			return;
 
-		MCUtils.applyModifier(wither, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, this.bonusHealth * DifficultyHelper.getScalingDifficulty(wither), AttributeModifier.Operation.ADDITION);
+		MCUtils.applyModifier(wither, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, bonusHealth * DifficultyHelper.getScalingDifficulty(wither), AttributeModifier.Operation.ADDITION);
 	}
 
 	@SubscribeEvent
@@ -72,8 +54,8 @@ public class HealthFeature extends Feature {
 		if (event.getEntity().level.isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof WitherBoss wither)
-				|| this.bonusRegen == 0d
-				|| this.maxBonusRegen == 0d
+				|| bonusRegen == 0d
+				|| maxBonusRegen == 0d
 				|| wither.getInvulnerableTicks() > 0
 				|| !wither.isAlive())
 			return;
@@ -82,7 +64,7 @@ public class HealthFeature extends Feature {
 		if (wither.getHealth() / wither.getMaxHealth() > 0.49f && wither.getHealth() / wither.getMaxHealth() < 0.50f)
 			return;
 
-		float heal = (float) Math.min(this.bonusRegen * DifficultyHelper.getScalingDifficulty(wither), this.maxBonusRegen);
+		float heal = (float) Math.min(bonusRegen * DifficultyHelper.getScalingDifficulty(wither), maxBonusRegen);
 		heal /= 20f;
 
 		if (heal > 0f)

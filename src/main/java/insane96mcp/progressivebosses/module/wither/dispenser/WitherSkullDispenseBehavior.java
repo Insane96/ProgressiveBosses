@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.module.wither.dispenser;
 
-import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.module.wither.feature.MiscFeature;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
@@ -21,7 +21,7 @@ public class WitherSkullDispenseBehavior extends OptionalDispenseItemBehavior {
 		Level world = source.getLevel();
 		Direction direction = source.getBlockState().getValue(DispenserBlock.FACING);
 		BlockPos blockpos = source.getPos().relative(direction);
-		if (world.isEmptyBlock(blockpos) && WitherSkullBlock.canSpawnMob(world, blockpos, stack) && Modules.wither.misc.canPlaceSkull(world, blockpos)) {
+		if (world.isEmptyBlock(blockpos) && WitherSkullBlock.canSpawnMob(world, blockpos, stack) && MiscFeature.canPlaceSkull(world, blockpos)) {
 			world.setBlock(blockpos, Blocks.WITHER_SKELETON_SKULL.defaultBlockState().setValue(SkullBlock.ROTATION, direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().get2DDataValue() * 4), 3);
 			BlockEntity tileentity = world.getBlockEntity(blockpos);
 			if (tileentity instanceof SkullBlockEntity) {
