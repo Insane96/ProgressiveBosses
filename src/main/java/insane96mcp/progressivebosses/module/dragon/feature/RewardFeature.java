@@ -3,8 +3,9 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
@@ -15,45 +16,28 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootTableReference;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Rewards", description = "Bonus Experience and Dragon Egg per player")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class RewardFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> dragonEggPerPlayerConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> injectDefaultRewardsConfig;
+	@Config(min = 0d)
+	@Label(name = "Bonus Experience", description = "How much more experience (percentage, 36 means +3600%) will Dragon drop at max Difficulty.")
+	public static Double bonusExperience = 36d;
+	@Config
+	@Label(name = "Dragon Egg per Player", description = "If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg ìì will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
+	public static Boolean dragonEggPerPlayer = true;
+	@Config
+	@Label(name = "Inject Default Loot", description = "If true default mod drops are added to the Ender Dragon.\n" +
+			"Note that replacing the Ender Dragon loot table (e.g. via DataPack) will automatically remove the Injected loot.")
+	public static Boolean injectDefaultRewards = true;
 
-	public double bonusExperience = 36d;
-	public boolean dragonEggPerPlayer = true;
-	public boolean injectDefaultRewards = true;
-
-	public RewardFeature(Module module) {
-		super(Config.builder, module);
-		this.pushConfig(Config.builder);
-		bonusExperienceConfig = Config.builder
-				.comment("How much more experience (percentage, 36 means +3600%) will Dragon drop at max Difficulty.")
-				.defineInRange("Bonus Experience", bonusExperience, 0.0, Double.MAX_VALUE);
-		dragonEggPerPlayerConfig = Config.builder
-				.comment("If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg ìì will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
-				.define("Dragon Egg per Player", dragonEggPerPlayer);
-		injectDefaultRewardsConfig = Config.builder
-				.comment("If true default mod drops are added to the Ender Dragon.\n" +
-						"Note that replacing the Ender Dragon loot table (e.g. via DataPack) will automatically remove the Injected loot.")
-				.define("Injecet Default Loot", this.injectDefaultRewards);
-		Config.builder.pop();
-	}
-
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.bonusExperience = this.bonusExperienceConfig.get();
-		this.dragonEggPerPlayer = this.dragonEggPerPlayerConfig.get();
-		this.injectDefaultRewards = this.injectDefaultRewardsConfig.get();
+	public RewardFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 	}
 
 	@SubscribeEvent
@@ -69,14 +53,15 @@ public class RewardFeature extends Feature {
 	public void onExpDrop(LivingExperienceDropEvent event) {
 		if (!this.isEnabled()
 				|| !(event.getEntity() instanceof EnderDragon dragon)
-				|| this.bonusExperience == 0d)
+				|| bonusExperience == 0d)
 			return;
 
-		event.setDroppedExperience((int) (event.getDroppedExperience() * this.bonusExperience * DifficultyHelper.getScalingDifficulty(dragon)));
+		event.setDroppedExperience((int) (event.getDroppedExperience() * bonusExperience * DifficultyHelper.getScalingDifficulty(dragon)));
 	}
 
-	private void dropEgg(EnderDragon dragon) {
-		if (!this.dragonEggPerPlayer || dragon.dragonDeathTime != 100)
+	private static void dropEgg(EnderDragon dragon) {
+		if (!dragonEggPerPlayer
+				|| dragon.dragonDeathTime != 100)
 			return;
 
 		CompoundTag tags = dragon.getPersistentData();
@@ -94,7 +79,8 @@ public class RewardFeature extends Feature {
 
 	@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
-		if (!this.isEnabled() || !this.injectDefaultRewards)
+		if (!this.isEnabled()
+				|| !injectDefaultRewards)
 			return;
 
 		ResourceLocation name = event.getName();

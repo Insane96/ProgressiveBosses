@@ -3,6 +3,8 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
@@ -25,6 +27,7 @@ import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Misc", description = "Handles various small features, such as the explosion")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class MiscFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Double> explosionPowerBonusConfig;
@@ -35,14 +38,14 @@ public class MiscFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Boolean> witherNetherOnlyConfig;
 
 	public double explosionPowerBonus = 8d;
-	public int explosionCausesFireAtDifficulty = 5;
+	public int explosionCausesFireAtDifficulty = -1;
 	public boolean fasterBlockBreaking = true;
 	public boolean biggerBlockBreaking = true;
 	public boolean ignoreWitherProofBlocks = false;
 	public boolean witherNetherOnly = false;
 
-	public MiscFeature(Module module) {
-		super(Config.builder, module);
+	public MiscFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		explosionPowerBonusConfig = Config.builder
 				.comment("How much explosion power (after the invulnerability) will the Wither have at max difficulty. Explosion Radius is capped to 13. Base Wither Explosion Power is 7.0. Setting this to 0 will not increase the Wither Explosion Power.")
@@ -146,17 +149,11 @@ public class MiscFeature extends Feature {
 
 	@SubscribeEvent
 	public void onExplosion(ExplosionEvent.Start event) {
-		if (!this.isEnabled())
-			return;
-
-		if (this.explosionCausesFireAtDifficulty == -1 && this.explosionPowerBonus == 0d)
-			return;
-
-		if (!(event.getExplosion().getExploder() instanceof WitherBoss wither))
-			return;
-
-		//Check if the explosion is the one from the wither
-		if (event.getExplosion().radius != 7f)
+		if (!this.isEnabled()
+			|| (this.explosionCausesFireAtDifficulty == -1 && this.explosionPowerBonus == 0d)
+			|| !(event.getExplosion().getExploder() instanceof WitherBoss wither)
+			//Check if the explosion is the one from the wither
+			|| event.getExplosion().radius != 7f)
 			return;
 		CompoundTag tags = wither.getPersistentData();
 

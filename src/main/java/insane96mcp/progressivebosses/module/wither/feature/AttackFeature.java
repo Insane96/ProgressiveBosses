@@ -3,7 +3,9 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.MCUtils;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.network.MessageWitherSync;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 @Label(name = "Attack", description = "Makes the Wither smarter (will no longer try to stand on the player's head ...), attack faster and hit harder")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class AttackFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Double> increasedDamageConfig;
@@ -58,8 +61,8 @@ public class AttackFeature extends Feature {
 	public int attackInterval = 35;
 	public double bonusAttackSpeedWhenNear = 0.6d;
 
-	public AttackFeature(Module module) {
-		super(Config.builder, module);
+	public AttackFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		increasedDamageConfig = Config.builder
 				.comment("Percentage bonus damage dealt by the Wither at max difficulty.")

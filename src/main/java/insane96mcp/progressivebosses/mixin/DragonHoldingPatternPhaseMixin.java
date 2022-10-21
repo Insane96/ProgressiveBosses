@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.module.dragon.feature.AttackFeature;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonHoldingPatternPhase;
 import net.minecraft.world.level.pathfinder.Path;
 import org.spongepowered.asm.mixin.Mixin;
@@ -20,7 +20,7 @@ public class DragonHoldingPatternPhaseMixin {
 		if (this.currentPath == null || !this.currentPath.isDone())
 			return;
 
-		if (Modules.dragon.attack.onPhaseEnd(((DragonHoldingPatternPhase)(Object)this).dragon))
+		if (AttackFeature.onPhaseEnd(((DragonHoldingPatternPhase)(Object)this).dragon))
 			callback.cancel();
 	}
 }

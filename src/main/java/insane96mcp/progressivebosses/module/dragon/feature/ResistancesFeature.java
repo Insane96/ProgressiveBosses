@@ -3,13 +3,14 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.progressivebosses.setup.Config;
+import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.base.config.LoadFeature;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -17,31 +18,18 @@ import java.util.Arrays;
 import java.util.List;
 
 @Label(name = "Resistances & Vulnerabilities", description = "Handles the Damage Resistances and Vulnerabilities")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class ResistancesFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Double> damageReductionWhenSittingConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> explosionDamageReductionConfig;
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Melee Damage reduction while at the center", description = "Melee Damage reduction at max difficulty while the Ender Dragon is at the center.")
+	public static Double damageReductionWhenSitting = 0.40d;
+	@Config(min = 0d, max = 1d)
+	@Label(name = "Explosion Damage reduction", description = "Damage reduction when hit by explosions (firework rockets excluded).")
+	public static Double explosionDamageReduction = 0.667d;
 
-	public double damageReductionWhenSitting = 0.45d;
-	public double explosionDamageReduction = 0.667d;
-
-	public ResistancesFeature(Module module) {
-		super(Config.builder, module);
-		this.pushConfig(Config.builder);
-		damageReductionWhenSittingConfig = Config.builder
-				.comment("Melee Damage reduction at max difficulty while the Ender Dragon is at the center.")
-				.defineInRange("Melee Damage reduction while at the center", damageReductionWhenSitting, 0d, Double.MAX_VALUE);
-		explosionDamageReductionConfig = Config.builder
-				.comment("Damage reduction when hit by explosions (firework rockets excluded).")
-				.defineInRange("Explosion Damage reduction", explosionDamageReduction, 0d, Double.MAX_VALUE);
-		Config.builder.pop();
-	}
-
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.damageReductionWhenSitting = this.damageReductionWhenSittingConfig.get();
-		this.explosionDamageReduction = this.explosionDamageReductionConfig.get();
+	public ResistancesFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 	}
 
 	@SubscribeEvent
@@ -56,20 +44,20 @@ public class ResistancesFeature extends Feature {
 
 	private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);
 
-	private void meleeDamageReduction(LivingDamageEvent event, EnderDragon dragon) {
-		if (this.damageReductionWhenSitting == 0d)
+	private static void meleeDamageReduction(LivingDamageEvent event, EnderDragon dragon) {
+		if (damageReductionWhenSitting == 0d)
 			return;
 		if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()) && event.getSource().getDirectEntity() instanceof Player) {
-			event.setAmount((event.getAmount() - (float) (event.getAmount() * (this.damageReductionWhenSitting * DifficultyHelper.getScalingDifficulty(dragon)))));
+			event.setAmount((event.getAmount() - (float) (event.getAmount() * (damageReductionWhenSitting * DifficultyHelper.getScalingDifficulty(dragon)))));
 		}
 	}
 
-	private void explosionDamageReduction(LivingDamageEvent event, EnderDragon dragon) {
-		if (this.explosionDamageReduction == 0d)
+	private static void explosionDamageReduction(LivingDamageEvent event, EnderDragon dragon) {
+		if (explosionDamageReduction == 0d)
 			return;
 
 		if (event.getSource().isExplosion() && !event.getSource().getMsgId().equals("fireworks")) {
-			event.setAmount((event.getAmount() - (float) (event.getAmount() * this.explosionDamageReduction)));
+			event.setAmount((event.getAmount() - (float) (event.getAmount() * explosionDamageReduction)));
 		}
 	}
 }

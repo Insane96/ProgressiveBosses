@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.module.dragon.feature.MinionFeature;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -25,7 +25,7 @@ public abstract class ShulkerBulletMixin extends Projectile {
 	@ModifyArg(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"), index = 0)
 	private MobEffectInstance applyBlindness(MobEffectInstance mobEffectInstance) {
 		if (this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-			return new MobEffectInstance(MobEffects.BLINDNESS, Modules.dragon.minion.blindingDuration);
+			return new MobEffectInstance(MobEffects.BLINDNESS, MinionFeature.blindingDuration);
 		else
 			return mobEffectInstance;
 	}
@@ -39,6 +39,6 @@ public abstract class ShulkerBulletMixin extends Projectile {
 
 	@Inject(at = @At("HEAD"), method = "tick()V")
 	public void tick(CallbackInfo callback) {
-		Modules.dragon.minion.onBulletTick((ShulkerBullet) (Object) this);
+		MinionFeature.onBulletTick((ShulkerBullet) (Object) this);
 	}
 }

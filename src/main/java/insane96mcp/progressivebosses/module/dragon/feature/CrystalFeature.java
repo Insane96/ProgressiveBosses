@@ -3,10 +3,12 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.insanelib.util.MathHelper;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
@@ -28,7 +30,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -42,67 +43,35 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Label(name = "Crystals", description = "Makes more Crystal spawn and with more cages.")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class CrystalFeature extends Feature {
+	@Config(min = -1)
+	@Label(name = "More Cages at Difficulty", description = "At this difficulty cages will start to appear around other crystals too. -1 will disable this feature.")
+	public static Integer moreCagesAtDifficulty = 1;
+	@Config(min = 0, max = 8)
+	@Label(name = "Max Bonus Cages", description = "Max number of bonus cages that can spawn around the crystals. (Vanilla already has 2 cages)")
+	public static Integer maxBonusCages = 6;
+	@Config(min = -1)
+	@Label(name = "More Crystals at Difficulty", description = "At this difficulty one crystal will start to appear inside obsidian towers. -1 will disable this feature.")
+	public static Integer moreCrystalsAtDifficulty = 2;
+	@Config(min = -1)
+	@Label(name = "More Crystals Step", description = "Every how much difficulty one more crystal will be spawned inside towers")
+	public static Integer moreCrystalsStep = 3;
+	@Config(min = 0, max = 10)
+	@Label(name = "More Crystals Max", description = "Max number of bonus crystals that can spawn inside the towers.")
+	public static Integer moreCrystalsMax = 3;
+	@Config
+	@Label(name = "Enable crystal respawn", description = "Everytime the dragon is hit (when below 50% of health) there's a chance to to trigger a Crystal respawn Phase. The chance is 0% when health >=50% and 100% when health <=30%, the health threshold decreases by 20% every time the dragon respawns crystals.")
+	public static Boolean enableCrystalRespawn = true;
+	@Config(min = 0d, max = 10d)
+	@Label(name = "Crystal Respawn Per Difficulty", description = "At max Difficulty how many crystals will the dragon respawn.")
+	public static Double crystalsRespawned = 3d;
+	@Config
+	@Label(name = "Explosion Immune", description = "Crystals can no longer be destroyed by other explosions.")
+	public static Boolean explosionImmune = true;
 
-	private final ForgeConfigSpec.ConfigValue<Integer> moreCagesAtDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> maxBonusCagesConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsAtDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsStepConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> moreCrystalsMaxConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> enableCrystalRespawnConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> crystalsRespawnedConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> explosionImmuneConfig;
-
-	public int moreCagesAtDifficulty = 1;
-	public int maxBonusCages = 6;
-	public int moreCrystalsAtDifficulty = 2;
-	public int moreCrystalsStep = 3;
-	public int moreCrystalsMax = 3;
-	public boolean enableCrystalRespawn = true;
-	public double crystalsRespawned = 3d;
-	public boolean explosionImmune = true;
-
-	public CrystalFeature(Module module) {
-		super(Config.builder, module);
-		this.pushConfig(Config.builder);
-		moreCagesAtDifficultyConfig = Config.builder
-				.comment("At this difficulty cages will start to appear around other crystals too. -1 will disable this feature.")
-				.defineInRange("More Cages at Difficulty", moreCagesAtDifficulty, -1, Integer.MAX_VALUE);
-		maxBonusCagesConfig = Config.builder
-				.comment("Max number of bonus cages that can spawn around the crystals. (Vanilla already has 2 cages)")
-				.defineInRange("Max Bonus Cages", maxBonusCages, 0, 8);
-		moreCrystalsAtDifficultyConfig = Config.builder
-				.comment("At this difficulty one crystal will start to appear inside obsidian towers. -1 will disable this feature.")
-				.defineInRange("More Crystals at Difficulty", moreCrystalsAtDifficulty, -1, Integer.MAX_VALUE);
-		moreCrystalsStepConfig = Config.builder
-				.comment("Every how much difficulty one more crystal will be spawned inside towers")
-				.defineInRange("More Crystals Step", this.moreCrystalsStep, -1, Integer.MAX_VALUE);
-		moreCrystalsMaxConfig = Config.builder
-				.comment("Max number of bonus crystals that can spawn inside the towers.")
-				.defineInRange("More Crystals Max", moreCrystalsMax, 0, 10);
-		enableCrystalRespawnConfig = Config.builder
-				.comment("Everytime the dragon is hit (when below 50% of health) there's a chance to to trigger a Crystal respawn Phase. The chance is 0% when health >=50% and 100% when health <=30%, the health threshold decreases by 20% every time the dragon respawns crystals.")
-				.define("Enable crystal respawn", enableCrystalRespawn);
-		crystalsRespawnedConfig = Config.builder
-				.comment("At max Difficulty how many crystals will the dragon respawn.")
-				.defineInRange("Crystal Respawn Per Difficulty", crystalsRespawned, 0d, 10d);
-		explosionImmuneConfig = Config.builder
-				.comment("Crystals can no longer be destroyed by other explosions.")
-				.define("Explosion Immune", explosionImmune);
-		Config.builder.pop();
-	}
-
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.moreCagesAtDifficulty = this.moreCagesAtDifficultyConfig.get();
-		this.maxBonusCages = this.maxBonusCagesConfig.get();
-		this.moreCrystalsAtDifficulty = this.moreCrystalsAtDifficultyConfig.get();
-		this.moreCrystalsStep = this.moreCrystalsStepConfig.get();
-		this.moreCrystalsMax = this.moreCrystalsMaxConfig.get();
-		this.enableCrystalRespawn = this.enableCrystalRespawnConfig.get();
-		this.crystalsRespawned = this.crystalsRespawnedConfig.get();
-		this.explosionImmune = this.explosionImmuneConfig.get();
+	public CrystalFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 	}
 
 	private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF, EnderDragonPhase.CHARGING_PLAYER, EnderDragonPhase.STRAFE_PLAYER);
@@ -115,7 +84,7 @@ public class CrystalFeature extends Feature {
 		if (!(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
-		if (!this.enableCrystalRespawn)
+		if (!enableCrystalRespawn)
 			return;
 
 		CompoundTag dragonTags = dragon.getPersistentData();
@@ -140,9 +109,9 @@ public class CrystalFeature extends Feature {
 
 		dragonTags.putByte(Strings.Tags.CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
 
-		double crystalsRespawned = Mth.clamp(this.crystalsRespawned * DifficultyHelper.getScalingDifficulty(dragon), 0, SpikeFeature.NUMBER_OF_SPIKES);
-		crystalsRespawned = MathHelper.getAmountWithDecimalChance(dragon.getRandom(), crystalsRespawned);
-		if (crystalsRespawned == 0d)
+		double crystalsToRespawn = Mth.clamp(crystalsRespawned * DifficultyHelper.getScalingDifficulty(dragon), 0, SpikeFeature.NUMBER_OF_SPIKES);
+		crystalsToRespawn = MathHelper.getAmountWithDecimalChance(dragon.getRandom(), crystalsToRespawn);
+		if (crystalsToRespawn == 0d)
 			return;
 
 		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
@@ -150,7 +119,7 @@ public class CrystalFeature extends Feature {
 
 		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level));
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius).reversed());
-		for (int i = 0; i < crystalsRespawned; i++) {
+		for (int i = 0; i < crystalsToRespawn; i++) {
 			SpikeFeature.EndSpike targetSpike = spikes.get(i);
 			phase.addCrystalRespawn(targetSpike);
 		}
@@ -165,13 +134,9 @@ public class CrystalFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSpawn(EntityJoinLevelEvent event) {
-		if (event.getLevel().isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragon dragon))
+		if (event.getLevel().isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
 		CompoundTag dragonTags = dragon.getPersistentData();
@@ -181,11 +146,10 @@ public class CrystalFeature extends Feature {
 		moreCrystals(dragon, difficulty);
 	}
 
-	private void crystalCages(EnderDragon dragon, float difficulty) {
-		if (this.moreCagesAtDifficulty == -1 || this.maxBonusCages == 0)
-			return;
-
-		if (difficulty < moreCagesAtDifficulty)
+	private static void crystalCages(EnderDragon dragon, float difficulty) {
+		if (moreCagesAtDifficulty == -1
+				|| maxBonusCages == 0
+				|| difficulty < moreCagesAtDifficulty)
 			return;
 
 		CompoundTag dragonTags = dragon.getPersistentData();
@@ -207,23 +171,22 @@ public class CrystalFeature extends Feature {
 		//Remove all the crystals that already have cages around
 		crystals.removeIf(c -> c.level.getBlockState(c.blockPosition().above(2)).getBlock() == Blocks.IRON_BARS);
 
-		int crystalsInvolved = Math.round(difficulty - this.moreCagesAtDifficulty + 1);
+		int crystalsInvolved = Math.round(difficulty - moreCagesAtDifficulty + 1);
 		int cagesGenerated = 0;
 
 		for (EndCrystal crystal : crystals) {
 			generateCage(crystal.level, crystal.blockPosition());
 
 			cagesGenerated++;
-			if (cagesGenerated == crystalsInvolved || cagesGenerated == this.maxBonusCages)
+			if (cagesGenerated == crystalsInvolved || cagesGenerated == maxBonusCages)
 				break;
 		}
 	}
 
-	private void moreCrystals(EnderDragon dragon, float difficulty) {
-		if (this.moreCrystalsAtDifficulty == -1 || this.moreCrystalsMax == 0)
-			return;
-
-		if (difficulty < this.moreCrystalsAtDifficulty)
+	private static void moreCrystals(EnderDragon dragon, float difficulty) {
+		if (moreCrystalsAtDifficulty == -1
+				|| moreCrystalsMax == 0
+				|| difficulty < moreCrystalsAtDifficulty)
 			return;
 
 		CompoundTag dragonTags = dragon.getPersistentData();
@@ -242,7 +205,7 @@ public class CrystalFeature extends Feature {
 			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox(), EndCrystal::showsBottom));
 		}
 
-		int crystalsMax = (int) Math.ceil((difficulty + 1 - this.moreCrystalsAtDifficulty) / this.moreCrystalsStep);
+		int crystalsMax = (int) Math.ceil((difficulty + 1 - moreCrystalsAtDifficulty) / moreCrystalsStep);
 		if (crystalsMax <= 0)
 			return;
 		int crystalSpawned = 0;
@@ -251,16 +214,14 @@ public class CrystalFeature extends Feature {
 			generateCrystalInTower(dragon.level, crystal.getX(), crystal.getY(), crystal.getZ());
 
 			crystalSpawned++;
-			if (crystalSpawned == crystalsMax || crystalSpawned == this.moreCrystalsMax)
+			if (crystalSpawned == crystalsMax || crystalSpawned == moreCrystalsMax)
 				break;
 		}
 	}
 
-	public boolean onDamageFromExplosion(EndCrystal enderCrystalEntity, DamageSource source) {
-		if (!this.isEnabled())
-			return false;
-
-		if (!this.explosionImmune)
+	public static boolean onDamageFromExplosion(DamageSource source) {
+		if (!isEnabled(CrystalFeature.class)
+				|| !explosionImmune)
 			return false;
 
 		return source.isExplosion();
@@ -268,7 +229,7 @@ public class CrystalFeature extends Feature {
 
 	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER_RL = new ResourceLocation("endergetic:crystal_holder");
 
-	public static EndCrystal generateCrystalInTower(Level world, double x, double y, double z) {
+	public static void generateCrystalInTower(Level world, double x, double y, double z) {
 		Vec3 centerPodium = Vec3.atBottomCenterOf(world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
 
 		int spawnY = (int) (y - Mth.nextInt(world.getRandom(), 12, 24));
@@ -283,6 +244,7 @@ public class CrystalFeature extends Feature {
 		BlockState baseBlockState = Blocks.BEDROCK.defaultBlockState();
 		if (ModList.get().isLoaded("endergetic"))
 			if (ForgeRegistries.BLOCKS.containsKey(ENDERGETIC_CRYSTAL_HOLDER_RL))
+				//noinspection ConstantConditions
 				baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_HOLDER_RL).defaultBlockState();
 			else
 				LogHelper.warn("The Endergetic Expansion is loaded but the %s block was not registered", ENDERGETIC_CRYSTAL_HOLDER_RL);
@@ -292,8 +254,6 @@ public class CrystalFeature extends Feature {
 
 		EndCrystal crystal = new EndCrystal(world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
 		world.addFreshEntity(crystal);
-
-		return crystal;
 	}
 
 	public static void generateCage(Level world, BlockPos pos) {

@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import insane96mcp.progressivebosses.capability.Difficulty;
-import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.module.dragon.feature.LarvaFeature;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.commands.CommandSourceStack;
@@ -35,24 +35,24 @@ public class PBCommand {
                     )
                     .then(Commands.literal("set")
                         .then(Commands.literal("wither")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.wither.difficulty.maxDifficulty))
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty))
                                 .executes(context -> setBossDifficulty(context.getSource(),EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
                             )
                         )
                         .then(Commands.literal("dragon")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty))
                                 .executes(context -> setBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon", IntegerArgumentType.getInteger(context, "amount")))
                             )
                         )
                     )
                     .then(Commands.literal("add")
                         .then(Commands.literal("wither")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.wither.difficulty.maxDifficulty))
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty))
                                 .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
                             )
                         )
                         .then(Commands.literal("dragon")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
+                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty))
                                 .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"),"dragon", IntegerArgumentType.getInteger(context, "amount")))
                             )
                         )
@@ -61,19 +61,19 @@ public class PBCommand {
             )
             .then(Commands.literal("summon")
                 .then(Commands.literal(Strings.Tags.WITHER_MINION)
-                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.wither.difficulty.maxDifficulty))
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty))
                         .executes(context -> summon(context.getSource(), Strings.Tags.WITHER_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
                     .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.WITHER_MINION))
                 )
                 .then(Commands.literal(Strings.Tags.DRAGON_MINION)
-                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty))
                         .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
                     .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.DRAGON_MINION))
                 )
                 .then(Commands.literal(Strings.Tags.DRAGON_LARVA)
-                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, Modules.dragon.difficulty.maxDifficulty))
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty))
                         .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, IntegerArgumentType.getInteger(context, "difficulty")))
                     )
                     .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.DRAGON_LARVA))
@@ -139,22 +139,22 @@ public class PBCommand {
     private static int summon(CommandSourceStack source, String entity, int difficulty) {
         switch (entity) {
             case Strings.Tags.WITHER_MINION -> {
-                Modules.wither.minion.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, Modules.wither.difficulty.maxDifficulty), false);
+                insane96mcp.progressivebosses.module.wither.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty), false);
                 source.sendSuccess(Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
                 return 1;
             }
             case Strings.Tags.DRAGON_MINION -> {
-                Modules.dragon.minion.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, Modules.dragon.difficulty.maxDifficulty));
+                insane96mcp.progressivebosses.module.dragon.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty));
                 source.sendSuccess(Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
                 return 1;
             }
             case Strings.Tags.DRAGON_LARVA -> {
-                Modules.dragon.larva.summonLarva(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, Modules.dragon.difficulty.maxDifficulty));
+                LarvaFeature.summonLarva(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty));
                 source.sendSuccess(Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
                 return 1;
             }
             case Strings.Tags.ELDER_MINION -> {
-                Modules.elderGuardian.minion.summonMinion(source.getLevel(), source.getPosition());
+                insane96mcp.progressivebosses.module.elderguardian.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition());
                 source.sendSuccess(Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
                 return 1;
             }

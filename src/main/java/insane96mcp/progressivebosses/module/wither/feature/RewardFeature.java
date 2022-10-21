@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
@@ -17,6 +18,7 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Rewards", description = "Bonus Experience and Drops")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class RewardFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Double> bonusExperienceConfig;
@@ -25,8 +27,8 @@ public class RewardFeature extends Feature {
 	public double bonusExperience = 60d;
 	public boolean injectDefaultRewards = true;
 
-	public RewardFeature(Module module) {
-		super(Config.builder, module);
+	public RewardFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		bonusExperienceConfig = Config.builder
 				.comment("How much more experience (percentage, 60 means +6000%) will Wither drop at max Difficulty.")

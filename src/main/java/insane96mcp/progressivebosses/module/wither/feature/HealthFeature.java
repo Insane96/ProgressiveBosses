@@ -3,7 +3,9 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.MCUtils;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
@@ -16,6 +18,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Health", description = "Bonus Health and Bonus regeneration. The feature even fixes the Wither health bar not updating on spawn.")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class HealthFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Double> bonusHealthConfig;
@@ -26,8 +29,8 @@ public class HealthFeature extends Feature {
 	public double maxBonusRegen = 2d;
 	public double bonusRegen = 2.4d;
 
-	public HealthFeature(Module module) {
-		super(Config.builder, module);
+	public HealthFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		this.bonusHealthConfig = Config.builder
 				.comment("Increase Wither's Health by this value at max difficulty (scales accordingly at lower difficulties)")

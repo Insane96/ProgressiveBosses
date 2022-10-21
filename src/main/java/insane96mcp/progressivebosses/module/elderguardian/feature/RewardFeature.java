@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.elderguardian.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Config;
 import net.minecraft.resources.ResourceLocation;
@@ -17,6 +18,7 @@ import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Rewards", description = "Bonus Experience and Dragon Egg per player")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian")
 public class RewardFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Integer> baseExperienceConfig;
@@ -27,8 +29,8 @@ public class RewardFeature extends Feature {
 	public double bonusExperience = 1.0d;
 	public boolean injectDefaultRewards = true;
 
-	public RewardFeature(Module module) {
-		super(Config.builder, module);
+	public RewardFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		baseExperienceConfig = Config.builder
 				.comment("How much experience will an Elder Guardian drop. -1 will make the Elder Guardian drop vanilla experience.")

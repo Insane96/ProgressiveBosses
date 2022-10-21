@@ -3,8 +3,10 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.insanelib.util.MathHelper;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.entity.WitherMinion;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.PBEntities;
@@ -20,13 +22,17 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -40,6 +46,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Label(name = "Minions", description = "Wither will spawn deadly Minions")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class MinionFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Integer> minionAtDifficultyConfig;
@@ -78,8 +85,8 @@ public class MinionFeature extends Feature {
 	public double knockbackChance = 2.40d;
 	public double punchChance = 1.50d;
 
-	public MinionFeature(Module module) {
-		super(Config.builder, module);
+	public MinionFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		minionAtDifficultyConfig = Config.builder
 				.comment("At which difficulty the Wither starts spawning Minions")
@@ -308,6 +315,31 @@ public class MinionFeature extends Feature {
 			if (witherMinion == null)
 				continue;
 			witherMinion.addEffect(new MobEffectInstance(MobEffects.HEAL, 10000, 0, false, false));
+		}
+	}
+
+	@SubscribeEvent
+	public void onEntityDeath(LivingDeathEvent event) {
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !(event.getSource().getEntity() instanceof WitherMinion witherMinion))
+			return;
+
+		LivingEntity livingEntity = event.getEntity();
+
+		boolean hasPlantedRose = false;
+		if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(witherMinion.level, witherMinion)) {
+			BlockPos blockpos = livingEntity.blockPosition();
+			BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
+			if (livingEntity.level.isEmptyBlock(blockpos) && blockstate.canSurvive(livingEntity.level, blockpos)) {
+				livingEntity.level.setBlock(blockpos, blockstate, 3);
+				hasPlantedRose = true;
+			}
+		}
+
+		if (!hasPlantedRose) {
+			ItemEntity itementity = new ItemEntity(livingEntity.level, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), new ItemStack(Items.WITHER_ROSE));
+			livingEntity.level.addFreshEntity(itementity);
 		}
 	}
 

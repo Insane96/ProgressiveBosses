@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.module.dragon.feature.AttackFeature;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonLandingPhase;
@@ -27,7 +27,7 @@ public class DragonLandingPhaseMixin extends AbstractDragonPhaseInstance {
 
 	@Inject(at = @At("HEAD"), method = "getFlySpeed()F", cancellable = true)
 	private void getFlySpeed(CallbackInfoReturnable<Float> callback) {
-		if (Modules.dragon.attack.increaseMaxRiseAndFall)
+		if (AttackFeature.increaseMaxRiseAndFall)
 			callback.setReturnValue(12f);
 	}
 

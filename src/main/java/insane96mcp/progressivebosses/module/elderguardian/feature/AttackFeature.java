@@ -3,6 +3,8 @@ package insane96mcp.progressivebosses.module.elderguardian.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.world.entity.monster.ElderGuardian;
@@ -11,6 +13,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Attack", description = "More damage and attack speed based off Elder Guardians Defeated")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian")
 public class AttackFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Double> bonusDamageConfig;
@@ -19,8 +22,8 @@ public class AttackFeature extends Feature {
 	public double bonusDamage = 0d;
 	public int attackDurationReduction = 25;
 
-	public AttackFeature(Module module) {
-		super(Config.builder, module);
+	public AttackFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		bonusDamageConfig = Config.builder
 				.comment("Percentage Bonus damage per defeated Elder Guardian.")

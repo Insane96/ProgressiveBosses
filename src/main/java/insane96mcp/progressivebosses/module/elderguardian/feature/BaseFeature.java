@@ -3,6 +3,8 @@ package insane96mcp.progressivebosses.module.elderguardian.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
@@ -26,14 +28,15 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import java.util.List;
 
 @Label(name = "Base", description = "Base feature for the Elder Guardian harder fights. Disabling this feature will disable the added sound when an Elder Guardian is killed.")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian", canBeDisabled = false)
 public class BaseFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Boolean> adventureConfig;
 
 	public boolean adventure = true;
 
-	public BaseFeature(Module module) {
-		super(Config.builder, module);
+	public BaseFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		this.adventureConfig = Config.builder
 				.comment("If true, the player will not be able to break blocks when an Elder Guardian is nearby.")

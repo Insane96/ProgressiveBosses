@@ -3,6 +3,8 @@ package insane96mcp.progressivebosses.module.wither.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -11,6 +13,7 @@ import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Resistances & Vulnerabilities", description = "Handles the Damage Resistances and Vulnerabilities")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class ResistancesFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Double> meleeDamageReductionAboveHalfHealthConfig;
@@ -25,8 +28,8 @@ public class ResistancesFeature extends Feature {
 	public double maxMeleeDamageReductionBelowHalfHealth = 0.48d;
 	public double magicDamageBonus = 250d;
 
-	public ResistancesFeature(Module module) {
-		super(Config.builder, module);
+	public ResistancesFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		meleeDamageReductionAboveHalfHealthConfig = Config.builder
 				.comment("Percentage Melee Damage Reduction (at max difficulty) while the Wither is above half health.")

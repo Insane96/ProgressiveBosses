@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.module.dragon.feature.AttackFeature;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -64,7 +64,7 @@ public abstract class DragonStrafePlayerPhaseMixin extends AbstractDragonPhaseIn
 					float f = (float)(Math.acos(f1) * (double)(180F / (float)Math.PI));
 					f = f + 0.5F;
 					if (this.fireballCharge >= 5 && f >= 0.0F && f < 10.0F) {
-						Modules.dragon.attack.fireFireball(this.dragon, this.attackTarget);
+						AttackFeature.fireFireball(this.dragon, this.attackTarget);
 						this.fireballCharge = 0;
 						if (this.currentPath != null) {
 							while(!this.currentPath.isDone()) {
@@ -73,7 +73,7 @@ public abstract class DragonStrafePlayerPhaseMixin extends AbstractDragonPhaseIn
 						}
 
 						//If must not charge or fireball then go back to holding pattern
-						if (!Modules.dragon.attack.onPhaseEnd(this.dragon))
+						if (!AttackFeature.onPhaseEnd(this.dragon))
 							this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
 						//Otherwise reset the phase, in case she fireballs again
 						else

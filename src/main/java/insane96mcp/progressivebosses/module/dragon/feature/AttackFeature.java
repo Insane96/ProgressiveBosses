@@ -3,10 +3,11 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import insane96mcp.insanelib.util.MathHelper;
-import insane96mcp.progressivebosses.module.Modules;
-import insane96mcp.progressivebosses.setup.Config;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Reflection;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
@@ -31,7 +32,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.phys.*;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -41,78 +41,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Label(name = "Attack", description = "Makes the dragon hit harder in various different ways")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class AttackFeature extends Feature {
-	private final ForgeConfigSpec.ConfigValue<Double> increasedDirectDamageConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> increasedAcidPoolDamageConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> chargePlayerMaxChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> fireballMaxChanceConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> increaseMaxRiseAndFallConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> fireballExplosionDamagesConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> fireball3DEffectCloudConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> fireballVelocityMultiplierConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> maxBonusFireballConfig;
-
-	public double increasedDirectDamage = 2.25d;
-	public double increasedAcidPoolDamage = 2.4d;
-	public double chargePlayerMaxChance = 0.45d;
-	public double fireballMaxChance = 0.35d;
-	public boolean increaseMaxRiseAndFall = true;
-	public boolean fireballExplosionDamages = true;
-	public boolean fireball3DEffectCloud = true;
-	public double fireballVelocityMultiplier = 2.5d;
-	public double maxBonusFireball = 15d;
-
-	public AttackFeature(Module module) {
-		super(Config.builder, module);
-		this.pushConfig(Config.builder);
-		increasedDirectDamageConfig = Config.builder
-				.comment("How much more damage at max difficulty (percentage) does the Ender Dragon deal per difficulty?")
-				.defineInRange("Bonus Direct Damage", increasedDirectDamage, 0.0, Double.MAX_VALUE);
-		increasedAcidPoolDamageConfig = Config.builder
-				.comment("How much more damage at max difficulty (percentage) does the Ender Dragon's Acid fireball and pool deal per difficulty?")
-				.defineInRange("Bonus Acid Pool Damage", increasedAcidPoolDamage, 0.0, Double.MAX_VALUE);
-		chargePlayerMaxChanceConfig = Config.builder
-				.comment("""
+	@Config(min = 0d)
+	@Label(name = "Bonus Direct Damage", description = "How much more damage at max difficulty (percentage) does the Ender Dragon deal per difficulty?")
+	public static Double increasedDirectDamage = 2.25d;
+	@Config(min = 0d)
+	@Label(name = "Bonus Acid Pool Damage", description = "How much more damage at max difficulty (percentage) does the Ender Dragon's Acid fireball and pool deal per difficulty?")
+	public static Double increasedAcidPoolDamage = 2.4d;
+	@Config(min = 0d)
+	@Label(name = "Charge Player Max Chance", description = """
 						Normally the Ender Dragon attacks only when leaving the center platform. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to charge the player.
 						This is the chance to start a charge attack when the difficulty is at max. Otherwise it scales accordingly.
 						The actual chance is: (this_value * (difficulty / max difficulty)).""")
-				.defineInRange("Charge Player Max Chance", chargePlayerMaxChance, 0.0, Double.MAX_VALUE);
-		fireballMaxChanceConfig = Config.builder
-				.comment("""
+	public static Double chargePlayerMaxChance = 0.45d;
+	@Config(min = 0d)
+	@Label(name = "Fireball Max Chance", description = """
 						Normally the Ender Dragon spits fireballs when a Crystal is destroyed and rarely during the fight. With this active she has a chance when she has finished charging / fireballing or before checking if she should land in the center to spit a fireball.
 						This is the chance to start a fireball attack when the difficulty is at max. Otherwise it scales accordingly.
 						The actual chance is: (this_value * (difficulty / max difficulty)).""")
-				.defineInRange("Fireball Max Chance", fireballMaxChance, 0.0, Double.MAX_VALUE);
-		increaseMaxRiseAndFallConfig = Config.builder
-				.comment("Since around 1.13/1.14 the Ender Dragon can no longer dive for more than about 3 blocks so she takes a lot to rise / fall. With this active the dragon will be able to rise and fall many more blocks, making easier to hit the player and approach the center.")
-				.define("Increase Max Rise and Fall", increaseMaxRiseAndFall);
-		fireballExplosionDamagesConfig = Config.builder
-				.comment("On impact the Acid Fireball will deal magic damage in an area.")
-				.define("Fireball Explosion Magic Damage", fireballExplosionDamages);
-		fireball3DEffectCloudConfig = Config.builder
-				.comment("On impact the Acid Fireball will generate a 3D area of effect cloud instead of a normal flat one. The 3D cloud lasts for half the time")
-				.define("Fireball 3D Area Effect Cloud", fireball3DEffectCloud);
-		fireballVelocityMultiplierConfig = Config.builder
-				.comment("Speed multiplier for the Dragon Fireball.")
-				.defineInRange("Fireball Velocity Multiplier", fireballVelocityMultiplier, 0d, Double.MAX_VALUE);
-		maxBonusFireballConfig = Config.builder
-				.comment("The dragon will fire (up to) this more fireballs at max difficulty. The bonus fireballs have a slight shotting error so aren't all directly aimed at the player.")
-				.defineInRange("Bonus Fireballs", maxBonusFireball, 0d, Double.MAX_VALUE);
-		Config.builder.pop();
-	}
+	public static Double fireballMaxChance = 0.35d;
+	@Config
+	@Label(name = "Increase Max Rise and Fall", description = "Since around 1.13/1.14 the Ender Dragon can no longer dive for more than about 3 blocks so she takes a lot to rise / fall. With this active the dragon will be able to rise and fall many more blocks, making easier to hit the player and approach the center.")
+	public static Boolean increaseMaxRiseAndFall = true;
+	@Config
+	@Label(name = "Fireball Explosion Magic Damage", description = "On impact the Acid Fireball will deal magic damage in an area.")
+	public static Boolean fireballExplosionDamages = true;
+	@Config
+	@Label(name = "Fireball 3D Area Effect Cloud", description = "On impact the Acid Fireball will generate a 3D area of effect cloud instead of a normal flat one. The 3D cloud lasts for half the time.")
+	public static Boolean fireball3DEffectCloud = true;
+	@Config(min = 0d)
+	@Label(name = "Fireball Velocity Multiplier", description = "Speed multiplier for the Dragon Fireball.")
+	public static Double fireballVelocityMultiplier = 2.5d;
+	@Config(min = 0d)
+	@Label(name = "Bonus Fireballs", description = "The dragon will fire (up to) this more fireballs at max difficulty. The bonus fireballs have a slight shotting error so aren't all directly aimed at the player.")
+	public static Double maxBonusFireball = 15d;
 
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.increasedDirectDamage = this.increasedDirectDamageConfig.get();
-		this.increasedAcidPoolDamage = this.increasedAcidPoolDamageConfig.get();
-		this.chargePlayerMaxChance = this.chargePlayerMaxChanceConfig.get();
-		this.fireballMaxChance = this.fireballMaxChanceConfig.get();
-		this.increaseMaxRiseAndFall = this.increaseMaxRiseAndFallConfig.get();
-		this.fireballExplosionDamages = this.fireballExplosionDamagesConfig.get();
-		this.fireball3DEffectCloud = this.fireball3DEffectCloudConfig.get();
-		this.fireballVelocityMultiplier = this.fireballVelocityMultiplierConfig.get();
-		this.maxBonusFireball = this.maxBonusFireballConfig.get();
+	public AttackFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 	}
 
 	@SubscribeEvent
@@ -124,7 +90,7 @@ public class AttackFeature extends Feature {
 		if (!(entity instanceof DragonFireball fireball))
 			return;
 
-		if (!this.isEnabled() || this.fireballVelocityMultiplier == 0d)
+		if (!this.isEnabled() || fireballVelocityMultiplier == 0d)
 			return;
 
 		if (Math.abs(fireball.xPower) > 10 || Math.abs(fireball.yPower) > 10 || Math.abs(fireball.zPower) > 10) {
@@ -132,9 +98,9 @@ public class AttackFeature extends Feature {
 			return;
 		}
 
-		fireball.xPower *= this.fireballVelocityMultiplier;
-		fireball.yPower *= this.fireballVelocityMultiplier;
-		fireball.zPower *= this.fireballVelocityMultiplier;
+		fireball.xPower *= fireballVelocityMultiplier;
+		fireball.yPower *= fireballVelocityMultiplier;
+		fireball.zPower *= fireballVelocityMultiplier;
 	}
 
 	@SubscribeEvent
@@ -147,23 +113,23 @@ public class AttackFeature extends Feature {
 		onAcidDamage(event);
 	}
 
-	private void onDirectDamage(LivingHurtEvent event) {
+	private static void onDirectDamage(LivingHurtEvent event) {
 		if (!(event.getSource().getDirectEntity() instanceof EnderDragon dragon)
 				|| event.getEntity() instanceof EnderDragon)
 			return;
 
-		event.setAmount(event.getAmount() * (float)(1d + (this.increasedDirectDamage * DifficultyHelper.getScalingDifficulty(dragon))));
+		event.setAmount(event.getAmount() * (float)(1d + (increasedDirectDamage * DifficultyHelper.getScalingDifficulty(dragon))));
 	}
 
-	private void onAcidDamage(LivingHurtEvent event) {
+	private static void onAcidDamage(LivingHurtEvent event) {
 		if (!(event.getSource().getEntity() instanceof EnderDragon dragon)
 				|| !(event.getSource().getDirectEntity() instanceof AreaEffectCloud))
 			return;
 
-		event.setAmount(event.getAmount() * (float)(1d + (this.increasedAcidPoolDamage * DifficultyHelper.getScalingDifficulty(dragon))));
+		event.setAmount(event.getAmount() * (float)(1d + (increasedAcidPoolDamage * DifficultyHelper.getScalingDifficulty(dragon))));
 	}
 
-	public boolean onPhaseEnd(EnderDragon dragon) {
+	public static boolean onPhaseEnd(EnderDragon dragon) {
 		boolean chargePlayer = shouldChargePlayer(dragon);
 		boolean fireballPlayer = shouldFireballPlayer(dragon);
 
@@ -180,8 +146,8 @@ public class AttackFeature extends Feature {
 		return chargePlayer || fireballPlayer;
 	}
 
-	private boolean shouldChargePlayer(EnderDragon dragon) {
-		if (this.chargePlayerMaxChance == 0f)
+	private static boolean shouldChargePlayer(EnderDragon dragon) {
+		if (chargePlayerMaxChance == 0f)
 			return false;
 
 		if (dragon.getDragonFight() == null)
@@ -190,7 +156,7 @@ public class AttackFeature extends Feature {
 		CompoundTag tags = dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
-		double chance = this.chargePlayerMaxChance * (difficulty / Modules.dragon.difficulty.maxDifficulty);
+		double chance = chargePlayerMaxChance * (difficulty / DifficultyFeature.maxDifficulty);
 
 		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB boundingBox = new AABB(centerPodium).inflate(64d);
@@ -209,7 +175,7 @@ public class AttackFeature extends Feature {
 		return rng < chance;
 	}
 
-	private void chargePlayer(EnderDragon dragon) {
+	private static void chargePlayer(EnderDragon dragon) {
 		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB bb = new AABB(centerPodium).inflate(64d);
 		ServerPlayer player = (ServerPlayer) getRandomPlayerNearCrystal(dragon.level, bb);
@@ -226,11 +192,9 @@ public class AttackFeature extends Feature {
 		dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(targetPos);
 	}
 
-	private boolean shouldFireballPlayer(EnderDragon dragon) {
-		if (this.fireballMaxChance == 0f)
-			return false;
-
-		if (dragon.getDragonFight() == null)
+	private static boolean shouldFireballPlayer(EnderDragon dragon) {
+		if (fireballMaxChance == 0f
+				|| dragon.getDragonFight() == null)
 			return false;
 
 		CompoundTag tags = dragon.getPersistentData();
@@ -239,14 +203,14 @@ public class AttackFeature extends Feature {
 		if (difficulty == 0f)
 			return false;
 
-		double chance = this.fireballMaxChance * (difficulty / Modules.dragon.difficulty.maxDifficulty);
+		double chance = fireballMaxChance * (difficulty / DifficultyFeature.maxDifficulty);
 
 		double rng = dragon.getRandom().nextDouble();
 
 		return rng < chance;
 	}
 
-	private void fireballPlayer(EnderDragon dragon) {
+	private static void fireballPlayer(EnderDragon dragon) {
 		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB bb = new AABB(centerPodium).inflate(64d);
 		ServerPlayer player = (ServerPlayer) getRandomPlayer(dragon.level, bb);
@@ -259,16 +223,16 @@ public class AttackFeature extends Feature {
 	}
 
 
-	public boolean onFireballImpact(DragonFireball fireball, @Nullable Entity shooter, HitResult result) {
-		if (!this.isEnabled())
+	public static boolean onFireballImpact(DragonFireball fireball, @Nullable Entity shooter, HitResult result) {
+		if (isEnabled(AttackFeature.class))
 			return false;
 
 		onImpactExplosion(fireball, shooter, result);
 		return onImpact3DCloud(fireball, result);
 	}
 
-	private void onImpactExplosion(DragonFireball fireball, @Nullable Entity shooter, HitResult result) {
-		if (!this.fireballExplosionDamages)
+	private static void onImpactExplosion(DragonFireball fireball, @Nullable Entity shooter, HitResult result) {
+		if (!fireballExplosionDamages)
 			return;
 
 		float difficultyScaling = 0;
@@ -276,7 +240,7 @@ public class AttackFeature extends Feature {
 			difficultyScaling = DifficultyHelper.getScalingDifficulty(livingEntity);
 		}
 
-		float damage = 6 * (1f + (float) (this.increasedAcidPoolDamage * difficultyScaling));
+		float damage = 6 * (1f + (float) (increasedAcidPoolDamage * difficultyScaling));
 
 		AABB axisAlignedBB = new AABB(result.getLocation(), result.getLocation()).inflate(4d);
 		List<LivingEntity> livingEntities = fireball.level.getEntitiesOfClass(LivingEntity.class, axisAlignedBB);
@@ -286,18 +250,15 @@ public class AttackFeature extends Feature {
 		}
 	}
 
-	private boolean onImpact3DCloud(DragonFireball fireball, HitResult result) {
-		if (!this.isEnabled())
+	private static boolean onImpact3DCloud(DragonFireball fireball, HitResult result) {
+		if (!fireball3DEffectCloud)
 			return false;
 
-		if (!this.fireball3DEffectCloud)
-			return false;
-
-		HitResult.Type raytraceresult$type = result.getType();
-		if (raytraceresult$type == HitResult.Type.ENTITY) {
+		HitResult.Type hitResult$type = result.getType();
+		if (hitResult$type == HitResult.Type.ENTITY) {
 			Reflection.Projectile_onHitEntity(fireball, (EntityHitResult)result);
 		}
-		else if (raytraceresult$type == HitResult.Type.BLOCK) {
+		else if (hitResult$type == HitResult.Type.BLOCK) {
 			Reflection.Projectile_onHitBlock(fireball, (BlockHitResult)result);
 		}
 		Entity entity = fireball.getOwner();
@@ -334,7 +295,7 @@ public class AttackFeature extends Feature {
 		return true;
 	}
 
-	public void fireFireball(EnderDragon dragon, LivingEntity attackTarget) {
+	public static void fireFireball(EnderDragon dragon, LivingEntity attackTarget) {
 		Vec3 vector3d2 = dragon.getViewVector(1.0F);
 		double x = dragon.head.getX() - vector3d2.x;
 		double y = dragon.head.getY(0.5D) + 0.5D;
@@ -373,7 +334,7 @@ public class AttackFeature extends Feature {
 	}
 
 	@Nullable
-	public Player getRandomPlayer(Level world, AABB boundingBox) {
+	public static Player getRandomPlayer(Level world, AABB boundingBox) {
 		List<Player> players = world.getEntitiesOfClass(Player.class, boundingBox, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
 		if (players.isEmpty())
 			return null;
@@ -384,7 +345,7 @@ public class AttackFeature extends Feature {
 
 	//Returns a random player that is at least 10 blocks near a Crystal or a random player if no players are near crystals
 	@Nullable
-	public Player getRandomPlayerNearCrystal(Level world, AABB boundingBox) {
+	public static Player getRandomPlayerNearCrystal(Level world, AABB boundingBox) {
 		List<Player> players = world.getEntitiesOfClass(Player.class, boundingBox);
 		if (players.isEmpty())
 			return null;

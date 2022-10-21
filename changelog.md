@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+* Ported 3.6.4 changes
+* Reduced melee damage reduction when at center (~~-45%~~ -> -40% damage)
+
 ## 3.7.1
 * Wither Minions
   * Equipment chances can now be configured separately

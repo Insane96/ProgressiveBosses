@@ -4,9 +4,11 @@ import com.google.common.util.concurrent.AtomicDouble;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.LogHelper;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.capability.Difficulty;
-import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -14,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -24,67 +25,36 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Label(name = "Difficulty Settings", description = "How difficulty is handled for the Dragon.")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon", canBeDisabled = false)
 public class DifficultyFeature extends Feature {
 
-	private final ForgeConfigSpec.ConfigValue<Boolean> sumKilledDragonDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Double> bonusDifficultyPerPlayerConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> maxDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Integer> startingDifficultyConfig;
-	private final ForgeConfigSpec.ConfigValue<Boolean> showFirstKilledDragonMessageConfig;
+	@Config(min = 1)
+	@Label(name = "Max Difficulty", description = "The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 24 because it's the last spawning end gate.")
+	public static Integer maxDifficulty = 8;
+	@Config(min = 0)
+	@Label(name = "Starting Difficulty", description = "How much difficulty will players start with when joining a world? Note that this will apply when the player joins the world if the current player difficulty is below this value.")
+	public static Integer startingDifficulty = 0;
+	@Config
+	@Label(name = "Sum Killed Dragons Difficulty", description = "If false and there's more than 1 player around the Dragon, difficulty will be the average of all the players' difficulty instead of summing them.")
+	public static Boolean sumKilledDragonDifficulty = false;
 
-	public boolean sumKilledDragonDifficulty = false;
-	public double bonusDifficultyPerPlayer = 0.25d;
-	public int maxDifficulty = 8;
-	public int startingDifficulty = 0;
-	public boolean showFirstKilledDragonMessage = true;
+	@Config(min = 0d)
+	@Label(name = "Bonus Difficulty per Player", description = "Percentage bonus difficulty added to the Dragon when more than one player is present. Each player past the first one will add this percentage to the difficulty.")
+	public static Double bonusDifficultyPerPlayer = 0.25d;
+	@Config
+	@Label(name = "Show First Killed Dragon Message", description = "Set to false to disable the first Dragon killed message.")
+	public static Boolean showFirstKilledDragonMessage = true;
 
-	public DifficultyFeature(Module module) {
-		super(Config.builder, module, true, false);
-		this.pushConfig(Config.builder);
-		sumKilledDragonDifficultyConfig = Config.builder
-				.comment("If false and there's more than 1 player around the Dragon, difficulty will be the average of all the players' difficulty instead of summing them.")
-				.define("Sum Killed Dragons Difficulty", sumKilledDragonDifficulty);
-		bonusDifficultyPerPlayerConfig = Config.builder
-				.comment("Percentage bonus difficulty added to the Dragon when more than one player is present. Each player past the first one will add this percentage to the difficulty.")
-				.defineInRange("Bonus Difficulty per Player", this.bonusDifficultyPerPlayer, 0d, Double.MAX_VALUE);
-		maxDifficultyConfig = Config.builder
-				.comment("The Maximum difficulty (times killed) reachable by Ender Dragon. By default is set to 24 because it's the last spawning end gate.")
-				.defineInRange("Max Difficulty", maxDifficulty, 1, Integer.MAX_VALUE);
-		startingDifficultyConfig = Config.builder
-				.comment("How much difficulty will players start with when joining a world? Note that this will apply when the player joins the world if the current player difficulty is below this value.")
-				.defineInRange("Starting Difficulty", startingDifficulty, 0, Integer.MAX_VALUE);
-		this.showFirstKilledDragonMessageConfig = Config.builder
-				.comment("Set to false to disable the first Dragon killed message.")
-				.define("Show First Killed Dragon Message", this.showFirstKilledDragonMessage);
-		Config.builder.pop();
-	}
-
-	@Override
-	public void loadConfig() {
-		super.loadConfig();
-		this.sumKilledDragonDifficulty = this.sumKilledDragonDifficultyConfig.get();
-		this.bonusDifficultyPerPlayer = this.bonusDifficultyPerPlayerConfig.get();
-		this.maxDifficulty = this.maxDifficultyConfig.get();
-		this.startingDifficulty = this.startingDifficultyConfig.get();
-		this.showFirstKilledDragonMessage = this.showFirstKilledDragonMessageConfig.get();
+	public DifficultyFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 	}
 
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onSpawn(EntityJoinLevelEvent event) {
-		if (event.getLevel().isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		//What could go wrong?
-		//if (!event.getWorld().dimension().location().equals(DimensionType.END_LOCATION.location()))
-		//	return;
-
-		if (!(event.getEntity() instanceof EnderDragon dragon))
-			return;
-
-		if (dragon.getDragonFight() == null)
+		if (event.getLevel().isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof EnderDragon dragon)
+				|| dragon.getDragonFight() == null)
 			return;
 
 		CompoundTag dragonTags = dragon.getPersistentData();
@@ -116,11 +86,11 @@ public class DifficultyFeature extends Feature {
 
 		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, playersFirstDragon.get());
 
-		if (!this.sumKilledDragonDifficulty)
+		if (!sumKilledDragonDifficulty)
 			dragonDifficulty.set(dragonDifficulty.get() / players.size());
 
 		if (players.size() > 1)
-			dragonDifficulty.set(dragonDifficulty.get() * (1d + ((players.size() - 1) * this.bonusDifficultyPerPlayer)));
+			dragonDifficulty.set(dragonDifficulty.get() * (1d + ((players.size() - 1) * bonusDifficultyPerPlayer)));
 
 		dragonTags.putFloat(Strings.Tags.DIFFICULTY, (float) dragonDifficulty.get());
 	}
@@ -128,13 +98,9 @@ public class DifficultyFeature extends Feature {
 	//Increase Player Difficulty
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
-		if (event.getEntity().level.isClientSide)
-			return;
-
-		if (!this.isEnabled())
-			return;
-
-		if (!(event.getEntity() instanceof EnderDragon dragon))
+		if (event.getEntity().level.isClientSide
+				|| !this.isEnabled()
+				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
 		int radius = 256;
@@ -151,9 +117,9 @@ public class DifficultyFeature extends Feature {
 
 		for (ServerPlayer player : players) {
 			player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
-				if (difficulty.getKilledDragons() <= this.startingDifficulty && this.showFirstKilledDragonMessage)
+				if (difficulty.getKilledDragons() <= startingDifficulty && showFirstKilledDragonMessage)
 					player.sendSystemMessage(Component.translatable(Strings.Translatable.FIRST_DRAGON_KILL));
-				if (difficulty.getKilledDragons() < this.maxDifficulty)
+				if (difficulty.getKilledDragons() < maxDifficulty)
 					difficulty.addKilledDragons(1);
 			});
 		}
@@ -167,12 +133,12 @@ public class DifficultyFeature extends Feature {
 			return;
 
 		player.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> {
-			if (difficulty.getKilledDragons() < this.startingDifficulty) {
-				difficulty.setKilledDragons(this.startingDifficulty);
+			if (difficulty.getKilledDragons() < startingDifficulty) {
+				difficulty.setKilledDragons(startingDifficulty);
 				LogHelper.info("[Progressive Bosses] %s killed dragons counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
 			}
-			if (difficulty.getKilledDragons() > this.maxDifficulty) {
-				difficulty.setKilledDragons(this.maxDifficulty);
+			if (difficulty.getKilledDragons() > maxDifficulty) {
+				difficulty.setKilledDragons(maxDifficulty);
 				LogHelper.info("[Progressive Bosses] %s killed dragons counter was above the 'Max Difficulty', Has been decreased to match 'Max Difficulty'", player.getName().getString());
 			}
 

@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.module.Modules;
+import insane96mcp.progressivebosses.module.dragon.feature.AttackFeature;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.DragonFireball;
@@ -20,7 +20,7 @@ public class DragonFireballMixin extends AbstractHurtingProjectile {
 
 	@Inject(at = @At("HEAD"), method = "onHit(Lnet/minecraft/world/phys/HitResult;)V", cancellable = true)
 	private void onHit(HitResult result, CallbackInfo callback) {
-		if (Modules.dragon.attack.onFireballImpact((DragonFireball) (Object) this, this.getOwner(), result))
+		if (AttackFeature.onFireballImpact((DragonFireball) (Object) this, this.getOwner(), result))
 			callback.cancel();
 	}
 }

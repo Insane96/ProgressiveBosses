@@ -4,7 +4,9 @@ import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
+import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.MCUtils;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.core.BlockPos;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Label(name = "Minions", description = "Elder Guardians will spawn Elder Minions.")
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian")
 public class MinionFeature extends Feature {
 
 	private final ForgeConfigSpec.ConfigValue<Integer> baseCooldownConfig;
@@ -41,8 +44,8 @@ public class MinionFeature extends Feature {
 	public int baseCooldown = 200;
 	public int cooldownReductionPerMissingGuardian = 60;
 
-	public MinionFeature(Module module) {
-		super(Config.builder, module);
+	public MinionFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super(module, enabledByDefault, canBeDisabled);
 		this.pushConfig(Config.builder);
 		baseCooldownConfig = Config.builder
 				.comment("Elder Guardians will spawn Elder Minions every this tick value (20 ticks = 1 sec).")
