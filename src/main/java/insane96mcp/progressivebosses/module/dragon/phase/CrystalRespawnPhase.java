@@ -23,6 +23,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	private boolean respawning = false;
 	private final ArrayList<SpikeFeature.EndSpike> spikesToRespawn = new ArrayList<>();
 
+	@SuppressWarnings("FieldCanBeLocal")
 	private final int TICK_RESPAWN_CRYSTAL = 100;
 
 	public CrystalRespawnPhase(EnderDragon dragonIn) {
