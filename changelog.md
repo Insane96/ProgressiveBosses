@@ -4,8 +4,9 @@
 * Ported 3.6.4 changes
 * Ender Dragon
   * Reduced melee damage reduction when at center (~~-45%~~ -> -24% damage)
-  * Added bonus melee damage when not at center. +24%
+  * Added bonus melee damage when not at center: +24%
   * Dragon Minions will now no longer spawn on towers
+* Increased Elder Guardian adventure mode range and made it configurable (~~32~~ -> 48)
 
 ## 3.7.1
 * Wither Minions

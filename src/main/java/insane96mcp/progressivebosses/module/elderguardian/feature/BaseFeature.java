@@ -34,6 +34,10 @@ public class BaseFeature extends Feature {
 	@Label(name = "Adventure mode", description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby.")
 	public static Boolean adventure = true;
 
+	@Config
+	@Label(name = "Adventure mode Range", description = "The range from any Elder Guardian at which players get adventure mode. It's advised to increase this (to about 80) with YUNG's Better Ocean Monuments.")
+	public static Double adventureRange = 48d;
+
 	public BaseFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
 	}
@@ -54,7 +58,7 @@ public class BaseFeature extends Feature {
 		boolean previouslyNearElderGuardian = nbt.getBoolean(Strings.Tags.PREVIOUSLY_NEAR_ELDER_GUARDIAN);
 		boolean adventureMessage = nbt.getBoolean(Strings.Tags.ADVENTURE_MESSAGE);
 
-		boolean nearElderGuardian = !world.getEntitiesOfClass(ElderGuardian.class, serverPlayer.getBoundingBox().inflate(32d)).isEmpty();
+		boolean nearElderGuardian = !world.getEntitiesOfClass(ElderGuardian.class, serverPlayer.getBoundingBox().inflate(adventureRange)).isEmpty();
 		nbt.putBoolean(Strings.Tags.PREVIOUSLY_NEAR_ELDER_GUARDIAN, nearElderGuardian);
 
 		if (serverPlayer.gameMode.getGameModeForPlayer() == GameType.SURVIVAL && nearElderGuardian) {
@@ -95,7 +99,7 @@ public class BaseFeature extends Feature {
 				|| event.getExplosion().blockInteraction == Explosion.BlockInteraction.NONE)
 			return;
 
-		boolean nearElderGuardian = !event.getLevel().getEntitiesOfClass(ElderGuardian.class, event.getExplosion().getExploder().getBoundingBox().inflate(32d)).isEmpty();
+		boolean nearElderGuardian = !event.getLevel().getEntitiesOfClass(ElderGuardian.class, event.getExplosion().getExploder().getBoundingBox().inflate(adventureRange)).isEmpty();
 		if (nearElderGuardian) {
 			event.setCanceled(true);
 			event.getLevel().explode(event.getExplosion().getExploder(), event.getExplosion().getPosition().x, event.getExplosion().getPosition().y, event.getExplosion().getPosition().z, event.getExplosion().radius, event.getExplosion().fire, Explosion.BlockInteraction.NONE);
@@ -108,7 +112,7 @@ public class BaseFeature extends Feature {
 				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
-		List<Entity> elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardian);
+		List<Entity> elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(64d), entity -> entity instanceof ElderGuardian);
 		if (elderGuardiansNearby.size() == 0)
 			return;
 
