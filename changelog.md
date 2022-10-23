@@ -1,7 +1,8 @@
 # Changelog
 
-## Upcoming
+## 3.7.2
 * Ported 3.6.4 changes
+* Updated to InsaneLib 1.7.0
 * Ender Dragon
   * Reduced melee damage reduction when at center (~~-45%~~ -> -24% damage)
   * Added bonus melee damage when not at center: +24%
