@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.7.3
+* Updated to InsaneLib 1.7.1
+
 ## 3.7.2
 * Ported 3.6.4 changes
 * Updated to InsaneLib 1.7.0
