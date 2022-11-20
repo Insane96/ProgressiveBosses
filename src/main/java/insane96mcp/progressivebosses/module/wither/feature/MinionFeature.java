@@ -85,16 +85,16 @@ public class MinionFeature extends Feature {
 	@Label(name = "Equipment.Bow Chance Below Half Health", description = "Chance for the Wither Minion to spawn with a bow instead of a Stone Sword when Wither's below Half Health.")
 	public static Double belowHalfHealthBowChance = 0.08d;
 	//TODO Make a list of enchantments instead of making one config option per enchantment
-	@Config(min = 0d, max = 255d)
+	@Config(min = 0d, max = 127d)
 	@Label(name = "Equipment.Enchantments.Sharpness Chance", description = "Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Sharpness. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
 	public static Double sharpnessChance = 2.40d;
-	@Config(min = 0d, max = 255d)
+	@Config(min = 0d, max = 127d)
 	@Label(name = "Equipment.Enchantments.Knockback Chance", description = "Chance (at max difficulty) for the Wither Minion's Sword to be enchanted with Knockback. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
 	public static Double knockbackChance = 2.40d;
-	@Config(min = 0d, max = 255d)
+	@Config(min = 0d, max = 127d)
 	@Label(name = "Equipment.Enchantments.Power Chance", description = "Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Power. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
 	public static Double powerChance = 3.20d;
-	@Config(min = 0d, max = 255d)
+	@Config(min = 0d, max = 127d)
 	@Label(name = "Equipment.Enchantments.Punch Chance", description = "Chance (at max difficulty) for the Wither Minion's Bow to be enchanted with Punch. Note that every 100% chance adds one guaranteed level of the enchantment, while the remaining dictates the chance to add on more level.")
 	public static Double punchChance = 1.50d;
 

@@ -2,6 +2,7 @@
 
 ## 3.7.4
 * Fixed Mixins overriding some stuff
+* Fixed minions enchantment not going over 127 (the config is now capped to that value)
 
 ## 3.7.3
 * Updated to InsaneLib 1.7.1
