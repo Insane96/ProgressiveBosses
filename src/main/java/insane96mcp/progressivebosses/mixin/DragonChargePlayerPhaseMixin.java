@@ -1,7 +1,9 @@
 package insane96mcp.progressivebosses.mixin;
 
 import com.mojang.logging.LogUtils;
+import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.feature.AttackFeature;
+import insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonChargePlayerPhase;
@@ -14,6 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(DragonChargePlayerPhase.class)
@@ -31,13 +34,15 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 		super(dragonIn);
 	}
 
-	@Override
-	public void doServerTick() {
+	@Inject(at = @At("HEAD"), method = "doServerTick", cancellable = true)
+	public void doServerTick(CallbackInfo ci) {
+		if (!Feature.isEnabled(DifficultyFeature.class))
+			return;
 		if (this.targetLocation == null) {
 			LOGGER.warn("Aborting charge player as no target was set.");
 			this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
 		} else if (this.timeSinceCharge > 0 && this.timeSinceCharge++ >= 10) {
-			//If must not charge or fireball then go back to holding pattern
+			//If no charge or fireball then go back to holding pattern
 			if (!AttackFeature.onPhaseEnd(this.dragon))
 				this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
 			//Otherwise reset the phase, in case she charges again
@@ -51,6 +56,7 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 			}
 
 		}
+		ci.cancel();
 	}
 
 	@Inject(at = @At("HEAD"), method = "getFlySpeed()F", cancellable = true)

@@ -1,6 +1,8 @@
 package insane96mcp.progressivebosses.mixin;
 
+import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.feature.AttackFeature;
+import insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,6 +15,9 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DragonStrafePlayerPhase.class)
 public abstract class DragonStrafePlayerPhaseMixin extends AbstractDragonPhaseInstance {
@@ -29,8 +34,10 @@ public abstract class DragonStrafePlayerPhaseMixin extends AbstractDragonPhaseIn
 		super(dragonIn);
 	}
 
-	@Override
-	public void doServerTick() {
+	@Inject(at = @At("HEAD"), method = "doServerTick", cancellable = true)
+	public void doServerTick(CallbackInfo ci) {
+		if (!Feature.isEnabled(DifficultyFeature.class))
+			return;
 		if (this.attackTarget == null) {
 			LogHelper.warn("Skipping player strafe phase because no player was found");
 			this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
@@ -90,6 +97,7 @@ public abstract class DragonStrafePlayerPhaseMixin extends AbstractDragonPhaseIn
 			}
 
 		}
+		ci.cancel();
 	}
 
 	@Shadow

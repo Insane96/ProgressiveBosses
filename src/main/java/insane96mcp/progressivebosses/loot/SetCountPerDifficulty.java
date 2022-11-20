@@ -43,6 +43,7 @@ public class SetCountPerDifficulty extends LootItemConditionalFunction {
         return builder.build();
     }
 
+    //Rolls are equal to the current difficulty + difficulty_modifier
     public ItemStack run(ItemStack itemStack, LootContext lootContext) {
         Entity entity = lootContext.getParam(LootContextParams.THIS_ENTITY);
 

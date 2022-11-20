@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.7.4
+* Fixed Mixins overriding some stuff
+
 ## 3.7.3
 * Updated to InsaneLib 1.7.1
 
