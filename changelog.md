@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.7.5
+* Wither
+  * Bonus health regen is now reduced by 40% if Wither took damage in the last 3 seconds
+* Dragon
+  * Bonus health regen is now reduced by 60% if Dragon took damage in the last 3 seconds
+
 ## 3.7.4
 * Fixed Mixins overriding some stuff
 * Fixed minions enchantment not going over 127 (the config is now capped to that value)
