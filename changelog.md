@@ -1,7 +1,10 @@
 # Changelog
 
 ## Upcoming
-* Wither and Dragon bonus health regen is now reduced by 60% if they took damage in the last 3 seconds.
+* Wither
+    * Bonus health regen is now reduced by 40% if Wither took damage in the last 3 seconds
+* Dragon
+    * Bonus health regen is now reduced by 60% if Dragon took damage in the last 3 seconds
 
 ## 3.6.4
 * Wither Minions now make entities they kill drop Wither Roses

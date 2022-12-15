@@ -26,7 +26,7 @@ public class HealthFeature extends Feature {
 	public double bonusHealth = 720d;
 	public double maxBonusRegen = 2d;
 	public double bonusRegen = 2.4d;
-	public double bonusRegenRatioWhenHit = 0.4d;
+	public double bonusRegenRatioWhenHit = 0.6d;
 
 	public HealthFeature(Module module) {
 		super(Config.builder, module);
