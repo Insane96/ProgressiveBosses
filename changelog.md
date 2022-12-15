@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Wither and Dragon bonus health regen is now reduced by 60% if they took damage in the last 3 seconds.
+
 ## 3.6.4
 * Wither Minions now make entities they kill drop Wither Roses
 * Wither no longer generates fire on the starting Explosion
