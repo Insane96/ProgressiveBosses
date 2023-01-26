@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.8.0
+* Updated to 1.19.3
+
 ## 3.7.5
 * Wither
   * Bonus health regen is now reduced by 40% if Wither took damage in the last 3 seconds

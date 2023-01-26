@@ -7,10 +7,8 @@ import insane96mcp.progressivebosses.network.PacketManager;
 import insane96mcp.progressivebosses.setup.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.CreativeModeTabEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -32,7 +30,8 @@ public class ProgressiveBosses {
 	public ProgressiveBosses() {
 		ModLoadingContext.get().registerConfig(net.minecraftforge.fml.config.ModConfig.Type.COMMON, Config.COMMON_SPEC);
 		MinecraftForge.EVENT_BUS.register(this);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::init);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerEntityRenderers);
+		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::creativeTabsBuildContents);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		PBItems.ITEMS.register(modEventBus);
@@ -49,16 +48,6 @@ public class ProgressiveBosses {
 	{
 		if (event.getObject() instanceof Player)
 			event.addCapability(DifficultyProvider.IDENTIFIER, new DifficultyProvider());
-	}
-
-	@SubscribeEvent
-	public void attachCapabilitiesEntity(final CreativeModeTabEvent.BuildContents event)
-	{
-		if (event.getTab() == CreativeModeTabs.INGREDIENTS)
-		{
-			event.accept(PBItems.NETHER_STAR_SHARD.get());
-			event.accept(PBItems.ELDER_GUARDIAN_SPIKE.get());
-		}
 	}
 
 	@SubscribeEvent
