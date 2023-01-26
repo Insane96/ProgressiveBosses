@@ -8,7 +8,7 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
-import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.phys.Vec3;
 
@@ -60,7 +60,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 				double z = spikesToRespawn.get(0).getCenterZ();
 				EndCrystal crystal = new EndCrystal(dragon.level, x + 0.5, y + 1, z + 0.5);
 				crystal.setShowBottom(true);
-				crystal.level.explode(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Explosion.BlockInteraction.NONE);
+				crystal.level.explode(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Level.ExplosionInteraction.NONE);
 				dragon.level.addFreshEntity(crystal);
 				CrystalFeature.generateCage(crystal.level, crystal.blockPosition());
 				spikesToRespawn.remove(0);

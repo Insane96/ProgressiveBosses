@@ -17,6 +17,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -96,13 +97,13 @@ public class BaseFeature extends Feature {
 		if (!this.isEnabled()
 				|| !adventure
 				|| event.getExplosion().getExploder() == null
-				|| event.getExplosion().blockInteraction == Explosion.BlockInteraction.NONE)
+				|| event.getExplosion().blockInteraction == Explosion.BlockInteraction.KEEP)
 			return;
 
 		boolean nearElderGuardian = !event.getLevel().getEntitiesOfClass(ElderGuardian.class, event.getExplosion().getExploder().getBoundingBox().inflate(adventureRange)).isEmpty();
 		if (nearElderGuardian) {
 			event.setCanceled(true);
-			event.getLevel().explode(event.getExplosion().getExploder(), event.getExplosion().getPosition().x, event.getExplosion().getPosition().y, event.getExplosion().getPosition().z, event.getExplosion().radius, event.getExplosion().fire, Explosion.BlockInteraction.NONE);
+			event.getLevel().explode(event.getExplosion().getExploder(), event.getExplosion().getPosition().x, event.getExplosion().getPosition().y, event.getExplosion().getPosition().z, event.getExplosion().radius, event.getExplosion().fire, Level.ExplosionInteraction.NONE);
 		}
 	}
 

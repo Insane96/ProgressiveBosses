@@ -61,7 +61,7 @@ public class DifficultyFeature extends Feature {
 		if (event.getLevel().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof WitherBoss wither)
-				|| this.entityBlacklist.isEntityBlackOrNotWhitelist(wither))
+				|| entityBlacklist.isEntityBlackOrNotWhitelist(wither))
 			return;
 
 		CompoundTag witherTags = wither.getPersistentData();
