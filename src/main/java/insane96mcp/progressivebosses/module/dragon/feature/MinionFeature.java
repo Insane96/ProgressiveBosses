@@ -145,7 +145,7 @@ public class MinionFeature extends Feature {
 		float angle = world.random.nextFloat() * (float) Math.PI * 2f;
 		float x = (float) (Math.cos(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 40f)));
 		float z = (float) (Math.sin(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 40f)));
-		float y = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, new BlockPos(x, 255, z)).getY();
+		float y = world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 255, z)).getY();
 		summonMinion(world, new Vec3(x, y, z), DifficultyHelper.getScalingDifficulty(dragon));
 	}
 

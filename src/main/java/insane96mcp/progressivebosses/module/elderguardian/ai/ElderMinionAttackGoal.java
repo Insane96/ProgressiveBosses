@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.module.elderguardian.ai;
 
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -78,8 +77,8 @@ public class ElderMinionAttackGoal extends Goal {
 				f += 2.0F;
 			}
 
-			livingentity.hurt(DamageSource.indirectMagic(this.guardian, this.guardian), f);
-			livingentity.hurt(DamageSource.mobAttack(this.guardian), (float)this.guardian.getAttributeValue(Attributes.ATTACK_DAMAGE));
+			livingentity.hurt(livingentity.damageSources().indirectMagic(this.guardian, this.guardian), f);
+			livingentity.hurt(livingentity.damageSources().mobAttack(this.guardian), (float)this.guardian.getAttributeValue(Attributes.ATTACK_DAMAGE));
 			this.guardian.setTarget(null);
 		}
 

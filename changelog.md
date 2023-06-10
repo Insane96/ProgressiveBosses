@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.8.1
+* MC 1.19.4
+* Reduced Wither charge attack damage (~~16~~ -> 12)
+
 ## 3.8.0
 * Updated to 1.19.3
 

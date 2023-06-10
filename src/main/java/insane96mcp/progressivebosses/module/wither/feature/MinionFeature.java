@@ -19,6 +19,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -205,7 +206,7 @@ public class MinionFeature extends Feature {
 		if (!this.isEnabled()
 				|| magicDamageMultiplier == 0d
 				|| !(event.getEntity() instanceof WitherMinion)
-				|| !event.getSource().isMagic())
+				|| (!event.getSource().is(DamageTypes.MAGIC) && !event.getSource().is(DamageTypes.INDIRECT_MAGIC)))
 			return;
 
 		event.setAmount((float) (event.getAmount() * magicDamageMultiplier));

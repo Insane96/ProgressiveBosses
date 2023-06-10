@@ -19,9 +19,9 @@ public class WitherMinionRenderer extends HumanoidMobRenderer<WitherMinion, With
 		this(context, ModelLayers.SKELETON, ModelLayers.SKELETON_INNER_ARMOR, ModelLayers.SKELETON_OUTER_ARMOR);
 	}
 
-	public WitherMinionRenderer(EntityRendererProvider.Context p_174382_, ModelLayerLocation p_174383_, ModelLayerLocation p_174384_, ModelLayerLocation p_174385_) {
-		super(p_174382_, new WitherMinionModel<>(p_174382_.bakeLayer(p_174383_)), 0.5F);
-		this.addLayer(new HumanoidArmorLayer<>(this, new WitherMinionModel<>(p_174382_.bakeLayer(p_174384_)), new WitherMinionModel<>(p_174382_.bakeLayer(p_174385_))));
+	public WitherMinionRenderer(EntityRendererProvider.Context context, ModelLayerLocation model, ModelLayerLocation innerModel, ModelLayerLocation outerModel) {
+		super(context, new WitherMinionModel<>(context.bakeLayer(model)), 0.5F);
+		this.addLayer(new HumanoidArmorLayer<>(this, new WitherMinionModel<>(context.bakeLayer(innerModel)), new WitherMinionModel<>(context.bakeLayer(outerModel)), context.getModelManager()));
 	}
 
 	/**

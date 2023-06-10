@@ -7,6 +7,7 @@ import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -49,7 +50,7 @@ public class ResistancesFeature extends Feature {
 			return;
 
 		//Handle Magic Damage
-		if (event.getSource().isMagic() && magicDamageBonus > 0d) {
+		if ((event.getSource().is(DamageTypes.MAGIC) || event.getSource().is(DamageTypes.INDIRECT_MAGIC)) && magicDamageBonus > 0d) {
 			double missingHealth = wither.getMaxHealth() - wither.getHealth();
 			event.setAmount((event.getAmount() * (float) (missingHealth / (magicDamageBonus) + 1)));
 		}

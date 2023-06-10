@@ -3,7 +3,7 @@
   "item.progressivebosses.elder_guardian_spike": "Elder Guardian Spike",
 
   "entity.progressivebosses.wither_minion": "Wither Minion",
-  "death.attack.progressivebosses:wither_charge_attack": "%1$s was charged by %2$s",
+  "death.attack.progressivebosses:wither_charge": "%1$s was charged by %2$s",
 
   "entity.progressivebosses.larva": "Dragon Larva",
   "progressivebosses:dragon_minion": "Dragon Minion",

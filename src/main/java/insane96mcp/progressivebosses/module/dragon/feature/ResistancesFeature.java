@@ -7,6 +7,7 @@ import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
@@ -68,7 +69,7 @@ public class ResistancesFeature extends Feature {
 		if (explosionDamageReduction == 0d)
 			return;
 
-		if (event.getSource().isExplosion() && !event.getSource().getMsgId().equals("fireworks")) {
+		if (event.getSource().is(DamageTypeTags.IS_EXPLOSION) && !event.getSource().getMsgId().equals("fireworks")) {
 			event.setAmount((event.getAmount() - (float) (event.getAmount() * explosionDamageReduction)));
 		}
 	}

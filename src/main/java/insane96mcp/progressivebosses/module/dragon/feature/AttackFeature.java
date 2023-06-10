@@ -13,10 +13,13 @@ import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -43,6 +46,8 @@ import java.util.List;
 @Label(name = "Attack", description = "Makes the dragon hit harder in various different ways")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class AttackFeature extends Feature {
+	static ResourceKey<DamageType> DRAGON_FIREBALL_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_fireball"));
+
 	@Config(min = 0d)
 	@Label(name = "Bonus Direct Damage", description = "How much more damage at max difficulty (percentage) does the Ender Dragon deal per difficulty?")
 	public static Double increasedDirectDamage = 2.25d;
@@ -246,7 +251,7 @@ public class AttackFeature extends Feature {
 		List<LivingEntity> livingEntities = fireball.level.getEntitiesOfClass(LivingEntity.class, axisAlignedBB);
 		for (LivingEntity livingEntity : livingEntities) {
 			if (livingEntity.distanceToSqr(fireball.position()) < 20.25d)
-				livingEntity.hurt((new IndirectEntityDamageSource(Strings.Translatable.DRAGON_FIREBALL, fireball, shooter)).bypassArmor().setProjectile().setMagic(), damage);
+				livingEntity.hurt(livingEntity.damageSources().source(DRAGON_FIREBALL_DAMAGE_TYPE, fireball, shooter), damage);
 		}
 	}
 

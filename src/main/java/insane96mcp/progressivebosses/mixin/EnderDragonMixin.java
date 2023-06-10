@@ -2,7 +2,7 @@ package insane96mcp.progressivebosses.mixin;
 
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.boss.EnderDragonPart;
@@ -23,7 +23,7 @@ public class EnderDragonMixin extends Mob {
 	@Inject(at = @At("HEAD"), method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z")
 	private void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {
 		EnderDragon $this = (EnderDragon) (Object) this;
-		if (source instanceof EntityDamageSource && !((EntityDamageSource)source).isThorns()) {
+		if (source.is(DamageTypes.THORNS)) {
 			$this.hurt($this.getSubEntities()[2], source, amount);
 		}
 	}

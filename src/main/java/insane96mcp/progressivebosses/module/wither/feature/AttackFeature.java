@@ -43,9 +43,9 @@ public class AttackFeature extends Feature {
 	@Label(name = "Charge attack.Chance", description = "Chance every time the Wither takes damage to start a charge attack. Lower health and more damage taken increases the chance.\n" +
 			"This value is the chance at 0% health and when taking 10 damage.")
 	public static Double maxChargeAttackChance = 0.06d;
-	@Config(min = 0d, max = 50d)
+	@Config(min = 0d, max = 32d)
 	@Label(name = "Charge attack.Base Damage", description = "Base damage of the charge attack. Increased by 'Increased Damage' config option.")
-	public static Double chargeAttackBaseDamage = 16d;
+	public static Double chargeAttackBaseDamage = 12d;
 	//Barrage Attack
 	@Config(min = 0d, max = 1d)
 	@Label(name = "Barrage Attack.Chance", description = "Chance (at max difficulty) every time the Wither takes damage to start a barrage attack. More damage taken increases the chance.\n" +

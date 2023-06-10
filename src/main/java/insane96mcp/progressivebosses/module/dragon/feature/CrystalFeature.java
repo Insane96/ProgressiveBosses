@@ -15,6 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
@@ -223,7 +224,7 @@ public class CrystalFeature extends Feature {
 				|| !explosionImmune)
 			return false;
 
-		return source.isExplosion();
+		return source.is(DamageTypeTags.IS_EXPLOSION);
 	}
 
 	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER_RL = new ResourceLocation("endergetic:crystal_holder");
@@ -234,7 +235,7 @@ public class CrystalFeature extends Feature {
 		int spawnY = (int) (y - Mth.nextInt(world.getRandom(), 12, 24));
 		if (spawnY < centerPodium.y())
 			spawnY = (int) centerPodium.y();
-		BlockPos crystalPos = new BlockPos(x, spawnY, z);
+		BlockPos crystalPos = BlockPos.containing(x, spawnY, z);
 
 		Stream<BlockPos> blocks = BlockPos.betweenClosedStream(crystalPos.offset(-1, -1, -1), crystalPos.offset(1, 1, 1));
 
