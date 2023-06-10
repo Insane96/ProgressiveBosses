@@ -10,8 +10,7 @@
                     "conditions": [
                         {
                             "condition": "progressivebosses:random_chance_with_difficulty",
-                            "chance": 0.1,
-                            "difficulty_modifier": -3
+                            "chance": 0.125
                         }
                     ]
                 }

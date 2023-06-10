@@ -10,24 +10,7 @@
                     "functions": [
                         {
                             "function": "progressivebosses:set_count_per_difficulty",
-                            "count": 1,
-                            "per_difficulty_chance": 0.75
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "rolls": 1,
-            "entries": [
-                {
-                    "type": "minecraft:item",
-                    "name": "progressivebosses:nether_star_shard",
-                    "functions": [
-                        {
-                            "function": "progressivebosses:set_count_per_difficulty",
-                            "count": 1,
-                            "per_difficulty_chance": 0.75
+                            "count": 2
                         }
                     ]
                 }
@@ -42,24 +25,7 @@
                     "functions": [
                         {
                             "function": "progressivebosses:set_count_per_difficulty",
-                            "count": 1,
-                            "per_difficulty_chance": 0.75
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "rolls": 1,
-            "entries": [
-                {
-                    "type": "minecraft:item",
-                    "name": "minecraft:ancient_debris",
-                    "functions": [
-                        {
-                            "function": "progressivebosses:set_count_per_difficulty",
-                            "count": 1,
-                            "per_difficulty_chance": 0.75
+                            "count": 2
                         }
                     ]
                 }
