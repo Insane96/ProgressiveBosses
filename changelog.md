@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Slightly lowered Wither charge chance and barrage duration
+
 ## 3.8.2
 * Nether Star is now crafted from 4 shards instead of 9
 * Wither loot

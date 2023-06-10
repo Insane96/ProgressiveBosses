@@ -42,7 +42,7 @@ public class AttackFeature extends Feature {
 	@Config(min = 0d, max = 1d)
 	@Label(name = "Charge attack.Chance", description = "Chance every time the Wither takes damage to start a charge attack. Lower health and more damage taken increases the chance.\n" +
 			"This value is the chance at 0% health and when taking 10 damage.")
-	public static Double maxChargeAttackChance = 0.06d;
+	public static Double maxChargeAttackChance = 0.05d;
 	@Config(min = 0d, max = 32d)
 	@Label(name = "Charge attack.Base Damage", description = "Base damage of the charge attack. Increased by 'Increased Damage' config option.")
 	public static Double chargeAttackBaseDamage = 12d;
@@ -56,7 +56,7 @@ public class AttackFeature extends Feature {
 	public static Integer minBarrageDuration = 20;
 	@Config(min = 0)
 	@Label(name = "Barrage Attack.Max Duration", description = "Max time (in ticks) for the duration of the barrage attack. Less health = longer barrage")
-	public static Integer maxBarrageDuration = 150;
+	public static Integer maxBarrageDuration = 140;
 	@Config(min = 1d)
 	@Label(name = "Skull Velocity Multiplier", description = "Wither Skull Projectiles speed will be multiplied by this value. Set to 1 to not change the speed.")
 	//Skulls

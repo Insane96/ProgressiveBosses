@@ -32,7 +32,7 @@ public abstract class ItemEntityMixin extends Entity implements TraceableEntity 
 	@Shadow public abstract ItemStack getItem();
 
 	@Inject(at = @At("HEAD"), method = "hurt", cancellable = true)
-	public void hitByShulkerBullet(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+	public void onItemHurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
 		if (!this.getItem().isEmpty() && this.getItem().is(PBItems.NETHER_STAR_SHARD.get()) && source.getEntity() instanceof WitherBoss)
 			cir.setReturnValue(false);
 		else if (!this.getItem().isEmpty() && this.getItem().is(WITHER_INVULNERABLE) && this.tickCount < 100 && source.getEntity() instanceof WitherBoss)
