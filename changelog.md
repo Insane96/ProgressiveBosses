@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Slightly lowered Wither charge chance and barrage duration
+* Increased ender dragon healing reduction when hit duration
 
 ## 3.8.2
 * Nether Star is now crafted from 4 shards instead of 9
