@@ -27,7 +27,7 @@ public class EndDragonFightMixin {
 	private void respawnDragon(List<EndCrystal> p_64092_, CallbackInfo callback) {
 		List<EndCrystal> endCrystals = this.level.getEntitiesOfClass(EndCrystal.class, new AABB(this.portalLocation).inflate(48d), EndCrystal::showsBottom);
 		for (EndCrystal endCrystal : endCrystals) {
-			endCrystal.level.explode(endCrystal, endCrystal.getX(), endCrystal.getY(), endCrystal.getZ(), 6.0F, Level.ExplosionInteraction.NONE);
+			endCrystal.level().explode(endCrystal, endCrystal.getX(), endCrystal.getY(), endCrystal.getZ(), 6.0F, Level.ExplosionInteraction.NONE);
 			endCrystal.discard();
 		}
 	}

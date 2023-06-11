@@ -10,13 +10,8 @@ import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.entries.LootTableReference;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -73,11 +68,11 @@ public class RewardFeature extends Feature {
 		}
 
 		for (int i = 0; i < eggsToDrop; i++) {
-			dragon.level.setBlockAndUpdate(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.defaultBlockState());
+			dragon.level().setBlockAndUpdate(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.defaultBlockState());
 		}
 	}
 
-	@SubscribeEvent
+	/*@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
 		if (!this.isEnabled()
 				|| !injectDefaultRewards)
@@ -92,5 +87,5 @@ public class RewardFeature extends Feature {
 				.add(LootTableReference.lootTableReference(new ResourceLocation(ProgressiveBosses.MOD_ID, "entities/ender_dragon")))
 				.build();
 		event.getTable().addPool(pool);
-	}
+	}*/
 }

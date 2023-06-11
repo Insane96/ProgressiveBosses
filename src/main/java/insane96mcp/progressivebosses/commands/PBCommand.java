@@ -90,7 +90,7 @@ public class PBCommand {
             targetPlayer.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> difficulty.setSpawnedWithers(amount));
         if (boss.equals("dragon"))
             targetPlayer.getCapability(Difficulty.INSTANCE).ifPresent(difficulty -> difficulty.setKilledDragons(amount));
-        source.sendSuccess(Component.translatable(Strings.Translatable.PLAYER_SET_BOSS_DIFFICULTY, targetPlayer.getName(), boss, amount), true);
+        source.sendSuccess(() -> Component.translatable(Strings.Translatable.PLAYER_SET_BOSS_DIFFICULTY, targetPlayer.getName(), boss, amount), true);
         return amount;
     }
 
@@ -109,7 +109,7 @@ public class PBCommand {
                 difficulty.set(difficultyCap.getKilledDragons());
             });
         }
-        source.sendSuccess(Component.translatable(Strings.Translatable.PLAYER_ADD_BOSS_DIFFICULTY, amount, boss, targetPlayer.getName(), difficulty.get()), true);
+        source.sendSuccess(() -> Component.translatable(Strings.Translatable.PLAYER_ADD_BOSS_DIFFICULTY, amount, boss, targetPlayer.getName(), difficulty.get()), true);
         return difficulty.get();
     }
 
@@ -121,16 +121,16 @@ public class PBCommand {
 
         switch (boss) {
             case "wither" -> {
-                source.sendSuccess(Component.translatable(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
                 return witherDifficulty.get();
             }
             case "dragon" -> {
-                source.sendSuccess(Component.translatable(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
                 return dragonDifficulty.get();
             }
             default -> {
-                source.sendSuccess(Component.translatable(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
-                source.sendSuccess(Component.translatable(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.PLAYER_GET_WITHER_DIFFICULTY, targetPlayer.getName(), witherDifficulty), true);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.PLAYER_GET_DRAGON_DIFFICULTY, targetPlayer.getName(), dragonDifficulty), true);
                 return 1;
             }
         }
@@ -140,22 +140,22 @@ public class PBCommand {
         switch (entity) {
             case Strings.Tags.WITHER_MINION -> {
                 insane96mcp.progressivebosses.module.wither.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty), false);
-                source.sendSuccess(Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
                 return 1;
             }
             case Strings.Tags.DRAGON_MINION -> {
                 insane96mcp.progressivebosses.module.dragon.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty));
-                source.sendSuccess(Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
                 return 1;
             }
             case Strings.Tags.DRAGON_LARVA -> {
                 LarvaFeature.summonLarva(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty));
-                source.sendSuccess(Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
                 return 1;
             }
             case Strings.Tags.ELDER_MINION -> {
                 insane96mcp.progressivebosses.module.elderguardian.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition());
-                source.sendSuccess(Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
                 return 1;
             }
             default -> {

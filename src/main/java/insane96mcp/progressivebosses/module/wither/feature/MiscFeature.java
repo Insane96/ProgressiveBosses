@@ -67,7 +67,7 @@ public class MiscFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingTickEvent event) {
-		if (event.getEntity().level.isClientSide)
+		if (event.getEntity().level().isClientSide)
 			return;
 
 		if (!this.isEnabled())
@@ -84,7 +84,7 @@ public class MiscFeature extends Feature {
 		//Overrides the block breaking in wither's updateAI since LivingTickEvent is called before
 		if (wither.destroyBlocksTick == 1) {
 			--wither.destroyBlocksTick;
-			if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level, wither)) {
+			if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
 				int i1 = Mth.floor(wither.getY());
 				int l1 = Mth.floor(wither.getX());
 				int i2 = Mth.floor(wither.getZ());
@@ -101,16 +101,16 @@ public class MiscFeature extends Feature {
 							int k = i1 + j;
 							int l = i2 + l2;
 							BlockPos blockpos = new BlockPos(i3, k, l);
-							BlockState blockstate = wither.level.getBlockState(blockpos);
+							BlockState blockstate = wither.level().getBlockState(blockpos);
 							if (canWitherDestroy(wither, blockpos, blockstate) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockpos, blockstate)) {
-								flag = wither.level.destroyBlock(blockpos, true, wither) || flag;
+								flag = wither.level().destroyBlock(blockpos, true, wither) || flag;
 							}
 						}
 					}
 				}
 
 				if (flag) {
-					wither.level.levelEvent(null, 1022, wither.blockPosition(), 0);
+					wither.level().levelEvent(null, 1022, wither.blockPosition(), 0);
 				}
 			}
 		}
@@ -118,9 +118,9 @@ public class MiscFeature extends Feature {
 
 	private boolean canWitherDestroy(WitherBoss wither, BlockPos pos, BlockState state) {
 		if (ignoreWitherProofBlocks)
-			return !state.isAir() && state.getDestroySpeed(wither.level, pos) >= 0f;
+			return !state.isAir() && state.getDestroySpeed(wither.level(), pos) >= 0f;
 		else
-			return state.canEntityDestroy(wither.level, pos, wither);
+			return state.canEntityDestroy(wither.level(), pos, wither);
 	}
 
 	@SubscribeEvent
@@ -151,7 +151,7 @@ public class MiscFeature extends Feature {
 
 	@SubscribeEvent
 	public void onWitherDamage(LivingHurtEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !fasterBlockBreaking
 				|| !event.getEntity().isAlive()

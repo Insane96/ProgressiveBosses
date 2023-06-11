@@ -117,7 +117,7 @@ public class CrystalFeature extends Feature {
 		dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
 		CrystalRespawnPhase phase = (CrystalRespawnPhase) dragon.getPhaseManager().getCurrentPhase();
 
-		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level));
+		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level()));
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius).reversed());
 		for (int i = 0; i < crystalsToRespawn; i++) {
 			SpikeFeature.EndSpike targetSpike = spikes.get(i);
@@ -161,21 +161,21 @@ public class CrystalFeature extends Feature {
 		List<EndCrystal> crystals = new ArrayList<>();
 
 		//Order from smaller towers to bigger ones
-		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level));
+		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level()));
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 
 		for(SpikeFeature.EndSpike spike : spikes) {
-			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()));
+			crystals.addAll(dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()));
 		}
 
 		//Remove all the crystals that already have cages around
-		crystals.removeIf(c -> c.level.getBlockState(c.blockPosition().above(2)).getBlock() == Blocks.IRON_BARS);
+		crystals.removeIf(c -> c.level().getBlockState(c.blockPosition().above(2)).getBlock() == Blocks.IRON_BARS);
 
 		int crystalsInvolved = Math.round(difficulty - moreCagesAtDifficulty + 1);
 		int cagesGenerated = 0;
 
 		for (EndCrystal crystal : crystals) {
-			generateCage(crystal.level, crystal.blockPosition());
+			generateCage(crystal.level(), crystal.blockPosition());
 
 			cagesGenerated++;
 			if (cagesGenerated == crystalsInvolved || cagesGenerated == maxBonusCages)
@@ -198,11 +198,11 @@ public class CrystalFeature extends Feature {
 		List<EndCrystal> crystals = new ArrayList<>();
 
 		//Order from smaller towers to bigger ones
-		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level));
+		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level()));
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 
 		for(SpikeFeature.EndSpike spike : spikes) {
-			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox(), EndCrystal::showsBottom));
+			crystals.addAll(dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox(), EndCrystal::showsBottom));
 		}
 
 		int crystalsMax = (int) Math.ceil((difficulty + 1 - moreCrystalsAtDifficulty) / moreCrystalsStep);
@@ -211,7 +211,7 @@ public class CrystalFeature extends Feature {
 		int crystalSpawned = 0;
 
 		for (EndCrystal crystal : crystals) {
-			generateCrystalInTower(dragon.level, crystal.getX(), crystal.getY(), crystal.getZ());
+			generateCrystalInTower(dragon.level(), crystal.getX(), crystal.getY(), crystal.getZ());
 
 			crystalSpawned++;
 			if (crystalSpawned == crystalsMax || crystalSpawned == moreCrystalsMax)

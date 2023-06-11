@@ -1,0 +1,10 @@
+{
+    "type": "insanelib:inject_loot_table",
+    "conditions": [
+        {
+            "condition": "forge:loot_table_id",
+            "loot_table_id": "minecraft:entities/elder_guardian"
+        }
+    ],
+    "loot_table": "progressivebosses:entities/elder_guardian_reward"
+}

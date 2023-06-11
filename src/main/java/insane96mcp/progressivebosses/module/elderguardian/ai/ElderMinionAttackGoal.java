@@ -65,11 +65,11 @@ public class ElderMinionAttackGoal extends Goal {
 		if (this.attackTime == 0) {
 			this.guardian.setActiveAttackTarget(this.guardian.getTarget().getId());
 			if (!this.guardian.isSilent()) {
-				this.guardian.level.broadcastEntityEvent(this.guardian, (byte)21);
+				this.guardian.level().broadcastEntityEvent(this.guardian, (byte)21);
 			}
 		} else if (this.attackTime >= this.guardian.getAttackDuration()) {
 			float f = 1.0F;
-			if (this.guardian.level.getDifficulty() == Difficulty.HARD) {
+			if (this.guardian.level().getDifficulty() == Difficulty.HARD) {
 				f += 2.0F;
 			}
 

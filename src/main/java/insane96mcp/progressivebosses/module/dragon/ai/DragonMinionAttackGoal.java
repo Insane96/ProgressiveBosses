@@ -28,7 +28,7 @@ public class DragonMinionAttackGoal extends Goal {
     public boolean canUse() {
         LivingEntity livingentity = shulker.getTarget();
         if (livingentity != null && livingentity.isAlive()) {
-            return shulker.level.getDifficulty() != Difficulty.PEACEFUL;
+            return shulker.level().getDifficulty() != Difficulty.PEACEFUL;
         } else {
             return false;
         }
@@ -44,7 +44,7 @@ public class DragonMinionAttackGoal extends Goal {
     }
 
     public void tick() {
-        if (shulker.level.getDifficulty() == Difficulty.PEACEFUL)
+        if (shulker.level().getDifficulty() == Difficulty.PEACEFUL)
             return;
 
         --this.attackTime;
@@ -56,13 +56,13 @@ public class DragonMinionAttackGoal extends Goal {
         if (d0 < 9216d) { //96 blocks
             if (this.attackTime <= 0) {
                 this.attackTime = this.baseAttackInterval + shulker.getRandom().nextInt(10) * this.baseAttackInterval / 2;
-                ShulkerBullet bullet = new ShulkerBullet(shulker.level, shulker, livingentity, shulker.getAttachFace().getAxis());
+                ShulkerBullet bullet = new ShulkerBullet(shulker.level(), shulker, livingentity, shulker.getAttachFace().getAxis());
                 if (DragonMinionHelper.isBlindingMinion(this.shulker)) {
                     CompoundTag nbt = bullet.getPersistentData();
                     nbt.putBoolean(Strings.Tags.BLINDNESS_BULLET, true);
                 }
-                shulker.level.addFreshEntity(bullet);
-                shulker.playSound(SoundEvents.SHULKER_SHOOT, 2.0F, (shulker.level.random.nextFloat() - shulker.level.random.nextFloat()) * 0.2F + 1.0F);
+                shulker.level().addFreshEntity(bullet);
+                shulker.playSound(SoundEvents.SHULKER_SHOOT, 2.0F, (shulker.level().random.nextFloat() - shulker.level().random.nextFloat()) * 0.2F + 1.0F);
             }
         } else {
             shulker.setTarget(null);

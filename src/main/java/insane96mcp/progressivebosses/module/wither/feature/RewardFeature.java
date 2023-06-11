@@ -7,12 +7,7 @@ import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.entries.LootTableReference;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -42,7 +37,7 @@ public class RewardFeature extends Feature {
 		wither.xpReward = 50 + (int) (50 * (bonusExperience * DifficultyHelper.getScalingDifficulty(wither)));
 	}
 
-	@SubscribeEvent
+	/*@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
 		if (!this.isEnabled() || !injectDefaultRewards)
 			return;
@@ -53,5 +48,5 @@ public class RewardFeature extends Feature {
 
 		LootPool pool = new LootPool.Builder().setRolls(ConstantValue.exactly(1)).add(LootTableReference.lootTableReference(new ResourceLocation(ProgressiveBosses.MOD_ID, "entities/wither"))).build();
 		event.getTable().addPool(pool);
-	}
+	}*/
 }

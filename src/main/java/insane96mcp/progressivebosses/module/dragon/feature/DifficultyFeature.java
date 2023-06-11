@@ -98,7 +98,7 @@ public class DifficultyFeature extends Feature {
 	//Increase Player Difficulty
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
@@ -108,10 +108,10 @@ public class DifficultyFeature extends Feature {
 		BlockPos pos2 = new BlockPos(radius, radius, radius);
 		AABB bb = new AABB(pos1, pos2);
 
-		List<ServerPlayer> players = dragon.level.getEntitiesOfClass(ServerPlayer.class, bb);
+		List<ServerPlayer> players = dragon.level().getEntitiesOfClass(ServerPlayer.class, bb);
 		//If no players are found in the "Spawn Radius Player Check", try to get the nearest player
 		if (players.size() == 0) {
-			ServerPlayer nearestPlayer = (ServerPlayer) dragon.level.getNearestPlayer(dragon.getX(), dragon.getY(), dragon.getZ(), Double.MAX_VALUE, true);
+			ServerPlayer nearestPlayer = (ServerPlayer) dragon.level().getNearestPlayer(dragon.getX(), dragon.getY(), dragon.getZ(), Double.MAX_VALUE, true);
 			players.add(nearestPlayer);
 		}
 

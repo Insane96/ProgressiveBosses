@@ -6,12 +6,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.ElderGuardian;
-import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.level.storage.loot.entries.LootTableReference;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -56,7 +51,7 @@ public class RewardFeature extends Feature {
 		event.setDroppedExperience(event.getOriginalExperience() + bonusXp);
 	}
 
-	@SubscribeEvent
+	/*@SubscribeEvent
 	public void onLootTableLoad(LootTableLoadEvent event) {
 		if (!this.isEnabled()
 				|| !injectDefaultRewards)
@@ -68,6 +63,6 @@ public class RewardFeature extends Feature {
 
 		LootPool pool = new LootPool.Builder().setRolls(ConstantValue.exactly(1)).add(LootTableReference.lootTableReference(new ResourceLocation(ProgressiveBosses.MOD_ID, "entities/elder_guardian"))).build();
 		event.getTable().addPool(pool);
-	}
+	}*/
 
 }

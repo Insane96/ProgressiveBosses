@@ -45,7 +45,7 @@ public class BaseFeature extends Feature {
 
 	@SubscribeEvent
 	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-		if (event.player.level.isClientSide
+		if (event.player.level().isClientSide
 				|| !this.isEnabled()
 				|| !adventure
 				|| event.player.tickCount % 20 != 0
@@ -53,7 +53,7 @@ public class BaseFeature extends Feature {
 			return;
 
 		ServerPlayer serverPlayer = (ServerPlayer) event.player;
-		ServerLevel world = (ServerLevel) serverPlayer.level;
+		ServerLevel world = (ServerLevel) serverPlayer.level();
 
 		CompoundTag nbt = serverPlayer.getPersistentData();
 		boolean previouslyNearElderGuardian = nbt.getBoolean(Strings.Tags.PREVIOUSLY_NEAR_ELDER_GUARDIAN);
@@ -113,7 +113,7 @@ public class BaseFeature extends Feature {
 				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
-		List<Entity> elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(64d), entity -> entity instanceof ElderGuardian);
+		List<Entity> elderGuardiansNearby = elderGuardian.level().getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(64d), entity -> entity instanceof ElderGuardian);
 		if (elderGuardiansNearby.size() == 0)
 			return;
 

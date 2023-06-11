@@ -27,7 +27,7 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDamageDealt(LivingHurtEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| bonusDamage == 0d
 				|| !(event.getSource().getEntity() instanceof ElderGuardian elderGuardian))
@@ -43,7 +43,7 @@ public class AttackFeature extends Feature {
 	public static int getAttackDuration(ElderGuardian elderGuardian) {
 		if (!isEnabled(AttackFeature.class) || attackDurationReduction == 0)
 			return BASE_ATTACK_DURATION;
-		int elderGuardiansNearby = elderGuardian.level.getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardian).size();
+		int elderGuardiansNearby = elderGuardian.level().getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardian).size();
 		if (elderGuardiansNearby == 2)
 			return BASE_ATTACK_DURATION;
 

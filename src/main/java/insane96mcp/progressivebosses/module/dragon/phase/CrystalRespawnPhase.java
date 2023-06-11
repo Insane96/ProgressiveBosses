@@ -59,11 +59,11 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 				double x = spikesToRespawn.get(0).getCenterX();
 				double y = spikesToRespawn.get(0).getHeight();
 				double z = spikesToRespawn.get(0).getCenterZ();
-				EndCrystal crystal = new EndCrystal(dragon.level, x + 0.5, y + 1, z + 0.5);
+				EndCrystal crystal = new EndCrystal(dragon.level(), x + 0.5, y + 1, z + 0.5);
 				crystal.setShowBottom(true);
-				crystal.level.explode(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Level.ExplosionInteraction.NONE);
-				dragon.level.addFreshEntity(crystal);
-				CrystalFeature.generateCage(crystal.level, crystal.blockPosition());
+				crystal.level().explode(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Level.ExplosionInteraction.NONE);
+				dragon.level().addFreshEntity(crystal);
+				CrystalFeature.generateCage(crystal.level(), crystal.blockPosition());
 				spikesToRespawn.remove(0);
 				if (this.spikesToRespawn.isEmpty())
 					LogHelper.info("No more crystals to respawn left");

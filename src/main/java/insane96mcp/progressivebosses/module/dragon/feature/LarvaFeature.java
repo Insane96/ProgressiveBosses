@@ -80,12 +80,12 @@ public class LarvaFeature extends Feature {
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingTickEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
-		Level world = event.getEntity().level;
+		Level world = event.getEntity().level();
 
 		CompoundTag dragonTags = dragon.getPersistentData();
 
@@ -102,8 +102,8 @@ public class LarvaFeature extends Feature {
 			return;
 		}
 
-		//If there is no player in the main island don't spawn larvae
-		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		//If there is no player on the main island don't spawn larvae
+		BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB bb = new AABB(centerPodium).inflate(64d);
 		List<ServerPlayer> players = world.getEntitiesOfClass(ServerPlayer.class, bb);
 

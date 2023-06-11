@@ -119,18 +119,18 @@ public class MinionFeature extends Feature {
 
 		CompoundTag witherTags = wither.getPersistentData();
 
-		int cooldown = (int) (Mth.nextInt(wither.level.random, minCooldown, maxCooldown) * cooldownMultiplierBelowHalfHealth);
+		int cooldown = (int) (Mth.nextInt(wither.level().random, minCooldown, maxCooldown) * cooldownMultiplierBelowHalfHealth);
 		witherTags.putInt(Strings.Tags.WITHER_MINION_COOLDOWN, cooldown);
 	}
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingTickEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		Level world = event.getEntity().level;
+		Level world = event.getEntity().level();
 		CompoundTag witherTags = wither.getPersistentData();
 
 		float difficulty = witherTags.getFloat(Strings.Tags.DIFFICULTY);
@@ -180,7 +180,7 @@ public class MinionFeature extends Feature {
 				if (y != -1)
 					break;
 			}
-			if (y <= wither.level.getMinBuildHeight())
+			if (y <= wither.level().getMinBuildHeight())
 				continue;
 
 			WitherMinion witherMinion = summonMinion(world, new Vec3(x + 0.5, y + 0.5, z + 0.5), DifficultyHelper.getScalingDifficulty(wither), wither.isPowered());
@@ -214,13 +214,13 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDeath(LivingDeathEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !killMinionOnWitherDeath
 				|| !(event.getEntity() instanceof WitherBoss wither))
 			return;
 
-		ServerLevel world = (ServerLevel) wither.level;
+		ServerLevel world = (ServerLevel) wither.level();
 
 		CompoundTag tags = wither.getPersistentData();
 		ListTag minionsList = tags.getList(Strings.Tags.MINIONS, Tag.TAG_COMPOUND);
@@ -236,7 +236,7 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void onEntityDeath(LivingDeathEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getSource().getEntity() instanceof WitherMinion witherMinion))
 			return;
@@ -244,18 +244,18 @@ public class MinionFeature extends Feature {
 		LivingEntity livingEntity = event.getEntity();
 
 		boolean hasPlantedRose = false;
-		if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(witherMinion.level, witherMinion)) {
+		if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(witherMinion.level(), witherMinion)) {
 			BlockPos blockpos = livingEntity.blockPosition();
 			BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
-			if (livingEntity.level.isEmptyBlock(blockpos) && blockstate.canSurvive(livingEntity.level, blockpos)) {
-				livingEntity.level.setBlock(blockpos, blockstate, 3);
+			if (livingEntity.level().isEmptyBlock(blockpos) && blockstate.canSurvive(livingEntity.level(), blockpos)) {
+				livingEntity.level().setBlock(blockpos, blockstate, 3);
 				hasPlantedRose = true;
 			}
 		}
 
 		if (!hasPlantedRose) {
-			ItemEntity itementity = new ItemEntity(livingEntity.level, livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), new ItemStack(Items.WITHER_ROSE));
-			livingEntity.level.addFreshEntity(itementity);
+			ItemEntity itementity = new ItemEntity(livingEntity.level(), livingEntity.getX(), livingEntity.getY(), livingEntity.getZ(), new ItemStack(Items.WITHER_ROSE));
+			livingEntity.level().addFreshEntity(itementity);
 		}
 	}
 
@@ -265,7 +265,7 @@ public class MinionFeature extends Feature {
 		double bowChance = isCharged ? belowHalfHealthBowChance : aboveHalfHealthBowChance;
 		ItemStack item;
 
-		if (Mth.nextDouble(witherMinion.level.getRandom(), 0d, 1d) < bowChance) {
+		if (Mth.nextDouble(witherMinion.level().getRandom(), 0d, 1d) < bowChance) {
 			item = new ItemStack(Items.BOW);
 			int powerLevel = MathHelper.getAmountWithDecimalChance(witherMinion.getRandom(), powerChance * scalingDifficulty);
 			if (powerLevel > 0)

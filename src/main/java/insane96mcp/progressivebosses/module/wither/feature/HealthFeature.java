@@ -57,7 +57,7 @@ public class HealthFeature extends Feature {
 
 	@SubscribeEvent
 	public void onUpdate(LivingEvent.LivingTickEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof WitherBoss wither)
 				|| bonusRegen == 0d

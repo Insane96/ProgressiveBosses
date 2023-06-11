@@ -104,7 +104,7 @@ public class WitherMinion extends AbstractSkeleton {
 	}
 
 	private void reassesMinionWeapon() {
-		if (!this.level.isClientSide) {
+		if (!this.level().isClientSide) {
 			this.goalSelector.removeGoal(this.meleeGoal);
 			this.goalSelector.removeGoal(this.bowGoal);
 			this.goalSelector.removeGoal(this.minionBowGoal);

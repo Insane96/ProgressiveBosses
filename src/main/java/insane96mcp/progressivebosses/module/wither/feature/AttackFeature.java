@@ -105,7 +105,7 @@ public class AttackFeature extends Feature {
 
 		tickCharge(wither);
 
-		if (event.getEntity().level.isClientSide)
+		if (event.getEntity().level().isClientSide)
 			return;
 
 		chargeUnseen(wither);
@@ -136,7 +136,7 @@ public class AttackFeature extends Feature {
 
 	@SubscribeEvent
 	public void onDamageDealt(LivingHurtEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| increasedDamage == 0d
 				|| !(event.getSource().getEntity() instanceof WitherBoss wither))
@@ -145,10 +145,10 @@ public class AttackFeature extends Feature {
 		event.setAmount(event.getAmount() * (float)(1d + (increasedDamage * DifficultyHelper.getScalingDifficulty(wither))));
 	}
 
-	//High priority so runs before the damage reduction
+	//High-priority so runs before the damage reduction
 	@SubscribeEvent(priority = EventPriority.HIGH)
 	public void onDamaged(LivingHurtEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !event.getEntity().isAlive()
 				|| !(event.getEntity() instanceof WitherBoss wither))
@@ -189,7 +189,7 @@ public class AttackFeature extends Feature {
 	}
 
 	public void setWitherAI(Entity entity) {
-		if (entity.level.isClientSide
+		if (entity.level().isClientSide
 				|| !this.isEnabled()
 				|| !(entity instanceof WitherBoss wither))
 			return;
@@ -218,7 +218,7 @@ public class AttackFeature extends Feature {
 	public static void initCharging(WitherBoss wither) {
 		wither.getPersistentData().putByte(Strings.Tags.CHARGE_ATTACK, (byte) Consts.CHARGE_ATTACK_TICK_START);
 		Object msg = new MessageWitherSync(wither.getId(), (byte) Consts.CHARGE_ATTACK_TICK_START);
-		for (Player player : wither.level.players()) {
+		for (Player player : wither.level().players()) {
 			PacketManager.CHANNEL.sendTo(msg, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		}
 	}
@@ -226,7 +226,7 @@ public class AttackFeature extends Feature {
 	public static void stopCharging(WitherBoss wither) {
 		wither.getPersistentData().putByte(Strings.Tags.CHARGE_ATTACK, (byte) 0);
 		Object msg = new MessageWitherSync(wither.getId(), (byte) 0);
-		for (Player player : wither.level.players()) {
+		for (Player player : wither.level().players()) {
 			PacketManager.CHANNEL.sendTo(msg, ((ServerPlayer) player).connection.connection, NetworkDirection.PLAY_TO_CLIENT);
 		}
 	}

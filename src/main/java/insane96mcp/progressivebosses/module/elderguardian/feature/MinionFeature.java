@@ -61,12 +61,12 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingTickEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
 
-		Level world = event.getEntity().level;
+		Level world = event.getEntity().level();
 
 		CompoundTag elderGuardianTags = elderGuardian.getPersistentData();
 

@@ -111,12 +111,12 @@ public class MinionFeature extends Feature {
 
 	@SubscribeEvent
 	public void update(LivingEvent.LivingTickEvent event) {
-		if (event.getEntity().level.isClientSide
+		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof EnderDragon dragon))
 			return;
 
-		Level world = event.getEntity().level;
+		Level world = event.getEntity().level();
 
 		CompoundTag dragonTags = dragon.getPersistentData();
 
@@ -130,8 +130,8 @@ public class MinionFeature extends Feature {
 			return;
 		}
 
-		//If there is no player in the main island don't spawn minions
-		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		//If there is no player on the main island don't spawn minions
+		BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB bb = new AABB(centerPodium).inflate(64d);
 		List<ServerPlayer> players = world.getEntitiesOfClass(ServerPlayer.class, bb);
 
@@ -212,8 +212,8 @@ public class MinionFeature extends Feature {
 	}
 
 	public static void onBulletTick(ShulkerBullet shulkerBulletEntity) {
-		if (!shulkerBulletEntity.level.isClientSide && shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET)) {
-			((ServerLevel)shulkerBulletEntity.level).sendParticles(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getX(), shulkerBulletEntity.getY(), shulkerBulletEntity.getZ(), 1, 0d, 0d, 0d, 0d);
+		if (!shulkerBulletEntity.level().isClientSide && shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET)) {
+			((ServerLevel)shulkerBulletEntity.level()).sendParticles(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getX(), shulkerBulletEntity.getY(), shulkerBulletEntity.getZ(), 1, 0d, 0d, 0d, 0d);
 		}
 	}
 }

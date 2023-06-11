@@ -163,12 +163,12 @@ public class AttackFeature extends Feature {
 
 		double chance = chargePlayerMaxChance * (difficulty / DifficultyFeature.maxDifficulty);
 
-		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB boundingBox = new AABB(centerPodium).inflate(64d);
-		List<Player> players = dragon.level.getEntitiesOfClass(Player.class, boundingBox, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
+		List<Player> players = dragon.level().getEntitiesOfClass(Player.class, boundingBox, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
 
 		for (Player player : players) {
-			List<EndCrystal> endCrystals = player.level.getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(10d));
+			List<EndCrystal> endCrystals = player.level().getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(10d));
 			if (endCrystals.size() > 0) {
 				chance *= 2d;
 				break;
@@ -181,9 +181,9 @@ public class AttackFeature extends Feature {
 	}
 
 	private static void chargePlayer(EnderDragon dragon) {
-		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB bb = new AABB(centerPodium).inflate(64d);
-		ServerPlayer player = (ServerPlayer) getRandomPlayerNearCrystal(dragon.level, bb);
+		ServerPlayer player = (ServerPlayer) getRandomPlayerNearCrystal(dragon.level(), bb);
 
 		if (player == null)
 			return;
@@ -216,9 +216,9 @@ public class AttackFeature extends Feature {
 	}
 
 	private static void fireballPlayer(EnderDragon dragon) {
-		BlockPos centerPodium = dragon.level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB bb = new AABB(centerPodium).inflate(64d);
-		ServerPlayer player = (ServerPlayer) getRandomPlayer(dragon.level, bb);
+		ServerPlayer player = (ServerPlayer) getRandomPlayer(dragon.level(), bb);
 
 		if (player == null)
 			return;
@@ -248,7 +248,7 @@ public class AttackFeature extends Feature {
 		float damage = 6 * (1f + (float) (increasedAcidPoolDamage * difficultyScaling));
 
 		AABB axisAlignedBB = new AABB(result.getLocation(), result.getLocation()).inflate(4d);
-		List<LivingEntity> livingEntities = fireball.level.getEntitiesOfClass(LivingEntity.class, axisAlignedBB);
+		List<LivingEntity> livingEntities = fireball.level().getEntitiesOfClass(LivingEntity.class, axisAlignedBB);
 		for (LivingEntity livingEntity : livingEntities) {
 			if (livingEntity.distanceToSqr(fireball.position()) < 20.25d)
 				livingEntity.hurt(livingEntity.damageSources().source(DRAGON_FIREBALL_DAMAGE_TYPE, fireball, shooter), damage);
@@ -268,9 +268,9 @@ public class AttackFeature extends Feature {
 		}
 		Entity entity = fireball.getOwner();
 		if (entity != null && (result.getType() != HitResult.Type.ENTITY || !((EntityHitResult)result).getEntity().is(entity))) {
-			if (!fireball.level.isClientSide) {
-				List<LivingEntity> list = fireball.level.getEntitiesOfClass(LivingEntity.class, fireball.getBoundingBox().inflate(4.0D, 2.0D, 4.0D));
-				AreaEffectCloud3DEntity areaeffectcloudentity = new AreaEffectCloud3DEntity(fireball.level, fireball.getX(), fireball.getY(), fireball.getZ());
+			if (!fireball.level().isClientSide) {
+				List<LivingEntity> list = fireball.level().getEntitiesOfClass(LivingEntity.class, fireball.getBoundingBox().inflate(4.0D, 2.0D, 4.0D));
+				AreaEffectCloud3DEntity areaeffectcloudentity = new AreaEffectCloud3DEntity(fireball.level(), fireball.getX(), fireball.getY(), fireball.getZ());
 				if (entity instanceof LivingEntity) {
 					areaeffectcloudentity.setOwner((LivingEntity)entity);
 				}
@@ -291,8 +291,8 @@ public class AttackFeature extends Feature {
 					}
 				}
 
-				fireball.level.levelEvent(2006, fireball.blockPosition(), fireball.isSilent() ? -1 : 1);
-				fireball.level.addFreshEntity(areaeffectcloudentity);
+				fireball.level().levelEvent(2006, fireball.blockPosition(), fireball.isSilent() ? -1 : 1);
+				fireball.level().addFreshEntity(areaeffectcloudentity);
 				fireball.discard();
 			}
 		}
@@ -309,12 +309,12 @@ public class AttackFeature extends Feature {
 		double yPower = attackTarget.getY(0.5D) - y;
 		double zPower = attackTarget.getZ() - z;
 		if (!dragon.isSilent()) {
-			dragon.level.levelEvent(null, 1017, dragon.blockPosition(), 0);
+			dragon.level().levelEvent(null, 1017, dragon.blockPosition(), 0);
 		}
 
-		DragonFireball dragonfireballentity = new DragonFireball(dragon.level, dragon, xPower, yPower, zPower);
+		DragonFireball dragonfireballentity = new DragonFireball(dragon.level(), dragon, xPower, yPower, zPower);
 		dragonfireballentity.moveTo(x, y, z, 0.0F, 0.0F);
-		dragon.level.addFreshEntity(dragonfireballentity);
+		dragon.level().addFreshEntity(dragonfireballentity);
 
 		float fireballs = Mth.nextFloat(dragon.getRandom(), 0f, (float) (maxBonusFireball * DifficultyHelper.getScalingDifficulty(dragon)));
 		fireballs = MathHelper.getAmountWithDecimalChance(dragon.getRandom(), fireballs);
@@ -329,12 +329,12 @@ public class AttackFeature extends Feature {
 			yPower = attackTarget.getY(0.5D) + Mth.nextDouble(dragon.getRandom(), -(fireballs), fireballs) - y;
 			zPower = attackTarget.getZ() + Mth.nextDouble(dragon.getRandom(), -(fireballs), fireballs) - z;
 			if (!dragon.isSilent()) {
-				dragon.level.levelEvent(null, 1017, dragon.blockPosition(), 0);
+				dragon.level().levelEvent(null, 1017, dragon.blockPosition(), 0);
 			}
 
-			dragonfireballentity = new DragonFireball(dragon.level, dragon, xPower, yPower, zPower);
+			dragonfireballentity = new DragonFireball(dragon.level(), dragon, xPower, yPower, zPower);
 			dragonfireballentity.moveTo(x, y, z, 0.0F, 0.0F);
-			dragon.level.addFreshEntity(dragonfireballentity);
+			dragon.level().addFreshEntity(dragonfireballentity);
 		}
 	}
 
@@ -358,7 +358,7 @@ public class AttackFeature extends Feature {
 		List<Player> playersNearCrystals = new ArrayList<>();
 
  		for (Player player : players) {
-			List<EndCrystal> endCrystals = player.level.getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(10d), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
+			List<EndCrystal> endCrystals = player.level().getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(10d), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
 			if (endCrystals.size() > 0)
 				playersNearCrystals.add(player);
 		}
