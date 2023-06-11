@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 3.8.3
 * Slightly lowered Wither charge chance and barrage duration
 * Increased ender dragon healing reduction when hit duration
 
