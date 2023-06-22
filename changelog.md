@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.0
+* Updated to MC 1.20.1
+
 ## 3.8.3
 * Slightly lowered Wither charge chance and barrage duration
 * Increased ender dragon healing reduction when hit duration
@@ -8,7 +11,7 @@
 * Nether Star is now crafted from 4 shards instead of 9
 * Wither loot
   * Shards changed from (75% to drop 2 shards * difficulty) to (2 shards * difficulty)
-  * Ancient debris changed from (75% to drop 2 debris * difficulty) to (2 shards * difficulty)
+  * Ancient debris changed from (75% to drop 2 debris * difficulty) to (2 debris * difficulty)
 * Ender Dragon loot
   * Enchanted Golden Apples changed from (10/20/30/40/50% chance to drop on difficulties 4/5/6/7/8) to (12.5% chance per difficulty, up to a guaranteed drop at maximum difficulty)
 * Wither loot is now invulnerable to wither damage (Nether Star Shards and Ancient Debris). An item tag `progressivebosses:wither_immune` has been added to add items that for 5 seconds from spawning are immune to wither damage
