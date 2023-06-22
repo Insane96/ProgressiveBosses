@@ -46,12 +46,12 @@ public class AttackFeature extends Feature {
 	private final ForgeConfigSpec.DoubleValue bonusAttackSpeedWhenNearConfig;
 
 	public double increasedDamage = 0.96d;
-	public double maxChargeAttackChance = 0.06d;
-	public double chargeAttackBaseDamage = 16d;
+	public double maxChargeAttackChance = 0.05d;
+	public double chargeAttackBaseDamage = 12d;
 	//Barrage Attack
 	public double maxBarrageChance = 0.075d;
 	public int minBarrageDuration = 20;
-	public int maxBarrageDuration = 150;
+	public int maxBarrageDuration = 140;
 	//Skulls
 	public double skullVelocityMultiplier = 2.5d;
 	//Attack Speed
@@ -71,7 +71,7 @@ public class AttackFeature extends Feature {
 				.defineInRange("Charge chance", maxChargeAttackChance, 0d, 1d);
 		chargeAttackBaseDamageConfig = Config.builder
 				.comment("Base damage of the charge attack. Increased by 'Increased Damage' config option.")
-				.defineInRange("Charge Attack Base Damage", this.chargeAttackBaseDamage, 0d, 50d);
+				.defineInRange("Charge Attack Base Damage", this.chargeAttackBaseDamage, 0d, 32d);
 		Config.builder.pop();
 		//Barrage
 		Config.builder.push("Barrage Attack");

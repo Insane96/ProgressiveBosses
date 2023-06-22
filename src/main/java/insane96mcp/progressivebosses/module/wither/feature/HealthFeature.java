@@ -22,11 +22,13 @@ public class HealthFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> maximumBonusRegenConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> bonusRegenConfig;
 	private final ForgeConfigSpec.DoubleValue bonusRegenRatioWhenHitConfig;
+	private final ForgeConfigSpec.IntValue bonusRegenerationWhenHitDurationConfig;
 
 	public double bonusHealth = 720d;
 	public double maxBonusRegen = 2d;
 	public double bonusRegen = 2.4d;
 	public double bonusRegenRatioWhenHit = 0.6d;
+	public int bonusRegenerationWhenHitDuration = 60;
 
 	public HealthFeature(Module module) {
 		super(Config.builder, module);
@@ -44,8 +46,10 @@ public class HealthFeature extends Feature {
 				.comment("How many half hearts will the Wither regen at max difficulty. This is added to the natural regeneration of the Wither (1 Health per Second).")
 				.defineInRange("Bonus Regeneration", bonusRegen, 0.0, Double.MAX_VALUE);
 		this.bonusRegenRatioWhenHitConfig = Config.builder
-				.comment("Bonus regeneration will be multiplied by this ratio when the Wither has been hit in the last 3 seconds.")
+				.comment("Bonus regeneration will be multiplied by this ratio when the Wither has been hit in the last 'Bonus Regeneration When Hit Duration' ticks.")
 				.defineInRange("Bonus Regeneration Ratio When Hit", bonusRegenRatioWhenHit, 0.0d, 2.0d);
+		this.bonusRegenerationWhenHitDurationConfig = Config.builder
+				.defineInRange("Bonus Regeneration When Hit Duration", bonusRegenerationWhenHitDuration, 0, Integer.MAX_VALUE);
 		Config.builder.pop();
 	}
 
@@ -56,6 +60,7 @@ public class HealthFeature extends Feature {
 		this.maxBonusRegen = this.maximumBonusRegenConfig.get();
 		this.bonusRegen = this.bonusRegenConfig.get();
 		this.bonusRegenRatioWhenHit = this.bonusRegenRatioWhenHitConfig.get();
+		this.bonusRegenerationWhenHitDuration = this.bonusRegenerationWhenHitDurationConfig.get();
 	}
 
 	@SubscribeEvent
@@ -88,7 +93,7 @@ public class HealthFeature extends Feature {
 		float heal = (float) Math.min(this.bonusRegen * DifficultyHelper.getScalingDifficulty(wither), this.maxBonusRegen);
 		heal /= 20f;
 
-		if (wither.tickCount - wither.getLastHurtByMobTimestamp() <= 60) // 3 seconds
+		if (wither.tickCount - wither.getLastHurtByMobTimestamp() <= bonusRegenerationWhenHitDuration) // 3 seconds
 			heal *= this.bonusRegenRatioWhenHit;
 
 		if (heal > 0f)

@@ -25,12 +25,14 @@ public class HealthFeature extends Feature {
 	private final ForgeConfigSpec.ConfigValue<Double> maximumBonusRegenConfig;
 	private final ForgeConfigSpec.ConfigValue<Double> bonusCrystalRegenConfig;
 	private final ForgeConfigSpec.DoubleValue bonusRegenRatioWhenHitConfig;
+	private final ForgeConfigSpec.IntValue bonusRegenerationWhenHitDurationConfig;
 
 	public double bonusHealth = 200d;
 	public double bonusRegen = 1.0d;
 	public double maxBonusRegen = 1.0d;
 	public double bonusCrystalRegen = 0d;
 	public double bonusRegenRatioWhenHit = 0.4d;
+	public int bonusRegenerationWhenHitDuration = 85;
 
 	public HealthFeature(Module module) {
 		super(Config.builder, module);
@@ -48,8 +50,10 @@ public class HealthFeature extends Feature {
 				.comment("How much health (when missing 100% health) will the Ender Dragon regen at max difficulty each second whenever she's attached to a Crystal. So if she's missing 30% health, this will be 30% effective. This is added to the normal Crystal regen.")
 				.defineInRange("Bonus Crystal Regeneration", this.bonusCrystalRegen, 0.0, Double.MAX_VALUE);
 		this.bonusRegenRatioWhenHitConfig = Config.builder
-				.comment("Bonus regeneration (also crystal bonus regeneration) will be multiplied by this ratio when the Dragon has been hit in the last 3 seconds.")
+				.comment("Bonus regeneration (also crystal bonus regeneration) will be multiplied by this ratio when the Dragon has been hit in the last 'Bonus Regeneration When Hit Duration' ticks.")
 				.defineInRange("Bonus Regeneration Ratio When Hit", bonusRegenRatioWhenHit, 0.0d, 2.0d);
+		this.bonusRegenerationWhenHitDurationConfig = Config.builder
+				.defineInRange("Bonus Regeneration When Hit Duration", bonusRegenerationWhenHitDuration, 0, Integer.MAX_VALUE);
 		Config.builder.pop();
 	}
 
@@ -61,6 +65,7 @@ public class HealthFeature extends Feature {
 		this.bonusRegen = this.bonusRegenConfig.get();
 		this.bonusCrystalRegen = this.bonusCrystalRegenConfig.get();
 		this.bonusRegenRatioWhenHit = this.bonusRegenRatioWhenHitConfig.get();
+		this.bonusRegenerationWhenHitDuration = this.bonusRegenerationWhenHitDurationConfig.get();
 	}
 
 	@SubscribeEvent
@@ -100,7 +105,7 @@ public class HealthFeature extends Feature {
 
 		heal /= 20f;
 
-		if (dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= 60) // 3 seconds
+		if (dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= bonusRegenerationWhenHitDuration) // 4.25 seconds
 			heal *= this.bonusRegenRatioWhenHit;
 
 		dragon.heal(heal);
