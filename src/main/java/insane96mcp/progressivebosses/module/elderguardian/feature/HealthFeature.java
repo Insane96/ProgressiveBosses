@@ -46,12 +46,8 @@ public class HealthFeature extends Feature {
 		if (nbt.contains(Strings.Tags.DIFFICULTY))
 			return;
 
-		if (bonusHealth > 0d) {
-			//noinspection ConstantConditions
-			if (elderGuardian.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
-				return;
+		if (bonusHealth > 0d)
 			MCUtils.applyModifier(elderGuardian, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, bonusHealth, AttributeModifier.Operation.MULTIPLY_BASE);
-		}
 
 		if (absorptionHealth > 0d)
 			elderGuardian.setAbsorptionAmount(absorptionHealth.floatValue());
