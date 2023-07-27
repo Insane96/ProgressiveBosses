@@ -24,7 +24,7 @@ public class HealthFeature extends Feature {
 	@Label(name = "Health Bonus per Difficulty", description = "Increase Elder Guardians' Health by this percentage (1 = +100% health)")
 	public static Double bonusHealth = 0.5d;
 	@Config(min = 0d)
-	@Label(name = "Absorption Health", description = "Adds absorption health to Elder Guradians (health that doesn't regen)")
+	@Label(name = "Absorption Health", description = "Adds absorption health to Elder Guardians (health that doesn't regen)")
 	public static Double absorptionHealth = 40d;
 	@Config(min = 0d)
 	@Label(name = "Health Regen", description = "Health Regen per second")
