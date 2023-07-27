@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.1
+* Fixed Elder Guardians being able to be invincible if mods spawned more than 4 elder guardians 
+
 ## 3.9.0
 * Updated to MC 1.20.1
 
