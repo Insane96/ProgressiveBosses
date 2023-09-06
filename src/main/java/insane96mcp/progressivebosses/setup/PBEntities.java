@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.setup;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.entity.Larva;
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.module.wither.entity.WitherMinion;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -12,6 +13,13 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class PBEntities {
 	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, ProgressiveBosses.MOD_ID);
+
+	public static final RegistryObject<EntityType<PBWither>> WITHER = ENTITIES.register("wither", () -> EntityType.Builder.of(PBWither::new, MobCategory.MONSTER)
+			.fireImmune()
+			.immuneTo(Blocks.WITHER_ROSE)
+			.sized(0.7f, 2.4f)
+			.clientTrackingRange(8)
+			.build("wither"));
 
 	public static final RegistryObject<EntityType<WitherMinion>> WITHER_MINION = ENTITIES.register("wither_minion", () -> EntityType.Builder.of(WitherMinion::new, MobCategory.MONSTER)
 			.sized(0.55f, 1.5f)
