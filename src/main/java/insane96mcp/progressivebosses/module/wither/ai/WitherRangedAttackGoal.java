@@ -1,33 +1,28 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.EnumSet;
 
 public class WitherRangedAttackGoal extends Goal {
-	private final WitherBoss wither;
+	private final PBWither wither;
 	private LivingEntity target;
 	private int attackTime = -1;
 	private int seeTime;
-	private final int attackInterval;
 	private final float attackRadius;
 	private final float attackRadiusSqr;
-	//Increases the rate of attack of the middle head the closer the player is to the wither
-	private final double bonusASWhenNear;
 
-	public WitherRangedAttackGoal(WitherBoss wither, int attackInterval, float attackRadius, double bonusASWhenNear) {
+	public WitherRangedAttackGoal(PBWither wither, float attackRadius) {
 		this.wither = wither;
-		this.attackInterval = attackInterval;
 		this.attackRadius = attackRadius;
 		this.attackRadiusSqr = attackRadius * attackRadius;
-		this.bonusASWhenNear = bonusASWhenNear;
 		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 	}
 
@@ -111,16 +106,8 @@ public class WitherRangedAttackGoal extends Goal {
 			if (!canSee)
 				return;
 			this.wither.performRangedAttack(0, this.target.getX(), this.target.getY() + (double)this.target.getEyeHeight() * 0.5D, target.getZ(), this.wither.getRandom().nextDouble() < 0.001d);
-			this.attackTime = this.attackInterval;
-
-			if (this.bonusASWhenNear > 0d) {
-				float distance = this.wither.distanceTo(this.target);
-				if (distance < this.attackRadius) {
-					int nearBonusAS = (int) Math.round((this.attackInterval * this.bonusASWhenNear) * (1d - (distance / this.attackRadius)));
-					//int nearBonusAS = (int) Math.round((this.attackInterval * 0.75d) * (1d - (distance / this.attackRadius)));
-					this.attackTime -= nearBonusAS;
-				}
-			}
+			//TODO attackSpeedNear
+			this.attackTime = this.wither.stats.attackStats.attackSpeedFar;
 		}
 	}
 

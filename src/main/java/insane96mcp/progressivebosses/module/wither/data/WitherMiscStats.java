@@ -11,7 +11,6 @@ public class WitherMiscStats {
     public float explosionPower;
     public boolean explosionCausesFire;
     public boolean ignoreWitherProofBlocks;
-
     public boolean netherOnly;
 
     public WitherMiscStats(float explosionPower, boolean explosionCausesFire, boolean ignoreWitherProofBlocks, boolean netherOnly) {

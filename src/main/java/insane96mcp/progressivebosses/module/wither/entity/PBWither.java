@@ -1,9 +1,13 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
 import com.google.common.collect.ImmutableList;
+import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
+import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.module.wither.data.*;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -27,7 +31,10 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
-import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomFlyingGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -57,6 +64,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     private static final EntityDataAccessor<Integer> DATA_TARGET_C = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final List<EntityDataAccessor<Integer>> DATA_TARGETS = ImmutableList.of(DATA_TARGET_A, DATA_TARGET_B, DATA_TARGET_C);
     private static final EntityDataAccessor<Integer> DATA_ID_INV = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> LVL = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> CHARGING = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final int INVULNERABLE_TICKS = 220;
     private final float[] xRotHeads = new float[2];
@@ -69,8 +77,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     public final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
     private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (livingEntity) -> livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
     private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(20.0D).selector(LIVING_ENTITY_SELECTOR);
-    private WitherStats stats;
-    private int lvl;
+    public WitherStats stats;
 
     public PBWither(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -78,10 +85,44 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         this.setHealth(this.getMaxHealth());
     }
 
+    protected PathNavigation createNavigation(Level pLevel) {
+        FlyingPathNavigation flyingpathnavigation = new FlyingPathNavigation(this, pLevel);
+        flyingpathnavigation.setCanOpenDoors(false);
+        flyingpathnavigation.setCanFloat(true);
+        flyingpathnavigation.setCanPassDoors(true);
+        return flyingpathnavigation;
+    }
+
+    protected void registerGoals() {
+        //this.goalSelector.addGoal(0, new WitherDoNothingGoal());
+        this.goalSelector.addGoal(1, new WitherChargeAttackGoal(this));
+        this.goalSelector.addGoal(2, new WitherRangedAttackGoal(this, 24f));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomFlyingGoal(this, 1.0D));
+        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
+        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, LIVING_ENTITY_SELECTOR));
+    }
+
+    @Override
+    public Component getName() {
+        Component component = this.getCustomName();
+        if (component != null)
+            return super.getName();
+        return Component.translatable(Util.makeDescriptionId("entity", BuiltInRegistries.ENTITY_TYPE.getKey(this.getType())) + "." + this.getLvL());
+    }
+
+    @Nullable
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+        this.setHealth(this.getMaxHealth());
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+    }
+
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("Invul", this.getInvulnerableTicks());
-        tag.putInt("lvl", this.lvl);
+        tag.putInt("lvl", this.getLvL());
     }
 
     /**
@@ -109,64 +150,45 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         super.actuallyHurt(damageSource, damageAmount);
     }
 
-    @Nullable
-    @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        this.setHealth(this.getMaxHealth());
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
-    }
-
-    /**+
-     * Called when spawning the wither from the "corrupted soul sand"
-     */
-    public void setLvl(int lvl) {
-        this.lvl = lvl;
-        if (WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
-            this.stats = WitherStatsReloadListener.STATS_MAP.get(lvl);
-            this.stats.apply(this);
-        }
-        else {
-            this.stats = new WitherStats(0,
-                    new WitherAttackStats(8f, 2f, 30, 60, 0.05f, 12f, 50, 0.05f, 40),
-                    new WitherHealthStats(300f, 1f, 0.8f, 30),
-                    new WitherResistancesWeaknesses(0f, 0.2f, 250f),
-                    new WitherMiscStats(7f, true, false, false));
-        }
-    }
-
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(CHARGING, 0);
         this.entityData.define(DATA_TARGET_A, 0);
         this.entityData.define(DATA_TARGET_B, 0);
         this.entityData.define(DATA_TARGET_C, 0);
         this.entityData.define(DATA_ID_INV, 0);
+        this.entityData.define(LVL, 0);
+        this.entityData.define(CHARGING, 0);
     }
 
     public int getChargingTicks() {
         return this.entityData.get(CHARGING);
     }
 
-    protected PathNavigation createNavigation(Level pLevel) {
-        FlyingPathNavigation flyingpathnavigation = new FlyingPathNavigation(this, pLevel);
-        flyingpathnavigation.setCanOpenDoors(false);
-        flyingpathnavigation.setCanFloat(true);
-        flyingpathnavigation.setCanPassDoors(true);
-        return flyingpathnavigation;
+    /**+
+     * Called when spawning the wither from the "corrupted soul sand"
+     */
+    public void setLvl(int lvl) {
+        this.entityData.set(LVL, lvl);
+        if (WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
+            this.stats = WitherStatsReloadListener.STATS_MAP.get(lvl);
+            this.stats.apply(this);
+        }
+        else {
+            this.stats = new WitherStats(0,
+                    new WitherAttackStats(8f, 2f, 40, 70, 0.05f, 12f, 50, 0.05f, 40),
+                    new WitherHealthStats(300f, 1f, 0.8f, 30),
+                    new WitherResistancesWeaknesses(0f, 0.2f, 250f),
+                    new WitherMiscStats(7f, true, false, false));
+        }
+        this.bossEvent.setName(this.getDisplayName());
     }
 
-    protected void registerGoals() {
-        this.goalSelector.addGoal(0, new WitherDoNothingGoal());
-        this.goalSelector.addGoal(2, new RangedAttackGoal(this, 1.0D, 40, 20.0F));
-        this.goalSelector.addGoal(5, new WaterAvoidingRandomFlyingGoal(this, 1.0D));
-        this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
-        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
-        this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, LIVING_ENTITY_SELECTOR));
+    public int getLvL() {
+        return this.entityData.get(LVL);
     }
 
-    public void setCustomName(@javax.annotation.Nullable Component pName) {
+    public void setCustomName(@Nullable Component pName) {
         super.setCustomName(pName);
         this.bossEvent.setName(this.getDisplayName());
     }
@@ -353,6 +375,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
                 }
             }
 
+            //TODO this.stats.healthStats.regenWhenHit
             if (this.tickCount % 20 == 0) {
                 this.heal(this.stats.healthStats.regeneration);
             }

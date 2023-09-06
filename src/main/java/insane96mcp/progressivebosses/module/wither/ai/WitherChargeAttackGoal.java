@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.module.wither.ai;
 
 import com.mojang.datafixers.util.Pair;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.module.wither.feature.AttackFeature;
 import insane96mcp.progressivebosses.setup.Strings;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -15,7 +16,6 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -34,12 +34,12 @@ import java.util.stream.Stream;
 public class WitherChargeAttackGoal extends Goal {
 	static ResourceKey<DamageType> WITHER_CHARGE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_charge"));
 
-	private final WitherBoss wither;
+	private final PBWither wither;
 	private LivingEntity target;
 	private Vec3 targetPos;
 	private double lastDistanceFromTarget = 0d;
 
-	public WitherChargeAttackGoal(WitherBoss wither) {
+	public WitherChargeAttackGoal(PBWither wither) {
 		this.wither = wither;
 		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Flag.TARGET));
 	}

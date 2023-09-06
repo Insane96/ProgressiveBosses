@@ -28,6 +28,10 @@ public class WitherStats {
         wither.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.healthStats.health);
     }
 
+    public void finalizeSpawn(PBWither wither) {
+        wither.setHealth(wither.getMaxHealth());
+    }
+
     public static class Serializer implements JsonSerializer<WitherStats>, JsonDeserializer<WitherStats> {
         @Override
         public WitherStats deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

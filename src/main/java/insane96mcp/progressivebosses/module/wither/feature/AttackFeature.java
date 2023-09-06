@@ -5,10 +5,8 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
-import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
-import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.network.MessageWitherSync;
 import insane96mcp.progressivebosses.network.PacketManager;
 import insane96mcp.progressivebosses.setup.Strings;
@@ -16,10 +14,6 @@ import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.WitherSkull;
@@ -29,9 +23,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.network.NetworkDirection;
-
-import java.util.ArrayList;
-import java.util.UUID;
 
 @Label(name = "Attack", description = "Makes the Wither smarter (will no longer try to stand on the player's head ...), attack faster and hit harder")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
@@ -76,7 +67,6 @@ public class AttackFeature extends Feature {
 	@SubscribeEvent
 	public void onSpawn(EntityJoinLevelEvent event) {
 		witherSkullSpeed(event.getEntity());
-		setWitherAI(event.getEntity());
 	}
 
 	//TODO Scale skulls speed with difficulty (requires client sync)
@@ -100,7 +90,7 @@ public class AttackFeature extends Feature {
 	public void onUpdate(LivingEvent.LivingTickEvent event) {
 		if (!this.isEnabled()
 				|| !event.getEntity().isAlive()
-				|| !(event.getEntity() instanceof WitherBoss wither))
+				|| !(event.getEntity() instanceof PBWither wither))
 			return;
 
 		tickCharge(wither);
@@ -111,7 +101,7 @@ public class AttackFeature extends Feature {
 		chargeUnseen(wither);
 	}
 
-	private void tickCharge(WitherBoss wither) {
+	private void tickCharge(PBWither wither) {
 		if (maxChargeAttackChance == 0d)
 			return;
 		byte chargeTick = wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK);
@@ -126,7 +116,7 @@ public class AttackFeature extends Feature {
 		}
 	}
 
-	private void chargeUnseen(WitherBoss wither) {
+	private void chargeUnseen(PBWither wither) {
 		CompoundTag witherTags = wither.getPersistentData();
 
 		if (witherTags.getByte(Strings.Tags.CHARGE_ATTACK) <= 0 && wither.tickCount % 20 == 0) {
@@ -151,14 +141,14 @@ public class AttackFeature extends Feature {
 		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !event.getEntity().isAlive()
-				|| !(event.getEntity() instanceof WitherBoss wither))
+				|| !(event.getEntity() instanceof PBWither wither))
 			return;
 
 		doBarrage(wither, event.getAmount());
 		doCharge(wither, event.getAmount());
 	}
 
-	private void doBarrage(WitherBoss wither, float damageTaken) {
+	private void doBarrage(PBWither wither, float damageTaken) {
 		if (maxBarrageChance == 0d)
 			return;
 
@@ -174,7 +164,7 @@ public class AttackFeature extends Feature {
 		}
 	}
 
-	private void doCharge(WitherBoss wither, float damageTaken) {
+	private void doCharge(PBWither wither, float damageTaken) {
 		if (maxChargeAttackChance == 0d
 				|| wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK) > 0)
 			return;
@@ -188,34 +178,12 @@ public class AttackFeature extends Feature {
 		}
 	}
 
-	public void setWitherAI(Entity entity) {
-		if (entity.level().isClientSide
-				|| !this.isEnabled()
-				|| !(entity instanceof WitherBoss wither))
-			return;
-
-		ArrayList<Goal> toRemove = new ArrayList<>();
-		wither.goalSelector.availableGoals.forEach(goal -> {
-			if (goal.getGoal() instanceof RangedAttackGoal)
-				toRemove.add(goal.getGoal());
-			if (goal.getGoal() instanceof WitherBoss.WitherDoNothingGoal)
-				toRemove.add(goal.getGoal());
-		});
-
-		toRemove.forEach(wither.goalSelector::removeGoal);
-
-		wither.goalSelector.addGoal(1, new WitherChargeAttackGoal(wither));
-		wither.goalSelector.addGoal(2, new WitherRangedAttackGoal(wither,  attackInterval, 24.0f, bonusAttackSpeedWhenNear));
-
-		MCUtils.applyModifier(wither, Attributes.FOLLOW_RANGE, UUID.randomUUID(), "Wither Sexy Glasses", 56d, AttributeModifier.Operation.ADDITION);
-	}
-
 	public static class Consts {
 		public static final int CHARGE_ATTACK_TICK_START = 90;
 		public static final int CHARGE_ATTACK_TICK_CHARGE = 30;
 	}
 
-	public static void initCharging(WitherBoss wither) {
+	public static void initCharging(PBWither wither) {
 		wither.getPersistentData().putByte(Strings.Tags.CHARGE_ATTACK, (byte) Consts.CHARGE_ATTACK_TICK_START);
 		Object msg = new MessageWitherSync(wither.getId(), (byte) Consts.CHARGE_ATTACK_TICK_START);
 		for (Player player : wither.level().players()) {
@@ -223,7 +191,7 @@ public class AttackFeature extends Feature {
 		}
 	}
 
-	public static void stopCharging(WitherBoss wither) {
+	public static void stopCharging(PBWither wither) {
 		wither.getPersistentData().putByte(Strings.Tags.CHARGE_ATTACK, (byte) 0);
 		Object msg = new MessageWitherSync(wither.getId(), (byte) 0);
 		for (Player player : wither.level().players()) {
