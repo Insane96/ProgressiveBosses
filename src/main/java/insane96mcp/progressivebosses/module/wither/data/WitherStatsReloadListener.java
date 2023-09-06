@@ -1,11 +1,10 @@
-package insane96mcp.progressivebosses.data;
+package insane96mcp.progressivebosses.module.wither.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.data.wither.WitherStats;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;

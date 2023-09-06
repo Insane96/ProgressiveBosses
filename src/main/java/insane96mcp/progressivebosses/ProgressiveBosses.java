@@ -2,8 +2,8 @@ package insane96mcp.progressivebosses;
 
 import insane96mcp.progressivebosses.capability.DifficultyProvider;
 import insane96mcp.progressivebosses.commands.PBCommand;
-import insane96mcp.progressivebosses.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
+import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.network.PacketManager;
 import insane96mcp.progressivebosses.setup.*;
 import net.minecraft.world.entity.Entity;

@@ -1,8 +1,7 @@
-package insane96mcp.progressivebosses.data.wither;
+package insane96mcp.progressivebosses.module.wither.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.GsonHelper;
 
 import java.lang.reflect.Type;
@@ -29,31 +28,6 @@ public class WitherAttackStats {
         this.chargeTime = chargeTime;
         this.barrageChance = barrageChance;
         this.barrageDuration = barrageDuration;
-    }
-
-    public CompoundTag toNbt(CompoundTag tag) {
-        tag.putFloat("skull_damage", skullDamage);
-        tag.putFloat("skull_speed_multiplier", skullSpeedMultiplier);
-        tag.putInt("attack_speed_near", attackSpeedNear);
-        tag.putInt( "attack_speed_far", attackSpeedFar);
-        tag.putFloat( "max_charge_chance", maxChargeChance);
-        tag.putFloat("charge_damage", chargeDamage);
-        tag.putFloat("charge_time", chargeTime);
-        tag.putFloat("barrage_chance", barrageChance);
-        tag.putInt("barrage_duration", barrageDuration);
-        return tag;
-    }
-
-    public static WitherAttackStats fromNbt(CompoundTag tag) {
-        return new WitherAttackStats(tag.getFloat("skull_damage"),
-                tag.getFloat("skull_speed_multiplier"),
-                tag.getInt("attack_speed_near"),
-                tag.getInt("attack_speed_far"),
-                tag.getFloat("max_charge_chance"),
-                tag.getFloat("charge_damage"),
-                tag.getInt("charge_time"),
-                tag.getFloat("barrage_chance"),
-                tag.getInt("barrage_duration"));
     }
 
     public static class Serializer implements JsonSerializer<WitherAttackStats>, JsonDeserializer<WitherAttackStats> {

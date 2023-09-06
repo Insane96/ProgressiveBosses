@@ -1,8 +1,7 @@
-package insane96mcp.progressivebosses.data.wither;
+package insane96mcp.progressivebosses.module.wither.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.GsonHelper;
 
 import java.lang.reflect.Type;
@@ -20,21 +19,6 @@ public class WitherHealthStats {
         this.regeneration = regeneration;
         this.regenWhenHit = regenWhenHit;
         this.regenWhenHitDuration = regenWhenHitDuration;
-    }
-
-    public CompoundTag toNbt(CompoundTag tag) {
-        tag.putFloat("health", health);
-        tag.putFloat("regeneration", regeneration);
-        tag.putFloat("regen_when_hit", regenWhenHit);
-        tag.putInt( "regen_when_hit_duration", regenWhenHitDuration);
-        return tag;
-    }
-
-    public static WitherHealthStats fromNbt(CompoundTag tag) {
-        return new WitherHealthStats(tag.getFloat("health"),
-                tag.getFloat("regeneration"),
-                tag.getFloat("regen_when_hit"),
-                tag.getInt("regen_when_hit_duration"));
     }
 
     public static class Serializer implements JsonSerializer<WitherHealthStats>, JsonDeserializer<WitherHealthStats> {

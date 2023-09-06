@@ -3,20 +3,19 @@ package insane96mcp.progressivebosses.module.wither.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.feature.AttackFeature;
-import net.minecraft.client.model.WitherBossModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
-public class PBWitherRenderer extends MobRenderer<PBWither, WitherBossModel<PBWither>> {
+public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWither>> {
     private static final ResourceLocation WITHER_CHARGING_LOCATION = new ResourceLocation(ProgressiveBosses.MOD_ID, "textures/entity/wither/wither_charge.png");
     private static final ResourceLocation WITHER_INVULNERABLE_LOCATION = new ResourceLocation("textures/entity/wither/wither_invulnerable.png");
     private static final ResourceLocation WITHER_LOCATION = new ResourceLocation("textures/entity/wither/wither.png");
 
     public PBWitherRenderer(EntityRendererProvider.Context context) {
-        super(context, new WitherBossModel<>(context.bakeLayer(ModelLayers.WITHER)), 1.0F);
+        super(context, new PBWitherModel<>(context.bakeLayer(ModelLayers.WITHER)), 1.0F);
         this.addLayer(new PBWitherArmorLayer(this, context.getModelSet()));
     }
 
