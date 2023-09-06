@@ -1,8 +1,7 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
 import com.google.common.collect.ImmutableList;
-import insane96mcp.progressivebosses.module.wither.data.WitherStats;
-import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
+import insane96mcp.progressivebosses.module.wither.data.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -125,6 +124,13 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         if (WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
             this.stats = WitherStatsReloadListener.STATS_MAP.get(lvl);
             this.stats.apply(this);
+        }
+        else {
+            this.stats = new WitherStats(0,
+                    new WitherAttackStats(8f, 2f, 30, 60, 0.05f, 12f, 50, 0.05f, 40),
+                    new WitherHealthStats(300f, 1f, 0.8f, 30),
+                    new WitherResistancesWeaknesses(0f, 0.2f, 250f),
+                    new WitherMiscStats(7f, true, false, false));
         }
     }
 
@@ -360,7 +366,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         /*if (ignoreWitherProofBlocks)
             return !state.isAir() && state.getDestroySpeed(wither.level(), pos) >= 0f;
         else*/
-            return state.canEntityDestroy(this.level(), pos, this);
+            return !state.isAir() && !state.is(BlockTags.WITHER_IMMUNE);
     }
 
     /**
