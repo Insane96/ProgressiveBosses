@@ -2,11 +2,14 @@ package insane96mcp.progressivebosses.module.wither.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import com.google.gson.reflect.TypeToken;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
+import insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 @JsonAdapter(WitherStats.Serializer.class)
 public class WitherStats {
@@ -31,6 +34,12 @@ public class WitherStats {
     public void finalizeSpawn(PBWither wither) {
         wither.setHealth(wither.getMaxHealth());
     }
+
+    public static WitherStats getDefaultStats() {
+        return DifficultyFeature.DEFAULT_WITHER_STATS.get(0);
+    }
+
+    public static final java.lang.reflect.Type LIST_TYPE = new TypeToken<ArrayList<WitherStats>>(){}.getType();
 
     public static class Serializer implements JsonSerializer<WitherStats>, JsonDeserializer<WitherStats> {
         @Override

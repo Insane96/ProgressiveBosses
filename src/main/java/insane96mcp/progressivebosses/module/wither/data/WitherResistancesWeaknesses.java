@@ -8,6 +8,7 @@ import java.lang.reflect.Type;
 
 @JsonAdapter(WitherResistancesWeaknesses.Serializer.class)
 public class WitherResistancesWeaknesses {
+    //TODO Change to armor
     public float meleeDamageReduction;
     public float shieldedMeleeDamageReduction;
     public float doubleMagicDamageEveryThisMissingHealth;

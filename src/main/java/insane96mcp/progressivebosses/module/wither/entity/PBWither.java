@@ -3,7 +3,8 @@ package insane96mcp.progressivebosses.module.wither.entity;
 import com.google.common.collect.ImmutableList;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
-import insane96mcp.progressivebosses.module.wither.data.*;
+import insane96mcp.progressivebosses.module.wither.data.WitherStats;
+import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -115,7 +116,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
-        this.setHealth(this.getMaxHealth());
+        this.stats.finalizeSpawn(this);
         return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
     }
 
@@ -175,11 +176,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
             this.stats.apply(this);
         }
         else {
-            this.stats = new WitherStats(0,
-                    new WitherAttackStats(8f, 2f, 40, 70, 0.05f, 12f, 50, 0.05f, 40),
-                    new WitherHealthStats(300f, 1f, 0.8f, 30),
-                    new WitherResistancesWeaknesses(0f, 0.2f, 250f),
-                    new WitherMiscStats(7f, true, false, false));
+            this.stats = WitherStats.getDefaultStats();
         }
         this.bossEvent.setName(this.getDisplayName());
     }
@@ -294,11 +291,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
                 if (!this.isSilent()) {
                     this.level().globalLevelEvent(1023, this.blockPosition(), 0);
                 }
+                this.setHealth(this.getMaxHealth());
             }
 
             this.setInvulnerableTicks(newInvulTicks);
-            this.heal(1.0F);
-
+            //this.heal(this.getMaxHealth() / 3f * 2f);
         }
         else {
             super.customServerAiStep();

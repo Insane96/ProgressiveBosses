@@ -11,6 +11,7 @@ import insane96mcp.insanelib.util.IdTagMatcher;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.module.wither.block.CorruptedSoulSandBlockEntity;
+import insane96mcp.progressivebosses.module.wither.data.*;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBBlocks;
 import insane96mcp.progressivebosses.setup.PBEntities;
@@ -39,6 +40,7 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Label(name = "Difficulty Settings", description = "How difficulty is handled for the Wither.")
@@ -67,6 +69,29 @@ public class DifficultyFeature extends Feature {
 	public static Blacklist entityBlacklist = new Blacklist(List.of(
 			new IdTagMatcher(IdTagMatcher.Type.ID, "botania:pink_wither")
 	), false);
+
+	public static final List<WitherStats> DEFAULT_WITHER_STATS = new ArrayList<>(List.of(
+			new WitherStats(0,
+					new WitherAttackStats(8f, 2f, 45, 70, 0.05f, 12f, 50, 0.05f, 40),
+					new WitherHealthStats(300f, 1f, 0.8f, 30),
+					new WitherResistancesWeaknesses(0f, 0.2f, 200f),
+					new WitherMiscStats(7f, false, false, false)),
+			new WitherStats(1,
+					new WitherAttackStats(12f, 2.2f, 40, 65, 0.05f, 16f, 45, 0.05f, 60),
+					new WitherHealthStats(400f, 1.1f, 0.7f, 30),
+					new WitherResistancesWeaknesses(0.05f, 0.25f, 225f),
+					new WitherMiscStats(8.5f, false, true, false)),
+			new WitherStats(2,
+					new WitherAttackStats(16f, 2.4f, 35, 60, 0.05f, 20f, 40, 0.05f, 80),
+					new WitherHealthStats(500f, 1.25f, 0.6f, 35),
+					new WitherResistancesWeaknesses(0.1f, 0.30f, 250f),
+					new WitherMiscStats(10f, false, true, false)),
+			new WitherStats(3,
+					new WitherAttackStats(20f, 2.6f, 30, 55, 0.05f, 24f, 35, 0.05f, 100),
+					new WitherHealthStats(600f, 1.5f, 0.6f, 40),
+					new WitherResistancesWeaknesses(0.15f, 0.35f, 275f),
+					new WitherMiscStats(11.5f, true, true, true))
+	));
 
 	public DifficultyFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
