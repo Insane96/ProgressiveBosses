@@ -10,18 +10,35 @@ import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.IdTagMatcher;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.capability.Difficulty;
+import insane96mcp.progressivebosses.module.wither.block.CorruptedSoulSandBlockEntity;
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
+import insane96mcp.progressivebosses.setup.PBBlocks;
+import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LogHelper;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.CarvedPumpkinBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.pattern.BlockInWorld;
+import net.minecraft.world.level.block.state.pattern.BlockPattern;
+import net.minecraft.world.level.block.state.pattern.BlockPatternBuilder;
+import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Label(name = "Difficulty Settings", description = "How difficulty is handled for the Wither.")
@@ -73,7 +90,7 @@ public class DifficultyFeature extends Feature {
 		AABB bb = new AABB(pos1, pos2);
 
 		List<ServerPlayer> players = event.getLevel().getEntitiesOfClass(ServerPlayer.class, bb);
-		if (players.size() == 0)
+		if (players.isEmpty())
 			return;
 
 		final AtomicDouble witherDifficulty = new AtomicDouble(0d);
@@ -115,5 +132,84 @@ public class DifficultyFeature extends Feature {
 				LogHelper.info("[Progressive Bosses] %s spawned withers counter was below the set 'Starting Difficulty', Has been increased to match 'Starting Difficulty'", player.getName().getString());
 			}
 		});
+	}
+
+	@Nullable
+	private static BlockPattern witherPatternFull;
+	@Nullable
+	private static BlockPattern witherPatternBase;
+
+	@SubscribeEvent
+	public void onSkullPlaced(BlockEvent.EntityPlaceEvent event) {
+		BlockState state = event.getState();
+		BlockPos pos = event.getPos();
+		Level level = (Level) event.getLevel();
+		boolean isWitherSkeletonSkull = state.is(Blocks.WITHER_SKELETON_SKULL) || state.is(Blocks.WITHER_SKELETON_WALL_SKULL);
+        if (!isWitherSkeletonSkull || pos.getY() < level.getMinBuildHeight() || level.getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL)
+            return;
+
+        BlockPattern.BlockPatternMatch blockPatternMatch = getOrCreatePBWitherFull().find(level, pos);
+        if (blockPatternMatch == null)
+            return;
+			
+        PBWither wither = PBEntities.WITHER.get().create(level);
+        if (wither != null) {
+			int lvl = getLevelFromPatternBlocks(level, blockPatternMatch);
+            CarvedPumpkinBlock.clearPatternBlocks(level, blockPatternMatch);
+            BlockPos blockpos = blockPatternMatch.getBlock(1, 2, 0).getPos();
+            wither.moveTo((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.55D, (double)blockpos.getZ() + 0.5D, blockPatternMatch.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F, 0.0F);
+            wither.yBodyRot = blockPatternMatch.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
+            wither.makeInvulnerable();
+			wither.setLvl(lvl);
+
+            for (ServerPlayer serverplayer : level.getEntitiesOfClass(ServerPlayer.class, wither.getBoundingBox().inflate(50.0D))) {
+                CriteriaTriggers.SUMMONED_ENTITY.trigger(serverplayer, wither);
+            }
+
+            level.addFreshEntity(wither);
+            CarvedPumpkinBlock.updatePatternBlocks(level, blockPatternMatch);
+        }
+
+    }
+
+	private static BlockPattern getOrCreatePBWitherFull() {
+		if (witherPatternFull == null) {
+			witherPatternFull = BlockPatternBuilder
+					.start()
+					.aisle("^^^", "#C#", "~#~")
+					.where('#', (blockInWorld) -> blockInWorld.getState().is(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
+					.where('^', BlockInWorld.hasState(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_SKULL).or(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_WALL_SKULL))))
+					.where('~', (blockInWorld) -> blockInWorld.getState().canBeReplaced())
+					.where('C', (blockInWorld) -> blockInWorld.getState().is(PBBlocks.CORRUPTED_SOUL_SAND.get()))
+					.build();
+		}
+
+		return witherPatternFull;
+	}
+
+	//TODO Dispenser
+	private static BlockPattern getOrCreatePBWitherBase() {
+		if (witherPatternBase == null) {
+			witherPatternBase = BlockPatternBuilder
+					.start()
+					.aisle("   ", "###", "~#~")
+					.where('#', (blockInWorld) -> blockInWorld.getState().is(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
+					.where('~', (blockInWorld) -> blockInWorld.getState().isAir()).build();
+		}
+
+		return witherPatternBase;
+	}
+
+	public static int getLevelFromPatternBlocks(Level pLevel, BlockPattern.BlockPatternMatch pPatternMatch) {
+		for (int i = 0; i < pPatternMatch.getWidth(); ++i) {
+			for (int j = 0; j < pPatternMatch.getHeight(); ++j) {
+				BlockInWorld blockinworld = pPatternMatch.getBlock(i, j, 0);
+				if (blockinworld.getState().is(PBBlocks.CORRUPTED_SOUL_SAND.get())
+						&& (pLevel.getBlockEntity(blockinworld.getPos()) instanceof CorruptedSoulSandBlockEntity corruptedSoulSandBlockEntity)) {
+					return corruptedSoulSandBlockEntity.getLvl();
+				}
+			}
+		}
+		return -1;
 	}
 }

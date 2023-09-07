@@ -39,8 +39,10 @@ public class ProgressiveBosses {
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::creativeTabsBuildContents);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
-		PBItems.ITEMS.register(modEventBus);
-		PBEntities.ENTITIES.register(modEventBus);
+		PBItems.REGISTRY.register(modEventBus);
+		PBEntities.REGISTRY.register(modEventBus);
+		PBBlocks.BLOCKS.register(modEventBus);
+		PBBlocks.BLOCK_ENTITY_TYPES.register(modEventBus);
 		PBLoot.LOOT_CONDITIONS.register(modEventBus);
 		PBLoot.LOOT_FUNCTION.register(modEventBus);
 		Reflection.init();

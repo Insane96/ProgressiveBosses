@@ -1,6 +1,7 @@
 {
   "item.progressivebosses.nether_star_shard": "Nether Star Shard",
   "item.progressivebosses.elder_guardian_spike": "Elder Guardian Spike",
+  "block.progressivebosses.corrupted_soul_sand": "Corrupted Soul Sand",
 
   "entity.progressivebosses.wither_minion": "Wither Minion",
   "death.attack.progressivebosses:wither_charge": "%1$s was charged by %2$s",
@@ -18,10 +19,17 @@
   "progressivebosses:command.summoned_entity": "Summoned %s with difficulty %d",
   "progressivebosses:command.summon_invalid_entity": "Entity %s is not valid",
 
-  "entity.progressivebosses.wither.0": "Wither I",
+  "progressivebosses:corrupted_soul_sand.corruption_level": "Corruption level: %d",
+
+  "entity.progressivebosses.wither.0": "Wither",
   "entity.progressivebosses.wither.1": "Wither II",
   "entity.progressivebosses.wither.2": "Wither III",
   "entity.progressivebosses.wither.3": "Wither IV",
+
+  "entity.progressivebosses.ender_dragon.0": "Ender Dragon I",
+  "entity.progressivebosses.ender_dragon.1": "Ender Dragon II",
+  "entity.progressivebosses.ender_dragon.2": "Ender Dragon III",
+  "entity.progressivebosses.ender_dragon.3": "Ender Dragon IV",
 
   "dragon.first_killed": "Congrats on killing your first Dragon. Be aware that every Dragon you kill will make the next one harder to fight.",
   "wither.first_summon": "You spawned your first Wither. Be aware that every Wither you spawn will make the next one harder to fight.",

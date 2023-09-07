@@ -12,23 +12,23 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 
 public class PBEntities {
-	public static final DeferredRegister<EntityType<?>> ENTITIES = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, ProgressiveBosses.MOD_ID);
+	public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, ProgressiveBosses.MOD_ID);
 
-	public static final RegistryObject<EntityType<PBWither>> WITHER = ENTITIES.register("wither", () -> EntityType.Builder.of(PBWither::new, MobCategory.MONSTER)
+	public static final RegistryObject<EntityType<PBWither>> WITHER = REGISTRY.register("wither", () -> EntityType.Builder.of(PBWither::new, MobCategory.MONSTER)
 			.fireImmune()
 			.immuneTo(Blocks.WITHER_ROSE)
 			.sized(0.7f, 2.4f)
 			.clientTrackingRange(8)
 			.build("wither"));
 
-	public static final RegistryObject<EntityType<WitherMinion>> WITHER_MINION = ENTITIES.register("wither_minion", () -> EntityType.Builder.of(WitherMinion::new, MobCategory.MONSTER)
+	public static final RegistryObject<EntityType<WitherMinion>> WITHER_MINION = REGISTRY.register("wither_minion", () -> EntityType.Builder.of(WitherMinion::new, MobCategory.MONSTER)
 			.sized(0.55f, 1.5f)
 			.fireImmune()
 			.immuneTo(Blocks.WITHER_ROSE)
 			.clientTrackingRange(8)
 			.build("wither_minion"));
 
-	public static final RegistryObject<EntityType<Larva>> LARVA = ENTITIES.register("larva", () -> EntityType.Builder.of(Larva::new, MobCategory.MONSTER)
+	public static final RegistryObject<EntityType<Larva>> LARVA = REGISTRY.register("larva", () -> EntityType.Builder.of(Larva::new, MobCategory.MONSTER)
 			.sized(0.6f, 0.45f)
 			.clientTrackingRange(8)
 			.build("larva"));
