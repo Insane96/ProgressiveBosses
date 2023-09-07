@@ -38,7 +38,7 @@ public class WitherStatsReloadListener extends SimplePreparableReloadListener<Vo
 
         try {
             if (!file.exists()) {
-                String json = GSON.toJson(DifficultyFeature.DEFAULT_WITHER_STATS, WitherStats.LIST_TYPE);
+                String json = GSON.toJson(DifficultyFeature.DEFAULT_WITHER_STATS, WitherStats.LIST_TYPE).replaceAll("  ", "    ");
                 Files.write(file.toPath(), json.getBytes());
             }
             JsonReader reader = new JsonReader(new FileReader(file.getAbsolutePath()));
