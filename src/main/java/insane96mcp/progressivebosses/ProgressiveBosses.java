@@ -4,10 +4,13 @@ import insane96mcp.progressivebosses.capability.DifficultyProvider;
 import insane96mcp.progressivebosses.commands.PBCommand;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
+import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
 import insane96mcp.progressivebosses.network.PacketManager;
 import insane96mcp.progressivebosses.setup.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -49,6 +52,8 @@ public class ProgressiveBosses {
 		Reflection.init();
 
 		CrystalRespawnPhase.init();
+
+		DispenserBlock.registerBehavior(Items.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());
 	}
 
 	@SubscribeEvent

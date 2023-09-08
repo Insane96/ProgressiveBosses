@@ -11,7 +11,6 @@ public class WitherHealthStats {
     public float health;
     public float regeneration;
     public float regenWhenHit;
-
     public int regenWhenHitDuration;
 
     public WitherHealthStats(float health, float regeneration, float regenWhenHit, int regenWhenHitDuration) {

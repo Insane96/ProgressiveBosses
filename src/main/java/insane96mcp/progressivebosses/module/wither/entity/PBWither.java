@@ -367,7 +367,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
             float regen = this.stats.healthStats.regeneration / 20f;
             if (this.tickCount > this.getLastHurtByMobTimestamp() && this.tickCount - this.getLastHurtByMobTimestamp() < this.stats.healthStats.regenWhenHitDuration)
                 regen *= this.stats.healthStats.regenWhenHit;
-            this.heal(regen);
+            if (!this.isPowered() || this.getHealth() + regen < this.getMaxHealth() / 2f)
+                this.heal(regen);
 
             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
         }
