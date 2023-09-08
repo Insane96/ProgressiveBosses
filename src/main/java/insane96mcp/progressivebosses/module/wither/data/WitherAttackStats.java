@@ -14,7 +14,7 @@ public class WitherAttackStats {
     public int attackSpeedFar;
     public float maxChargeChance;
     public float chargeDamage;
-    public float chargeTime;
+    public int chargeTime;
     public float barrageChance;
     public int barrageDuration;
 

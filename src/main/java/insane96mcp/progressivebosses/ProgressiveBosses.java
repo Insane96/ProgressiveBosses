@@ -5,7 +5,6 @@ import insane96mcp.progressivebosses.commands.PBCommand;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
-import insane96mcp.progressivebosses.network.PacketManager;
 import insane96mcp.progressivebosses.setup.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -21,7 +20,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,7 +39,6 @@ public class ProgressiveBosses {
 		MinecraftForge.EVENT_BUS.register(this);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerEntityRenderers);
 		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::creativeTabsBuildContents);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		PBItems.REGISTRY.register(modEventBus);
 		PBEntities.REGISTRY.register(modEventBus);
@@ -70,9 +67,5 @@ public class ProgressiveBosses {
 	@SubscribeEvent
 	public void registerCommands(RegisterCommandsEvent event) {
 		PBCommand.register(event.getDispatcher());
-	}
-
-	private void setup(final FMLCommonSetupEvent event) {
-		PacketManager.init();
 	}
 }

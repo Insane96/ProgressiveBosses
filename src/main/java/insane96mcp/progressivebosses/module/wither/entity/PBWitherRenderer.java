@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.module.wither.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.module.wither.feature.AttackFeature;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
@@ -37,13 +36,13 @@ public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWith
 
     protected void scale(PBWither pLivingEntity, PoseStack poseStack, float partialTick) {
         float f = 2.0F;
-        int chargingTicks = pLivingEntity.getChargingTicks();
+        /*int chargingTicks = pLivingEntity.getChargingTicks();
         if (chargingTicks > 0) {
             float scale = 1f;
             //TODO Replace with WitherAttackStats.chargeTime
-            scale += (AttackFeature.Consts.CHARGE_ATTACK_TICK_START - ((float)chargingTicks - partialTick)) * 0.003f;
+            scale += (pLivingEntity - ((float)chargingTicks - partialTick)) * 0.003f;
             poseStack.scale(scale, scale, scale);
-        }
+        }*/
         int i = pLivingEntity.getInvulnerableTicks();
         if (i > 0) {
             f -= ((float)i - partialTick) / 220.0F * 0.5F;

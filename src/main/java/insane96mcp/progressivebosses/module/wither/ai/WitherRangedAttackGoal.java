@@ -1,8 +1,6 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
-import insane96mcp.progressivebosses.setup.Strings;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -59,8 +57,6 @@ public class WitherRangedAttackGoal extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
-		CompoundTag witherTags = wither.getPersistentData();
-
 		for (int i = 0; i < 3; i++) {
 			int targetId = this.wither.getAlternativeTarget(i);
 			if (targetId <= 0)
@@ -71,6 +67,7 @@ public class WitherRangedAttackGoal extends Goal {
 				continue;
 			double distanceSqr = this.wither.distanceToSqr(target.getX(), target.getY(), target.getZ());
 			boolean canSee = this.wither.getSensing().hasLineOfSight(target);
+			//TODO Charge unseen this.wither.tryCharge(wither, this.unseenTargetTicks[i] / 20f);
 			int unseenPlayerTicks = this.unseenTargetTicks[i];
 			if (canSee) {
 				++this.seeTime;
@@ -94,13 +91,14 @@ public class WitherRangedAttackGoal extends Goal {
 			if (i == 0)
 				this.wither.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
-			int barrageAttackTick = witherTags.getInt(Strings.Tags.BARRAGE_ATTACK);
+			int barrageAttackTick = this.wither.barrageTicks;
 			if (barrageAttackTick > 0) {
 				if (!canSee)
 					return;
-				witherTags.putInt(Strings.Tags.BARRAGE_ATTACK, barrageAttackTick - 1);
-				if (barrageAttackTick % 4 == 0) {
-					this.wither.performRangedAttack(Mth.nextInt(this.wither.getRandom(), 0, 2), target.getX() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), false);
+				if (i == 0)
+					this.wither.barrageTicks--;
+				if (this.wither.barrageTicks % 4 == 0) {
+					this.wither.performRangedAttack(i, target.getX() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), false);
 				}
 			}
 			else if (distanceSqr <= (double)this.attackRadiusSqr && --this.headAttackTimes[i] <= 0) {

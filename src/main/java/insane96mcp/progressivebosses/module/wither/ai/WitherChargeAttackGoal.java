@@ -3,8 +3,6 @@ package insane96mcp.progressivebosses.module.wither.ai;
 import com.mojang.datafixers.util.Pair;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
-import insane96mcp.progressivebosses.module.wither.feature.AttackFeature;
-import insane96mcp.progressivebosses.setup.Strings;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -49,7 +47,7 @@ public class WitherChargeAttackGoal extends Goal {
 	 * method as well.
 	 */
 	public boolean canUse() {
-		byte chargeTick = this.wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK);
+		int chargeTick = this.wither.getChargingTicks();
 		return chargeTick > 0;
 	}
 
@@ -60,13 +58,6 @@ public class WitherChargeAttackGoal extends Goal {
 
 		this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.WITHER_DEATH, SoundSource.HOSTILE, 5.0f, 2.0f);
 		blocksToDrop.clear();
-	}
-
-	/**
-	 * Returns whether an in-progress EntityAIBase should continue executing
-	 */
-	public boolean canContinueToUse() {
-		return this.wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK) > 0;
 	}
 
 	/**
@@ -85,22 +76,20 @@ public class WitherChargeAttackGoal extends Goal {
 	}
 
 	ObjectArrayList<Pair<ItemStack, BlockPos>> blocksToDrop = new ObjectArrayList<>();
+	final int CHARGE_ATTACK_TICK_CHARGE = 30;
 
 	/**
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
-		byte chargeTick = this.wither.getPersistentData().getByte(Strings.Tags.CHARGE_ATTACK);
-		//Needed since stop() now gets called every other tick
-		if (chargeTick <= 0) {
-			this.stop();
+		int chargeTicks = this.wither.getChargingTicks();
+		if (chargeTicks <= 0)
 			return;
-		}
 
-		if (chargeTick > AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE)
+		if (chargeTicks > CHARGE_ATTACK_TICK_CHARGE)
 			this.wither.setDeltaMovement(Vec3.ZERO);
 
-		if (chargeTick == AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
+		if (chargeTicks == CHARGE_ATTACK_TICK_CHARGE) {
 			this.target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
 			if (target != null) {
 				this.targetPos = this.target.position().add(0, -1.5d, 0);
@@ -110,16 +99,16 @@ public class WitherChargeAttackGoal extends Goal {
 				this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 4.0f, 2.0f);
 			}
 			else {
-				AttackFeature.stopCharging(this.wither);
+				this.wither.stopCharging();
 			}
 		}
-		else if (chargeTick < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE) {
+		else if (chargeTicks < CHARGE_ATTACK_TICK_CHARGE) {
 			if (this.targetPos == null) {
-				AttackFeature.stopCharging(this.wither);
+				this.wither.stopCharging();
 				return;
 			}
 			//So it goes faster and faster
-			double mult = 60d / chargeTick;
+			double mult = 60d / chargeTicks;
 			Vec3 diff = this.targetPos.subtract(this.wither.position()).normalize().multiply(mult, mult, mult);
 			this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
 			this.wither.getLookControl().setLookAt(this.targetPos);
@@ -129,13 +118,11 @@ public class WitherChargeAttackGoal extends Goal {
 			if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
 				blocks.forEach(blockPos -> {
 					BlockState state = wither.level().getBlockState(blockPos);
-					if (state.canEntityDestroy(wither.level(), blockPos, wither)
+					if (this.wither.canDestroyBlock(blockPos, state)
 							&& net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
 						BlockEntity tileentity = state.hasBlockEntity() ? this.wither.level().getBlockEntity(blockPos) : null;
 						LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel)this.wither.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, tileentity);
-						state.getDrops(lootcontext$builder).forEach(itemStack -> {
-							addBlockDrops(blocksToDrop, itemStack, blockPos);
-						});
+						state.getDrops(lootcontext$builder).forEach(itemStack -> addBlockDrops(blocksToDrop, itemStack, blockPos));
 						wither.level().setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
 						hasBrokenBlocks.set(true);
 					}
@@ -149,7 +136,7 @@ public class WitherChargeAttackGoal extends Goal {
 			this.wither.level().getEntitiesOfClass(LivingEntity.class, axisAlignedBB).forEach(entity -> {
 				if (entity == this.wither)
 					return;
-				entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), AttackFeature.chargeAttackBaseDamage.floatValue());
+				entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attackStats.chargeDamage);
 				double d2 = entity.getX() - this.wither.getX();
 				double d3 = entity.getZ() - this.wither.getZ();
 				double d4 = Math.max(d2 * d2 + d3 * d3, 0.1D);
@@ -157,8 +144,8 @@ public class WitherChargeAttackGoal extends Goal {
 			});
 		}
 		//If the wither's charging and is farther from the target point than the last tick OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-		if ((chargeTick < AttackFeature.Consts.CHARGE_ATTACK_TICK_CHARGE && (this.targetPos.distanceToSqr(this.wither.position()) - this.lastDistanceFromTarget > 16d || this.targetPos.distanceToSqr(this.wither.position()) < 4d)) || chargeTick == 1) {
-			AttackFeature.stopCharging(this.wither);
+		if ((chargeTicks < CHARGE_ATTACK_TICK_CHARGE && (this.targetPos.distanceToSqr(this.wither.position()) - this.lastDistanceFromTarget > 16d || this.targetPos.distanceToSqr(this.wither.position()) < 9d)) || chargeTicks == 1) {
+			this.wither.stopCharging();
 		}
 		if (this.targetPos != null)
 			this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());

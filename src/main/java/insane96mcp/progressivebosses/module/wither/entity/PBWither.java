@@ -79,6 +79,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     public final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
     private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (livingEntity) -> livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
     private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(64d).selector(LIVING_ENTITY_SELECTOR);
+    public int barrageTicks;
     public WitherStats stats;
 
     public PBWither(EntityType<? extends Monster> pEntityType, Level pLevel) {
@@ -153,6 +154,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
             if (instance != null)
                 instance.setBaseValue(this.stats.resistancesWeaknesses.armor.getValue(this));
         }
+
+        tryCharge(damageAmount);
+        tryBarrage(damageAmount);
     }
 
     @Override
@@ -168,6 +172,31 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
 
     public int getChargingTicks() {
         return this.entityData.get(CHARGING);
+    }
+    public void tickCharging() {
+        int ticks = this.entityData.get(CHARGING);
+        if (ticks > 0)
+            this.entityData.set(CHARGING, ticks - 1);
+    }
+    public void initCharging() {
+        this.entityData.set(CHARGING, this.stats.attackStats.chargeTime + 30);
+    }
+    public void stopCharging() {
+        this.entityData.set(CHARGING, 0);
+    }
+    public void tryCharge(float damageAmount) {
+        double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
+        double chance = this.stats.attackStats.maxChargeChance * missingHealthPerc;
+        chance *= (damageAmount / 10f);
+        double r = this.getRandom().nextDouble();
+        if (r < chance)
+            this.initCharging();
+    }
+
+    private void tryBarrage(float damageAmount) {
+        double chance = this.stats.attackStats.maxChargeChance * (damageAmount / 10f);
+        if (this.getRandom().nextDouble() < chance)
+            this.barrageTicks = this.stats.attackStats.barrageDuration;
     }
 
     /**+
@@ -375,10 +404,12 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
                 this.heal(regen);
 
             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
+
+            this.tickCharging();
         }
     }
 
-    private boolean canDestroyBlock(BlockPos pos, BlockState state) {
+    public boolean canDestroyBlock(BlockPos pos, BlockState state) {
         if (this.stats.miscStats.ignoreWitherProofBlocks)
             return !state.isAir() && state.getDestroySpeed(this.level(), pos) >= 0f;
         else
