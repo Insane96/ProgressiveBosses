@@ -84,7 +84,6 @@ public class WitherRangedAttackGoal extends Goal {
 					this.unseenTargetTicks[i] = unseenPlayerTicks + 2;
 			}
 
-			//TODO Do this if elseif in PBWither
 			if (distanceSqr <= (double)this.attackRadiusSqr && this.seeTime > 0) {
 				//Stops the wither from chasing the player
 				this.wither.setDeltaMovement(0d, wither.getDeltaMovement().y, 0d);
@@ -109,10 +108,10 @@ public class WitherRangedAttackGoal extends Goal {
 				if (!canSee)
 					return;
 				this.wither.performRangedAttack(i, target);
-				//TODO attackSpeedNear
 				int attackSpeedDelta = this.wither.stats.attackStats.attackSpeedFar - this.wither.stats.attackStats.attackSpeedNear;
-
-				this.headAttackTimes[i] = this.wither.stats.attackStats.attackSpeedFar;
+				double distanceRatio = distanceSqr / this.attackRadiusSqr;
+				this.headAttackTimes[i] = (int) (this.wither.stats.attackStats.attackSpeedNear + (attackSpeedDelta * distanceRatio));
+				this.headAttackTimes[i] += this.wither.getRandom().nextInt(-5, 6);
 			}
 		}
 	}
