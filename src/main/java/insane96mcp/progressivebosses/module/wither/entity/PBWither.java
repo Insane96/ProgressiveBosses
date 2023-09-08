@@ -321,9 +321,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
                 int targetId = this.getAlternativeTarget(i + 1);
                 if (targetId > 0) {
                     LivingEntity targetEntity = (LivingEntity)this.level().getEntity(targetId);
-                    if (targetEntity == null || targetEntity.isDeadOrDying() || !this.canAttack(targetEntity)) {
-                        int newTarget = this.findNewTarget();
-                        this.setAlternativeTarget(i + 1, newTarget);
+                    if (targetEntity == null || targetEntity.isDeadOrDying() || !this.canAttack(targetEntity) || this.getAlternativeTarget(i + 1) == this.getAlternativeTarget(0)) {
+                        this.setAlternativeTarget(i + 1, this.findNewTarget());
                     }
                 }
                 else {
@@ -331,7 +330,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
                 }
             }
 
-            //TODO Remove? Maybe not, the middle head should not change target
             if (this.getTarget() != null)
                 this.setAlternativeTarget(0, this.getTarget().getId());
             else
@@ -366,10 +364,10 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
                 }
             }
 
-            //TODO this.stats.healthStats.regenWhenHit
-            if (this.tickCount % 20 == 0) {
-                this.heal(this.stats.healthStats.regeneration);
-            }
+            float regen = this.stats.healthStats.regeneration / 20f;
+            if (this.tickCount > this.getLastHurtByMobTimestamp() && this.tickCount - this.getLastHurtByMobTimestamp() < this.stats.healthStats.regenWhenHitDuration)
+                regen *= this.stats.healthStats.regenWhenHit;
+            this.heal(regen);
 
             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
         }
