@@ -120,7 +120,7 @@ public class AttackFeature extends Feature {
 		CompoundTag witherTags = wither.getPersistentData();
 
 		if (witherTags.getByte(Strings.Tags.CHARGE_ATTACK) <= 0 && wither.tickCount % 20 == 0) {
-			doCharge(wither, witherTags.getInt(Strings.Tags.UNSEEN_PLAYER_TICKS) / 20f);
+			//doCharge(wither, witherTags.getInt(PBWither.UNSEEN_PLAYER_TICKS) / 20f);
 		}
 	}
 

@@ -13,7 +13,6 @@ public class Strings {
 		public static final String WITHER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "wither_minion";
 		public static final String MINIONS = ProgressiveBosses.RESOURCE_PREFIX + "minions";
 		public static final String CHARGE_ATTACK = ProgressiveBosses.RESOURCE_PREFIX + "charge_attack";
-		public static final String UNSEEN_PLAYER_TICKS = ProgressiveBosses.RESOURCE_PREFIX + "unseen_player_ticks";
 		public static final String BARRAGE_ATTACK = ProgressiveBosses.RESOURCE_PREFIX + "barrage_attack";
 
 		public static final String KILLED_DRAGONS = ProgressiveBosses.RESOURCE_PREFIX + "killed_dragons";
