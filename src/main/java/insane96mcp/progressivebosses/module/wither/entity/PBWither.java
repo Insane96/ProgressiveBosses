@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
+    public static final int CHARGE_ATTACK_TICK_CHARGE = 30;
     private static final EntityDataAccessor<Integer> DATA_TARGET_A = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_TARGET_B = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_TARGET_C = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
@@ -243,7 +244,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         if (this.getInvulnerableTicks() > 0) {
             this.setDeltaMovement(Vec3.ZERO);
         }
-        else {
+        else if (this.getChargingTicks() <= 0) {
             Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0D, 1.0D);
             if (!this.level().isClientSide && this.getAlternativeTarget(0) > 0) {
                 Entity entity = this.level().getEntity(this.getAlternativeTarget(0));

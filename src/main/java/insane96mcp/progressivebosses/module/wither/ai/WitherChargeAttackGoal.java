@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 public class WitherChargeAttackGoal extends Goal {
-	static ResourceKey<DamageType> WITHER_CHARGE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_charge"));
+	public static ResourceKey<DamageType> WITHER_CHARGE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_charge"));
 
 	private final PBWither wither;
 	private LivingEntity target;
@@ -76,7 +76,6 @@ public class WitherChargeAttackGoal extends Goal {
 	}
 
 	ObjectArrayList<Pair<ItemStack, BlockPos>> blocksToDrop = new ObjectArrayList<>();
-	final int CHARGE_ATTACK_TICK_CHARGE = 30;
 
 	/**
 	 * Keep ticking a continuous task that has already been started
@@ -86,10 +85,10 @@ public class WitherChargeAttackGoal extends Goal {
 		if (chargeTicks <= 0)
 			return;
 
-		if (chargeTicks > CHARGE_ATTACK_TICK_CHARGE)
+		if (chargeTicks > PBWither.CHARGE_ATTACK_TICK_CHARGE)
 			this.wither.setDeltaMovement(Vec3.ZERO);
 
-		if (chargeTicks == CHARGE_ATTACK_TICK_CHARGE) {
+		if (chargeTicks == PBWither.CHARGE_ATTACK_TICK_CHARGE) {
 			this.target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
 			if (target != null) {
 				this.targetPos = this.target.position().add(0, -1.5d, 0);
@@ -102,7 +101,7 @@ public class WitherChargeAttackGoal extends Goal {
 				this.wither.stopCharging();
 			}
 		}
-		else if (chargeTicks < CHARGE_ATTACK_TICK_CHARGE) {
+		else if (chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE) {
 			if (this.targetPos == null) {
 				this.wither.stopCharging();
 				return;
@@ -129,7 +128,7 @@ public class WitherChargeAttackGoal extends Goal {
 				});
 			}
 
-			if (hasBrokenBlocks.get() && this.wither.tickCount % 2 == 0)
+			if (hasBrokenBlocks.get() && this.wither.tickCount % 3 == 0)
 				this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_BREAK_BLOCK, SoundSource.HOSTILE, 1.0f, 0.75f);
 
 			axisAlignedBB = axisAlignedBB.inflate(1d);
@@ -143,12 +142,14 @@ public class WitherChargeAttackGoal extends Goal {
 				entity.push(d2 / d4 * 20d, 0.7d, d3 / d4 * 20d);
 			});
 		}
-		//If the wither's charging and is farther from the target point than the last tick OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-		if ((chargeTicks < CHARGE_ATTACK_TICK_CHARGE && (this.targetPos.distanceToSqr(this.wither.position()) - this.lastDistanceFromTarget > 16d || this.targetPos.distanceToSqr(this.wither.position()) < 9d)) || chargeTicks == 1) {
-			this.wither.stopCharging();
+		if (this.targetPos != null) {
+			double distance = this.targetPos.distanceToSqr(this.wither.position());
+			//If the wither's charging and is farther from the target point than the last tick OR is closer than sqrt(6) blocks OR is about to finish the invulnerability time then prevent the explosion and stop the attack
+			if ((chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE && (distance - this.lastDistanceFromTarget > 16d || distance < 6d)) || chargeTicks == 1)
+				this.wither.stopCharging();
+
+			this.lastDistanceFromTarget = distance;
 		}
-		if (this.targetPos != null)
-			this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
 	}
 
 	@Override

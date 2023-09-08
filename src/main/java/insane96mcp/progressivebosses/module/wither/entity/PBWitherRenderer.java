@@ -29,7 +29,8 @@ public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWith
         int c = pEntity.getChargingTicks();
         //TODO Blink when about to charge
         if (c > 0)
-            return WITHER_CHARGING_LOCATION;
+            return c < 30 || (c > 50 && c % 10 < 5) || (c < 50 && c % 4 >= 2) ? WITHER_CHARGING_LOCATION : WITHER_LOCATION;
+
         int i = pEntity.getInvulnerableTicks();
         return i > 0 && (i > 80 || i / 5 % 2 != 1) ? WITHER_INVULNERABLE_LOCATION : WITHER_LOCATION;
     }
