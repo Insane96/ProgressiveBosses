@@ -10,36 +10,22 @@ import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.util.IdTagMatcher;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.capability.Difficulty;
-import insane96mcp.progressivebosses.module.wither.block.CorruptedSoulSandBlockEntity;
+import insane96mcp.progressivebosses.module.wither.SummonHelper;
 import insane96mcp.progressivebosses.module.wither.data.*;
-import insane96mcp.progressivebosses.module.wither.entity.PBWither;
-import insane96mcp.progressivebosses.setup.PBBlocks;
-import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LogHelper;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.CarvedPumpkinBlock;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.pattern.BlockInWorld;
-import net.minecraft.world.level.block.state.pattern.BlockPattern;
-import net.minecraft.world.level.block.state.pattern.BlockPatternBuilder;
-import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -90,7 +76,7 @@ public class DifficultyFeature extends Feature {
 					new WitherAttackStats(20f, 2.6f, 30, 55, 0.05f, 24f, 35, 0.05f, 100),
 					new WitherHealthStats(600f, 1.5f, 0.6f, 40),
 					new WitherResistancesWeaknesses(0.15f, 0.35f, 275f),
-					new WitherMiscStats(11.5f, true, true, true))
+					new WitherMiscStats(11.5f, false, true, true))
 	));
 
 	public DifficultyFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
@@ -159,82 +145,8 @@ public class DifficultyFeature extends Feature {
 		});
 	}
 
-	@Nullable
-	private static BlockPattern witherPatternFull;
-	@Nullable
-	private static BlockPattern witherPatternBase;
-
 	@SubscribeEvent
 	public void onSkullPlaced(BlockEvent.EntityPlaceEvent event) {
-		BlockState state = event.getState();
-		BlockPos pos = event.getPos();
-		Level level = (Level) event.getLevel();
-		boolean isWitherSkeletonSkull = state.is(Blocks.WITHER_SKELETON_SKULL) || state.is(Blocks.WITHER_SKELETON_WALL_SKULL);
-        if (!isWitherSkeletonSkull || pos.getY() < level.getMinBuildHeight() || level.getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL)
-            return;
-
-        BlockPattern.BlockPatternMatch blockPatternMatch = getOrCreatePBWitherFull().find(level, pos);
-        if (blockPatternMatch == null)
-            return;
-			
-        PBWither wither = PBEntities.WITHER.get().create(level);
-        if (wither != null) {
-			int lvl = getLevelFromPatternBlocks(level, blockPatternMatch);
-            CarvedPumpkinBlock.clearPatternBlocks(level, blockPatternMatch);
-            BlockPos blockpos = blockPatternMatch.getBlock(1, 2, 0).getPos();
-            wither.moveTo((double)blockpos.getX() + 0.5D, (double)blockpos.getY() + 0.55D, (double)blockpos.getZ() + 0.5D, blockPatternMatch.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F, 0.0F);
-            wither.yBodyRot = blockPatternMatch.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
-            wither.makeInvulnerable();
-			wither.setLvl(lvl);
-
-            for (ServerPlayer serverplayer : level.getEntitiesOfClass(ServerPlayer.class, wither.getBoundingBox().inflate(50.0D))) {
-                CriteriaTriggers.SUMMONED_ENTITY.trigger(serverplayer, wither);
-            }
-
-            level.addFreshEntity(wither);
-            CarvedPumpkinBlock.updatePatternBlocks(level, blockPatternMatch);
-        }
-
+		SummonHelper.checkSpawnFromSkullPlacement(event.getState(), event.getPos(), (Level) event.getLevel(), event.getEntity());
     }
-
-	private static BlockPattern getOrCreatePBWitherFull() {
-		if (witherPatternFull == null) {
-			witherPatternFull = BlockPatternBuilder
-					.start()
-					.aisle("^^^", "#C#", "~#~")
-					.where('#', (blockInWorld) -> blockInWorld.getState().is(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
-					.where('^', BlockInWorld.hasState(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_SKULL).or(BlockStatePredicate.forBlock(Blocks.WITHER_SKELETON_WALL_SKULL))))
-					.where('~', (blockInWorld) -> blockInWorld.getState().canBeReplaced())
-					.where('C', (blockInWorld) -> blockInWorld.getState().is(PBBlocks.CORRUPTED_SOUL_SAND.get()))
-					.build();
-		}
-
-		return witherPatternFull;
-	}
-
-	//TODO Dispenser
-	private static BlockPattern getOrCreatePBWitherBase() {
-		if (witherPatternBase == null) {
-			witherPatternBase = BlockPatternBuilder
-					.start()
-					.aisle("   ", "###", "~#~")
-					.where('#', (blockInWorld) -> blockInWorld.getState().is(BlockTags.WITHER_SUMMON_BASE_BLOCKS))
-					.where('~', (blockInWorld) -> blockInWorld.getState().isAir()).build();
-		}
-
-		return witherPatternBase;
-	}
-
-	public static int getLevelFromPatternBlocks(Level pLevel, BlockPattern.BlockPatternMatch pPatternMatch) {
-		for (int i = 0; i < pPatternMatch.getWidth(); ++i) {
-			for (int j = 0; j < pPatternMatch.getHeight(); ++j) {
-				BlockInWorld blockinworld = pPatternMatch.getBlock(i, j, 0);
-				if (blockinworld.getState().is(PBBlocks.CORRUPTED_SOUL_SAND.get())
-						&& (pLevel.getBlockEntity(blockinworld.getPos()) instanceof CorruptedSoulSandBlockEntity corruptedSoulSandBlockEntity)) {
-					return corruptedSoulSandBlockEntity.getLvl();
-				}
-			}
-		}
-		return -1;
-	}
 }
