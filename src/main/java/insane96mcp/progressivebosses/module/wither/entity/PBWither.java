@@ -5,6 +5,7 @@ import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.module.wither.data.WitherStats;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
+import insane96mcp.progressivebosses.module.wither.entity.skull.PBWitherSkull;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -46,7 +47,6 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.WitherSkull;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -461,7 +461,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     }
 
     public void performRangedAttack(int pHead, LivingEntity pTarget) {
-        this.performRangedAttack(pHead, pTarget.getX(), pTarget.getY() + (double)pTarget.getEyeHeight() * 0.5D, pTarget.getZ(), pHead == 0 && this.random.nextFloat() < 0.001F);
+        this.performRangedAttack(pHead, pTarget.getX(), pTarget.getY() + (double)pTarget.getEyeHeight() * 0.5D, pTarget.getZ(), pHead == 0 /*&& this.random.nextFloat() < 0.01F*/);
     }
 
     /**
@@ -478,7 +478,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         double d3 = pX - d0;
         double d4 = pY - d1;
         double d5 = pZ - d2;
-        WitherSkull witherskull = new WitherSkull(this.level(), this, d3, d4, d5);
+        PBWitherSkull witherskull = new PBWitherSkull(this.level(), this, d3, d4, d5);
         witherskull.setOwner(this);
         if (pIsDangerous) {
             witherskull.setDangerous(true);
@@ -510,13 +510,17 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
      * Called when the entity is attacked.
      */
     public boolean hurt(DamageSource pSource, float pAmount) {
-        if (this.isInvulnerableTo(pSource)) {
+        if (this.isInvulnerableTo(pSource))
             return false;
-        }
-        else if (!pSource.is(DamageTypeTags.WITHER_IMMUNE_TO) && !(pSource.getEntity() instanceof PBWither)) {
+
+        if (pSource.is(DamageTypeTags.WITHER_IMMUNE_TO) || (pSource.getEntity() instanceof PBWither && pSource.getDirectEntity() instanceof PBWitherSkull skull && !skull.isDangerous()))
+            return false;
+
+        else {
             if (this.getInvulnerableTicks() > 0 && !pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
                 return false;
-            } else {
+            }
+            else {
                 if (this.isPowered()) {
                     Entity entity = pSource.getDirectEntity();
                     if (entity instanceof AbstractArrow) {
@@ -539,9 +543,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
                     return super.hurt(pSource, pAmount);
                 }
             }
-        }
-        else {
-            return false;
         }
     }
 

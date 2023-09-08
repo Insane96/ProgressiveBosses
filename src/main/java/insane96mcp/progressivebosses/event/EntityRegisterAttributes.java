@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.event;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
-import insane96mcp.progressivebosses.module.wither.entity.WitherMinion;
+import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

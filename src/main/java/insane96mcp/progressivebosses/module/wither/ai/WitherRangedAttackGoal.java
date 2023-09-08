@@ -58,7 +58,6 @@ public class WitherRangedAttackGoal extends Goal {
 	/**
 	 * Keep ticking a continuous task that has already been started
 	 */
-	//TODO Attack with all the heads ...
 	public void tick() {
 		CompoundTag witherTags = wither.getPersistentData();
 

@@ -13,11 +13,7 @@ import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.WitherSkull;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
@@ -27,9 +23,6 @@ import net.minecraftforge.network.NetworkDirection;
 @Label(name = "Attack", description = "Makes the Wither smarter (will no longer try to stand on the player's head ...), attack faster and hit harder")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class AttackFeature extends Feature {
-	@Config(min = 0d)
-	@Label(name = "Increased Damage", description = "How much experience will an Elder Guardian drop. -1 will make the Elder Guardian drop vanilla experience.")
-	public static Double increasedDamage = 0.96d;
 	@Config(min = 0d, max = 1d)
 	@Label(name = "Charge attack.Chance", description = "Chance every time the Wither takes damage to start a charge attack. Lower health and more damage taken increases the chance.\n" +
 			"This value is the chance at 0% health and when taking 10 damage.")
@@ -48,42 +41,9 @@ public class AttackFeature extends Feature {
 	@Config(min = 0)
 	@Label(name = "Barrage Attack.Max Duration", description = "Max time (in ticks) for the duration of the barrage attack. Less health = longer barrage")
 	public static Integer maxBarrageDuration = 140;
-	@Config(min = 1d)
-	@Label(name = "Skull Velocity Multiplier", description = "Wither Skull Projectiles speed will be multiplied by this value. Set to 1 to not change the speed.")
-	//Skulls
-	public static Double skullVelocityMultiplier = 2.5d;
-	//Attack Speed
-	@Config(min = 1)
-	@Label(name = "Attack Speed.Interval", description = "Every how many ticks (20 ticks = 1 seconds) the middle head will fire a projectile to the target.")
-	public static Integer attackInterval = 35;
-	@Config(min = 0d, max = 1d)
-	@Label(name = "Attack Speed.Bonus when near", description = "The middle head will attack faster (up to this bonus percentage) the nearer the target is to the Wither.")
-	public static Double bonusAttackSpeedWhenNear = 0.6d;
 
 	public AttackFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-	}
-
-	@SubscribeEvent
-	public void onSpawn(EntityJoinLevelEvent event) {
-		witherSkullSpeed(event.getEntity());
-	}
-
-	//TODO Scale skulls speed with difficulty (requires client sync)
-	private void witherSkullSpeed(Entity entity) {
-		if (!(entity instanceof WitherSkull witherSkullEntity)
-				|| !this.isEnabled())
-			return;
-
-		//Prevent ultra-fast wither skulls from breaking the game
-		if (Math.abs(witherSkullEntity.xPower) > 10 || Math.abs(witherSkullEntity.yPower) > 10 || Math.abs(witherSkullEntity.zPower) > 10) {
-			entity.kill();
-			return;
-		}
-
-		witherSkullEntity.xPower *= skullVelocityMultiplier;
-		witherSkullEntity.yPower *= skullVelocityMultiplier;
-		witherSkullEntity.zPower *= skullVelocityMultiplier;
 	}
 
 	@SubscribeEvent
@@ -122,17 +82,6 @@ public class AttackFeature extends Feature {
 		if (witherTags.getByte(Strings.Tags.CHARGE_ATTACK) <= 0 && wither.tickCount % 20 == 0) {
 			//doCharge(wither, witherTags.getInt(PBWither.UNSEEN_PLAYER_TICKS) / 20f);
 		}
-	}
-
-	@SubscribeEvent
-	public void onDamageDealt(LivingHurtEvent event) {
-		if (event.getEntity().level().isClientSide
-				|| !this.isEnabled()
-				|| increasedDamage == 0d
-				|| !(event.getSource().getEntity() instanceof WitherBoss wither))
-			return;
-
-		event.setAmount(event.getAmount() * (float)(1d + (increasedDamage * DifficultyHelper.getScalingDifficulty(wither))));
 	}
 
 	//High-priority so runs before the damage reduction

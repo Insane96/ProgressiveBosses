@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.module.wither.entity;
+package insane96mcp.progressivebosses.module.wither.entity.minion;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import insane96mcp.progressivebosses.ProgressiveBosses;

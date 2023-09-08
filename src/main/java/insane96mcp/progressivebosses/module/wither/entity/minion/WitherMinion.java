@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.module.wither.entity;
+package insane96mcp.progressivebosses.module.wither.entity.minion;
 
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.module.wither.ai.RangedMinionAttackGoal;
