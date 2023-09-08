@@ -374,10 +374,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     }
 
     private boolean canDestroyBlock(BlockPos pos, BlockState state) {
-        //TODO
-        /*if (ignoreWitherProofBlocks)
-            return !state.isAir() && state.getDestroySpeed(wither.level(), pos) >= 0f;
-        else*/
+        if (this.stats.miscStats.ignoreWitherProofBlocks)
+            return !state.isAir() && state.getDestroySpeed(this.level(), pos) >= 0f;
+        else
             return !state.isAir() && !state.is(BlockTags.WITHER_IMMUNE);
     }
 
