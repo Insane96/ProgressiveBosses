@@ -29,6 +29,8 @@ public class WitherStats {
 
     public void apply(PBWither wither) {
         wither.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.healthStats.health);
+        wither.getAttribute(Attributes.ARMOR).setBaseValue(this.resistancesWeaknesses.armor.getValue(wither));
+        wither.getAttribute(Attributes.ARMOR_TOUGHNESS).setBaseValue(this.resistancesWeaknesses.toughness.getValue(wither));
     }
 
     public void finalizeSpawn(PBWither wither) {

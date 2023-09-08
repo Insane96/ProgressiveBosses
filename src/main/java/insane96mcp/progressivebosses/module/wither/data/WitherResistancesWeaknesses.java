@@ -8,30 +8,29 @@ import java.lang.reflect.Type;
 
 @JsonAdapter(WitherResistancesWeaknesses.Serializer.class)
 public class WitherResistancesWeaknesses {
-    //TODO Change to armor
-    public float meleeDamageReduction;
-    public float shieldedMeleeDamageReduction;
+    public PoweredValue armor;
+    public PoweredValue toughness;
     public float doubleMagicDamageEveryThisMissingHealth;
 
-    public WitherResistancesWeaknesses(float meleeDamageReduction, float shieldedMeleeDamageReduction, float doubleMagicDamageEveryThisMissingHealth) {
-        this.meleeDamageReduction = meleeDamageReduction;
-        this.shieldedMeleeDamageReduction = shieldedMeleeDamageReduction;
+    public WitherResistancesWeaknesses(PoweredValue armor, PoweredValue toughness, float doubleMagicDamageEveryThisMissingHealth) {
+        this.armor = armor;
+        this.toughness = toughness;
         this.doubleMagicDamageEveryThisMissingHealth = doubleMagicDamageEveryThisMissingHealth;
     }
 
     public static class Serializer implements JsonSerializer<WitherResistancesWeaknesses>, JsonDeserializer<WitherResistancesWeaknesses> {
         @Override
         public WitherResistancesWeaknesses deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return new WitherResistancesWeaknesses(GsonHelper.getAsFloat(json.getAsJsonObject(), "melee_damage_reduction"),
-                    GsonHelper.getAsFloat(json.getAsJsonObject(), "shielded_melee_damage_reduction"),
+            return new WitherResistancesWeaknesses(context.deserialize(json.getAsJsonObject().get("armor"), PoweredValue.class),
+                    context.deserialize(json.getAsJsonObject().get("toughness"), PoweredValue.class),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "double_magic_damage_every_this_missing_health"));
         }
 
         @Override
         public JsonElement serialize(WitherResistancesWeaknesses src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("melee_damage_reduction", src.meleeDamageReduction);
-            jsonObject.addProperty("shielded_melee_damage_reduction", src.shieldedMeleeDamageReduction);
+            jsonObject.add("armor", context.serialize(src.armor));
+            jsonObject.add("toughness", context.serialize(src.toughness));
             jsonObject.addProperty("double_magic_damage_every_this_missing_health", src.doubleMagicDamageEveryThisMissingHealth);
             return jsonObject;
         }

@@ -28,6 +28,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -145,10 +146,13 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
             double missingHealth = this.getMaxHealth() - this.getHealth();
             damageAmount *= (float) (missingHealth / this.stats.resistancesWeaknesses.doubleMagicDamageEveryThisMissingHealth + 1);
         }
-        //If it's direct damage
-        if (damageSource.getDirectEntity() == damageSource.getEntity())
-            damageAmount *= 1f - (this.isPowered() ? this.stats.resistancesWeaknesses.shieldedMeleeDamageReduction : this.stats.resistancesWeaknesses.meleeDamageReduction);
+        boolean wasPowered = this.isPowered();
         super.actuallyHurt(damageSource, damageAmount);
+        if (wasPowered != this.isPowered()) {
+            AttributeInstance instance = this.getAttribute(Attributes.ARMOR);
+            if (instance != null)
+                instance.setBaseValue(this.stats.resistancesWeaknesses.armor.getValue(this));
+        }
     }
 
     @Override
@@ -211,11 +215,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
             this.setDeltaMovement(Vec3.ZERO);
         }
         else {
-            Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0.6D, 1.0D);
+            Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0D, 1.0D);
             if (!this.level().isClientSide && this.getAlternativeTarget(0) > 0) {
                 Entity entity = this.level().getEntity(this.getAlternativeTarget(0));
                 if (entity != null) {
-                    double d0 = vec3.y;
+                    double d0 = -0.01d;
                     if ((this.getY() < entity.getY() || (!this.isPowered() && this.getY() < entity.getY() + 5.0D))) {
                         d0 = 0.3D;
                     }
@@ -395,7 +399,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     public void makeInvulnerable() {
         this.setInvulnerableTicks(INVULNERABLE_TICKS);
         this.bossEvent.setProgress(0.0F);
-        this.setHealth(this.getMaxHealth() / 3.0F);
+        //this.setHealth(this.getMaxHealth() / 3.0F);
     }
 
     public void makeStuckInBlock(BlockState pState, Vec3 pMotionMultiplier) {
@@ -491,6 +495,17 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         this.performRangedAttack(0, pTarget);
     }
 
+    @Override
+    public void heal(float pHealAmount) {
+        boolean wasPowered = this.isPowered();
+        super.heal(pHealAmount);
+        if (wasPowered != this.isPowered()) {
+            AttributeInstance instance = this.getAttribute(Attributes.ARMOR);
+            if (instance != null)
+                instance.setBaseValue(this.stats.resistancesWeaknesses.armor.getValue(this));
+        }
+    }
+
     /**
      * Called when the entity is attacked.
      */
@@ -554,10 +569,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         return false;
     }
 
-    public static AttributeSupplier.Builder createAttributes() {
-        return Monster.createMonsterAttributes().add(Attributes.MAX_HEALTH, 300.0D).add(Attributes.MOVEMENT_SPEED, (double)0.6F).add(Attributes.FLYING_SPEED, (double)0.6F).add(Attributes.FOLLOW_RANGE, 40.0D).add(Attributes.ARMOR, 4.0D);
-    }
-
     public float getHeadYRot(int pHead) {
         return this.yRotHeads[pHead];
     }
@@ -609,7 +620,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     }
 
     public boolean canBeAffected(MobEffectInstance pPotioneffect) {
-        return pPotioneffect.getEffect() == MobEffects.WITHER ? false : super.canBeAffected(pPotioneffect);
+        return pPotioneffect.getEffect() != MobEffects.WITHER && super.canBeAffected(pPotioneffect);
     }
 
     public class WitherDoNothingGoal extends Goal {
@@ -631,7 +642,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
                 .add(Attributes.MAX_HEALTH, 300.0d)
                 .add(Attributes.FOLLOW_RANGE, 64.0d)
                 .add(Attributes.MOVEMENT_SPEED, 0.6d)
-                .add(Attributes.FLYING_SPEED, 0.6d)
-                .add(Attributes.ARMOR, 4d);
+                .add(Attributes.FLYING_SPEED, 0.6d);
     }
 }
