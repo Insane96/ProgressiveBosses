@@ -33,9 +33,9 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
     public PBWitherSkull(Level pLevel, LivingEntity pShooter, double pOffsetX, double pOffsetY, double pOffsetZ) {
         super(PBEntities.WITHER_SKULL.get(), pShooter, pOffsetX, pOffsetY, pOffsetZ, pLevel);
         if (pShooter instanceof PBWither wither) {
-            this.xPower *= wither.stats.attackStats.skullSpeedMultiplier;
-            this.yPower *= wither.stats.attackStats.skullSpeedMultiplier;
-            this.zPower *= wither.stats.attackStats.skullSpeedMultiplier;
+            this.xPower *= wither.stats.attack.skullSpeedMultiplier;
+            this.yPower *= wither.stats.attack.skullSpeedMultiplier;
+            this.zPower *= wither.stats.attack.skullSpeedMultiplier;
         }
     }
 
@@ -65,7 +65,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
             if (owner instanceof LivingEntity livingOwner) {
                 float damage = 8f;
                 if (owner instanceof PBWither wither)
-                    damage = wither.stats.attackStats.skullDamage;
+                    damage = wither.stats.attack.skullDamage;
                 hasHurtEntity = entityHit.hurt(this.damageSources().source(DAMAGE_TYPE, this, livingOwner), damage);
                 if (hasHurtEntity) {
                     if (entityHit.isAlive()) {

@@ -47,8 +47,7 @@ public class WitherChargeAttackGoal extends Goal {
 	 * method as well.
 	 */
 	public boolean canUse() {
-		int chargeTick = this.wither.getChargingTicks();
-		return chargeTick > 0;
+		return this.wither.isCharging();
 	}
 
 	public void start() {
@@ -81,10 +80,10 @@ public class WitherChargeAttackGoal extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
-		int chargeTicks = this.wither.getChargingTicks();
-		if (chargeTicks <= 0)
+		if (!this.wither.isCharging())
 			return;
 
+		int chargeTicks = this.wither.getChargingTicks();
 		if (chargeTicks > PBWither.CHARGE_ATTACK_TICK_CHARGE)
 			this.wither.setDeltaMovement(Vec3.ZERO);
 
@@ -135,7 +134,7 @@ public class WitherChargeAttackGoal extends Goal {
 			this.wither.level().getEntitiesOfClass(LivingEntity.class, axisAlignedBB).forEach(entity -> {
 				if (entity == this.wither)
 					return;
-				entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attackStats.chargeDamage);
+				entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.chargeDamage);
 				double d2 = entity.getX() - this.wither.getX();
 				double d3 = entity.getZ() - this.wither.getZ();
 				double d4 = Math.max(d2 * d2 + d3 * d3, 0.1D);

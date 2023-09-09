@@ -4,6 +4,8 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.module.dragon.feature.LarvaFeature;
+import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
+import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.commands.CommandSourceStack;
@@ -22,23 +24,15 @@ public class PBCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("progressivebosses").requires(source -> source.hasPermission(2))
-            .then(Commands.literal("difficulty")
+            .then(Commands.literal("lvl")
                 .then(Commands.argument("targetPlayer", EntityArgument.player())
                     .then(Commands.literal("get")
-                        .then(Commands.literal("wither")
-                            .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither"))
-                        )
                         .then(Commands.literal("dragon")
                             .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon"))
                         )
                         .executes(context -> getBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), ""))
                     )
                     .then(Commands.literal("set")
-                        .then(Commands.literal("wither")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty))
-                                .executes(context -> setBossDifficulty(context.getSource(),EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
-                            )
-                        )
                         .then(Commands.literal("dragon")
                             .then(Commands.argument("amount", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty))
                                 .executes(context -> setBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "dragon", IntegerArgumentType.getInteger(context, "amount")))
@@ -46,11 +40,6 @@ public class PBCommand {
                         )
                     )
                     .then(Commands.literal("add")
-                        .then(Commands.literal("wither")
-                            .then(Commands.argument("amount", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty))
-                                .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"), "wither", IntegerArgumentType.getInteger(context, "amount")))
-                            )
-                        )
                         .then(Commands.literal("dragon")
                             .then(Commands.argument("amount", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty))
                                 .executes(context -> addBossDifficulty(context.getSource(), EntityArgument.getPlayer(context, "targetPlayer"),"dragon", IntegerArgumentType.getInteger(context, "amount")))
@@ -61,25 +50,22 @@ public class PBCommand {
             )
             .then(Commands.literal("summon")
                 .then(Commands.literal(Strings.Tags.WITHER_MINION)
-                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty))
-                        .executes(context -> summon(context.getSource(), Strings.Tags.WITHER_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, WitherStatsReloadListener.STATS_MAP.size() - 1))
+                        .executes(context -> summon(context.getSource(), Strings.Tags.WITHER_MINION, IntegerArgumentType.getInteger(context, "lvl"), context.getArgument("isPowered", Boolean.class)))
                     )
-                    .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.WITHER_MINION))
                 )
                 .then(Commands.literal(Strings.Tags.DRAGON_MINION)
                     .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty))
-                        .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_MINION, IntegerArgumentType.getInteger(context, "difficulty")))
+                        .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_MINION, IntegerArgumentType.getInteger(context, "lvl"), false))
                     )
-                    .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.DRAGON_MINION))
                 )
                 .then(Commands.literal(Strings.Tags.DRAGON_LARVA)
                     .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty))
-                        .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, IntegerArgumentType.getInteger(context, "difficulty")))
+                        .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, IntegerArgumentType.getInteger(context, "lvl"), false))
                     )
-                    .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.DRAGON_LARVA))
                 )
                 .then(Commands.literal(Strings.Tags.ELDER_MINION)
-                    .executes(context -> summon(context.getSource(), context.getSource().getPlayerOrException(), Strings.Tags.ELDER_MINION))
+                    .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, 0, false))
                 )
             )
         );
@@ -136,26 +122,26 @@ public class PBCommand {
         }
     }
 
-    private static int summon(CommandSourceStack source, String entity, int difficulty) {
+    private static int summon(CommandSourceStack source, String entity, int lvl, boolean isPowered) {
         switch (entity) {
             case Strings.Tags.WITHER_MINION -> {
-                insane96mcp.progressivebosses.module.wither.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature.maxDifficulty), false);
-                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
+                WitherMinion.create(source.getLevel(), source.getPosition(), lvl, isPowered);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), lvl), true);
                 return 1;
             }
             case Strings.Tags.DRAGON_MINION -> {
-                insane96mcp.progressivebosses.module.dragon.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty));
-                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
+                insane96mcp.progressivebosses.module.dragon.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(lvl, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty));
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), lvl), true);
                 return 1;
             }
             case Strings.Tags.DRAGON_LARVA -> {
-                LarvaFeature.summonLarva(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(difficulty, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty));
-                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
+                LarvaFeature.summonLarva(source.getLevel(), source.getPosition(), DifficultyHelper.getScalingDifficulty(lvl, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty));
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), lvl), true);
                 return 1;
             }
             case Strings.Tags.ELDER_MINION -> {
                 insane96mcp.progressivebosses.module.elderguardian.feature.MinionFeature.summonMinion(source.getLevel(), source.getPosition());
-                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), difficulty), true);
+                source.sendSuccess(() -> Component.translatable(Strings.Translatable.SUMMONED_ENTITY, Component.translatable(entity), lvl), true);
                 return 1;
             }
             default -> {
@@ -163,19 +149,5 @@ public class PBCommand {
                 return 0;
             }
         }
-    }
-
-    private static int summon(CommandSourceStack source, ServerPlayer targetPlayer, String entity) {
-        AtomicInteger witherDifficulty = new AtomicInteger(0);
-        targetPlayer.getCapability(Difficulty.INSTANCE).ifPresent(difficultyCap -> witherDifficulty.set(difficultyCap.getSpawnedWithers()));
-        AtomicInteger dragonDifficulty = new AtomicInteger(0);
-        targetPlayer.getCapability(Difficulty.INSTANCE).ifPresent(difficultyCap -> dragonDifficulty.set(difficultyCap.getKilledDragons()));
-        if (entity.contains("wither"))
-            return summon(source, entity, witherDifficulty.get());
-        else if (entity.contains("dragon"))
-            return summon(source, entity, dragonDifficulty.get());
-        else if (entity.contains("elder"))
-            return summon(source, entity, 0);
-        return 0;
     }
 }

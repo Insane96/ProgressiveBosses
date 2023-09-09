@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import insane96mcp.progressivebosses.module.wither.LvlHelper;
 import insane96mcp.progressivebosses.setup.PBLoot;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.util.GsonHelper;
@@ -21,20 +22,20 @@ import net.minecraft.world.level.storage.loot.providers.number.NumberProvider;
 
 import java.util.Set;
 
-public class SetCountPerDifficulty extends LootItemConditionalFunction {
+public class SetCountPerLvl extends LootItemConditionalFunction {
     final NumberProvider count;
-    final float perDifficultyChance;
-    final int difficultyModifier;
+    final float perLvlChance;
+    final int lvlModifier;
 
-    SetCountPerDifficulty(LootItemCondition[] lootItemConditions, NumberProvider count, float perDifficultyChance, int difficultyModifier) {
+    SetCountPerLvl(LootItemCondition[] lootItemConditions, NumberProvider count, float perLvlChance, int lvlModifier) {
         super(lootItemConditions);
         this.count = count;
-        this.perDifficultyChance = perDifficultyChance;
-        this.difficultyModifier = difficultyModifier;
+        this.perLvlChance = perLvlChance;
+        this.lvlModifier = lvlModifier;
     }
 
     public LootItemFunctionType getType() {
-        return PBLoot.SET_COUNT_PER_DIFFICULTY.get();
+        return PBLoot.SET_COUNT_PER_LVL.get();
     }
 
     public Set<LootContextParam<?>> getReferencedContextParams() {
@@ -53,11 +54,11 @@ public class SetCountPerDifficulty extends LootItemConditionalFunction {
         if (!mob.getPersistentData().contains(Strings.Tags.DIFFICULTY))
             return itemStack;
 
-        float difficulty = mob.getPersistentData().getFloat(Strings.Tags.DIFFICULTY);
-        int tries = (int) difficulty + this.difficultyModifier;
+        int lvl = LvlHelper.getLvl(mob);
+        int tries = lvl + this.lvlModifier;
         for (int i = 0; i < tries; i++) {
             float r = lootContext.getRandom().nextFloat();
-            if (r < this.perDifficultyChance)
+            if (r < this.perLvlChance)
                 itemStack.grow(this.count.getInt(lootContext));
         }
         //Remove one as the loot table starts with 1 item
@@ -65,25 +66,25 @@ public class SetCountPerDifficulty extends LootItemConditionalFunction {
         return itemStack;
     }
 
-    public static LootItemConditionalFunction.Builder<?> setCountPerDifficulty(NumberProvider count, float perDifficultyChance, int difficultyModifier) {
-        return simpleBuilder((lootItemConditions) -> new SetCountPerDifficulty(lootItemConditions, count, perDifficultyChance, difficultyModifier));
+    public static LootItemConditionalFunction.Builder<?> setCountPerLvl(NumberProvider count, float perLvlChance, int lvlModifier) {
+        return simpleBuilder((lootItemConditions) -> new SetCountPerLvl(lootItemConditions, count, perLvlChance, lvlModifier));
     }
 
-    public static LootItemConditionalFunction.Builder<?> setCountPerDifficulty(NumberProvider count, float perDifficultyChance) {
-        return simpleBuilder((lootItemConditions) -> new SetCountPerDifficulty(lootItemConditions, count, perDifficultyChance, 0));
+    public static LootItemConditionalFunction.Builder<?> setCountPerLvl(NumberProvider count, float perLvlChance) {
+        return simpleBuilder((lootItemConditions) -> new SetCountPerLvl(lootItemConditions, count, perLvlChance, 0));
     }
 
-    public static class Serializer extends LootItemConditionalFunction.Serializer<SetCountPerDifficulty> {
-        public void serialize(JsonObject jsonObject, SetCountPerDifficulty setCountPerDifficulty, JsonSerializationContext jsonSerializationContext) {
-            super.serialize(jsonObject, setCountPerDifficulty, jsonSerializationContext);
-            jsonObject.add("count", jsonSerializationContext.serialize(setCountPerDifficulty.count));
-            jsonObject.add("per_difficulty_chance", jsonSerializationContext.serialize(setCountPerDifficulty.perDifficultyChance));
-            jsonObject.add("difficulty_modifier", jsonSerializationContext.serialize(setCountPerDifficulty.difficultyModifier));
+    public static class Serializer extends LootItemConditionalFunction.Serializer<SetCountPerLvl> {
+        public void serialize(JsonObject jsonObject, SetCountPerLvl setCountPerLvl, JsonSerializationContext jsonSerializationContext) {
+            super.serialize(jsonObject, setCountPerLvl, jsonSerializationContext);
+            jsonObject.add("count", jsonSerializationContext.serialize(setCountPerLvl.count));
+            jsonObject.add("per_lvl_chance", jsonSerializationContext.serialize(setCountPerLvl.perLvlChance));
+            jsonObject.add("lvl_modifier", jsonSerializationContext.serialize(setCountPerLvl.lvlModifier));
         }
 
-        public SetCountPerDifficulty deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootItemCondition[] lootItemConditions) {
+        public SetCountPerLvl deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootItemCondition[] lootItemConditions) {
             NumberProvider numberprovider = GsonHelper.getAsObject(jsonObject, "count", jsonDeserializationContext, NumberProvider.class);
-            return new SetCountPerDifficulty(lootItemConditions, numberprovider, Mth.clamp(GsonHelper.getAsFloat(jsonObject, "per_difficulty_chance", 1f), 0f, 1f), GsonHelper.getAsInt(jsonObject, "difficulty_modifier", 0));
+            return new SetCountPerLvl(lootItemConditions, numberprovider, Mth.clamp(GsonHelper.getAsFloat(jsonObject, "per_lvl_chance", 1f), 0f, 1f), GsonHelper.getAsInt(jsonObject, "lvl_modifier", 0));
         }
     }
 }

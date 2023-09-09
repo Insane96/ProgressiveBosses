@@ -5,14 +5,8 @@
             "rolls": 1,
             "entries": [
                 {
-                    "type": "minecraft:item",
-                    "name": "progressivebosses:nether_star_shard",
-                    "functions": [
-                        {
-                            "function": "progressivebosses:set_count_per_difficulty",
-                            "count": 2
-                        }
-                    ]
+                    "type": "minecraft:loot_table",
+                    "name": "progressivebosses:entities/wither_0"
                 }
             ]
         },
@@ -24,8 +18,23 @@
                     "name": "minecraft:ancient_debris",
                     "functions": [
                         {
-                            "function": "progressivebosses:set_count_per_difficulty",
-                            "count": 2
+                            "function": "minecraft:set_count",
+                            "count": 5
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "progressivebosses:nether_star_shard",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": 5
                         }
                     ]
                 }

@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.module.wither.feature.DifficultyFeature;
+import insane96mcp.progressivebosses.module.wither.WitherFeature;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -38,7 +38,7 @@ public class WitherStatsReloadListener extends SimplePreparableReloadListener<Vo
 
         try {
             if (!file.exists()) {
-                String json = GSON.toJson(DifficultyFeature.DEFAULT_WITHER_STATS, WitherStats.LIST_TYPE).replaceAll("  ", "    ");
+                String json = GSON.toJson(WitherFeature.DEFAULT_WITHER_STATS, WitherStats.LIST_TYPE).replaceAll("  ", "    ");
                 Files.write(file.toPath(), json.getBytes());
             }
             JsonReader reader = new JsonReader(new FileReader(file.getAbsolutePath()));

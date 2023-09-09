@@ -97,7 +97,7 @@ public class WitherRangedAttackGoal extends Goal {
 					return;
 				if (i == 0)
 					this.wither.barrageTicks--;
-				if (this.wither.barrageTicks % 4 == 0) {
+				if (this.wither.barrageTicks % 6 == i) {
 					this.wither.performRangedAttack(i, target.getX() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), false);
 				}
 			}
@@ -105,9 +105,9 @@ public class WitherRangedAttackGoal extends Goal {
 				if (!canSee)
 					return;
 				this.wither.performRangedAttack(i, target);
-				int attackSpeedDelta = this.wither.stats.attackStats.attackSpeedFar - this.wither.stats.attackStats.attackSpeedNear;
+				int attackSpeedDelta = this.wither.stats.attack.attackSpeedFar - this.wither.stats.attack.attackSpeedNear;
 				double distanceRatio = distanceSqr / this.attackRadiusSqr;
-				this.headAttackTimes[i] = (int) (this.wither.stats.attackStats.attackSpeedNear + (attackSpeedDelta * distanceRatio));
+				this.headAttackTimes[i] = (int) (this.wither.stats.attack.attackSpeedNear + (attackSpeedDelta * distanceRatio));
 				this.headAttackTimes[i] += this.wither.getRandom().nextInt(-5, 6);
 			}
 		}

@@ -26,6 +26,18 @@ public class PoweredValue {
         return wither.isPowered() ? this.belowHalfHealth : this.aboveHalfHealth;
     }
 
+    public int getIntValue(PBWither wither) {
+        return (int) (wither.isPowered() ? this.belowHalfHealth : this.aboveHalfHealth);
+    }
+
+    public float getValue(boolean isPowered) {
+        return isPowered ? this.belowHalfHealth : this.aboveHalfHealth;
+    }
+
+    public int getIntValue(boolean isPowered) {
+        return (int) (isPowered ? this.belowHalfHealth : this.aboveHalfHealth);
+    }
+
     public static class Serializer implements JsonSerializer<PoweredValue>, JsonDeserializer<PoweredValue> {
         @Override
         public PoweredValue deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {

@@ -50,7 +50,7 @@ public class SummonHelper {
             wither.yBodyRot = blockPatternMatch.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
             wither.makeInvulnerable();
             wither.setLvl(lvl);
-            if (wither.stats.miscStats.netherOnly && level.dimension() != Level.NETHER) {
+            if (wither.stats.misc.netherOnly && level.dimension() != Level.NETHER) {
                 if (placerEntity != null)
                     placerEntity.sendSystemMessage(Component.translatable(ProgressiveBosses.MOD_ID + ".requires_nether"));
                 return;

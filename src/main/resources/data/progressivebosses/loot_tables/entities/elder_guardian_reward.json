@@ -41,8 +41,8 @@
             ],
             "conditions": [
                 {
-                    "condition": "progressivebosses:difficulty",
-                    "difficulty": 1,
+                    "condition": "progressivebosses:lvl",
+                    "lvl": 1,
                     "entity": "this"
                 }
             ]
@@ -63,8 +63,8 @@
             ],
             "conditions": [
                 {
-                    "condition": "progressivebosses:difficulty",
-                    "difficulty": 2,
+                    "condition": "progressivebosses:lvl",
+                    "lvl": 2,
                     "entity": "this"
                 }
             ]

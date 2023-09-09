@@ -1,6 +1,8 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
 import com.google.common.collect.ImmutableList;
+import insane96mcp.progressivebosses.module.ILvl;
+import insane96mcp.progressivebosses.module.wither.WitherFeature;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.module.wither.data.WitherStats;
@@ -60,7 +62,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
+public class PBWither extends Monster implements PowerableMob, RangedAttackMob, ILvl {
     public static final int CHARGE_ATTACK_TICK_CHARGE = 30;
     private static final EntityDataAccessor<Integer> DATA_TARGET_A = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_TARGET_B = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
@@ -82,6 +84,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(64d).selector(LIVING_ENTITY_SELECTOR);
     public int barrageTicks;
     public WitherStats stats;
+    public int minionCooldown;
 
     public PBWither(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -113,7 +116,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         Component component = this.getCustomName();
         if (component != null)
             return super.getName();
-        return Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(this.getType())) + "." + this.getLvL());
+        return Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(this.getType())) + "." + this.getLvl());
     }
 
     @Nullable
@@ -126,7 +129,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("Invul", this.getInvulnerableTicks());
-        tag.putInt("lvl", this.getLvL());
+        tag.putInt("lvl", this.getLvl());
     }
 
     /**
@@ -174,20 +177,26 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     public int getChargingTicks() {
         return this.entityData.get(CHARGING);
     }
+    public boolean isCharging() {
+        return this.entityData.get(CHARGING) > 0;
+    }
     public void tickCharging() {
         int ticks = this.entityData.get(CHARGING);
         if (ticks > 0)
             this.entityData.set(CHARGING, ticks - 1);
     }
     public void initCharging() {
-        this.entityData.set(CHARGING, this.stats.attackStats.chargeTime + 30);
+        this.entityData.set(CHARGING, this.stats.attack.chargeTime + 30);
     }
     public void stopCharging() {
         this.entityData.set(CHARGING, 0);
     }
     public void tryCharge(float damageAmount) {
+        if (!WitherFeature.enableCharge
+                || this.isCharging())
+            return;
         double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
-        double chance = this.stats.attackStats.maxChargeChance * missingHealthPerc;
+        double chance = this.stats.attack.maxChargeChance * missingHealthPerc;
         chance *= (damageAmount / 10f);
         double r = this.getRandom().nextDouble();
         if (r < chance)
@@ -195,10 +204,42 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     }
 
     private void tryBarrage(float damageAmount) {
-        double chance = this.stats.attackStats.maxChargeChance * (damageAmount / 10f);
-        if (this.getRandom().nextDouble() < chance)
-            this.barrageTicks = this.stats.attackStats.barrageDuration;
+        if (!WitherFeature.enableBarrage)
+            return;
+        double chance = this.stats.attack.barrageChance * (damageAmount / 10f);
+        if (this.getRandom().nextDouble() < chance) {
+            double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
+            this.barrageTicks = (int) (((this.stats.attack.maxBarrageDuration - this.stats.attack.minBarrageDuration) * missingHealthPerc) + this.stats.attack.minBarrageDuration);
+        }
     }
+
+    private void tickMinion() {
+        if (--this.minionCooldown <= 0) {
+            this.stats.minion.trySpawnMinion(this);
+        }
+    }
+
+    /*@SubscribeEvent
+	public void onDeath(LivingDeathEvent event) {
+		if (event.getEntity().level().isClientSide
+				|| !this.isEnabled()
+				|| !killMinionOnWitherDeath
+				|| !(event.getEntity() instanceof WitherBoss wither))
+			return;
+
+		ServerLevel world = (ServerLevel) wither.level();
+
+		CompoundTag tags = wither.getPersistentData();
+		ListTag minionsList = tags.getList(Strings.Tags.MINIONS, Tag.TAG_COMPOUND);
+
+		for (int i = 0; i < minionsList.size(); i++) {
+			UUID uuid = minionsList.getCompound(i).getUUID("uuid");
+			WitherMinion witherMinion = (WitherMinion) world.getEntity(uuid);
+			if (witherMinion == null)
+				continue;
+			witherMinion.addEffect(new MobEffectInstance(MobEffects.HEAL, 10000, 0, false, false));
+		}
+	}*/
 
     /**+
      * Called when spawning the wither from the "corrupted soul sand"
@@ -215,7 +256,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         this.bossEvent.setName(this.getDisplayName());
     }
 
-    public int getLvL() {
+    public int getLvl() {
         return this.entityData.get(LVL);
     }
 
@@ -244,12 +285,14 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
         if (this.getInvulnerableTicks() > 0) {
             this.setDeltaMovement(Vec3.ZERO);
         }
-        else if (this.getChargingTicks() <= 0) {
+        else if (!this.isCharging()) {
             Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0D, 1.0D);
             if (!this.level().isClientSide && this.getAlternativeTarget(0) > 0) {
                 Entity entity = this.level().getEntity(this.getAlternativeTarget(0));
                 if (entity != null) {
                     double d0 = -0.01d;
+                    if (this.isPowered())
+                        d0 *= 5d;
                     if ((this.getY() < entity.getY() || (!this.isPowered() && this.getY() < entity.getY() + 5.0D))) {
                         d0 = 0.3D;
                     }
@@ -334,7 +377,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
             int newInvulTicks = this.getInvulnerableTicks() - 1;
             this.bossEvent.setProgress(1.0F - (float)newInvulTicks / INVULNERABLE_TICKS);
             if (newInvulTicks <= 0) {
-                this.level().explode(this, this.getX(), this.getEyeY(), this.getZ(), this.stats.miscStats.explosionPower, this.stats.miscStats.explosionCausesFire, Level.ExplosionInteraction.MOB);
+                this.level().explode(this, this.getX(), this.getEyeY(), this.getZ(), this.stats.misc.explosionPower, this.stats.misc.explosionCausesFire, Level.ExplosionInteraction.MOB);
                 if (!this.isSilent()) {
                     this.level().globalLevelEvent(LevelEvent.SOUND_WITHER_BOSS_SPAWN, this.blockPosition(), 0);
                 }
@@ -398,20 +441,22 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
                 }
             }
 
-            float regen = this.stats.healthStats.regeneration / 20f;
-            if (this.tickCount > this.getLastHurtByMobTimestamp() && this.tickCount - this.getLastHurtByMobTimestamp() < this.stats.healthStats.regenWhenHitDuration)
-                regen *= this.stats.healthStats.regenWhenHit;
+            float regen = this.stats.health.regeneration / 20f;
+            if (this.stats.health.regenWhenHit != 1f && this.tickCount > this.getLastHurtByMobTimestamp() && this.tickCount - this.getLastHurtByMobTimestamp() < this.stats.health.regenWhenHitDuration)
+                regen *= this.stats.health.regenWhenHit;
             if (!this.isPowered() || this.getHealth() + regen < this.getMaxHealth() / 2f)
                 this.heal(regen);
 
             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
 
+            if (!this.isCharging())
+                this.tickMinion();
             this.tickCharging();
         }
     }
 
     public boolean canDestroyBlock(BlockPos pos, BlockState state) {
-        if (this.stats.miscStats.ignoreWitherProofBlocks)
+        if (this.stats.misc.ignoreWitherProofBlocks)
             return !state.isAir() && state.getDestroySpeed(this.level(), pos) >= 0f;
         else
             return !state.isAir() && !state.is(BlockTags.WITHER_IMMUNE);
@@ -493,7 +538,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     }
 
     public void performRangedAttack(int pHead, LivingEntity pTarget) {
-        this.performRangedAttack(pHead, pTarget.getX(), pTarget.getY() + (double)pTarget.getEyeHeight() * 0.5D, pTarget.getZ(), pHead == 0 /*&& this.random.nextFloat() < 0.01F*/);
+        this.performRangedAttack(pHead, pTarget.getX(), pTarget.getY() + (double)pTarget.getEyeHeight() * 0.5D, pTarget.getZ(), pHead == 0 && this.random.nextFloat() < this.stats.attack.dangerousSkullChance);
     }
 
     /**
