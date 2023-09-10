@@ -24,6 +24,7 @@ import net.minecraft.world.phys.HitResult;
 
 public class PBWitherSkull extends AbstractHurtingProjectile {
     ResourceKey<DamageType> DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_skull"));
+    LivingEntity originalOwner;
 
     private static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(PBWitherSkull.class, EntityDataSerializers.BOOLEAN);
     public PBWitherSkull(EntityType<? extends PBWitherSkull> pEntityType, Level pLevel) {
@@ -37,6 +38,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
             this.yPower *= wither.stats.attack.skullSpeedMultiplier;
             this.zPower *= wither.stats.attack.skullSpeedMultiplier;
         }
+        this.originalOwner = pShooter;
     }
 
     /**
@@ -60,7 +62,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
         super.onHitEntity(pResult);
         if (!this.level().isClientSide) {
             Entity entityHit = pResult.getEntity();
-            Entity owner = this.getOwner();
+            Entity owner = this.originalOwner;
             boolean hasHurtEntity;
             if (owner instanceof LivingEntity livingOwner) {
                 float damage = 8f;
@@ -117,8 +119,13 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
      * Called when the entity is attacked.
      */
     public boolean hurt(DamageSource pSource, float pAmount) {
-        if (this.isDangerous() && !(pSource.getDirectEntity() instanceof PBWitherSkull))
-            return super.hurt(pSource, pAmount);
+        if (this.isDangerous() && !(pSource.getDirectEntity() instanceof PBWitherSkull)) {
+            boolean ret = super.hurt(pSource, pAmount);
+            this.xPower *= 1.5f;
+            this.yPower *= 1.5f;
+            this.zPower *= 1.5f;
+            return ret;
+        }
         return false;
     }
 

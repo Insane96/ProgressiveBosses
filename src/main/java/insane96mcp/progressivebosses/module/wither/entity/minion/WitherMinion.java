@@ -71,7 +71,6 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 			return null;
 		CompoundTag minionTags = minion.getPersistentData();
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
-		//TODO Scaling health
 
 		minion.setPos(pos);
 		minion.setLvl(lvl);
