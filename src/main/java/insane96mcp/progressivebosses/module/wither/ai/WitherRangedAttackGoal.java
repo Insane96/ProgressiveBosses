@@ -97,7 +97,7 @@ public class WitherRangedAttackGoal extends Goal {
 					return;
 				if (i == 0)
 					this.wither.barrageTicks--;
-				if (this.wither.barrageTicks % 6 == i) {
+				if (this.wither.barrageTicks % 9 == i * 3) {
 					this.wither.performRangedAttack(i, target.getX() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), false);
 				}
 			}
