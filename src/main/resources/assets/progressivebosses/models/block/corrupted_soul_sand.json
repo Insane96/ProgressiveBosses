@@ -1,6 +1,6 @@
 {
     "parent": "minecraft:block/cube_all",
     "textures": {
-        "all": "survivalreimagined:block/corrupted_soul_sand"
+        "all": "progressivebosses:block/corrupted_soul_sand"
     }
 }

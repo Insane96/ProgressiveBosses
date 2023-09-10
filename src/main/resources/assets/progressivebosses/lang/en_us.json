@@ -2,6 +2,8 @@
   "item.progressivebosses.nether_star_shard": "Nether Star Shard",
   "item.progressivebosses.elder_guardian_spike": "Elder Guardian Spike",
   "block.progressivebosses.corrupted_soul_sand": "Corrupted Soul Sand",
+  "progressivebosses.corrupted_soul_sand": "Corrupted Soul Sand",
+  "progressivebosses.requires_nether": "This dimension can't stand this corruption level. The Nether is required.",
 
   "entity.progressivebosses.wither_minion": "Wither Minion",
   "death.attack.progressivebosses:wither_charge": "%1$s was charged by %2$s",
