@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 
 @JsonAdapter(WitherAttack.Serializer.class)
 public class WitherAttack {
+    //TODO Skulls wither effect
     public float skullDamage;
     public float skullSpeedMultiplier;
     public float dangerousSkullChance;

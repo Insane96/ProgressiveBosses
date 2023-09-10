@@ -142,7 +142,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 
 		this.targetSelector.addGoal(1, new HurtByTargetGoal(this, PBWither.class, WitherBoss.class, WitherMinion.class));
-		this.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(this, Player.class, false).setIgnoreLineOfSight());
+		this.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(this, Player.class, true).setIgnoreLineOfSight());
 		this.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(this, Mob.class, 0, false, false, NOT_UNDEAD));
 	}
 

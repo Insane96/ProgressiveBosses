@@ -93,13 +93,14 @@ public class WitherRangedAttackGoal extends Goal {
 			if (i == 0)
 				this.wither.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
+			//Barrage attack has a "charging up" phase where he grows before barraging
 			if (this.wither.barrageTicks > 0) {
 				if (!canSee)
 					return;
 				if (i == 0)
 					this.wither.barrageTicks--;
 				//noinspection DataFlowIssue - Shouldn't be able to get in here if barrage doesn't exist
-				if (this.wither.barrageTicks % 3 * (this.wither.stats.attack.barrage.attackSpeed) == i * this.wither.stats.attack.barrage.attackSpeed) {
+				if (this.wither.barrageTicks % (3 * this.wither.stats.attack.barrage.attackSpeed) == i * this.wither.stats.attack.barrage.attackSpeed) {
 					this.wither.performRangedAttack(i, target.getX() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), false);
 				}
 			}

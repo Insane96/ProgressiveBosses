@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
 import com.google.common.collect.ImmutableList;
+import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.module.ILvl;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
@@ -39,7 +40,6 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomFlyingGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -107,7 +107,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(this, LivingEntity.class, 0, false, false, LIVING_ENTITY_SELECTOR));
+        this.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(this, LivingEntity.class, false, false, LIVING_ENTITY_SELECTOR));
     }
 
     @Override
