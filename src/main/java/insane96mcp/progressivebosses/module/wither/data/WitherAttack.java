@@ -20,14 +20,14 @@ public class WitherAttack {
     @Nullable
     public WitherBarrage barrage;
 
-    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float maxChargeChance, float chargeDamage, int chargeTime, float barrageChance, int minBarrageDuration, int maxBarrageDuration) {
+    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float maxChargeChance, float chargeDamage, int chargeTime, float barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
         this.skullDamage = skullDamage;
         this.skullSpeedMultiplier = skullSpeedMultiplier;
         this.dangerousSkullChance = dangerousSkullChance;
         this.attackSpeedNear = attackSpeedNear;
         this.attackSpeedFar = attackSpeedFar;
         this.charge = new WitherCharge(maxChargeChance, chargeDamage, chargeTime);
-        this.barrage = new WitherBarrage(barrageChance, minBarrageDuration, maxBarrageDuration);
+        this.barrage = new WitherBarrage(barrageChance, minBarrageDuration, maxBarrageDuration, barrageAttackSpeed);
     }
 
     public static class Serializer implements JsonSerializer<WitherAttack>, JsonDeserializer<WitherAttack> {
@@ -40,7 +40,7 @@ public class WitherAttack {
                     GsonHelper.getAsFloat(jObject, "skull_speed_multiplier"),
                     GsonHelper.getAsFloat(jObject, "dangerous_skull_damage"),
                     GsonHelper.getAsInt(jObject, "attack_speed_near"),
-                    GsonHelper.getAsInt(jObject, "attack_speed_far"), 0, 0, 0, 0, 0, 0);
+                    GsonHelper.getAsInt(jObject, "attack_speed_far"), 0, 0, 0, 0, 1, 1, 1);
             witherAttack.charge = witherCharge;
             witherAttack.barrage = witherBarrage;
             return witherAttack;
@@ -84,11 +84,14 @@ public class WitherAttack {
         public int minDuration;
         @SerializedName("max_duration")
         public int maxDuration;
+        @SerializedName("attack_speed")
+        public int attackSpeed;
 
-        public WitherBarrage(float chance, int minDuration, int maxDuration) {
+        public WitherBarrage(float chance, int minDuration, int maxDuration, int attackSpeed) {
             this.chance = chance;
             this.minDuration = minDuration;
             this.maxDuration = maxDuration;
+            this.attackSpeed = attackSpeed;
         }
     }
 }
