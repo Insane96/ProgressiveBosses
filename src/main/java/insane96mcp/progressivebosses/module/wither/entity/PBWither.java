@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.module.wither.entity;
 
 import com.google.common.collect.ImmutableList;
 import insane96mcp.progressivebosses.module.ILvl;
-import insane96mcp.progressivebosses.module.wither.WitherFeature;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.module.wither.data.WitherStats;
@@ -147,17 +146,13 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     @Override
     protected void actuallyHurt(DamageSource damageSource, float damageAmount) {
         //If it's magic damage
-        if (damageSource.is(DamageTypes.MAGIC) || damageSource.is(DamageTypes.INDIRECT_MAGIC)) {
+        if (this.stats.resistancesWeaknesses != null && damageSource.is(DamageTypes.MAGIC) || damageSource.is(DamageTypes.INDIRECT_MAGIC)) {
             double missingHealth = this.getMaxHealth() - this.getHealth();
             damageAmount *= (float) (missingHealth / this.stats.resistancesWeaknesses.doubleMagicDamageEveryThisMissingHealth + 1);
         }
         boolean wasPowered = this.isPowered();
         super.actuallyHurt(damageSource, damageAmount);
-        if (wasPowered != this.isPowered()) {
-            AttributeInstance instance = this.getAttribute(Attributes.ARMOR);
-            if (instance != null)
-                instance.setBaseValue(this.stats.resistancesWeaknesses.armor.getValue(this));
-        }
+        updateStats(wasPowered);
 
         tryCharge(damageAmount);
         tryBarrage(damageAmount);
@@ -186,60 +181,52 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             this.entityData.set(CHARGING, ticks - 1);
     }
     public void initCharging() {
-        this.entityData.set(CHARGING, this.stats.attack.chargeTime + 30);
+        if (this.stats.attack.charge != null)
+            this.entityData.set(CHARGING, this.stats.attack.charge.time + CHARGE_ATTACK_TICK_CHARGE);
     }
     public void stopCharging() {
         this.entityData.set(CHARGING, 0);
     }
     public void tryCharge(float damageAmount) {
-        if (!WitherFeature.enableCharge
+        if (this.stats.attack.charge == null
                 || this.isCharging())
             return;
         double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
-        double chance = this.stats.attack.maxChargeChance * missingHealthPerc;
+        double chance = this.stats.attack.charge.maxChance * missingHealthPerc;
         chance *= (damageAmount / 10f);
         double r = this.getRandom().nextDouble();
         if (r < chance)
             this.initCharging();
     }
 
-    private void tryBarrage(float damageAmount) {
-        if (!WitherFeature.enableBarrage)
+    private void updateStats(boolean wasPowered) {
+        if (this.stats.resistancesWeaknesses == null)
             return;
-        double chance = this.stats.attack.barrageChance * (damageAmount / 10f);
+        if (wasPowered != this.isPowered()) {
+            AttributeInstance instance = this.getAttribute(Attributes.ARMOR);
+            if (instance != null)
+                instance.setBaseValue(this.stats.resistancesWeaknesses.armor.getValue(this));
+            instance = this.getAttribute(Attributes.ARMOR_TOUGHNESS);
+            if (instance != null)
+                instance.setBaseValue(this.stats.resistancesWeaknesses.toughness.getValue(this));
+        }
+    }
+
+    private void tryBarrage(float damageAmount) {
+        if (this.stats.attack.barrage == null)
+            return;
+        double chance = this.stats.attack.barrage.chance * (damageAmount / 10f);
         if (this.getRandom().nextDouble() < chance) {
             double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
-            this.barrageTicks = (int) (((this.stats.attack.maxBarrageDuration - this.stats.attack.minBarrageDuration) * missingHealthPerc) + this.stats.attack.minBarrageDuration);
+            this.barrageTicks = (int) (((this.stats.attack.barrage.maxDuration - this.stats.attack.barrage.minDuration) * missingHealthPerc) + this.stats.attack.barrage.minDuration);
         }
     }
 
     private void tickMinion() {
-        if (--this.minionCooldown <= 0) {
+        if (this.stats.minion != null && --this.minionCooldown <= 0) {
             this.stats.minion.trySpawnMinion(this);
         }
     }
-
-    /*@SubscribeEvent
-	public void onDeath(LivingDeathEvent event) {
-		if (event.getEntity().level().isClientSide
-				|| !this.isEnabled()
-				|| !killMinionOnWitherDeath
-				|| !(event.getEntity() instanceof WitherBoss wither))
-			return;
-
-		ServerLevel world = (ServerLevel) wither.level();
-
-		CompoundTag tags = wither.getPersistentData();
-		ListTag minionsList = tags.getList(Strings.Tags.MINIONS, Tag.TAG_COMPOUND);
-
-		for (int i = 0; i < minionsList.size(); i++) {
-			UUID uuid = minionsList.getCompound(i).getUUID("uuid");
-			WitherMinion witherMinion = (WitherMinion) world.getEntity(uuid);
-			if (witherMinion == null)
-				continue;
-			witherMinion.addEffect(new MobEffectInstance(MobEffects.HEAL, 10000, 0, false, false));
-		}
-	}*/
 
     /**+
      * Called when spawning the wither from the "corrupted soul sand"
@@ -576,11 +563,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public void heal(float pHealAmount) {
         boolean wasPowered = this.isPowered();
         super.heal(pHealAmount);
-        if (wasPowered != this.isPowered()) {
-            AttributeInstance instance = this.getAttribute(Attributes.ARMOR);
-            if (instance != null)
-                instance.setBaseValue(this.stats.resistancesWeaknesses.armor.getValue(this));
-        }
+        updateStats(wasPowered);
     }
 
     /**

@@ -23,7 +23,7 @@ public class PoweredValue {
     }
 
     public float getValue(PBWither wither) {
-        return wither.isPowered() ? this.belowHalfHealth : this.aboveHalfHealth;
+        return wither.isPowered() && wither.getInvulnerableTicks() == 0 ? this.belowHalfHealth : this.aboveHalfHealth;
     }
 
     public int getIntValue(PBWither wither) {

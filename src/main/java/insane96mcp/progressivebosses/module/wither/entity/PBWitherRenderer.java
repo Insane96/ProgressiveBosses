@@ -27,7 +27,6 @@ public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWith
      */
     public ResourceLocation getTextureLocation(PBWither pEntity) {
         int c = pEntity.getChargingTicks();
-        //TODO Blink when about to charge
         if (c > 0)
             return c < 30 || (c > 50 && c % 10 < 5) || (c < 50 && c % 4 >= 2) ? WITHER_CHARGING_LOCATION : WITHER_LOCATION;
 

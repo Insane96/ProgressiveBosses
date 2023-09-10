@@ -134,7 +134,7 @@ public class WitherChargeAttackGoal extends Goal {
 			this.wither.level().getEntitiesOfClass(LivingEntity.class, axisAlignedBB).forEach(entity -> {
 				if (entity == this.wither)
 					return;
-				entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.chargeDamage);
+				entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.charge == null ? 12f : this.wither.stats.attack.charge.damage);
 				double d2 = entity.getX() - this.wither.getX();
 				double d3 = entity.getZ() - this.wither.getZ();
 				double d4 = Math.max(d2 * d2 + d3 * d3, 0.1D);

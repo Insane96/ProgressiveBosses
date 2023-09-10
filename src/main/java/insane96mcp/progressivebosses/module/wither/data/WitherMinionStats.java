@@ -9,7 +9,6 @@ import insane96mcp.progressivebosses.setup.PBEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -24,21 +23,19 @@ public class WitherMinionStats {
     public PoweredValue maxCooldown;
     public PoweredValue bonusMovementSpeed;
     public float magicDamageMultiplier;
-    public boolean killMinionOnWitherDeath;
     public PoweredValue bowChance;
     public float sharpnessChance;
     public float knockbackChance;
     public float powerChance;
     public float punchChance;
 
-    public WitherMinionStats(PoweredValue minionsSpawned, PoweredValue maxAround, PoweredValue minCooldown, PoweredValue maxCooldown, PoweredValue bonusMovementSpeed, float magicDamageMultiplier, boolean killMinionOnWitherDeath, PoweredValue bowChance, float sharpnessChance, float knockbackChance, float powerChance, float punchChance) {
+    public WitherMinionStats(PoweredValue minionsSpawned, PoweredValue maxAround, PoweredValue minCooldown, PoweredValue maxCooldown, PoweredValue bonusMovementSpeed, float magicDamageMultiplier, PoweredValue bowChance, float sharpnessChance, float knockbackChance, float powerChance, float punchChance) {
         this.minionsSpawned = minionsSpawned;
         this.maxAround = maxAround;
         this.minCooldown = minCooldown;
         this.maxCooldown = maxCooldown;
         this.bonusMovementSpeed = bonusMovementSpeed;
         this.magicDamageMultiplier = magicDamageMultiplier;
-        this.killMinionOnWitherDeath = killMinionOnWitherDeath;
         this.bowChance = bowChance;
         this.sharpnessChance = sharpnessChance;
         this.knockbackChance = knockbackChance;
@@ -80,9 +77,9 @@ public class WitherMinionStats {
             int x = 0, y = 0, z = 0;
             //Tries to spawn the Minion up to 5 times
             for (int t = 0; t < 5; t++) {
-                x = (int) (wither.getX() + (Mth.nextInt(wither.level().random, -3, 3)));
+                x = (int) (wither.getX() + (wither.getRandom().nextInt(-3, 4)));
                 y = (int) (wither.getY() + 3);
-                z = (int) (wither.getZ() + (Mth.nextInt(wither.level().random, -3, 3)));
+                z = (int) (wither.getZ() + (wither.getRandom().nextInt(-3, 4)));
 
                 y = MCUtils.getFittingY(PBEntities.WITHER_MINION.get(), new BlockPos(x, y, z), wither.level(), 8);
                 if (y != -1)
@@ -92,13 +89,6 @@ public class WitherMinionStats {
                 continue;
 
             WitherMinion.create(new Vec3(x + 0.5, y + 0.5, z + 0.5), wither);
-
-            //TODO Kill minions on Wither Death
-            /*ListTag minionsList = witherTags.getList(Strings.Tags.MINIONS, Tag.TAG_COMPOUND);
-            CompoundTag uuid = new CompoundTag();
-            uuid.putUUID("uuid", witherMinion.getUUID());
-            minionsList.add(uuid);
-            witherTags.put(Strings.Tags.MINIONS, minionsList);*/
 
             minionsCountInAABB++;
             if (minionsCountInAABB >= this.maxAround.getIntValue(wither))
@@ -115,7 +105,6 @@ public class WitherMinionStats {
                     context.deserialize(json.getAsJsonObject().get("max_cooldown"), PoweredValue.class),
                     context.deserialize(json.getAsJsonObject().get("bonus_movement_speed"), PoweredValue.class),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "magic_damage_multiplier"),
-                    GsonHelper.getAsBoolean(json.getAsJsonObject(), "kill_minion_on_wither_death"),
                     context.deserialize(json.getAsJsonObject().get("bow_chance"), PoweredValue.class),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "sharpness_chance"),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "knockback_chance"),
@@ -133,7 +122,6 @@ public class WitherMinionStats {
             jsonObject.add("max_cooldown", context.serialize(src.maxCooldown));
             jsonObject.add("bonus_movement_speed", context.serialize(src.bonusMovementSpeed));
             jsonObject.add("magic_damage_multiplier", context.serialize(src.magicDamageMultiplier));
-            jsonObject.add("kill_minion_on_wither_death", context.serialize(src.killMinionOnWitherDeath));
             jsonObject.add("bow_chance", context.serialize(src.bowChance));
             jsonObject.add("sharpness_chance", context.serialize(src.sharpnessChance));
             jsonObject.add("knockback_chance", context.serialize(src.knockbackChance));
