@@ -6,7 +6,7 @@
             "entries": [
                 {
                     "type": "minecraft:loot_table",
-                    "name": "progressivebosses:entities/wither_0"
+                    "name": "minecraft:entities/wither"
                 }
             ]
         },
@@ -19,7 +19,7 @@
                     "functions": [
                         {
                             "function": "minecraft:set_count",
-                            "count": 5
+                            "count": 9
                         }
                     ]
                 }
@@ -34,7 +34,34 @@
                     "functions": [
                         {
                             "function": "minecraft:set_count",
-                            "count": 5
+                            "count": 7
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "weight": 1,
+                    "name": "progressivebosses:corrupted_soul_sand",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{BlockEntityTag:{lvl:1}}"
+                        }
+                    ]
+                },
+                {
+                    "type": "minecraft:item",
+                    "weight": 4,
+                    "name": "progressivebosses:corrupted_soul_sand",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_nbt",
+                            "tag": "{BlockEntityTag:{lvl:2}}"
                         }
                     ]
                 }
