@@ -296,6 +296,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                         }
                     }
                 }
+                //TODO Charge instead
                 else if (this.isInWall()) {
                     vec3 = vec3.add(0, -0.3d, 0);
                 }

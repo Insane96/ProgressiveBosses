@@ -1,0 +1,9 @@
+{
+    "replace": false,
+    "values": [
+        "minecraft:thorns",
+        "minecraft:wither_skull",
+        "progressivebosses:wither_skull",
+        "progressivebosses:wither_charge"
+    ]
+}
