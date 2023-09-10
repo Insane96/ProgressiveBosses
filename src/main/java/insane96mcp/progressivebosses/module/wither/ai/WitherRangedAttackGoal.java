@@ -10,7 +10,7 @@ import java.util.EnumSet;
 public class WitherRangedAttackGoal extends Goal {
 	private final PBWither wither;
 	private final int[] headAttackTimes = new int[3];
-	private final int[] unseenTargetTicks = new int[3];
+	private int unseenTargetTicks = 0;
 	private int seeTime;
 	private final float attackRadiusSqr;
 
@@ -67,17 +67,19 @@ public class WitherRangedAttackGoal extends Goal {
 				continue;
 			double distanceSqr = this.wither.distanceToSqr(target.getX(), target.getY(), target.getZ());
 			boolean canSee = this.wither.getSensing().hasLineOfSight(target);
-			//TODO Charge unseen this.wither.tryCharge(wither, this.unseenTargetTicks[i] / 20f);
-			int unseenPlayerTicks = this.unseenTargetTicks[i];
-			if (canSee) {
-				++this.seeTime;
-				if (unseenPlayerTicks > 0)
-					this.unseenTargetTicks[i] = unseenPlayerTicks - 1;
-			}
-			else {
-				this.seeTime = 0;
-				if (unseenPlayerTicks < 300)
-					this.unseenTargetTicks[i] = unseenPlayerTicks + 2;
+
+			if (i == 0) {
+				if (canSee) {
+					++this.seeTime;
+					if (this.unseenTargetTicks > 0)
+						this.unseenTargetTicks--;
+				}
+				else {
+					this.seeTime = 0;
+					if (this.unseenTargetTicks < 300)
+						this.unseenTargetTicks += 2;
+					this.wither.tryCharge(this.unseenTargetTicks / 30f);
+				}
 			}
 
 			if (distanceSqr <= (double)this.attackRadiusSqr && this.seeTime > 0) {
@@ -91,13 +93,13 @@ public class WitherRangedAttackGoal extends Goal {
 			if (i == 0)
 				this.wither.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
-			int barrageAttackTick = this.wither.barrageTicks;
-			if (barrageAttackTick > 0) {
+			if (this.wither.barrageTicks > 0) {
 				if (!canSee)
 					return;
 				if (i == 0)
 					this.wither.barrageTicks--;
-				if (this.wither.barrageTicks % 9 == i * 3) {
+				//noinspection DataFlowIssue - Shouldn't be able to get in here if barrage doesn't exist
+				if (this.wither.barrageTicks % 3 * (this.wither.stats.attack.barrage.attackSpeed) == i * this.wither.stats.attack.barrage.attackSpeed) {
 					this.wither.performRangedAttack(i, target.getX() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -2d, 2d), false);
 				}
 			}
