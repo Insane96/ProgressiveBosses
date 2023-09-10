@@ -150,6 +150,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             double missingHealth = this.getMaxHealth() - this.getHealth();
             damageAmount *= (float) (missingHealth / this.stats.resistancesWeaknesses.doubleMagicDamageEveryThisMissingHealth + 1);
         }
+        if (damageSource.getDirectEntity() instanceof PBWitherSkull witherSkull && witherSkull.isDangerous()) {
+            damageAmount *= 3;
+        }
         boolean wasPowered = this.isPowered();
         super.actuallyHurt(damageSource, damageAmount);
         updateStats(wasPowered);
@@ -274,22 +277,27 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         }
         else if (!this.isCharging()) {
             Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0D, 1.0D);
-            if (!this.level().isClientSide && this.getAlternativeTarget(0) > 0) {
-                Entity entity = this.level().getEntity(this.getAlternativeTarget(0));
-                if (entity != null) {
-                    double d0 = -0.01d;
-                    if (this.isPowered())
-                        d0 *= 5d;
-                    if ((this.getY() < entity.getY() || (!this.isPowered() && this.getY() < entity.getY() + 5.0D))) {
-                        d0 = 0.3D;
-                    }
+            if (!this.level().isClientSide) {
+                if (this.getAlternativeTarget(0) > 0) {
+                    Entity entity = this.level().getEntity(this.getAlternativeTarget(0));
+                    if (entity != null) {
+                        double d0 = -0.02d;
+                        if (this.isPowered())
+                            d0 *= 5d;
+                        if ((this.getY() < entity.getY() || (!this.isPowered() && this.getY() < entity.getY() + 5.0D))) {
+                            d0 = 0.3D;
+                        }
 
-                    vec3 = new Vec3(vec3.x, d0, vec3.z);
-                    Vec3 vec31 = new Vec3(entity.getX() - this.getX(), 0.0D, entity.getZ() - this.getZ());
-                    if (vec31.horizontalDistanceSqr() > 9.0D) {
-                        Vec3 vec32 = vec31.normalize();
-                        vec3 = vec3.add(vec32.x * 0.3D - vec3.x * 0.6D, 0.0D, vec32.z * 0.3D - vec3.z * 0.6D);
+                        vec3 = new Vec3(vec3.x, d0, vec3.z);
+                        Vec3 vec31 = new Vec3(entity.getX() - this.getX(), 0.0D, entity.getZ() - this.getZ());
+                        if (vec31.horizontalDistanceSqr() > 9.0D) {
+                            Vec3 vec32 = vec31.normalize();
+                            vec3 = vec3.add(vec32.x * 0.3D - vec3.x * 0.6D, 0.0D, vec32.z * 0.3D - vec3.z * 0.6D);
+                        }
                     }
+                }
+                else if (this.isInWall()) {
+                    vec3 = vec3.add(0, -0.3d, 0);
                 }
             }
 
