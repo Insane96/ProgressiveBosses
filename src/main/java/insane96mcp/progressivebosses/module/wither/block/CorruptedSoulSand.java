@@ -29,9 +29,9 @@ public class CorruptedSoulSand extends BaseEntityBlock {
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter pLevel, List<Component> pTooltip, TooltipFlag pFlag) {
         super.appendHoverText(stack, pLevel, pTooltip, pFlag);
         CompoundTag compoundTag = BlockItem.getBlockEntityData(stack);
-        if (compoundTag == null)
-            return;
-        int lvl = compoundTag.getInt("lvl");
+        int lvl = 0;
+        if (compoundTag != null)
+            lvl = compoundTag.getInt("lvl");
         pTooltip.add(Component.translatable(ProgressiveBosses.RESOURCE_PREFIX + "corrupted_soul_sand.corruption_level", lvl).withStyle(ChatFormatting.GRAY));
     }
 
@@ -39,7 +39,7 @@ public class CorruptedSoulSand extends BaseEntityBlock {
     public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         BlockEntity blockentity = level.getBlockEntity(pos);
         if (blockentity instanceof CorruptedSoulSandBlockEntity corruptedSoulSandBlockEntity) {
-            if (!level.isClientSide && player.isCreative()) {
+            if (!level.isClientSide && !player.isCreative()) {
                 ItemStack itemstack = new ItemStack(this.asItem());
                 blockentity.saveToItem(itemstack);
 
