@@ -88,7 +88,9 @@ public class WitherChargeAttackGoal extends Goal {
 			this.wither.setDeltaMovement(Vec3.ZERO);
 
 		if (chargeTicks == PBWither.CHARGE_ATTACK_TICK_CHARGE) {
-			this.target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
+			this.target = this.wither.getTarget();
+			if (this.target == null)
+				this.target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
 			if (target != null) {
 				this.targetPos = this.target.position().add(0, -1.5d, 0);
 				Vec3 forward = this.targetPos.subtract(this.wither.position()).normalize();
