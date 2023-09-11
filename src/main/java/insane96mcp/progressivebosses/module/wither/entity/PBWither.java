@@ -82,7 +82,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public int destroyBlocksTick;
     public final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
     private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (livingEntity) -> livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
-    private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(64d).selector(LIVING_ENTITY_SELECTOR);
+    private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(48d).selector(LIVING_ENTITY_SELECTOR);
     public int barrageTicks;
     public WitherStats stats;
     public int minionCooldown;
@@ -392,7 +392,14 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     protected int findNewTarget() {
-        List<LivingEntity> livingsNearby = this.level().getNearbyEntities(LivingEntity.class, TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(64d, 24d, 64d));
+        List<Player> playersNearby = this.level().getNearbyEntities(Player.class, TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(48d, 24d, 48d));
+        if (!playersNearby.isEmpty()) {
+            if (playersNearby.size() == 1)
+                return playersNearby.get(0).getId();
+            Player player = playersNearby.get(this.random.nextInt(playersNearby.size()));
+            return player.getId();
+        }
+        List<LivingEntity> livingsNearby = this.level().getNearbyEntities(LivingEntity.class, TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(48d, 24d, 48d));
         if (!livingsNearby.isEmpty()) {
             LivingEntity livingEntity = livingsNearby.get(this.random.nextInt(livingsNearby.size()));
             return livingEntity.getId();

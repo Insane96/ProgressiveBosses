@@ -4,7 +4,6 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.module.dragon.feature.LarvaFeature;
-import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
@@ -50,7 +49,7 @@ public class PBCommand {
             )
             .then(Commands.literal("summon")
                 .then(Commands.literal(Strings.Tags.WITHER_MINION)
-                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, WitherStatsReloadListener.STATS_MAP.size() - 1))
+                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0))
                         .executes(context -> summon(context.getSource(), Strings.Tags.WITHER_MINION, IntegerArgumentType.getInteger(context, "lvl"), context.getArgument("isPowered", Boolean.class)))
                     )
                 )
