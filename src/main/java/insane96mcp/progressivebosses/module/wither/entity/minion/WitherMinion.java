@@ -86,6 +86,19 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		return minion;
 	}
 
+	public void addAdditionalSaveData(CompoundTag tag) {
+		super.addAdditionalSaveData(tag);
+		tag.putInt("lvl", this.getLvl());
+	}
+
+	/**
+	 * (abstract) Protected helper method to read subclass entity data from NBT.
+	 */
+	public void readAdditionalSaveData(CompoundTag tag) {
+		super.readAdditionalSaveData(tag);
+		this.setLvl(tag.getInt("lvl"));
+	}
+
 	private void setEquipment() {
 		this.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
 
