@@ -63,6 +63,7 @@ import java.util.function.Predicate;
 
 public class PBWither extends Monster implements PowerableMob, RangedAttackMob, ILvl {
     public static final int CHARGE_ATTACK_TICK_CHARGE = 30;
+    public static final int BARRAGE_CHARGE_UP_TICKS = 50;
     private static final EntityDataAccessor<Integer> DATA_TARGET_A = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_TARGET_B = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_TARGET_C = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
@@ -70,6 +71,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     private static final EntityDataAccessor<Integer> DATA_ID_INV = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> LVL = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> CHARGING = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> BARRAGE_CHARGE_UP = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final int INVULNERABLE_TICKS = 220;
     private final float[] xRotHeads = new float[2];
     private final float[] yRotHeads = new float[2];
@@ -172,6 +174,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         this.entityData.define(DATA_ID_INV, 0);
         this.entityData.define(LVL, 0);
         this.entityData.define(CHARGING, 0);
+        this.entityData.define(BARRAGE_CHARGE_UP, 0);
     }
 
     public int getChargingTicks() {
@@ -217,14 +220,41 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         }
     }
 
+    private void tickBarrage() {
+        int barrage = this.getBarrageChargeUpTicks();
+        if (barrage > 0) {
+            barrage--;
+            if (barrage == 5)
+                initBarrage();
+            this.setBarrageChargeUpTicks(barrage);
+        }
+        if (this.barrageTicks > 0)
+            this.barrageTicks--;
+    }
+
+    public int getBarrageChargeUpTicks() {
+        return this.entityData.get(BARRAGE_CHARGE_UP);
+    }
+
+    public void setBarrageChargeUpTicks(int ticks) {
+        this.entityData.set(BARRAGE_CHARGE_UP, ticks);
+    }
+
     private void tryBarrage(float damageAmount) {
-        if (this.stats.attack.barrage == null)
+        if (this.stats.attack.barrage == null
+                || this.getBarrageChargeUpTicks() > 0
+                || this.barrageTicks > 0)
             return;
         double chance = this.stats.attack.barrage.chance * (damageAmount / 10f);
         if (this.getRandom().nextDouble() < chance) {
-            double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
-            this.barrageTicks = (int) (((this.stats.attack.barrage.maxDuration - this.stats.attack.barrage.minDuration) * missingHealthPerc) + this.stats.attack.barrage.minDuration);
+            this.setBarrageChargeUpTicks(50);
+            this.playSound(SoundEvents.WITHER_AMBIENT, 1f, 0.75f);
         }
+    }
+
+    private void initBarrage() {
+        double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
+        this.barrageTicks = (int) (((this.stats.attack.barrage.maxDuration - this.stats.attack.barrage.minDuration) * missingHealthPerc) + this.stats.attack.barrage.minDuration);
     }
 
     private void tickMinion() {
@@ -274,7 +304,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
      * react to sunlight and start to burn.
      */
     public void aiStep() {
-        if (this.getInvulnerableTicks() > 0) {
+        if (this.getInvulnerableTicks() > 0 || this.getBarrageChargeUpTicks() > 5) {
             this.setDeltaMovement(Vec3.ZERO);
         }
         else if (!this.isCharging()) {
@@ -450,6 +480,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             if (!this.isCharging())
                 this.tickMinion();
             this.tickCharging();
+            this.tickBarrage();
         }
     }
 
@@ -705,14 +736,14 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
          * method as well.
          */
         public boolean canUse() {
-            return PBWither.this.getInvulnerableTicks() > 0;
+            return PBWither.this.getInvulnerableTicks() > 0 || PBWither.this.getBarrageChargeUpTicks() > 0;
         }
     }
 
     public static AttributeSupplier.Builder prepareAttributes() {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 300.0d)
-                .add(Attributes.FOLLOW_RANGE, 64.0d)
+                .add(Attributes.FOLLOW_RANGE, 48.0d)
                 .add(Attributes.MOVEMENT_SPEED, 0.6d)
                 .add(Attributes.FLYING_SPEED, 0.6d);
     }

@@ -34,20 +34,29 @@ public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWith
         return i > 0 && (i > 80 || i / 5 % 2 != 1) ? WITHER_INVULNERABLE_LOCATION : WITHER_LOCATION;
     }
 
-    protected void scale(PBWither pLivingEntity, PoseStack poseStack, float partialTick) {
-        float f = 2.0F;
-        /*int chargingTicks = pLivingEntity.getChargingTicks();
+    protected void scale(PBWither wither, PoseStack poseStack, float partialTick) {
+        /*int chargingTicks = wither.getChargingTicks();
         if (chargingTicks > 0) {
             float scale = 1f;
             //TODO Replace with WitherAttackStats.chargeTime
-            scale += (pLivingEntity - ((float)chargingTicks - partialTick)) * 0.003f;
+            scale += (wither - ((float)chargingTicks - partialTick)) * 0.003f;
             poseStack.scale(scale, scale, scale);
         }*/
-        int i = pLivingEntity.getInvulnerableTicks();
-        if (i > 0) {
-            f -= ((float)i - partialTick) / 220.0F * 0.5F;
+        int barragingChargingTicks = wither.getBarrageChargeUpTicks();
+        if (barragingChargingTicks > 0) {
+            float scale = 1f;
+            scale += (PBWither.BARRAGE_CHARGE_UP_TICKS - ((float)barragingChargingTicks - partialTick)) * 0.01f;
+            if (barragingChargingTicks <= 5)
+                scale -= (0.01f * PBWither.BARRAGE_CHARGE_UP_TICKS / 5f) * (5 - (barragingChargingTicks - partialTick));
+            poseStack.scale(scale, scale, scale);
         }
 
-        poseStack.scale(f, f, f);
+        float scale = 2.0F;
+        int invulnerableTicks = wither.getInvulnerableTicks();
+        if (invulnerableTicks > 0) {
+            scale -= ((float)invulnerableTicks - partialTick) / 220.0F * 0.5F;
+        }
+
+        poseStack.scale(scale, scale, scale);
     }
 }
