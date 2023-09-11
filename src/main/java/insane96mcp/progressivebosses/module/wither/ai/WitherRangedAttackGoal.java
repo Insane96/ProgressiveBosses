@@ -17,6 +17,9 @@ public class WitherRangedAttackGoal extends Goal {
 	public WitherRangedAttackGoal(PBWither wither, float attackRadius) {
 		this.wither = wither;
 		this.attackRadiusSqr = attackRadius * attackRadius;
+		for (int i = 0; i < 3; i++) {
+			this.headAttackTimes[i] = wither.getRandom().nextInt(30, 60);
+		}
 		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 	}
 
