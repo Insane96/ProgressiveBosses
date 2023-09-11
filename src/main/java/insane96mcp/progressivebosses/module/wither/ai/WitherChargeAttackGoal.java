@@ -98,6 +98,10 @@ public class WitherChargeAttackGoal extends Goal {
 				this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
 				this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 4.0f, 2.0f);
 			}
+			else if (this.wither.chargeBelow) {
+				this.targetPos = this.wither.position().add(0, -3, 0);
+				this.wither.chargeBelow = false;
+			}
 			else {
 				this.wither.stopCharging();
 			}

@@ -84,6 +84,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public int barrageTicks;
     public WitherStats stats;
     public int minionCooldown;
+    public boolean chargeBelow;
 
     public PBWither(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -296,9 +297,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                         }
                     }
                 }
-                //TODO Charge instead
                 else if (this.isInWall()) {
-                    vec3 = vec3.add(0, -0.3d, 0);
+                    this.chargeBelow = true;
+                    this.initCharging();
                 }
             }
 
