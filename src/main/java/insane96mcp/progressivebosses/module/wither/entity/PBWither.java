@@ -108,7 +108,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(this, LivingEntity.class, false, false, LIVING_ENTITY_SELECTOR));
+        this.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(this, Player.class, false, false, LIVING_ENTITY_SELECTOR));
+        this.targetSelector.addGoal(3, new ILNearestAttackableTargetGoal<>(this, LivingEntity.class, false, false, LIVING_ENTITY_SELECTOR));
     }
 
     @Override
@@ -391,11 +392,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 if (this.tickCount < this.nextHeadUpdate[i])
                     continue;
 
-                this.nextHeadUpdate[i] = this.tickCount + 10 + this.random.nextInt(10);
+                this.nextHeadUpdate[i] = this.tickCount + 15 + this.random.nextInt(15);
                 int targetId = this.getAlternativeTarget(i + 1);
                 if (targetId > 0) {
                     LivingEntity targetEntity = (LivingEntity)this.level().getEntity(targetId);
-                    if (targetEntity == null || targetEntity.isDeadOrDying() || !this.canAttack(targetEntity) || this.getAlternativeTarget(i + 1) == this.getAlternativeTarget(0)) {
+                    if (targetEntity == null || targetEntity.isDeadOrDying() || !this.canAttack(targetEntity) || targetId == this.getAlternativeTarget(0) || targetEntity.distanceToSqr(this) > 625f) {
                         this.setAlternativeTarget(i + 1, this.findNewTarget());
                     }
                 }
