@@ -66,13 +66,12 @@ public class WitherMinionStats {
         if (players.isEmpty())
             return;
 
-        int minionsCountInAABB = wither.level().getEntitiesOfClass(WitherMinion.class, wither.getBoundingBox().inflate(16)).size();
+        int minionsCountInAABB = wither.level().getEntitiesOfClass(WitherMinion.class, wither.getBoundingBox().inflate(32)).size();
         if (minionsCountInAABB >= this.maxAround.getIntValue(wither))
             return;
 
         this.setCooldown(wither);
 
-        int minionSpawnedCount = 0;
         for (int i = 0; i < this.minionsSpawned.getIntValue(wither); i++) {
             int x = 0, y = 0, z = 0;
             //Tries to spawn the Minion up to 5 times
