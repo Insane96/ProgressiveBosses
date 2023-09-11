@@ -15,18 +15,20 @@ public class WitherAttack {
     public float dangerousSkullChance;
     public int attackSpeedNear;
     public int attackSpeedFar;
+    public float sideHeadsAttackSpeedMultiplier;
     public int effectAmplifier;
     @Nullable
     public WitherCharge charge;
     @Nullable
     public WitherBarrage barrage;
 
-    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, int effectAmplifier, float maxChargeChance, float chargeDamage, int chargeTime, float barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
+    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedMultiplier, int effectAmplifier, float maxChargeChance, float chargeDamage, int chargeTime, float barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
         this.skullDamage = skullDamage;
         this.skullSpeedMultiplier = skullSpeedMultiplier;
         this.dangerousSkullChance = dangerousSkullChance;
         this.attackSpeedNear = attackSpeedNear;
         this.attackSpeedFar = attackSpeedFar;
+        this.sideHeadsAttackSpeedMultiplier = sideHeadsAttackSpeedMultiplier;
         this.effectAmplifier = effectAmplifier;
         this.charge = new WitherCharge(maxChargeChance, chargeDamage, chargeTime);
         this.barrage = new WitherBarrage(barrageChance, minBarrageDuration, maxBarrageDuration, barrageAttackSpeed);
@@ -43,6 +45,7 @@ public class WitherAttack {
                     GsonHelper.getAsFloat(jObject, "dangerous_skull_damage"),
                     GsonHelper.getAsInt(jObject, "attack_speed_near"),
                     GsonHelper.getAsInt(jObject, "attack_speed_far"),
+                    GsonHelper.getAsFloat(jObject, "side_heads_attack_speed_multiplier"),
                     GsonHelper.getAsInt(jObject, "effect_amplifier"), 0, 0, 0, 0, 1, 1, 1);
             witherAttack.charge = witherCharge;
             witherAttack.barrage = witherBarrage;
@@ -57,6 +60,7 @@ public class WitherAttack {
             jsonObject.addProperty("dangerous_skull_damage", src.dangerousSkullChance);
             jsonObject.addProperty("attack_speed_near", src.attackSpeedNear);
             jsonObject.addProperty("attack_speed_far", src.attackSpeedFar);
+            jsonObject.addProperty("side_heads_attack_speed_multiplier", src.sideHeadsAttackSpeedMultiplier);
             jsonObject.addProperty("effect_amplifier", src.effectAmplifier);
             if (src.charge != null)
                 jsonObject.add("charge", context.serialize(src.charge));

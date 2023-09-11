@@ -109,8 +109,9 @@ public class WitherRangedAttackGoal extends Goal {
 				this.wither.performRangedAttack(i, target);
 				int attackSpeedDelta = this.wither.stats.attack.attackSpeedFar - this.wither.stats.attack.attackSpeedNear;
 				double distanceRatio = distanceSqr / this.attackRadiusSqr;
-				this.headAttackTimes[i] = (int) (this.wither.stats.attack.attackSpeedNear + (attackSpeedDelta * distanceRatio));
-				this.headAttackTimes[i] += this.wither.getRandom().nextInt(-5, 6);
+				this.headAttackTimes[i] = (int) (this.wither.stats.attack.attackSpeedNear + (attackSpeedDelta * distanceRatio)) + this.wither.getRandom().nextInt(-5, 6);
+				if (i != 0)
+					this.headAttackTimes[i] = (int) (this.headAttackTimes[i] * this.wither.stats.attack.sideHeadsAttackSpeedMultiplier);
 			}
 		}
 	}
