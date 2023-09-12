@@ -100,7 +100,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 	}
 
 	private void setEquipment() {
-		this.setDropChance(EquipmentSlot.MAINHAND, Float.MIN_VALUE);
+		this.setDropChance(EquipmentSlot.MAINHAND, -2f);
 
 		float bowChance = this.stats.bowChance.getValue(this.summonedByPoweredWither);
 		ItemStack item;

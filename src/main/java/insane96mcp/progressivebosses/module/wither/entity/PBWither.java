@@ -229,6 +229,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         int barrage = this.getBarrageChargeUpTicks();
         if (barrage > 0) {
             barrage--;
+            if (barrage % 5 == 0 && barrage > 10)
+                this.playSound(SoundEvents.WITHER_AMBIENT, 4f, 0.75f);
             if (barrage == 5)
                 initBarrage();
             this.setBarrageChargeUpTicks(barrage);
@@ -254,7 +256,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         double chance = this.stats.attack.barrage.chance * (damageAmount / 10f);
         if (this.getRandom().nextDouble() < chance) {
             this.setBarrageChargeUpTicks(50);
-            this.playSound(SoundEvents.WITHER_AMBIENT, 1f, 0.75f);
         }
     }
 
