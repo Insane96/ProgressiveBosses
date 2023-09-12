@@ -43,12 +43,10 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.LevelEvent;
@@ -197,7 +195,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
     public void tryCharge(float damageAmount) {
         if (this.stats.attack.charge == null
-                || this.isCharging())
+                || this.isCharging()
+                || this.getBarrageChargeUpTicks() > 0)
             return;
         double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
         double chance = this.stats.attack.charge.maxChance * missingHealthPerc;
@@ -243,7 +242,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     private void tryBarrage(float damageAmount) {
         if (this.stats.attack.barrage == null
                 || this.getBarrageChargeUpTicks() > 0
-                || this.barrageTicks > 0)
+                || this.barrageTicks > 0
+                || this.isCharging())
             return;
         double chance = this.stats.attack.barrage.chance * (damageAmount / 10f);
         if (this.getRandom().nextDouble() < chance) {
@@ -653,15 +653,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 }
             }
         }
-    }
-
-    protected void dropCustomDeathLoot(DamageSource pSource, int pLooting, boolean pRecentlyHit) {
-        super.dropCustomDeathLoot(pSource, pLooting, pRecentlyHit);
-        ItemEntity itementity = this.spawnAtLocation(Items.NETHER_STAR);
-        if (itementity != null) {
-            itementity.setExtendedLifetime();
-        }
-
     }
 
     /**
