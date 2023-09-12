@@ -183,12 +183,18 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
     public void tickCharging() {
         int ticks = this.entityData.get(CHARGING);
-        if (ticks > 0)
-            this.entityData.set(CHARGING, ticks - 1);
+        if (ticks > 0) {
+            ticks--;
+            this.entityData.set(CHARGING, ticks);
+        }
     }
     public void initCharging() {
-        if (this.stats.attack.charge != null)
-            this.entityData.set(CHARGING, this.stats.attack.charge.time + CHARGE_ATTACK_TICK_CHARGE);
+        if (this.stats.attack.charge != null) {
+            int chargeTime = this.stats.attack.charge.time;
+            if (!this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(3d)).isEmpty())
+                chargeTime /= 2;
+            this.entityData.set(CHARGING, chargeTime + CHARGE_ATTACK_TICK_CHARGE);
+        }
     }
     public void stopCharging() {
         this.entityData.set(CHARGING, 0);
