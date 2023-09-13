@@ -35,14 +35,15 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomFlyingGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.ai.util.AirAndWaterRandomPos;
+import net.minecraft.world.entity.ai.util.HoverRandomPos;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
@@ -55,7 +56,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -104,7 +104,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         //this.goalSelector.addGoal(0, new WitherDoNothingGoal());
         this.goalSelector.addGoal(1, new WitherChargeAttackGoal(this));
         this.goalSelector.addGoal(2, new WitherRangedAttackGoal(this, 24f));
-        this.goalSelector.addGoal(5, new WaterAvoidingRandomFlyingGoal(this, 1.0D));
+        this.goalSelector.addGoal(5, new WaterAvoidingRandomFlyingGoal(this));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
@@ -188,13 +188,15 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             this.entityData.set(CHARGING, ticks);
         }
     }
-    public void initCharging() {
+    public boolean initCharging() {
         if (this.stats.attack.charge != null) {
             int chargeTime = this.stats.attack.charge.time;
             if (!this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(3d)).isEmpty())
                 chargeTime /= 2;
             this.entityData.set(CHARGING, chargeTime + CHARGE_ATTACK_TICK_CHARGE);
+            return true;
         }
+        return false;
     }
     public void stopCharging() {
         this.entityData.set(CHARGING, 0);
@@ -255,8 +257,13 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             return;
         double chance = this.stats.attack.barrage.chance * (damageAmount / 10f);
         if (this.getRandom().nextDouble() < chance) {
-            this.setBarrageChargeUpTicks(50);
+            this.initBarrageChargeUp();
         }
+    }
+
+    public boolean initBarrageChargeUp() {
+        this.setBarrageChargeUpTicks(50);
+        return true;
     }
 
     private void initBarrage() {
@@ -731,17 +738,16 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return pPotioneffect.getEffect() != MobEffects.WITHER && super.canBeAffected(pPotioneffect);
     }
 
-    public class WitherDoNothingGoal extends Goal {
-        public WitherDoNothingGoal() {
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK));
+    public static class WaterAvoidingRandomFlyingGoal extends RandomStrollGoal {
+        public WaterAvoidingRandomFlyingGoal(PathfinderMob pathfinderMob) {
+            super(pathfinderMob, 2f, 7);
         }
 
-        /**
-         * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
-         * method as well.
-         */
-        public boolean canUse() {
-            return PBWither.this.getInvulnerableTicks() > 0 || PBWither.this.getBarrageChargeUpTicks() > 0;
+        @Nullable
+        protected Vec3 getPosition() {
+            Vec3 vec3 = this.mob.getViewVector(0.0F);
+            Vec3 vec31 = HoverRandomPos.getPos(this.mob, 16, 14, vec3.x, vec3.z, ((float)Math.PI / 2F), 6, 2);
+            return vec31 != null ? vec31 : AirAndWaterRandomPos.getPos(this.mob, 16, 8, -2, vec3.x, vec3.z, (double)((float)Math.PI / 2F));
         }
     }
 

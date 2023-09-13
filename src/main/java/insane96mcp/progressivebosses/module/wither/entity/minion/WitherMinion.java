@@ -78,7 +78,6 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		minion.setDropChance(EquipmentSlot.MAINHAND, -2f);
 		minion.setCanPickUpLoot(false);
 		minion.setPersistenceRequired();
-		minion.setEquipment();
 
 		MCUtils.applyModifier(minion, Attributes.MOVEMENT_SPEED, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, minion.stats.bonusMovementSpeed.getValue(isPowered), AttributeModifier.Operation.MULTIPLY_BASE);
 
@@ -140,6 +139,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		else {
 			this.stats = WitherStats.getDefaultStats().minion;
 		}
+		this.setEquipment();
 	}
 
 	@Override

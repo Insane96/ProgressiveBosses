@@ -12,8 +12,11 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -56,8 +59,9 @@ public class WitherFeature extends Feature {
 					new WitherMiscStats(10f, false, true, true),
 					1300, new ResourceLocation("progressivebosses:entities/wither_3"))
 	));
+    public static final TagKey<Item> WITHER_INVULNERABLE = ItemTags.create(new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_invulnerable"));
 
-	public WitherFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+    public WitherFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
 	}
 
