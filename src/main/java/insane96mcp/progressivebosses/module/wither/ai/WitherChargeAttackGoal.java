@@ -123,7 +123,21 @@ public class WitherChargeAttackGoal extends Goal {
 			if (this.blowUp) {
 				this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE);
 				((ServerLevel) this.wither.level()).sendParticles(ParticleTypes.EXPLOSION_EMITTER, this.wither.getX(), this.wither.getY(), this.wither.getZ(), 2, 0f, 0f, 0f, 1f);
-				this.wither.level().getEntitiesOfClass(LivingEntity.class, this.wither.getBoundingBox().inflate(3.5f)).forEach(entity -> this.damageAndPush(entity));
+				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f);
+				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
+				if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
+					blocks.forEach(blockPos -> {
+						BlockState state = wither.level().getBlockState(blockPos);
+						if (this.wither.canDestroyBlock(blockPos, state)
+								&& net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
+							BlockEntity tileentity = state.hasBlockEntity() ? this.wither.level().getBlockEntity(blockPos) : null;
+							LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel)this.wither.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, tileentity);
+							state.getDrops(lootcontext$builder).forEach(itemStack -> addBlockDrops(blocksToDrop, itemStack, blockPos));
+							wither.level().setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+						}
+					});
+				}
+				this.wither.level().getEntitiesOfClass(LivingEntity.class, this.wither.getBoundingBox().inflate(3.5f)).forEach(this::damageAndPush);
 				this.wither.stopCharging();
 			}
 			else if (this.targetPos == null) {
@@ -135,7 +149,7 @@ public class WitherChargeAttackGoal extends Goal {
 				Vec3 diff = this.targetPos.subtract(this.wither.position()).normalize().multiply(mult, mult, mult);
 				this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
 				this.wither.getLookControl().setLookAt(this.targetPos);
-				AABB axisAlignedBB = new AABB(this.wither.getX() - 2, this.wither.getY() - 2, this.wither.getZ() - 2, this.wither.getX() + 2, this.wither.getY() + 6, this.wither.getZ() + 2);
+				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
 				AtomicBoolean hasBrokenBlocks = new AtomicBoolean(false);
 				if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
@@ -158,7 +172,7 @@ public class WitherChargeAttackGoal extends Goal {
 				axisAlignedBB = axisAlignedBB.inflate(1d);
 				this.wither.level()
 						.getEntitiesOfClass(LivingEntity.class, axisAlignedBB)
-						.forEach(entity -> this.damageAndPush(entity));
+						.forEach(this::damageAndPush);
 			}
 		}
 		if (this.targetPos != null) {
