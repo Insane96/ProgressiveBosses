@@ -31,7 +31,6 @@ public class DifficultyProvider implements ICapabilityProvider, ICapabilitySeria
 	@Override
 	public CompoundTag serializeNBT() {
 		CompoundTag nbt = new CompoundTag();
-		nbt.putInt(Strings.Tags.SPAWNED_WITHERS, backend.getSpawnedWithers());
 		nbt.putInt(Strings.Tags.KILLED_DRAGONS, backend.getKilledDragons());
 		nbt.putByte(Strings.Tags.FIRST_DRAGON, backend.getFirstDragon());
 		return nbt;
@@ -39,7 +38,6 @@ public class DifficultyProvider implements ICapabilityProvider, ICapabilitySeria
 
 	@Override
 	public void deserializeNBT(CompoundTag nbt) {
-		backend.setSpawnedWithers(nbt.getInt(Strings.Tags.SPAWNED_WITHERS));
 		backend.setKilledDragons(nbt.getInt(Strings.Tags.KILLED_DRAGONS));
 		backend.setFirstDragon(nbt.getByte(Strings.Tags.FIRST_DRAGON));
 	}
