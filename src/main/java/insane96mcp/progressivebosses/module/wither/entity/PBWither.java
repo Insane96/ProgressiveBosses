@@ -206,11 +206,12 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 || this.isCharging()
                 || this.getBarrageChargeUpTicks() > 0)
             return;
-        double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
-        double chance = this.stats.attack.charge.maxChance * missingHealthPerc;
+        double missingHealthPercentage = 1d - this.getHealth() / this.getMaxHealth();
+        double chance = this.stats.attack.charge.maxChance * missingHealthPercentage;
         chance *= (damageAmount / 10f);
-        double r = this.getRandom().nextDouble();
-        if (r < chance)
+        if (!this.isPowered() && !this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(5d)).isEmpty())
+            chance *= 5f;
+        if (this.getRandom().nextDouble() < chance)
             this.initCharging();
     }
 
@@ -267,8 +268,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     private void initBarrage() {
-        double missingHealthPerc = 1d - this.getHealth() / this.getMaxHealth();
-        this.barrageTicks = (int) (((this.stats.attack.barrage.maxDuration - this.stats.attack.barrage.minDuration) * missingHealthPerc) + this.stats.attack.barrage.minDuration);
+        double missingHealthPercentage = 1d - this.getHealth() / this.getMaxHealth();
+        this.barrageTicks = (int) (((this.stats.attack.barrage.maxDuration - this.stats.attack.barrage.minDuration) * missingHealthPercentage) + this.stats.attack.barrage.minDuration);
     }
 
     private void tickMinion() {

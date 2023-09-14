@@ -243,7 +243,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 	public static AttributeSupplier.Builder prepareAttributes() {
 		return LivingEntity.createLivingAttributes()
 				.add(Attributes.ATTACK_DAMAGE, 1.0d)
-				.add(Attributes.MAX_HEALTH, 16.0d)
+				.add(Attributes.MAX_HEALTH, 15.0d)
 				.add(Attributes.FOLLOW_RANGE, 64.0d)
 				.add(Attributes.MOVEMENT_SPEED, 0.25d)
 				.add(Attributes.ATTACK_KNOCKBACK, 1d)

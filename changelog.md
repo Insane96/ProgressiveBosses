@@ -1,5 +1,8 @@
 # Changelog
 
+## Alpha 4.0.1
+* Wither has now a really high chance to charge if there are players nearby when above half health
+
 ## Alpha 4.0.0 - Wither
 * Stats have been heavily adjusted to the new system and features
 * Wither now has 4 levels (from 8 difficulties)
