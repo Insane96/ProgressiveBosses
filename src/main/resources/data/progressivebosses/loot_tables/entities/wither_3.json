@@ -39,26 +39,6 @@
                     ]
                 }
             ]
-        },
-        {
-            "rolls": 1,
-            "entries": [
-                {
-                    "type": "minecraft:empty",
-                    "weight": 1
-                },
-                {
-                    "type": "minecraft:item",
-                    "weight": 4,
-                    "name": "progressivebosses:corrupted_soul_sand",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_nbt",
-                            "tag": "{BlockEntityTag:{lvl:3}}"
-                        }
-                    ]
-                }
-            ]
         }
     ]
 }
