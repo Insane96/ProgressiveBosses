@@ -6,6 +6,7 @@
   * Each level stat can be configured separately in a `wither.json` file in the config folder
   * Killing a Wither has a chance to drop a corrupted Soul Sand, which can be used in the center of the Wither summoning pattern to summon a higher level wither
 * Attacking
+  * Blue skulls can be sent back (like a ghast fireball) to hit the Wither
   * Wither side heads now try to target another entity if it's the same as the middle head (so the wither should be able to attack two players at once)
   * Wither side heads now attack twice as slower than the middle head
   * Skulls speed is now slower at lower Levels
