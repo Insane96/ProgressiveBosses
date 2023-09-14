@@ -210,7 +210,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         double chance = this.stats.attack.charge.maxChance * missingHealthPercentage;
         chance *= (damageAmount / 10f);
         if (!this.isPowered() && !this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(5d)).isEmpty())
-            chance *= 5f;
+            chance = 0.25f;
         if (this.getRandom().nextDouble() < chance)
             this.initCharging();
     }
