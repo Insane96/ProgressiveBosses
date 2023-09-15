@@ -123,7 +123,7 @@ public class WitherChargeAttackGoal extends Goal {
 			if (this.blowUp) {
 				this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE);
 				((ServerLevel) this.wither.level()).sendParticles(ParticleTypes.EXPLOSION_EMITTER, this.wither.getX(), this.wither.getY(), this.wither.getZ(), 2, 0f, 0f, 0f, 1f);
-				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f);
+				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1f, 2f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
 				if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
 					blocks.forEach(blockPos -> {
@@ -149,7 +149,7 @@ public class WitherChargeAttackGoal extends Goal {
 				Vec3 diff = this.targetPos.subtract(this.wither.position()).normalize().multiply(mult, mult, mult);
 				this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
 				this.wither.getLookControl().setLookAt(this.targetPos);
-				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f);
+				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1.5f, 2f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
 				AtomicBoolean hasBrokenBlocks = new AtomicBoolean(false);
 				if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {

@@ -17,7 +17,7 @@
   * Charging now makes the wither blow up instead if there are players nearby
   * Barraging now has a charge up animation before starting
 * Health
-  * Reduced at lower levels
+  * Reduced at higher levels
 * Resistances and Weaknesses
   * Replaced damage reduction with armor and armor toughness
 * All the wither past lvl II now ignore wither proof blocks
