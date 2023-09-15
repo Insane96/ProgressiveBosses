@@ -755,7 +755,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public static AttributeSupplier.Builder prepareAttributes() {
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 300.0d)
-                .add(Attributes.FOLLOW_RANGE, 48.0d)
+                .add(Attributes.FOLLOW_RANGE, 64.0d)
                 .add(Attributes.MOVEMENT_SPEED, 0.6d)
                 .add(Attributes.FLYING_SPEED, 0.6d);
     }
