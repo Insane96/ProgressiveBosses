@@ -7,7 +7,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Blacklist;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
-import insane96mcp.insanelib.util.IdTagMatcher;
+import insane96mcp.insanelib.data.IdTagMatcher;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.capability.Difficulty;
 import insane96mcp.progressivebosses.setup.Strings;
@@ -48,7 +48,7 @@ public class DifficultyFeature extends Feature {
 	@Config
 	@Label(name = "Entity Blacklist", description = "Entities that extend the vanilla Wither but shouldn't be taken into account by the mod (e.g. Botania's Pink Wither).")
 	public static Blacklist entityBlacklist = new Blacklist(List.of(
-			new IdTagMatcher(IdTagMatcher.Type.ID, "botania:pink_wither")
+			IdTagMatcher.newId("botania:pink_wither")
 	), false);
 
 	public DifficultyFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {

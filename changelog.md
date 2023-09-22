@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.2
+* Now requires InsaneLib 1.11.1
+
 ## 3.9.1
 * Fixed Elder Guardians being able to be invincible if mods spawned more than 4 elder guardians 
 
