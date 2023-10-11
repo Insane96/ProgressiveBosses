@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.6.7
+* Compatibility with YUNG's better end island
+  * Fixed Crystals spawning in towers too close to normal crystals
+
 ## 3.6.6
 * Backported 1.19.4 changes:
 * Reduced Wither charge attack damage (16 -> 12)

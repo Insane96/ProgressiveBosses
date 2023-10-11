@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.Config;
@@ -27,7 +26,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -266,37 +264,37 @@ public class CrystalFeature extends Feature {
 		return source.isExplosion();
 	}
 
-	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER_RL = new ResourceLocation("endergetic:crystal_holder");
+	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER = new ResourceLocation("endergetic:crystal_holder");
 
-	public static EndCrystal generateCrystalInTower(Level world, double x, double y, double z) {
-		Vec3 centerPodium = Vec3.atBottomCenterOf(world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
+	public static EndCrystal generateCrystalInTower(Level level, double x, double y, double z) {
+		BlockPos centerPodium = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		while (!level.getBlockState(centerPodium).is(Blocks.BEDROCK) && centerPodium.getY() > level.getSeaLevel()) {
+			centerPodium = centerPodium.below();
+		}
 
-		int spawnY = (int) (y - Mth.nextInt(world.getRandom(), 12, 24));
-		if (spawnY < centerPodium.y())
-			spawnY = (int) centerPodium.y();
+		int spawnY = (int) (y - Mth.nextInt(level.getRandom(), 12, 24));
+		if (spawnY < centerPodium.getY())
+			spawnY = centerPodium.getY();
 		BlockPos crystalPos = new BlockPos(x, spawnY, z);
 
 		Stream<BlockPos> blocks = BlockPos.betweenClosedStream(crystalPos.offset(-1, -1, -1), crystalPos.offset(1, 1, 1));
 
-		blocks.forEach(pos -> world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
+		blocks.forEach(pos -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
 
 		BlockState baseBlockState = Blocks.BEDROCK.defaultBlockState();
 		if (ModList.get().isLoaded("endergetic"))
-			if (ForgeRegistries.BLOCKS.containsKey(ENDERGETIC_CRYSTAL_HOLDER_RL))
-				baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_HOLDER_RL).defaultBlockState();
-			else
-				LogHelper.warn("The Endergetic Expansion is loaded but the %s block was not registered", ENDERGETIC_CRYSTAL_HOLDER_RL);
-		world.setBlockAndUpdate(crystalPos.offset(0, -1, 0), baseBlockState);
+			baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_HOLDER).defaultBlockState();
+		level.setBlockAndUpdate(crystalPos.offset(0, -1, 0), baseBlockState);
 
-		world.explode(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.BlockInteraction.DESTROY);
+		level.explode(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Explosion.BlockInteraction.DESTROY);
 
-		EndCrystal crystal = new EndCrystal(world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
-		world.addFreshEntity(crystal);
+		EndCrystal crystal = new EndCrystal(level, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
+		level.addFreshEntity(crystal);
 
 		return crystal;
 	}
 
-	public static void generateCage(Level world, BlockPos pos) {
+	public static void generateCage(Level level, BlockPos pos) {
 		//Shamelessly copied from Vanilla Code
 		BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();
 		for(int k = -2; k <= 2; ++k) {
@@ -309,7 +307,7 @@ public class CrystalFeature extends Feature {
 						boolean flag3 = k == -2 || k == 2 || flag2;
 						boolean flag4 = l == -2 || l == 2 || flag2;
 						BlockState blockstate = Blocks.IRON_BARS.defaultBlockState().setValue(IronBarsBlock.NORTH, flag3 && l != -2).setValue(IronBarsBlock.SOUTH, flag3 && l != 2).setValue(IronBarsBlock.WEST, flag4 && k != -2).setValue(IronBarsBlock.EAST, flag4 && k != 2);
-						world.setBlockAndUpdate(blockpos$mutable.set(pos.getX() + k, pos.getY() - 1 + i1, pos.getZ() + l), blockstate);
+						level.setBlockAndUpdate(blockpos$mutable.set(pos.getX() + k, pos.getY() - 1 + i1, pos.getZ() + l), blockstate);
 					}
 				}
 			}
