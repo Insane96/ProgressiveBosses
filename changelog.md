@@ -1,9 +1,9 @@
 # Changelog
 
 ## 3.6.7
-* Compatibility with YUNG's better end island
+* Better Compatibility with YUNG's better end island
+  * Cages now use the vanilla method to generate so YUNG's one now generate correctly
   * Fixed Crystals spawning in towers too close to normal crystals
-  * Fixed cages overwriting mod's ones
 
 ## 3.6.6
 * Backported 1.19.4 changes:

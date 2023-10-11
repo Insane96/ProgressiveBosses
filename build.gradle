@@ -65,8 +65,8 @@ dependencies {
     minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
     implementation fg.deobf("blank:InsaneLib:${lib_version}-mc${mc_version}")
-    implementation fg.deobf("curse.maven:yungs-api-421850:4428184")
-    implementation fg.deobf("curse.maven:yungs-better-end-island-901344:4758567")
+    //implementation fg.deobf("curse.maven:yungs-api-421850:4428184")
+    //implementation fg.deobf("curse.maven:yungs-better-end-island-901344:4758567")
 }
 
 repositories {

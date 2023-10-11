@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.feature;
 
+import com.google.common.collect.ImmutableList;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
@@ -9,6 +10,7 @@ import insane96mcp.progressivebosses.setup.Config;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.data.worldgen.features.EndFeatures;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -26,6 +28,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.SpikeConfiguration;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
@@ -33,10 +36,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Label(name = "Crystals", description = "Makes more Crystal spawn and with more cages.")
@@ -195,35 +195,32 @@ public class CrystalFeature extends Feature {
 		List<EndCrystal> crystals = new ArrayList<>();
 
 		//Order from smaller towers to bigger ones
-		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level));
+		ServerLevel serverLevel = (ServerLevel) dragon.level;
+		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel(serverLevel));
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
-
-		for(SpikeFeature.EndSpike spike : spikes) {
-			crystals.addAll(dragon.level.getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()));
-		}
-
-		//Remove all the crystals that already have cages around
-		crystals.removeIf(CrystalFeature::hasCage);
 
 		int crystalsInvolved = Math.round(difficulty - this.moreCagesAtDifficulty + 1);
 		int cagesGenerated = 0;
 
-		for (EndCrystal crystal : crystals) {
-			generateCage(crystal.level, crystal.blockPosition());
+		for (SpikeFeature.EndSpike spike : spikes) {
+			Optional<EndCrystal> crystal = dragon.level.getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).stream().findAny();
+			if (crystal.isEmpty())
+				continue;
+
+			if (spike.isGuarded())
+				continue;
+
+			crystal.get().discard();
+			spike.guarded = true;
+			Random random = new Random();
+			random.setSeed(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island to generate guarded
+			EndFeatures.END_SPIKE.value().feature().place(new SpikeConfiguration(true, ImmutableList.of(spike), null), serverLevel, serverLevel.getChunkSource().getGenerator(), random, crystal.get().blockPosition());
+			spike.guarded = false;
 
 			cagesGenerated++;
 			if (cagesGenerated == crystalsInvolved || cagesGenerated == this.maxBonusCages)
 				break;
 		}
-	}
-
-	private static boolean hasCage(EndCrystal endCrystal) {
-		Iterable<BlockPos> blockPos = BlockPos.betweenClosed(endCrystal.blockPosition().offset(-3, -1, -3), endCrystal.blockPosition().offset(3, 5, 3));
-		for (BlockPos pos : blockPos) {
-			if (endCrystal.level.getBlockState(pos).is(Blocks.IRON_BARS))
-				return true;
-		}
-		return false;
 	}
 
 	private void moreCrystals(EnderDragon dragon, float difficulty) {
