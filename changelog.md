@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.9.3
+* Better Compatibility with YUNG's better end island
+  * Cages now use the vanilla method to generate so YUNG's one now generate correctly
+  * Fixed Crystals spawning in towers too close to normal crystals
+
 ## 3.9.2
 * Now requires InsaneLib 1.11.1
 
