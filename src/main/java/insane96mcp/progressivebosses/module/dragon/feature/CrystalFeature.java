@@ -203,7 +203,7 @@ public class CrystalFeature extends Feature {
 		}
 
 		//Remove all the crystals that already have cages around
-		crystals.removeIf(c -> c.level.getBlockState(c.blockPosition().above(2)).getBlock() == Blocks.IRON_BARS);
+		crystals.removeIf(CrystalFeature::hasCage);
 
 		int crystalsInvolved = Math.round(difficulty - this.moreCagesAtDifficulty + 1);
 		int cagesGenerated = 0;
@@ -215,6 +215,15 @@ public class CrystalFeature extends Feature {
 			if (cagesGenerated == crystalsInvolved || cagesGenerated == this.maxBonusCages)
 				break;
 		}
+	}
+
+	private static boolean hasCage(EndCrystal endCrystal) {
+		Iterable<BlockPos> blockPos = BlockPos.betweenClosed(endCrystal.blockPosition().offset(-3, -1, -3), endCrystal.blockPosition().offset(3, 5, 3));
+		for (BlockPos pos : blockPos) {
+			if (endCrystal.level.getBlockState(pos).is(Blocks.IRON_BARS))
+				return true;
+		}
+		return false;
 	}
 
 	private void moreCrystals(EnderDragon dragon, float difficulty) {
