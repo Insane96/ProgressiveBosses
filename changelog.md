@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.8.4
+* Better Compatibility with YUNG's better end island
+  * Cages now use the vanilla method to generate so YUNG's one now generate correctly
+  * Fixed Crystals spawning in towers too close to normal crystals
+
 ## 3.8.3
 * Slightly lowered Wither charge chance and barrage duration
 * Increased ender dragon healing reduction when hit duration
