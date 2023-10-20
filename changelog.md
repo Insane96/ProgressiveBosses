@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.4
+* Fixed Elder Guardian Health Feature not working
+
 ## 3.9.3
 * Better Compatibility with YUNG's better end island
   * Cages now use the vanilla method to generate so YUNG's one now generate correctly

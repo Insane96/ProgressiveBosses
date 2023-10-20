@@ -20,8 +20,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian")
 public class HealthFeature extends Feature {
 
+	public static final String APPLIED_HEALTH_FEATURE = ProgressiveBosses.RESOURCE_PREFIX + "applied_health_feature";
+
 	@Config(min = 0d)
-	@Label(name = "Health Bonus per Difficulty", description = "Increase Elder Guardians' Health by this percentage (1 = +100% health)")
+	@Label(name = "Health Bonus", description = "Increase Elder Guardians' Health by this percentage (1 = +100% health)")
 	public static Double bonusHealth = 0.5d;
 	@Config(min = 0d)
 	@Label(name = "Absorption Health", description = "Adds absorption health to Elder Guardians (health that doesn't regen)")
@@ -43,8 +45,11 @@ public class HealthFeature extends Feature {
 			return;
 
 		CompoundTag nbt = elderGuardian.getPersistentData();
-		if (nbt.contains(Strings.Tags.DIFFICULTY))
+		if (!nbt.contains(Strings.Tags.DIFFICULTY)
+				|| nbt.contains(APPLIED_HEALTH_FEATURE))
 			return;
+
+		nbt.putBoolean(APPLIED_HEALTH_FEATURE, true);
 
 		if (bonusHealth > 0d)
 			MCUtils.applyModifier(elderGuardian, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, bonusHealth, AttributeModifier.Operation.MULTIPLY_BASE);

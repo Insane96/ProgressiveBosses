@@ -114,7 +114,7 @@ public class BaseFeature extends Feature {
 			return;
 
 		List<Entity> elderGuardiansNearby = elderGuardian.level().getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(64d), entity -> entity instanceof ElderGuardian);
-		if (elderGuardiansNearby.size() == 0)
+		if (elderGuardiansNearby.isEmpty())
 			return;
 
 		CompoundTag nbt = elderGuardian.getPersistentData();
