@@ -12,6 +12,8 @@ public class ElderGuardianMixin {
 
 	@Inject(at = @At("HEAD"), method = "getAttackDuration()I", cancellable = true)
 	private void getAttackDuration(CallbackInfoReturnable<Integer> callback) {
+		if (!AttackFeature.shouldChangeAttackDuration((ElderGuardian) (Object) this))
+			return;
 		callback.setReturnValue(AttackFeature.getAttackDuration((ElderGuardian) (Object) this));
 	}
 }

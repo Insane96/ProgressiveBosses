@@ -40,13 +40,13 @@ public class AttackFeature extends Feature {
 
 	private static final int BASE_ATTACK_DURATION = 60;
 
-	public static int getAttackDuration(ElderGuardian elderGuardian) {
-		if (!isEnabled(AttackFeature.class) || attackDurationReduction == 0)
-			return BASE_ATTACK_DURATION;
+	public static boolean shouldChangeAttackDuration(ElderGuardian elderGuardian) {
 		int elderGuardiansNearby = elderGuardian.level().getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardian).size();
-		if (elderGuardiansNearby == 2)
-			return BASE_ATTACK_DURATION;
+		return isEnabled(AttackFeature.class) && attackDurationReduction > 0 && elderGuardiansNearby < 2;
+	}
 
+	public static int getAttackDuration(ElderGuardian elderGuardian) {
+		int elderGuardiansNearby = elderGuardian.level().getEntities(elderGuardian, elderGuardian.getBoundingBox().inflate(48d), entity -> entity instanceof ElderGuardian).size();
 		return BASE_ATTACK_DURATION - ((2 - elderGuardiansNearby) * attackDurationReduction);
 	}
 }
