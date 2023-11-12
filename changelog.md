@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.5
+* Fixed possible game freeze with Elder Guardians (most notably with Bumblezone)
+
 ## 3.9.4
 * Fixed Elder Guardian Health Feature not working
 
