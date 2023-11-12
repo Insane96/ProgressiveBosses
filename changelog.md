@@ -2,6 +2,10 @@
 
 ## Alpha 4.0.1
 * Wither has now a really high chance to charge if there are players nearby when above half health
+* Loot
+  * Wither drops 1 nether star per level, plus 2/3/4 shards at levels II/III/IV
+  * Wither drops 4 debris per level, plus 2/3/4 at levels II/III/IV
+  * Withers no longer drops Corrupted Soul Sand, instead can be crafted with soul sand/soil and nether stars
 
 ## Alpha 4.0.0 - Wither
 * Stats have been heavily adjusted to the new system and features

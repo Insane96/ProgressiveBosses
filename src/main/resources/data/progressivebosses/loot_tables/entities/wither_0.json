@@ -30,28 +30,7 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "progressivebosses:nether_star_shard",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_count",
-                            "count": 4
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "rolls": 1,
-            "entries": [
-                {
-                    "type": "minecraft:item",
-                    "name": "progressivebosses:corrupted_soul_sand",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_nbt",
-                            "tag": "{BlockEntityTag:{lvl:1}}"
-                        }
-                    ]
+                    "name": "minecraft:nether_star"
                 }
             ]
         }

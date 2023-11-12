@@ -19,7 +19,7 @@
                     "functions": [
                         {
                             "function": "minecraft:set_count",
-                            "count": 28
+                            "count": 20
                         }
                     ]
                 }
@@ -30,11 +30,11 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "progressivebosses:nether_star_shard",
+                    "name": "minecraft:nether_star",
                     "functions": [
                         {
                             "function": "minecraft:set_count",
-                            "count": 20
+                            "count": 5
                         }
                     ]
                 }

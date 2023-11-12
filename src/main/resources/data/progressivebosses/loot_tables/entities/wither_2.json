@@ -19,7 +19,22 @@
                     "functions": [
                         {
                             "function": "minecraft:set_count",
-                            "count": 20
+                            "count": 15
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:nether_star",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": 3
                         }
                     ]
                 }
@@ -34,23 +49,7 @@
                     "functions": [
                         {
                             "function": "minecraft:set_count",
-                            "count": 14
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "rolls": 1,
-            "entries": [
-                {
-                    "type": "minecraft:item",
-                    "weight": 4,
-                    "name": "progressivebosses:corrupted_soul_sand",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_nbt",
-                            "tag": "{BlockEntityTag:{lvl:3}}"
+                            "count": 3
                         }
                     ]
                 }

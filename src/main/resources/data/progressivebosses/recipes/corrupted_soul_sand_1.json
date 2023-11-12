@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    [
+      {
+        "item": "minecraft:soul_sand"
+      },
+      {
+        "item": "minecraft:soul_soil"
+      }
+    ],
+    {
+      "item": "minecraft:nether_star"
+    }
+  ],
+  "result": {
+    "item": "progressivebosses:corrupted_soul_sand",
+    "count": 1,
+    "nbt": "{BlockEntityTag:{lvl:1}}"
+  }
+}
