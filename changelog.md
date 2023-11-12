@@ -2,6 +2,7 @@
 
 ## Alpha 4.0.1
 * Wither has now a really high chance to charge if there are players nearby when above half health
+* Wither I no longer summons Minions
 * Loot
   * Wither drops 1 nether star per level, plus 2/3/4 shards at levels II/III/IV
   * Wither drops 4 debris per level, plus 2/3/4 at levels II/III/IV

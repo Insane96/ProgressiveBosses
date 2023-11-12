@@ -139,7 +139,10 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		else {
 			this.stats = WitherStats.getDefaultStats().minion;
 		}
-		this.setEquipment();
+		if (this.stats == null)
+			this.discard();
+		else
+			this.setEquipment();
 	}
 
 	@Override
