@@ -329,7 +329,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                     Entity entity = this.level().getEntity(this.getAlternativeTarget(0));
                     if (entity != null) {
                         double d0 = -0.02d;
-                        if (this.isPowered())
+                        if (this.isPowered() || this.getY() >= entity.getY() + 10d)
                             d0 *= 5d;
                         if ((this.getY() < entity.getY() || (!this.isPowered() && this.getY() < entity.getY() + 5.0D))) {
                             d0 = 0.3D;
