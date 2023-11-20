@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.9.6
+* Items in the `progressivebosses:wither_invulnerable` item tag are now invulnerable to wither damage (not only for 5 seconds from spawning)
+  * Nether Star Shards have been added to above tag, instead of being hardcoded
+
 ## 3.9.5
 * Fixed possible game freeze with Elder Guardians (most notably with Bumblezone)
 

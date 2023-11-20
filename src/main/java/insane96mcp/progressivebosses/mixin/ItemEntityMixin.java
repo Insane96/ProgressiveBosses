@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.setup.PBItems;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -33,9 +32,7 @@ public abstract class ItemEntityMixin extends Entity implements TraceableEntity 
 
 	@Inject(at = @At("HEAD"), method = "hurt", cancellable = true)
 	public void onItemHurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-		if (!this.getItem().isEmpty() && this.getItem().is(PBItems.NETHER_STAR_SHARD.get()) && source.getEntity() instanceof WitherBoss)
-			cir.setReturnValue(false);
-		else if (!this.getItem().isEmpty() && this.getItem().is(WITHER_INVULNERABLE) && this.tickCount < 100 && source.getEntity() instanceof WitherBoss)
+		if (!this.getItem().isEmpty() && this.getItem().is(WITHER_INVULNERABLE) && source.getEntity() instanceof WitherBoss)
 			cir.setReturnValue(false);
 	}
 }
