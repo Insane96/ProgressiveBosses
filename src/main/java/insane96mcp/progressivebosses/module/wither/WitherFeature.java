@@ -55,7 +55,7 @@ public class WitherFeature extends Feature {
 					new WitherAttack(16f, 2.5f, 0.15f, 35, 45, 1.5f, 1, 0.06f, 24f, 40, 0.05f, 50, 100, 3),
 					new WitherHealth(600f, 2f, 0.6f, 35),
 					new WitherResistancesWeaknesses(new PoweredValue(17f, 22f), new PoweredValue(12f, 16f), 450f),
-					new WitherMinionStats(new PoweredValue(5), new PoweredValue(8), new PoweredValue(400, 200), new PoweredValue(500, 250), new PoweredValue(0.25f), 4f, new PoweredValue(0.7f, 0.3f), 1.2f, 1.2f, 1.6f, 0.8f),
+					new WitherMinionStats(new PoweredValue(5), new PoweredValue(10), new PoweredValue(400, 200), new PoweredValue(500, 250), new PoweredValue(0.25f), 4f, new PoweredValue(0.7f, 0.3f), 1.2f, 1.2f, 1.6f, 0.8f),
 					new WitherMiscStats(10f, false, true, true),
 					1300, new ResourceLocation("progressivebosses:entities/wither_3"))
 	));

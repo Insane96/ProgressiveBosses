@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+* Wither loot
+  * Can now drop either Ancient Debris or Netherite Upgrade Templates
+
 ## Alpha 4.0.1
 * Wither has now a really high chance to charge if there are players nearby when above half health
 * Loot
