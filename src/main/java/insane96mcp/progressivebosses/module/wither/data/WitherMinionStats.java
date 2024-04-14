@@ -51,7 +51,7 @@ public class WitherMinionStats {
         wither.minionCooldown = (int) (wither.getRandom().nextInt(this.minCooldown.getIntValue(wither), this.maxCooldown.getIntValue(wither)) / divider);
     }
 
-    public void trySpawnMinion(PBWither wither) {
+    public void trySpawnMinion(PBWither wither, boolean force) {
         if (wither.isDeadOrDying()
                 || wither.getInvulnerableTicks() > 0)
             return;
@@ -63,11 +63,11 @@ public class WitherMinionStats {
         AABB bb = new AABB(pos1, pos2);
         List<ServerPlayer> players = wither.level().getEntitiesOfClass(ServerPlayer.class, bb);
 
-        if (players.isEmpty())
+        if (!force && players.isEmpty())
             return;
 
         int minionsCountInAABB = wither.level().getEntitiesOfClass(WitherMinion.class, wither.getBoundingBox().inflate(24)).size();
-        if (minionsCountInAABB >= this.maxAround.getIntValue(wither))
+        if (!force && minionsCountInAABB >= this.maxAround.getIntValue(wither))
             return;
 
         this.setCooldown(wither);

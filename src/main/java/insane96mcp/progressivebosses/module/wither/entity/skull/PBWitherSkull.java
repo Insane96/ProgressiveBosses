@@ -83,21 +83,17 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
             }
 
             if (hasHurtEntity && entityHit instanceof LivingEntity livingEntityHit) {
-                int duration = 0;
-                if (this.level().getDifficulty() == Difficulty.NORMAL) {
-                    duration = 10;
-                }
-                else if (this.level().getDifficulty() == Difficulty.HARD) {
+                int duration = 10;
+                if (this.level().getDifficulty() == Difficulty.NORMAL)
+                    duration = 20;
+                else if (this.level().getDifficulty() == Difficulty.HARD)
                     duration = 40;
-                }
 
                 int amplifier = 1;
                 if (owner instanceof PBWither wither)
                     amplifier = wither.stats.attack.effectAmplifier;
 
-                if (duration > 0) {
-                    livingEntityHit.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * duration, amplifier), this.getEffectSource());
-                }
+                livingEntityHit.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * duration, amplifier), this.getEffectSource());
             }
 
         }

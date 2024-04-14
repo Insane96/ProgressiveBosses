@@ -3,6 +3,7 @@
 ## Upcoming
 * Wither now targets any creature when below a certain health threshold trying to heal back
 * Wither heads attack cooldown is now reduced whenever the wither is hit
+* Wither's blue skulls chance has been increased and scales with how many normal skulls have been shot since last blue skulls
 * Wither loot
   * Can now drop either Ancient Debris or Netherite Upgrade Templates
 
@@ -28,7 +29,7 @@
   * Barraging now has a charge up animation before starting
 * Health
   * Reduced at higher levels
-  * When brought to half health no longer goes back up over it
+  * When brought to half health no longer goes back up over it with passive healing
 * Resistances and Weaknesses
   * Replaced damage reduction with armor and armor toughness
 * All the wither past lvl II now ignore wither proof blocks

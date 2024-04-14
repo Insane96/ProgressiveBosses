@@ -86,6 +86,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public WitherStats stats;
     public int minionCooldown;
     public boolean chargeBelow;
+    public int shotSkulls;
 
     public PBWither(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -275,7 +276,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
     private void tickMinion() {
         if (this.stats.minion != null && --this.minionCooldown <= 0) {
-            this.stats.minion.trySpawnMinion(this);
+            this.stats.minion.trySpawnMinion(this, false);
         }
     }
 
@@ -495,7 +496,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             float regen = this.stats.health.regeneration / 20f;
             if (this.stats.health.regenWhenHit != 1f && this.tickCount > this.getLastHurtByMobTimestamp() && this.tickCount - this.getLastHurtByMobTimestamp() < this.stats.health.regenWhenHitDuration)
                 regen *= this.stats.health.regenWhenHit;
-            if (!this.isPowered() || this.getHealth() + regen < this.getMaxHealth() / 2f)
+            if (!this.isPowered() || (this.getHealth() + regen) / this.getMaxHealth() < 0.5f)
                 this.heal(regen);
 
             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
@@ -589,21 +590,23 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return pAngle + f;
     }
 
-    public void performRangedAttack(int pHead, LivingEntity pTarget) {
-        this.performRangedAttack(pHead, pTarget.getX(), pTarget.getY() + (double)pTarget.getEyeHeight() * 0.5D, pTarget.getZ(), pHead == 0 && this.random.nextFloat() < this.stats.attack.dangerousSkullChance);
+    public void performRangedAttack(int head, LivingEntity target) {
+        this.performRangedAttack(head, target.getX(), target.getY() + (double)target.getEyeHeight() * 0.5D, target.getZ(), head == 0 && this.random.nextFloat() < this.stats.attack.dangerousSkullChance * (this.shotSkulls / 10f));
     }
 
     /**
      * Launches a Wither skull toward (pX, pY, pZ)
      */
-    public void performRangedAttack(int pHead, double pX, double pY, double pZ, boolean pIsDangerous) {
+    public void performRangedAttack(int head, double pX, double pY, double pZ, boolean pIsDangerous) {
+        if (head == 0)
+            this.shotSkulls++;
         if (!this.isSilent()) {
             this.level().levelEvent(null, LevelEvent.SOUND_WITHER_BOSS_SHOOT, this.blockPosition(), 0);
         }
 
-        double d0 = this.getHeadX(pHead);
-        double d1 = this.getHeadY(pHead);
-        double d2 = this.getHeadZ(pHead);
+        double d0 = this.getHeadX(head);
+        double d1 = this.getHeadY(head);
+        double d2 = this.getHeadZ(head);
         double d3 = pX - d0;
         double d4 = pY - d1;
         double d5 = pZ - d2;
@@ -611,6 +614,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         witherskull.setOwner(this);
         if (pIsDangerous) {
             witherskull.setDangerous(true);
+            this.shotSkulls = 0;
         }
 
         witherskull.setPosRaw(d0, d1, d2);
@@ -660,15 +664,18 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 this.destroyBlocksTick = 10;
 
             for (int i = 0; i < this.nextHeadUpdate.length; ++i) {
-                this.nextHeadUpdate[i] += 2;
+                this.nextHeadUpdate[i] -= 3;
             }
 
+            boolean wasPowered = this.isPowered();
             boolean hurt = super.hurt(pSource, pAmount);
-            if (hurt) {
-
+            if (hurt && !wasPowered && this.isPowered()) {
+                this.initCharging();
+                if (this.stats.minion != null)
+                    this.stats.minion.trySpawnMinion(this, true);
             }
             return hurt;
-    }
+        }
     }
 
     /**
