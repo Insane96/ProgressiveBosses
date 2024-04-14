@@ -641,34 +641,34 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         if (pSource.is(DamageTypeTags.WITHER_IMMUNE_TO) || (pSource.getEntity() instanceof PBWither && pSource.getDirectEntity() instanceof PBWitherSkull skull && !skull.isDangerous()))
             return false;
 
-        else {
-            if (this.getInvulnerableTicks() > 0 && !pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+        if (this.getInvulnerableTicks() > 0 && !pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY))
+            return false;
+
+        if (this.isPowered()) {
+            Entity entity = pSource.getDirectEntity();
+            if (entity instanceof AbstractArrow) {
                 return false;
             }
-            else {
-                if (this.isPowered()) {
-                    Entity entity = pSource.getDirectEntity();
-                    if (entity instanceof AbstractArrow) {
-                        return false;
-                    }
-                }
-
-                Entity damagingEntity = pSource.getEntity();
-                if (!(damagingEntity instanceof Player) && damagingEntity instanceof LivingEntity && ((LivingEntity) damagingEntity).getMobType() == this.getMobType()) {
-                    return false;
-                }
-                else {
-                    if (this.destroyBlocksTick <= 0)
-                        this.destroyBlocksTick = 10;
-
-                    /*for (int i = 0; i < this.idleHeadUpdates.length; ++i) {
-                        this.idleHeadUpdates[i] += 3;
-                    }*/
-
-                    return super.hurt(pSource, pAmount);
-                }
-            }
         }
+
+        Entity damagingEntity = pSource.getEntity();
+        if (!(damagingEntity instanceof Player) && damagingEntity instanceof LivingEntity && ((LivingEntity) damagingEntity).getMobType() == this.getMobType()) {
+            return false;
+        }
+        else {
+            if (this.destroyBlocksTick <= 0)
+                this.destroyBlocksTick = 10;
+
+            for (int i = 0; i < this.nextHeadUpdate.length; ++i) {
+                this.nextHeadUpdate[i] += 2;
+            }
+
+            boolean hurt = super.hurt(pSource, pAmount);
+            if (hurt) {
+
+            }
+            return hurt;
+    }
     }
 
     /**

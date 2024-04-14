@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Wither now targets any creature when below a certain health threshold trying to heal back
+* Wither heads attack cooldown is now reduced whenever the wither is hit
 * Wither loot
   * Can now drop either Ancient Debris or Netherite Upgrade Templates
 
