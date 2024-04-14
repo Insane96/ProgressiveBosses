@@ -228,8 +228,6 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 	}
 
 	public void actuallyHurt(DamageSource source, float amount) {
-		if (source.getEntity() instanceof WitherMinion || source.getEntity() instanceof PBWither)
-			amount *= 0.2f;
 		if (source.is(DamageTypes.MAGIC))
 			amount *= this.stats.magicDamageMultiplier;
 		super.actuallyHurt(source, amount);

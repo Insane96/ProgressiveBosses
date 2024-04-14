@@ -1,6 +1,7 @@
 # Changelog
 
 ## Upcoming
+* Wither now targets any creature when below a certain health threshold trying to heal back
 * Wither loot
   * Can now drop either Ancient Debris or Netherite Upgrade Templates
 
@@ -26,6 +27,7 @@
   * Barraging now has a charge up animation before starting
 * Health
   * Reduced at higher levels
+  * When brought to half health no longer goes back up over it
 * Resistances and Weaknesses
   * Replaced damage reduction with armor and armor toughness
 * All the wither past lvl II now ignore wither proof blocks

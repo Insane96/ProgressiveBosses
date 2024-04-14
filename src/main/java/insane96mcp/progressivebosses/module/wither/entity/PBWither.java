@@ -79,8 +79,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     //private final int[] idleHeadUpdates = new int[2];
     public int destroyBlocksTick;
     public final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
-    private static final Predicate<LivingEntity> LIVING_ENTITY_SELECTOR = (livingEntity) -> livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
-    private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(48d).selector(LIVING_ENTITY_SELECTOR);
+    private static final Predicate<LivingEntity> NO_UNDEAD_SELECTOR = (livingEntity) -> livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
+    private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(48d).selector(NO_UNDEAD_SELECTOR);
+    private static final TargetingConditions TARGETING_CONDITIONS_NEEDS_HEALING = TargetingConditions.forCombat().range(48d).selector(LivingEntity::attackable);
     public int barrageTicks;
     public WitherStats stats;
     public int minionCooldown;
@@ -108,8 +109,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(this, Player.class, false, false, LIVING_ENTITY_SELECTOR));
-        this.targetSelector.addGoal(3, new ILNearestAttackableTargetGoal<>(this, LivingEntity.class, false, false, LIVING_ENTITY_SELECTOR));
+        this.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(this, Player.class, false, false, NO_UNDEAD_SELECTOR));
+        this.targetSelector.addGoal(3, new ILNearestAttackableTargetGoal<>(this, LivingEntity.class, false, false, NO_UNDEAD_SELECTOR));
     }
 
     @Override
@@ -314,10 +315,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return SoundEvents.WITHER_DEATH;
     }
 
-    /**
-     * Called every tick so the entity can update its state as required. For example, zombies and skeletons use this to
-     * react to sunlight and start to burn.
-     */
     public void aiStep() {
         if (this.getInvulnerableTicks() > 0 || this.getBarrageChargeUpTicks() > 5) {
             this.setDeltaMovement(Vec3.ZERO);
@@ -357,50 +354,50 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
         super.aiStep();
 
-        for(int i = 0; i < 2; ++i) {
-            this.yRotOHeads[i] = this.yRotHeads[i];
-            this.xRotOHeads[i] = this.xRotHeads[i];
+        for(int head = 0; head < 2; ++head) {
+            this.yRotOHeads[head] = this.yRotHeads[head];
+            this.xRotOHeads[head] = this.xRotHeads[head];
         }
 
-        for(int j = 0; j < 2; ++j) {
-            int k = this.getAlternativeTarget(j + 1);
-            Entity entity1 = null;
-            if (k > 0) {
-                entity1 = this.level().getEntity(k);
+        for(int head = 0; head < 2; ++head) {
+            int targetId = this.getAlternativeTarget(head + 1);
+            Entity target = null;
+            if (targetId > 0) {
+                target = this.level().getEntity(targetId);
             }
 
-            if (entity1 != null) {
-                double d9 = this.getHeadX(j + 1);
-                double d1 = this.getHeadY(j + 1);
-                double d3 = this.getHeadZ(j + 1);
-                double d4 = entity1.getX() - d9;
-                double d5 = entity1.getEyeY() - d1;
-                double d6 = entity1.getZ() - d3;
-                double d7 = Math.sqrt(d4 * d4 + d6 * d6);
-                float f = (float)(Mth.atan2(d6, d4) * (double)(180F / (float)Math.PI)) - 90.0F;
-                float f1 = (float)(-(Mth.atan2(d5, d7) * (double)(180F / (float)Math.PI)));
-                this.xRotHeads[j] = this.rotLerp(this.xRotHeads[j], f1, 40.0F);
-                this.yRotHeads[j] = this.rotLerp(this.yRotHeads[j], f, 10.0F);
+            if (target != null) {
+                double headX = this.getHeadX(head + 1);
+                double headY = this.getHeadY(head + 1);
+                double headZ = this.getHeadZ(head + 1);
+                double diffX = target.getX() - headX;
+                double diffY = target.getEyeY() - headY;
+                double diffZ = target.getZ() - headZ;
+                double distance = Math.sqrt(diffX * diffX + diffZ * diffZ);
+                float xRot = (float)(Mth.atan2(diffZ, diffX) * (double)(180F / (float)Math.PI)) - 90.0F;
+                float yRot = (float)(-(Mth.atan2(diffY, distance) * (double)(180F / (float)Math.PI)));
+                this.xRotHeads[head] = this.rotLerp(this.xRotHeads[head], yRot, 40.0F);
+                this.yRotHeads[head] = this.rotLerp(this.yRotHeads[head], xRot, 10.0F);
             } else {
-                this.yRotHeads[j] = this.rotLerp(this.yRotHeads[j], this.yBodyRot, 10.0F);
+                this.yRotHeads[head] = this.rotLerp(this.yRotHeads[head], this.yBodyRot, 10.0F);
             }
         }
 
-        boolean flag = this.isPowered();
+        boolean isPowered = this.isPowered();
 
         for(int l = 0; l < 3; ++l) {
-            double d8 = this.getHeadX(l);
-            double d10 = this.getHeadY(l);
-            double d2 = this.getHeadZ(l);
-            this.level().addParticle(ParticleTypes.SMOKE, d8 + this.random.nextGaussian() * (double)0.3F, d10 + this.random.nextGaussian() * (double)0.3F, d2 + this.random.nextGaussian() * (double)0.3F, 0.0D, 0.0D, 0.0D);
-            if (flag && this.level().random.nextInt(4) == 0) {
-                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, d8 + this.random.nextGaussian() * (double)0.3F, d10 + this.random.nextGaussian() * (double)0.3F, d2 + this.random.nextGaussian() * (double)0.3F, (double)0.7F, (double)0.7F, 0.5D);
+            double headX = this.getHeadX(l);
+            double headY = this.getHeadY(l);
+            double headZ = this.getHeadZ(l);
+            this.level().addParticle(ParticleTypes.SMOKE, headX + this.random.nextGaussian() * 0.3f, headY + this.random.nextGaussian() * 0.3f, headZ + this.random.nextGaussian() * 0.3f, 0.0D, 0.0D, 0.0D);
+            if (isPowered && this.level().random.nextInt(4) == 0) {
+                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, headX + this.random.nextGaussian() * 0.3f, headY + this.random.nextGaussian() * 0.3f, headZ + this.random.nextGaussian() * 0.3f, 0.7F, 0.7F, 0.5D);
             }
         }
 
         if (this.getInvulnerableTicks() > 0) {
-            for(int i1 = 0; i1 < 3; ++i1) {
-                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + this.random.nextGaussian(), this.getY() + (double)(this.random.nextFloat() * 3.3F), this.getZ() + this.random.nextGaussian(), (double)0.7F, (double)0.7F, (double)0.9F);
+            for(int i = 0; i < 3; ++i) {
+                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + this.random.nextGaussian(), this.getY() + (double)(this.random.nextFloat() * 3.3F), this.getZ() + this.random.nextGaussian(), 0.7F, 0.7F, 0.9F);
             }
         }
 
@@ -408,18 +405,22 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
     protected int findNewTarget() {
         List<Player> playersNearby = this.level().getNearbyEntities(Player.class, TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(48d, 24d, 48d));
-        if (!playersNearby.isEmpty()) {
+        if (!playersNearby.isEmpty() && !this.needsHealing()) {
             if (playersNearby.size() == 1)
                 return playersNearby.get(0).getId();
             Player player = playersNearby.get(this.random.nextInt(playersNearby.size()));
             return player.getId();
         }
-        List<LivingEntity> livingsNearby = this.level().getNearbyEntities(LivingEntity.class, TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(48d, 24d, 48d));
+        List<LivingEntity> livingsNearby = this.level().getNearbyEntities(LivingEntity.class, this.needsHealing() ? TARGETING_CONDITIONS_NEEDS_HEALING : TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(48d, 24d, 48d));
         if (!livingsNearby.isEmpty()) {
             LivingEntity livingEntity = livingsNearby.get(this.random.nextInt(livingsNearby.size()));
             return livingEntity.getId();
         }
         return 0;
+    }
+
+    public boolean needsHealing() {
+        return this.getHealth() / this.getMaxHealth() < this.stats.attack.attackToHealThreshold;
     }
 
     protected void customServerAiStep() {
@@ -447,8 +448,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 this.nextHeadUpdate[i] = this.tickCount + 15 + this.random.nextInt(15);
                 int targetId = this.getAlternativeTarget(i + 1);
                 if (targetId > 0) {
-                    LivingEntity targetEntity = (LivingEntity)this.level().getEntity(targetId);
-                    if (targetEntity == null || targetEntity.isDeadOrDying() || !this.canAttack(targetEntity) || targetId == this.getAlternativeTarget(0) || targetEntity.distanceToSqr(this) > 625f) {
+                    LivingEntity targetEntity = (LivingEntity) this.level().getEntity(targetId);
+                    if (targetEntity == null || targetEntity.isDeadOrDying() || !this.canAttack(targetEntity) || !this.getSensing().hasLineOfSight(targetEntity) || targetId == this.getAlternativeTarget(0) || targetEntity.distanceToSqr(this) > 625f) {
                         this.setAlternativeTarget(i + 1, this.findNewTarget());
                     }
                 }

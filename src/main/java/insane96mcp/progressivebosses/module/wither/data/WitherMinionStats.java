@@ -66,7 +66,7 @@ public class WitherMinionStats {
         if (players.isEmpty())
             return;
 
-        int minionsCountInAABB = wither.level().getEntitiesOfClass(WitherMinion.class, wither.getBoundingBox().inflate(32)).size();
+        int minionsCountInAABB = wither.level().getEntitiesOfClass(WitherMinion.class, wither.getBoundingBox().inflate(24)).size();
         if (minionsCountInAABB >= this.maxAround.getIntValue(wither))
             return;
 
