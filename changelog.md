@@ -7,6 +7,7 @@
 * Wither's now weak to magic damage and always takes 2x damage from it
   * This also applies to minions
 * Wither now heals 10 hp instead of 5 when killing someone with a skull
+* Wither minions now get near the wither to get sacrificed and let the wither heal
 * Wither loot
   * Can now drop either Ancient Debris or Netherite Upgrade Templates
 

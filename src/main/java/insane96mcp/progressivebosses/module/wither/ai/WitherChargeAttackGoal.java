@@ -192,7 +192,7 @@ public class WitherChargeAttackGoal extends Goal {
 		float d2 = (float) (entity.getX() - this.wither.getX());
 		float d3 = (float) (entity.getZ() - this.wither.getZ());
 		float d4 = Math.max(d2 * d2 + d3 * d3, 0.1f);
-		entity.push(d2 / d4 * 15f, 0.7f, d3 / d4 * 15f);
+		entity.push(d2 / d4 * 10f, 0.7f, d3 / d4 * 10f);
 		if (entity instanceof ServerPlayer player)
 			player.hurtMarked = true;
 	}

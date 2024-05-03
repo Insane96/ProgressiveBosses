@@ -23,10 +23,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
@@ -38,10 +35,12 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.ForgeMod;
 
 import javax.annotation.Nullable;
+import java.util.EnumSet;
 import java.util.function.Predicate;
 
 public class WitherMinion extends AbstractSkeleton implements ILvl {
@@ -53,6 +52,8 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 	WitherMinionStats stats;
 	int lvl;
 	boolean summonedByPoweredWither;
+	@Nullable
+	PBWither owner;
 
 	public WitherMinion(EntityType<? extends AbstractSkeleton> type, Level worldIn) {
 		super(type, worldIn);
@@ -61,11 +62,11 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 
 	@Nullable
 	public static WitherMinion create(Vec3 pos, PBWither wither) {
-		return create(wither.level(), pos, wither.getLvl(), wither.isPowered());
+		return create(wither.level(), pos, wither, wither.getLvl(), wither.isPowered());
 	}
 
 	@Nullable
-	public static WitherMinion create(Level level, Vec3 pos, int lvl, boolean isPowered) {
+	public static WitherMinion create(Level level, Vec3 pos, PBWither wither, int lvl, boolean isPowered) {
 		WitherMinion minion = PBEntities.WITHER_MINION.get().create(level);
 		if (minion == null)
 			return null;
@@ -78,6 +79,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		minion.setDropChance(EquipmentSlot.MAINHAND, -2f);
 		minion.setCanPickUpLoot(false);
 		minion.setPersistenceRequired();
+		minion.owner = wither;
 
 		MCUtils.applyModifier(minion, Attributes.MOVEMENT_SPEED, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, minion.stats.bonusMovementSpeed.getValue(isPowered), AttributeModifier.Operation.MULTIPLY_BASE);
 
@@ -153,6 +155,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 	@Override
 	protected void registerGoals() {
 		this.goalSelector.addGoal(1, new FloatGoal(this));
+		this.goalSelector.addGoal(1, new HelpWitherGoal(this));
 		this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 1.0D));
 		this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
 		this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
@@ -227,9 +230,16 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		}
 	}
 
+	@Nullable
+	public PBWither getOwner() {
+		return this.owner;
+	}
+
 	public void actuallyHurt(DamageSource source, float amount) {
-		if (source.is(DamageTypes.MAGIC))
-			amount *= this.stats.magicDamageMultiplier;
+		if (source.is(DamageTypes.MAGIC) || source.is(DamageTypes.INDIRECT_MAGIC))
+			amount *= 2;
+		if (source.getDirectEntity() != null && source.getDirectEntity().getType() == PBEntities.WITHER_SKULL.get())
+			amount *= 2;
 		super.actuallyHurt(source, amount);
 	}
 
@@ -249,5 +259,40 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 				.add(Attributes.MOVEMENT_SPEED, 0.25d)
 				.add(Attributes.ATTACK_KNOCKBACK, 1d)
 				.add(ForgeMod.SWIM_SPEED.get(), 3d);
+	}
+
+	public static class HelpWitherGoal extends Goal {
+
+		WitherMinion minion;
+		Path path = null;
+
+		public HelpWitherGoal(WitherMinion minion) {
+			this.minion = minion;
+			this.setFlags(EnumSet.of(Flag.MOVE, Flag.TARGET));
+		}
+
+		@Override
+		public boolean canUse() {
+			if (this.minion.getOwner() == null
+					|| !this.minion.getOwner().needsHealing())
+				return false;
+			this.path = this.minion.getNavigation().createPath(this.minion.getOwner(), 2);
+			return this.path != null;
+		}
+
+		@Override
+		public boolean canContinueToUse() {
+			return this.minion.getOwner() != null && this.minion.distanceTo(this.minion.getOwner()) > 4d;
+		}
+
+		@Override
+		public void start() {
+			this.minion.getNavigation().moveTo(this.path, 1.25D);
+		}
+
+		@Override
+		public void stop() {
+			this.path = null;
+		}
 	}
 }
