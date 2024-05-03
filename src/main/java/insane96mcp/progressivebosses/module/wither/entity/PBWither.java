@@ -150,9 +150,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     @Override
     protected void actuallyHurt(DamageSource damageSource, float damageAmount) {
         //If it's magic damage
-        if (this.stats.resistancesWeaknesses != null && damageSource.is(DamageTypes.MAGIC) || damageSource.is(DamageTypes.INDIRECT_MAGIC)) {
-            double missingHealth = this.getMaxHealth() - this.getHealth();
-            damageAmount *= (float) (missingHealth / this.stats.resistancesWeaknesses.doubleMagicDamageEveryThisMissingHealth + 1);
+        if (damageSource.is(DamageTypes.MAGIC) || damageSource.is(DamageTypes.INDIRECT_MAGIC)) {
+            damageAmount *= 2;
         }
         if (damageSource.getDirectEntity() instanceof PBWitherSkull witherSkull && witherSkull.isDangerous()) {
             damageAmount *= 3;

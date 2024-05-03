@@ -4,6 +4,7 @@
 * Wither now targets any creature when below a certain health threshold trying to heal back
 * Wither heads attack cooldown is now reduced whenever the wither is hit
 * Wither's blue skulls chance has been increased and scales with how many normal skulls have been shot since last blue skulls
+* Wither's now weak to magic damage and always takes 2x damage from it
 * Wither loot
   * Can now drop either Ancient Debris or Netherite Upgrade Templates
 
