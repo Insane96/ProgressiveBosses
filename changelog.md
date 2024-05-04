@@ -1,7 +1,9 @@
 # Changelog
 
 ## Upcoming
-* Wither can no longer heal back past half health, even if kills someone
+* Wither
+  * When he reaches half health and charges, after charging minions will spawn
+  * Can no longer heal back past half health, even if kills someone
 
 ## Alpha 4.1.0
 * Elder Guardian

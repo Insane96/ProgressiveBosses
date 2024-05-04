@@ -676,8 +676,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             boolean hurt = super.hurt(pSource, pAmount);
             if (hurt && !wasPowered && this.isPowered()) {
                 this.initCharging();
-                if (this.stats.minion != null)
-                    this.stats.minion.trySpawnMinion(this, true);
+                this.minionCooldown = this.getChargingTicks();
             }
             return hurt;
         }
