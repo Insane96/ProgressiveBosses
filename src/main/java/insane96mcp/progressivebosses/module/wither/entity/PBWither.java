@@ -687,7 +687,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
      * Makes the entity despawn if requirements are reached
      */
     public void checkDespawn() {
-        if (this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful()) {
+        if ((this.level().getDifficulty() == Difficulty.PEACEFUL && this.shouldDespawnInPeaceful())
+                || this.getY() < this.level().getMinBuildHeight() - 32) {
             this.discard();
         } else {
             this.noActionTime = 0;
