@@ -24,7 +24,7 @@ public class WitherStatsReloadListener extends SimpleJsonResourceReloadListener 
     }
 
     public WitherStatsReloadListener() {
-        super(GSON, "bosses/wither");
+        super(GSON, "progressivebosses/wither");
     }
 
     @Override
