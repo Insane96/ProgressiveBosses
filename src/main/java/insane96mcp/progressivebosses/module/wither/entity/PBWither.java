@@ -417,10 +417,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             return livingEntity.getId();
         }
         return 0;
-    }
 
-    public boolean needsHealing() {
-        return this.getHealth() / this.getMaxHealth() < this.stats.attack.attackToHealThreshold;
     }
 
     protected void customServerAiStep() {
@@ -506,6 +503,12 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             this.tickBarrage();
         }
     }
+
+    public boolean needsHealing() {
+        return this.getHealth() / this.getMaxHealth() < this.stats.attack.attackToHealThreshold;
+    }
+
+
 
     public boolean canDestroyBlock(BlockPos pos, BlockState state) {
         if (this.stats.misc.ignoreWitherProofBlocks)
@@ -628,9 +631,12 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     @Override
-    public void heal(float pHealAmount) {
+    public void heal(float healAmount) {
         boolean wasPowered = this.isPowered();
-        super.heal(pHealAmount);
+        if (this.getHealth() + healAmount > this.getMaxHealth() / 2f) {
+            healAmount = this.getMaxHealth() / 2f - this.getHealth() - 1f;
+        }
+        super.heal(healAmount);
         updateStats(wasPowered);
     }
 

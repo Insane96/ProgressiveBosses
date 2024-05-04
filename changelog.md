@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Wither can no longer heal back past half health, even if kills someone
+
 ## Alpha 4.1.0
 * Elder Guardian
   * Now data packable!
