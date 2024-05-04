@@ -1,0 +1,69 @@
+{
+    "level": 3,
+    "attack": {
+        "skull_damage": 16.0,
+        "skull_speed_multiplier": 2.5,
+        "dangerous_skull_damage": 0.4,
+        "attack_speed_near": 35,
+        "attack_speed_far": 45,
+        "side_heads_attack_speed_divider": 1.5,
+        "effect_amplifier": 1,
+        "attack_to_heal_threshold": 0.25,
+        "charge": {
+            "max_chance": 0.06,
+            "damage": 24.0,
+            "time": 40
+        },
+        "barrage": {
+            "chance": 0.05,
+            "min_duration": 50,
+            "max_duration": 100,
+            "attack_speed": 3
+        }
+    },
+    "health": {
+        "health": 600.0,
+        "regeneration": 2.0,
+        "regen_when_hit": 0.6,
+        "regen_when_hit_duration": 35
+    },
+    "resistances_weaknesses": {
+        "armor": {
+            "above_half_health": 17.0,
+            "below_half_health": 22.0
+        },
+        "toughness": {
+            "above_half_health": 12.0,
+            "below_half_health": 16.0
+        }
+    },
+    "minion": {
+        "minions_spawned": 5.0,
+        "max_minion_around": 10.0,
+        "min_cooldown": {
+            "above_half_health": 400.0,
+            "below_half_health": 200.0
+        },
+        "max_cooldown": {
+            "above_half_health": 500.0,
+            "below_half_health": 250.0
+        },
+        "bonus_movement_speed": 0.25,
+        "bow_chance": {
+            "above_half_health": 0.7,
+            "below_half_health": 0.3
+        },
+        "sharpness_chance": 1.2,
+        "knockback_chance": 1.2,
+        "power_chance": 1.6,
+        "punch_chance": 0.8
+    },
+    "misc": {
+        "explosion_power": 10.0,
+        "explosion_causes_fire": false,
+        "ignore_wither_proof_blocks": true,
+        "nether_only": true
+    },
+    "xp_dropped": 1300,
+    "loot_table": "progressivebosses:entities/wither_3"
+}

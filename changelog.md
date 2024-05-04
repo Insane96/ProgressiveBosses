@@ -1,10 +1,11 @@
 # Changelog
 
 ## Upcoming
+* Wither levels are now loaded through data packs instead of the config folder
 * Wither now targets any creature when below a certain health threshold trying to heal back
 * Wither heads attack cooldown is now reduced whenever the wither is hit
 * Wither's blue skulls chance has been increased and scales with how many normal skulls have been shot since last blue skulls
-* Wither's now weak to magic damage and always takes 2x damage from it
+* Wither's now weak to magic damage and always takes 1.5x damage from it
   * This also applies to minions
 * Wither now heals 10 hp instead of 5 when killing someone with a skull
 * Wither minions now get near the wither to get sacrificed and let the wither heal
