@@ -8,8 +8,6 @@ public class Strings {
 	public static class Tags {
 		public static final String DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "difficulty";
 
-		public static final String WITHER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "wither_minion";
-
 		public static final String KILLED_DRAGONS = ProgressiveBosses.RESOURCE_PREFIX + "killed_dragons";
 		public static final String FIRST_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "first_dragon";
 		public static final String EGGS_TO_DROP = ProgressiveBosses.RESOURCE_PREFIX + "eggs_to_drop";
@@ -22,10 +20,6 @@ public class Strings {
 		public static final String DRAGON_LARVA_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva_cooldown";
 		public static final String BLINDNESS_BULLET = ProgressiveBosses.RESOURCE_PREFIX + "blindness_bullet";
 
-		public static final String PREVIOUSLY_NEAR_ELDER_GUARDIAN = ProgressiveBosses.RESOURCE_PREFIX + "previously_near_elder_guardian";
-		public static final String ADVENTURE_MESSAGE = ProgressiveBosses.RESOURCE_PREFIX + "adventure_message";
-		public static final String ELDER_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion_cooldown";
-		public static final String ELDER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion";
 	}
 
 	public static class AttributeModifiers {

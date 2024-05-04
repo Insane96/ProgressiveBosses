@@ -1,15 +1,23 @@
 # Changelog
 
 ## Upcoming
-* Wither levels are now loaded through data packs instead of the config folder
-* Wither now targets any creature when below a certain health threshold trying to heal back
-* Wither heads attack cooldown is now reduced whenever the wither is hit
-* Wither's blue skulls chance has been increased and scales with how many normal skulls have been shot since last blue skulls
-* Wither's now weak to magic damage and always takes 1.5x damage from it
-  * This also applies to minions
-* Wither now heals 10 hp instead of 5 when killing someone with a skull
-* Wither minions now get near the wither to get sacrificed and let the wither heal
-* Wither loot
+* Elder Guardian
+  * Now data packable!
+  * Now heal by 5 hp when the laser hits
+    * Removed passive regen
+  * Changed attack speed (3/1.75/0.5 -> 2.5/1.75/0.75 seconds to laser)
+  * Reduced damage reduction
+  * Reduced minion cooldown
+  * Elder Minions now have 50% less health
+* Wither
+  * Levels are now loaded through data packs instead of the config folder
+  * Now targets any creature when below a certain health threshold trying to heal back
+  * Heads attack cooldown is now reduced whenever the wither is hit
+  * Blue skulls chance has been increased and scales with how many normal skulls have been shot since last blue skulls
+  * Now weak to magic damage and always takes 1.5x damage from it
+    * This also applies to minions
+  * Now heals 10 hp instead of 5 when killing someone with a skull
+  * Minions now get near the wither to get sacrificed and let the wither heal
   * Can now drop either Ancient Debris or Netherite Upgrade Templates
 
 ## Alpha 4.0.1

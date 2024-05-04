@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses;
 import insane96mcp.progressivebosses.capability.DifficultyProvider;
 import insane96mcp.progressivebosses.commands.PBCommand;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
+import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
 import insane96mcp.progressivebosses.setup.*;
@@ -63,6 +64,7 @@ public class ProgressiveBosses {
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onAddReloadListener(AddReloadListenerEvent event) {
 		event.addListener(WitherStatsReloadListener.INSTANCE);
+		event.addListener(ElderGuardianStatsReloadListener.INSTANCE);
 	}
 	@SubscribeEvent
 	public void registerCommands(RegisterCommandsEvent event) {
