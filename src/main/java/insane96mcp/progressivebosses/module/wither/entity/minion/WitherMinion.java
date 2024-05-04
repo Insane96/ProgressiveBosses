@@ -237,7 +237,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 
 	public void actuallyHurt(DamageSource source, float amount) {
 		if (source.is(DamageTypes.MAGIC) || source.is(DamageTypes.INDIRECT_MAGIC))
-			amount *= 2;
+			amount *= 1.5f;
 		if (source.getDirectEntity() != null && source.getDirectEntity().getType() == PBEntities.WITHER_SKULL.get())
 			amount *= 2;
 		super.actuallyHurt(source, amount);
