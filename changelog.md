@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.9.7
+* Fixed first dragon dropping no experience
+
 ## 3.9.6
 * Items in the `progressivebosses:wither_invulnerable` item tag are now invulnerable to wither damage (not only for 5 seconds from spawning)
   * Nether Star Shards have been added to above tag, instead of being hardcoded
