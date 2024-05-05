@@ -4,6 +4,8 @@
 * Wither
   * When he reaches half health and charges, after charging minions will spawn
   * Can no longer heal back past half health, even if kills someone
+* Adventure mode range is now doubled when YUNG's Better Ocean Monuments is installed
+* Removed Mining Fatigue from Ocean Monuments if Adventure mode is enabled
 
 ## Alpha 4.1.0
 * Elder Guardian

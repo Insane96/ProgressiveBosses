@@ -8,7 +8,9 @@ import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ElderGuardian.class)
@@ -26,5 +28,12 @@ public class ElderGuardianMixin extends Guardian {
 		if (this.clientSideAttackTime > attackDuration)
 			this.clientSideAttackTime = attackDuration;
 		callback.setReturnValue(attackDuration);
+	}
+
+	@ModifyConstant(method = "customServerAiStep", constant = @Constant(doubleValue = 50d))
+	public double onMiningFatigueRange(double range) {
+		if (Feature.isEnabled(ElderGuardianFeature.class) && ElderGuardianFeature.adventure)
+			return 0;
+		return range;
 	}
 }

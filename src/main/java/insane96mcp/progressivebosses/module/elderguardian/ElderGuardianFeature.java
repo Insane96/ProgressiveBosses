@@ -46,6 +46,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,11 +61,11 @@ public class ElderGuardianFeature extends Feature {
 	public static final String ELDER_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion_cooldown";
 	public static final String ELDER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion";
 	@Config
-	@Label(name = "Adventure mode", description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby.")
+	@Label(name = "Adventure mode", description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby. This also removes Mining Fatigue.")
 	public static Boolean adventure = true;
 
 	@Config
-	@Label(name = "Adventure mode Range", description = "The range from any Elder Guardian at which players get adventure mode. It's advised to increase this (to about 80) with YUNG's Better Ocean Monuments.")
+	@Label(name = "Adventure mode Range", description = "The range from any Elder Guardian at which players get adventure mode. This range is doubled when YUNG's Better Ocean Monuments is installed.")
 	public static Double adventureRange = 48d;
 
 	public ElderGuardianFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
@@ -87,7 +88,10 @@ public class ElderGuardianFeature extends Feature {
 		boolean previouslyNearElderGuardian = nbt.getBoolean(PREVIOUSLY_NEAR_ELDER_GUARDIAN);
 		boolean adventureMessage = nbt.getBoolean(ADVENTURE_MESSAGE);
 
-		boolean nearElderGuardian = !world.getEntitiesOfClass(ElderGuardian.class, serverPlayer.getBoundingBox().inflate(adventureRange)).isEmpty();
+		float range = adventureRange.floatValue();
+		if (ModList.get().isLoaded("betteroceanmonuments"))
+			range *= 2f;
+		boolean nearElderGuardian = !world.getEntitiesOfClass(ElderGuardian.class, serverPlayer.getBoundingBox().inflate(range)).isEmpty();
 		nbt.putBoolean(PREVIOUSLY_NEAR_ELDER_GUARDIAN, nearElderGuardian);
 
 		if (serverPlayer.gameMode.getGameModeForPlayer() == GameType.SURVIVAL && nearElderGuardian) {
