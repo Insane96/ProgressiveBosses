@@ -5,6 +5,7 @@
   * When he reaches half health and charges, after charging minions will spawn
   * Can no longer heal back past half health, even if kills someone
 * Adventure mode range is now doubled when YUNG's Better Ocean Monuments is installed
+* Elder Guardian no longer spawn minions if any 6 guardians are nearby, not only minions
 * Removed Mining Fatigue from Ocean Monuments if Adventure mode is enabled
 
 ## Alpha 4.1.0

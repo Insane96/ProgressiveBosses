@@ -260,10 +260,9 @@ public class ElderGuardianFeature extends Feature {
 		if (players.isEmpty())
 			return;
 
-		List<Guardian> minionsInAABB = world.getEntitiesOfClass(Guardian.class, elderGuardian.getBoundingBox().inflate(12), entity -> entity.getPersistentData().contains(ElderGuardianFeature.ELDER_MINION));
-		int minionsCountInAABB = minionsInAABB.size();
+		List<Guardian> guardiansInRange = world.getEntitiesOfClass(Guardian.class, elderGuardian.getBoundingBox().inflate(12));
 
-		if (minionsCountInAABB >= 5)
+		if (guardiansInRange.size() >= 6)
 			return;
 
 		summonMinion(world, new Vec3(elderGuardian.getX(), elderGuardian.getY(), elderGuardian.getZ()));
