@@ -1,6 +1,8 @@
 # Changelog
 
 ## Upcoming
+* Added `heal_on_skull_kill` that defines how much health the wither regenerates when a skull kills an entity
+  * 5/7/9/10 healing at I to IV. Was 10
 * Renamed `resistances_weaknesses` to `resistances` in Wither's json
 
 ## Alpha 4.1.1

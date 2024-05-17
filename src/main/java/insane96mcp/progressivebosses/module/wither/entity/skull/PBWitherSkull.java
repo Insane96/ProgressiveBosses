@@ -74,7 +74,10 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
                         this.doEnchantDamageEffects(livingOwner, entityHit);
                     }
                     else {
-                        livingOwner.heal(10.0F);
+                        float heal = 5f;
+                        if (owner instanceof PBWither wither)
+                            heal = wither.stats.attack.healOnSkullKill;
+                        livingOwner.heal(heal);
                     }
                 }
             }

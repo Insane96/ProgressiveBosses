@@ -9,6 +9,7 @@
         "side_heads_attack_speed_divider": 1.5,
         "effect_amplifier": 1,
         "attack_to_heal_threshold": 0.2,
+        "heal_on_skull_kill": 9,
         "charge": {
             "max_chance": 0.06,
             "damage": 17.0,
