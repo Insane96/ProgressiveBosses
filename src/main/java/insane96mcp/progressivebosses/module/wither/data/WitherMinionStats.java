@@ -21,6 +21,7 @@ public class WitherMinionStats {
     public PoweredValue maxAround;
     public PoweredValue minCooldown;
     public PoweredValue maxCooldown;
+    public PoweredValue health;
     public PoweredValue bonusMovementSpeed;
     public PoweredValue bowChance;
     public float sharpnessChance;
@@ -28,11 +29,12 @@ public class WitherMinionStats {
     public float powerChance;
     public float punchChance;
 
-    public WitherMinionStats(PoweredValue minionsSpawned, PoweredValue maxAround, PoweredValue minCooldown, PoweredValue maxCooldown, PoweredValue bonusMovementSpeed, PoweredValue bowChance, float sharpnessChance, float knockbackChance, float powerChance, float punchChance) {
+    public WitherMinionStats(PoweredValue minionsSpawned, PoweredValue maxAround, PoweredValue minCooldown, PoweredValue maxCooldown, PoweredValue health, PoweredValue bonusMovementSpeed, PoweredValue bowChance, float sharpnessChance, float knockbackChance, float powerChance, float punchChance) {
         this.minionsSpawned = minionsSpawned;
         this.maxAround = maxAround;
         this.minCooldown = minCooldown;
         this.maxCooldown = maxCooldown;
+        this.health = health;
         this.bonusMovementSpeed = bonusMovementSpeed;
         this.bowChance = bowChance;
         this.sharpnessChance = sharpnessChance;
@@ -100,6 +102,7 @@ public class WitherMinionStats {
                     context.deserialize(json.getAsJsonObject().get("max_minion_around"), PoweredValue.class),
                     context.deserialize(json.getAsJsonObject().get("min_cooldown"), PoweredValue.class),
                     context.deserialize(json.getAsJsonObject().get("max_cooldown"), PoweredValue.class),
+                    context.deserialize(json.getAsJsonObject().get("health"), PoweredValue.class),
                     context.deserialize(json.getAsJsonObject().get("bonus_movement_speed"), PoweredValue.class),
                     context.deserialize(json.getAsJsonObject().get("bow_chance"), PoweredValue.class),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "sharpness_chance"),
@@ -116,6 +119,7 @@ public class WitherMinionStats {
             jsonObject.add("max_minion_around", context.serialize(src.maxAround));
             jsonObject.add("min_cooldown", context.serialize(src.minCooldown));
             jsonObject.add("max_cooldown", context.serialize(src.maxCooldown));
+            jsonObject.add("health", context.serialize(src.health));
             jsonObject.add("bonus_movement_speed", context.serialize(src.bonusMovementSpeed));
             jsonObject.add("bow_chance", context.serialize(src.bowChance));
             jsonObject.add("sharpness_chance", context.serialize(src.sharpnessChance));

@@ -4,7 +4,6 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import insane96mcp.progressivebosses.data.Resistances;
-import insane96mcp.progressivebosses.module.wither.WitherFeature;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -58,7 +57,13 @@ public class WitherStats {
     }
 
     public static WitherStats getDefaultStats() {
-        return WitherFeature.DEFAULT_WITHER_STATS.get(0);
+        return new WitherStats(0,
+                new WitherAttack(8f, 1.5f, 0.40f, 50, 60, 1.5f, 0, 0.1f, 10, 0.06f, 8f, 70, 0.05f, 40, 60, 5),
+                new WitherHealth(300f, 1f, 1f, 30),
+                new Resistances(new PoweredValue(6f, 13f), new PoweredValue(3f, 4f)),
+                new WitherMinionStats(new PoweredValue(1), new PoweredValue(2), new PoweredValue(400, 200), new PoweredValue(500, 250), new PoweredValue(15f), new PoweredValue(0.10f), new PoweredValue(0.7f, 0.3f), 0.2f, 0.2f, 0.3f, 0.1f),
+                new WitherMiscStats(7f, false, false, false),
+                250, new ResourceLocation("progressivebosses:entities/wither_0"));
     }
 
     public static final java.lang.reflect.Type LIST_TYPE = new TypeToken<ArrayList<WitherStats>>(){}.getType();

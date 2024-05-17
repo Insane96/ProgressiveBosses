@@ -49,6 +49,7 @@
             "above_half_health": 500.0,
             "below_half_health": 250.0
         },
+        "health": 10,
         "bonus_movement_speed": 0.1,
         "bow_chance": {
             "above_half_health": 0.7,

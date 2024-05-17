@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.wither.entity.minion;
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.insanelib.util.MathHelper;
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.ILvl;
 import insane96mcp.progressivebosses.module.wither.ai.RangedMinionAttackGoal;
 import insane96mcp.progressivebosses.module.wither.data.WitherMinionStats;
@@ -20,6 +21,7 @@ import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -45,7 +47,7 @@ import java.util.function.Predicate;
 
 public class WitherMinion extends AbstractSkeleton implements ILvl {
 
-	protected final RangedMinionAttackGoal minionBowGoal = new RangedMinionAttackGoal(this, 1.0D, 20, 15.0F);
+	protected final RangedMinionAttackGoal minionBowGoal = new RangedMinionAttackGoal(this, 1.0D, 30, 15.0F);
 
 	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
 
@@ -80,8 +82,13 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		minion.setCanPickUpLoot(false);
 		minion.setPersistenceRequired();
 		minion.owner = wither;
+		AttributeInstance maxHealth = minion.getAttribute(Attributes.MAX_HEALTH);
+		if (maxHealth != null) {
+			maxHealth.setBaseValue(minion.stats.health.getValue(isPowered));
+			minion.setHealth((float) maxHealth.getValue());
+		}
 
-		MCUtils.applyModifier(minion, Attributes.MOVEMENT_SPEED, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS, minion.stats.bonusMovementSpeed.getValue(isPowered), AttributeModifier.Operation.MULTIPLY_BASE);
+		MCUtils.applyModifier(minion, Attributes.MOVEMENT_SPEED, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, ProgressiveBosses.RESOURCE_PREFIX + "movement_speed_bonus", minion.stats.bonusMovementSpeed.getValue(isPowered), AttributeModifier.Operation.MULTIPLY_BASE);
 
 		level.addFreshEntity(minion);
 		return minion;
@@ -209,7 +216,6 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 			this.goalSelector.removeGoal(this.minionBowGoal);
 			ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
 			if (itemstack.is(Items.BOW)) {
-				this.minionBowGoal.setMinAttackInterval(30);
 				this.goalSelector.addGoal(4, this.minionBowGoal);
 			} else {
 				this.goalSelector.addGoal(4, this.meleeGoal);

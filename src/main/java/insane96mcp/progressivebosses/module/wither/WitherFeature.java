@@ -5,8 +5,6 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.data.Resistances;
-import insane96mcp.progressivebosses.module.wither.data.*;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -24,42 +22,11 @@ import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.level.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Label(name = "Wither Feature")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither", canBeDisabled = false)
 public class WitherFeature extends Feature {
-	public static final List<WitherStats> DEFAULT_WITHER_STATS = new ArrayList<>(List.of(
-			new WitherStats(0,
-					new WitherAttack(8f, 1.5f, 0.40f, 50, 60, 1.5f, 0, 0.1f, 0.06f, 8f, 70, 0.05f, 40, 60, 5),
-					new WitherHealth(300f, 1f, 1f, 30),
-					new Resistances(new PoweredValue(6f, 13f), new PoweredValue(3f, 4f)),
-					new WitherMinionStats(new PoweredValue(1), new PoweredValue(2), new PoweredValue(400, 200), new PoweredValue(500, 250), new PoweredValue(0.10f), new PoweredValue(0.7f, 0.3f), 0.2f, 0.2f, 0.3f, 0.1f),
-					new WitherMiscStats(7f, false, false, false),
-					250, new ResourceLocation("progressivebosses:entities/wither_0")),
-			new WitherStats(1,
-					new WitherAttack(10f, 1.7f, 0.40f, 45, 55, 1.5f, 1, 0.15f, 0.06f, 12f, 60, 0.05f, 50, 75, 5),
-					new WitherHealth(400f, 1.25f, 1f, 30),
-					new Resistances(new PoweredValue(10f, 16f), new PoweredValue(6f, 8f)),
-					new WitherMinionStats(new PoweredValue(2), new PoweredValue(4), new PoweredValue(400, 200), new PoweredValue(500, 250), new PoweredValue(0.15f), new PoweredValue(0.7f, 0.3f), 0.5f, 0.5f, 0.6f, 0.3f),
-					new WitherMiscStats(8f, false, true, false),
-					600, new ResourceLocation("progressivebosses:entities/wither_1")),
-			new WitherStats(2,
-					new WitherAttack(13f, 2.1f, 0.40f, 40, 45, 1.5f, 1, 0.20f, 0.06f, 17f, 50, 0.05f, 50, 90, 4),
-					new WitherHealth(500f, 1.5f, 0.8f, 30),
-					new Resistances(new PoweredValue(13f, 19f), new PoweredValue(9f, 12f)),
-					new WitherMinionStats(new PoweredValue(3), new PoweredValue(6), new PoweredValue(400, 200), new PoweredValue(500, 250), new PoweredValue(0.20f), new PoweredValue(0.7f, 0.3f), 0.8f, 0.8f, 0.8f, 0.5f),
-					new WitherMiscStats(9f, false, true, false),
-					950, new ResourceLocation("progressivebosses:entities/wither_2")),
-			new WitherStats(3,
-					new WitherAttack(16f, 2.5f, 0.40f, 35, 45, 1.5f, 1, 0.25f, 0.06f, 24f, 40, 0.05f, 50, 100, 3),
-					new WitherHealth(600f, 2f, 0.6f, 35),
-					new Resistances(new PoweredValue(17f, 22f), new PoweredValue(12f, 16f)),
-					new WitherMinionStats(new PoweredValue(5), new PoweredValue(10), new PoweredValue(400, 200), new PoweredValue(500, 250), new PoweredValue(0.25f), new PoweredValue(0.7f, 0.3f), 1.2f, 1.2f, 1.6f, 0.8f),
-					new WitherMiscStats(10f, false, true, true),
-					1300, new ResourceLocation("progressivebosses:entities/wither_3"))
-	));
     public static final TagKey<Item> WITHER_INVULNERABLE = ItemTags.create(new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_invulnerable"));
 
     public WitherFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
