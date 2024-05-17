@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Renamed `resistances_weaknesses` to `resistances` in Wither's json
+
 ## Alpha 4.1.1
 * Wither
   * When he reaches half health and charges, after charging minions will spawn

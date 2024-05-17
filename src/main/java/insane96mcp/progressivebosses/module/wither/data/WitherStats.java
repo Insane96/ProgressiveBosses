@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.wither.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
+import insane96mcp.progressivebosses.data.Resistances;
 import insane96mcp.progressivebosses.module.wither.WitherFeature;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import net.minecraft.resources.ResourceLocation;
@@ -21,14 +22,14 @@ public class WitherStats {
     public WitherAttack attack;
     public WitherHealth health;
     @Nullable
-    public WitherResistancesWeaknesses resistancesWeaknesses;
+    public Resistances resistancesWeaknesses;
     @Nullable
     public WitherMinionStats minion;
     public WitherMiscStats misc;
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public WitherStats(int level, WitherAttack attack, WitherHealth health, @Nullable WitherResistancesWeaknesses resistancesWeaknesses, @Nullable WitherMinionStats minion, WitherMiscStats misc, int xpDropped, ResourceLocation lootTable) {
+    public WitherStats(int level, WitherAttack attack, WitherHealth health, @Nullable Resistances resistancesWeaknesses, @Nullable WitherMinionStats minion, WitherMiscStats misc, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.attack = attack;
         this.health = health;
@@ -67,12 +68,12 @@ public class WitherStats {
         public WitherStats deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String sLootTable = GsonHelper.getAsString(json.getAsJsonObject(), "loot_table", VANILLA_LOOT_TABLE.getPath());
             ResourceLocation lootTable = ResourceLocation.tryParse(sLootTable);
-            WitherResistancesWeaknesses witherResistancesWeaknesses = json.getAsJsonObject().has("resistances_weaknesses") ? context.deserialize(json.getAsJsonObject().get("resistances_weaknesses"), WitherResistancesWeaknesses.class) : null;
+            Resistances resistances = json.getAsJsonObject().has("resistances") ? context.deserialize(json.getAsJsonObject().get("resistances"), Resistances.class) : null;
             WitherMinionStats witherMinionStats = json.getAsJsonObject().has("minion") ? context.deserialize(json.getAsJsonObject().get("minion"), WitherMinionStats.class) : null;
             return new WitherStats(GsonHelper.getAsInt(json.getAsJsonObject(), "level"),
                     context.deserialize(json.getAsJsonObject().get("attack"), WitherAttack.class),
                     context.deserialize(json.getAsJsonObject().get("health"), WitherHealth.class),
-                    witherResistancesWeaknesses,
+                    resistances,
                     witherMinionStats,
                     context.deserialize(json.getAsJsonObject().get("misc"), WitherMiscStats.class),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "xp_dropped"),
@@ -86,7 +87,7 @@ public class WitherStats {
             jsonObject.add("attack", context.serialize(src.attack));
             jsonObject.add("health", context.serialize(src.health));
             if (src.resistancesWeaknesses != null)
-                jsonObject.add("resistances_weaknesses", context.serialize(src.resistancesWeaknesses));
+                jsonObject.add("resistances", context.serialize(src.resistancesWeaknesses));
             if (src.minion != null)
                 jsonObject.add("minion", context.serialize(src.minion));
             jsonObject.add("misc", context.serialize(src.misc));

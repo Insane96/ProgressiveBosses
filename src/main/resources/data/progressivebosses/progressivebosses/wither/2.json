@@ -27,7 +27,7 @@
         "regen_when_hit": 0.8,
         "regen_when_hit_duration": 30
     },
-    "resistances_weaknesses": {
+    "resistances": {
         "armor": {
             "above_half_health": 13.0,
             "below_half_health": 19.0
