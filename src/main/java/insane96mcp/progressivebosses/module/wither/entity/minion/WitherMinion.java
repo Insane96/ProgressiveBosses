@@ -47,7 +47,7 @@ import java.util.function.Predicate;
 
 public class WitherMinion extends AbstractSkeleton implements ILvl {
 
-	protected final RangedMinionAttackGoal minionBowGoal = new RangedMinionAttackGoal(this, 1.0D, 30, 15.0F);
+	protected final RangedMinionAttackGoal minionBowGoal = new RangedMinionAttackGoal(this, 1.0D, 40, 15.0F);
 
 	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
 
