@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.wither.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
+import insane96mcp.progressivebosses.data.Difficulty;
 import net.minecraft.util.GsonHelper;
 
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ public class WitherAttack {
     public int attackSpeedFar;
     public float sideHeadsAttackSpeedDivider;
     public int effectAmplifier;
+    public Difficulty effectDuration;
     public float attackToHealThreshold;
     public float healOnSkullKill;
     @Nullable
@@ -24,7 +26,7 @@ public class WitherAttack {
     @Nullable
     public WitherBarrage barrage;
 
-    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedDivider, int effectAmplifier, float attackToHealThreshold, float healOnSkullKill, float maxChargeChance, float chargeDamage, int chargeTime, float barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
+    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedDivider, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, float maxChargeChance, float chargeDamage, int chargeTime, float barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
         this.skullDamage = skullDamage;
         this.skullSpeedMultiplier = skullSpeedMultiplier;
         this.dangerousSkullChance = dangerousSkullChance;
@@ -32,6 +34,7 @@ public class WitherAttack {
         this.attackSpeedFar = attackSpeedFar;
         this.sideHeadsAttackSpeedDivider = sideHeadsAttackSpeedDivider;
         this.effectAmplifier = effectAmplifier;
+        this.effectDuration = effectDuration;
         this.attackToHealThreshold = attackToHealThreshold;
         this.healOnSkullKill = healOnSkullKill;
         this.charge = new WitherCharge(maxChargeChance, chargeDamage, chargeTime);
@@ -51,6 +54,7 @@ public class WitherAttack {
                     GsonHelper.getAsInt(jObject, "attack_speed_far"),
                     GsonHelper.getAsFloat(jObject, "side_heads_attack_speed_divider"),
                     GsonHelper.getAsInt(jObject, "effect_amplifier"),
+                    context.deserialize(jObject.get("effect_duration"), Difficulty.class),
                     GsonHelper.getAsFloat(jObject, "attack_to_heal_threshold"),
                     GsonHelper.getAsFloat(jObject, "heal_on_skull_kill"),
                     0, 0, 0, 0, 1, 1, 1);
@@ -69,6 +73,7 @@ public class WitherAttack {
             jsonObject.addProperty("attack_speed_far", src.attackSpeedFar);
             jsonObject.addProperty("side_heads_attack_speed_divider", src.sideHeadsAttackSpeedDivider);
             jsonObject.addProperty("effect_amplifier", src.effectAmplifier);
+            jsonObject.add("effect_duration", context.serialize(src.effectDuration));
             jsonObject.addProperty("attack_to_heal_threshold", src.attackToHealThreshold);
             jsonObject.addProperty("heal_on_skull_kill", src.healOnSkullKill);
             if (src.charge != null)

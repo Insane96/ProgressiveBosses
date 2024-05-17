@@ -9,7 +9,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -87,10 +86,8 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
 
             if (hasHurtEntity && entityHit instanceof LivingEntity livingEntityHit) {
                 int duration = 10;
-                if (this.level().getDifficulty() == Difficulty.NORMAL)
-                    duration = 20;
-                else if (this.level().getDifficulty() == Difficulty.HARD)
-                    duration = 40;
+                if (owner instanceof PBWither wither)
+                    duration = wither.stats.attack.effectDuration.getInt(this.level());
 
                 int amplifier = 1;
                 if (owner instanceof PBWither wither)
@@ -108,7 +105,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
     protected void onHit(HitResult pResult) {
         super.onHit(pResult);
         if (!this.level().isClientSide) {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), this.isDangerous() ? 1.5f : 0.8F, false, Level.ExplosionInteraction.MOB);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), this.isDangerous() ? 1.5f : 0.75f, false, Level.ExplosionInteraction.MOB);
             this.discard();
         }
     }

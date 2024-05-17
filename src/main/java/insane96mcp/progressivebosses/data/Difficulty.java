@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.Level;
 
 import java.lang.reflect.Type;
 
@@ -16,6 +17,19 @@ public class Difficulty {
         this.easy = easy;
         this.normal = normal;
         this.hard = hard;
+    }
+
+    public int getInt(Level level) {
+        return (int) getFloat(level);
+    }
+
+    public float getFloat(Level level) {
+        if (level.getDifficulty() == net.minecraft.world.Difficulty.EASY)
+            return easy;
+        else if (level.getDifficulty() == net.minecraft.world.Difficulty.NORMAL)
+            return normal;
+        else
+            return hard;
     }
 
     public static class Serializer implements JsonSerializer<Difficulty>, JsonDeserializer<Difficulty> {

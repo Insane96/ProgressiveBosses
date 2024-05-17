@@ -154,7 +154,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             damageAmount *= 1.5f;
         }
         if (damageSource.getDirectEntity() instanceof PBWitherSkull witherSkull && witherSkull.isDangerous()) {
-            damageAmount *= 3;
+            damageAmount *= 4;
         }
         boolean wasPowered = this.isPowered();
         super.actuallyHurt(damageSource, damageAmount);

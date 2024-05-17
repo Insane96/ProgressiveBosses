@@ -12,7 +12,9 @@
     * 5/7/9/10 healing at I to IV. Was 10
   * Minion health is now configurable
     * 10/12/14/15 health at I to IV. Was 15
-  * Reduced the explosion radius of skulls (1 -> 0.8 and 2 -> 1.5 for blue skulls)
+  * Wither effect duration is now configurable
+    * Also reduced in hard difficulty from 40s to 20s and increased in easy from 0s to 10s
+  * Reduced the explosion radius of skulls (1 -> 0.75 and 2 -> 1.5 for blue skulls)
   * Sped up barrage at Wither II
   * Slowed down wither minion firing speed
   * Renamed `resistances_weaknesses` to `resistances` in Wither's json

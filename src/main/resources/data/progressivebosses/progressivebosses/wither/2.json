@@ -8,6 +8,11 @@
         "attack_speed_far": 45,
         "side_heads_attack_speed_divider": 1.5,
         "effect_amplifier": 1,
+        "effect_duration": {
+            "easy": 10,
+            "normal": 10,
+            "hard": 20
+        },
         "attack_to_heal_threshold": 0.2,
         "heal_on_skull_kill": 9,
         "charge": {
