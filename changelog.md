@@ -1,11 +1,20 @@
 # Changelog
 
 ## Upcoming
-* Added `heal_on_skull_kill` that defines how much health the wither regenerates when a skull kills an entity
-  * 5/7/9/10 healing at I to IV. Was 10
-* Wither minion health is now configurable
-  * 10/12/14/15 health at I to IV. Was 15
-* Renamed `resistances_weaknesses` to `resistances` in Wither's json
+* Wither
+  * Slight rework to charge attack
+    * The target is now decided as soon as the charge attack starts, instead of when the wither charges
+    * Now takes half the time to charge
+    * No longer takes half the time to blow up if there are players nearby
+    * Charge bounding box slightly increased (both when blowing up and when charging)
+    * The wither should no longer freak out when close the point where he's charging
+  * Added `heal_on_skull_kill` that defines how much health the wither regenerates when a skull kills an entity
+    * 5/7/9/10 healing at I to IV. Was 10
+  * Minion health is now configurable
+    * 10/12/14/15 health at I to IV. Was 15
+  * Sped up barrage at Wither II
+  * Slowed down wither minion firing speed
+  * Renamed `resistances_weaknesses` to `resistances` in Wither's json
 
 ## Alpha 4.1.1
 * Wither

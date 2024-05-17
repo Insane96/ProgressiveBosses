@@ -13,13 +13,13 @@
         "charge": {
             "max_chance": 0.06,
             "damage": 12.0,
-            "time": 60
+            "time": 30
         },
         "barrage": {
             "chance": 0.05,
             "min_duration": 50,
             "max_duration": 75,
-            "attack_speed": 5
+            "attack_speed": 4
         }
     },
     "health": {

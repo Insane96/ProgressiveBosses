@@ -13,7 +13,7 @@
         "charge": {
             "max_chance": 0.06,
             "damage": 24.0,
-            "time": 40
+            "time": 20
         },
         "barrage": {
             "chance": 0.05,

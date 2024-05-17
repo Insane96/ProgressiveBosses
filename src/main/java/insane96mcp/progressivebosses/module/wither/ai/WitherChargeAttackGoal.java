@@ -62,6 +62,29 @@ public class WitherChargeAttackGoal extends Goal {
 
 		this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.WITHER_DEATH, SoundSource.HOSTILE, 5.0f, 2.0f);
 		blocksToDrop.clear();
+		List<Player> playersNearby = this.wither.level().getEntitiesOfClass(Player.class, this.wither.getBoundingBox().inflate(3f));
+		if (!playersNearby.isEmpty()) {
+			this.blowUp = true;
+		}
+		else {
+			this.target = this.wither.getTarget();
+			if (this.target == null)
+				this.target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
+			if (target != null) {
+				this.wither.lookAt(this.target, 30f, 30f);
+				this.targetPos = this.target.position().add(0, -1.5d, 0);
+				Vec3 forward = this.targetPos.subtract(this.wither.position()).normalize();
+				this.targetPos = this.targetPos.add(forward.multiply(4d, 4d, 4d));
+				this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
+			}
+			else if (this.wither.chargeBelow) {
+				this.targetPos = this.wither.position().add(0, -3, 0);
+				this.wither.chargeBelow = false;
+			}
+			else {
+				this.wither.stopCharging();
+			}
+		}
 	}
 
 	/**
@@ -86,38 +109,17 @@ public class WitherChargeAttackGoal extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
-		if (!this.wither.isCharging())
+		if (!this.wither.isCharging()
+				|| this.target == null)
 			return;
 
 		int chargeTicks = this.wither.getChargingTicks();
-		if (chargeTicks > PBWither.CHARGE_ATTACK_TICK_CHARGE)
+		if (chargeTicks > PBWither.CHARGE_ATTACK_TICK_CHARGE) {
 			this.wither.setDeltaMovement(Vec3.ZERO);
-
-		if (chargeTicks == PBWither.CHARGE_ATTACK_TICK_CHARGE) {
-			List<Player> playersNearby = this.wither.level().getEntitiesOfClass(Player.class, this.wither.getBoundingBox().inflate(3.5f));
-			if (!playersNearby.isEmpty()) {
-				this.blowUp = true;
-				this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 4.0f, 2.0f);
-			}
-			else {
-				this.target = this.wither.getTarget();
-				if (this.target == null)
-					this.target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
-				if (target != null) {
-					this.targetPos = this.target.position().add(0, -1.5d, 0);
-					Vec3 forward = this.targetPos.subtract(this.wither.position()).normalize();
-					this.targetPos = this.targetPos.add(forward.multiply(4d, 4d, 4d));
-					this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
-					this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 4.0f, 2.0f);
-				}
-				else if (this.wither.chargeBelow) {
-					this.targetPos = this.wither.position().add(0, -3, 0);
-					this.wither.chargeBelow = false;
-				}
-				else {
-					this.wither.stopCharging();
-				}
-			}
+			this.wither.lookAt(this.target, 30f, 30f);
+		}
+		else if (chargeTicks == PBWither.CHARGE_ATTACK_TICK_CHARGE) {
+			this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 4.0f, 2.0f);
 		}
 		else if (chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE) {
 			if (this.blowUp) {
@@ -137,7 +139,7 @@ public class WitherChargeAttackGoal extends Goal {
 						}
 					});
 				}
-				this.wither.level().getEntitiesOfClass(LivingEntity.class, this.wither.getBoundingBox().inflate(3.5f)).forEach(this::damageAndPush);
+				this.wither.level().getEntitiesOfClass(LivingEntity.class, this.wither.getBoundingBox().inflate(4f)).forEach(this::damageAndPush);
 				this.wither.stopCharging();
 			}
 			else if (this.targetPos == null) {
@@ -169,7 +171,7 @@ public class WitherChargeAttackGoal extends Goal {
 				if (hasBrokenBlocks.get() && this.wither.tickCount % 3 == 0)
 					this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_BREAK_BLOCK, SoundSource.HOSTILE, 1.0f, 0.75f);
 
-				axisAlignedBB = axisAlignedBB.inflate(1d);
+				axisAlignedBB = axisAlignedBB.inflate(1.5d);
 				this.wither.level()
 						.getEntitiesOfClass(LivingEntity.class, axisAlignedBB)
 						.forEach(this::damageAndPush);
@@ -178,7 +180,7 @@ public class WitherChargeAttackGoal extends Goal {
 		if (this.targetPos != null) {
 			double distance = this.targetPos.distanceToSqr(this.wither.position());
 			//If the wither's charging and is farther from the target point than the last tick OR is closer than sqrt(6) blocks OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-			if ((chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE && (distance - this.lastDistanceFromTarget > 16d || distance < 6d)) || chargeTicks == 1)
+			if ((chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE && (distance - this.lastDistanceFromTarget >= 0 || distance < 10d)) || chargeTicks == 1)
 				this.wither.stopCharging();
 
 			this.lastDistanceFromTarget = distance;

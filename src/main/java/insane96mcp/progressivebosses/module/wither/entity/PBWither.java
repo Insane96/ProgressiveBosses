@@ -192,8 +192,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public boolean initCharging() {
         if (this.stats.attack.charge != null) {
             int chargeTime = this.stats.attack.charge.time;
-            if (!this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(3d)).isEmpty())
-                chargeTime /= 2;
+            /*if (!this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(3d)).isEmpty())
+                chargeTime /= 2;*/
             this.entityData.set(CHARGING, chargeTime + CHARGE_ATTACK_TICK_CHARGE);
             return true;
         }
