@@ -11,6 +11,7 @@
   * Wither IV now drops 6 nether stars instead of 5, 16 ancient debris instead of 8
   * Wither III now drops 8 ancient debris instead of 4
 * Blue skulls damage against the wither now is multiplied by 0.5% of wither's max health
+* When wither's below `attack_to_heal_threshold` he now charges away from players
 * Barrage attacks are now slightly more precise
 * Wither minions are now immune to fall damage
 * Barrage attack now has higher chance to happen when wither's above half health

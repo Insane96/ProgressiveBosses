@@ -4,6 +4,7 @@ import com.mojang.datafixers.util.Pair;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.commands.arguments.EntityAnchorArgument;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -38,7 +39,6 @@ public class WitherChargeAttackGoal extends Goal {
 	public static ResourceKey<DamageType> WITHER_CHARGE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_charge"));
 
 	private final PBWither wither;
-	private LivingEntity target;
 	private Vec3 targetPos;
 	private double lastDistanceFromTarget = 0d;
 	private boolean blowUp = false;
@@ -65,16 +65,21 @@ public class WitherChargeAttackGoal extends Goal {
 		blocksToDrop.clear();
 		List<Player> playersNearby = this.wither.level().getEntitiesOfClass(Player.class, this.wither.getBoundingBox().inflate(3f));
 		if (!playersNearby.isEmpty()) {
-			this.blowUp = true;
-			this.targetPos = this.wither.position();
+			if (this.wither.getHealth() / this.wither.getMaxHealth() > this.wither.stats.attack.healOnSkullKill) {
+				this.blowUp = true;
+				this.targetPos = this.wither.position();
+			}
+			else {
+				this.targetPos = this.wither.position().add((this.wither.getRandom().nextInt(5) - 2) * 10, (this.wither.getRandom().nextInt(5) - 2) * 10, (this.wither.getRandom().nextInt(5) - 2) * 10);
+			}
 		}
 		else {
-			this.target = this.wither.getTarget();
-			if (this.target == null)
-				this.target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
+			LivingEntity target = this.wither.getTarget();
+			if (target == null)
+				target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
 			if (target != null) {
-				this.wither.lookAt(this.target, 30f, 30f);
-				this.targetPos = this.target.position().add(0, -1.5d, 0);
+				this.wither.lookAt(target, 30f, 30f);
+				this.targetPos = target.position().add(0, -1.5d, 0);
 				Vec3 forward = this.targetPos.subtract(this.wither.position()).normalize();
 				this.targetPos = this.targetPos.add(forward.multiply(4d, 4d, 4d));
 				this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
@@ -93,8 +98,6 @@ public class WitherChargeAttackGoal extends Goal {
 	 * Reset the task's internal state. Called when this task is interrupted by another one
 	 */
 	public void stop() {
-		this.target = null;
-		//AttackFeature.setCharging(this.wither, false);
 		this.wither.setDeltaMovement(this.wither.getDeltaMovement().multiply(0.02d, 0.02d, 0.02d));
 		this.lastDistanceFromTarget = 0d;
 		this.targetPos = null;
@@ -117,11 +120,12 @@ public class WitherChargeAttackGoal extends Goal {
 		int chargeTicks = this.wither.getChargingTicks();
 		if (chargeTicks > PBWither.CHARGE_ATTACK_TICK_CHARGE) {
 			this.wither.setDeltaMovement(Vec3.ZERO);
-			if (this.target != null)
-				this.wither.lookAt(this.target, 30f, 30f);
+			if (this.targetPos != null)
+				this.wither.lookAt(EntityAnchorArgument.Anchor.EYES, this.targetPos);
 		}
 		else if (chargeTicks == PBWither.CHARGE_ATTACK_TICK_CHARGE) {
 			this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 4.0f, 2.0f);
+            this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
 		}
 		else if (chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE) {
 			if (this.blowUp) {
@@ -183,7 +187,7 @@ public class WitherChargeAttackGoal extends Goal {
 
 				double distance = this.targetPos.distanceToSqr(this.wither.position());
 				//If the wither's charging and is farther from the target point than the last tick OR is closer than sqrt(6) blocks OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-				if ((chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE && (distance - this.lastDistanceFromTarget >= 0 || distance < 10d)) || chargeTicks == 1)
+				if (distance - this.lastDistanceFromTarget >= 0 || distance < 10d || chargeTicks == 1)
 					this.wither.stopCharging();
 
 				this.lastDistanceFromTarget = distance;
