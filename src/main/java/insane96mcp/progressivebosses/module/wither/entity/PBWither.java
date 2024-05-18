@@ -161,8 +161,10 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         super.actuallyHurt(damageSource, damageAmount);
         updateStats(wasPowered);
 
-        tryCharge(damageAmount);
-        tryBarrage(damageAmount);
+        if (!this.isDeadOrDying()) {
+            tryCharge(damageAmount);
+            tryBarrage(damageAmount);
+        }
     }
 
     @Override

@@ -1,8 +1,9 @@
 # Changelog
 
 ## Upcoming
-* Reworked Levels, they are now different one from another
-  * Wither I no longer charges, barrages or summons minions. Also has no resistances. Reduced xp drop from 250 to 200
+* Reworked Levels, they are now different one from another, instead of being just stronger
+  * Wither I no longer charges or summons minions. Also has no resistances. Reduced xp drop from 250 to 200
+  * Wither II no longer barrages or summons minions. Charge happens more often. Wither effect is II but lasts less
 * Blue skulls now always deal 10% of wither's max health as damage
 * Barrage attack now has higher chance to happen when wither's above half health
 
@@ -13,9 +14,9 @@
 * Halved charge knockback
 * Changed wither loot
   * First wither only drops a nether star
-  * Wither II drops 1 nether star, 2 nether star shards and a Netherite Smithing upgrade template
-  * Wither III drops 1 nether star, 3 nether star shards, 4 Ancient Debris and 2 Netherite Smithing upgrade template
-  * Wither IV drops 1 nether star, 6 nether star shards, 8 Ancient Debris and 4 Netherite Smithing upgrade template
+  * Wither II drops 2 nether star, 2 nether star shards and a Netherite Smithing upgrade template
+  * Wither III drops 3 nether star, 3 nether star shards, 4 Ancient Debris and 2 Netherite Smithing upgrade template
+  * Wither IV drops 5 nether star, 8 Ancient Debris and 4 Netherite Smithing upgrade template
 * Fixed wither no longer blowing up on charge when players nearby
 
 ## Alpha 4.1.3
@@ -197,3 +198,4 @@
 * Wither
   * Wither now attacks faster (1 skull every ~~2~~ -> 1.75 seconds) (attack speed when near unchanged 1 skull every 0.7 seconds)
 * Fixed generating a bak config file due to wrong explosion config option
+ 

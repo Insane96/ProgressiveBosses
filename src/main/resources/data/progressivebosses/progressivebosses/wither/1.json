@@ -1,7 +1,7 @@
 {
     "level": 1,
     "attack": {
-        "skull_damage": 10.0,
+        "skull_damage": 8.0,
         "skull_speed_multiplier": 1.7,
         "dangerous_skull_damage": 0.4,
         "attack_speed_near": 45,
@@ -9,29 +9,23 @@
         "side_heads_attack_speed_divider": 1.5,
         "effect_amplifier": 1,
         "effect_duration": {
-            "easy": 10,
-            "normal": 10,
-            "hard": 20
+            "easy": 5,
+            "normal": 5,
+            "hard": 10
         },
-        "attack_to_heal_threshold": 0.1,
+        "attack_to_heal_threshold": 0,
         "heal_on_skull_kill": 7,
         "charge": {
             "max_chance": {
-                "above_half_health": 0.06,
+                "above_half_health": 0.15,
                 "below_half_health": 0.1
             },
             "damage": 12.0,
             "time": 30
-        },
-        "barrage": {
-            "chance": 0.05,
-            "min_duration": 50,
-            "max_duration": 75,
-            "attack_speed": 4
         }
     },
     "health": {
-        "health": 400.0,
+        "health": 300.0,
         "regeneration": 1.25,
         "regen_when_hit": 1.0,
         "regen_when_hit_duration": 30
@@ -45,28 +39,6 @@
             "above_half_health": 6.0,
             "below_half_health": 8.0
         }
-    },
-    "minion": {
-        "minions_spawned": 2.0,
-        "max_minion_around": 4.0,
-        "min_cooldown": {
-            "above_half_health": 400.0,
-            "below_half_health": 200.0
-        },
-        "max_cooldown": {
-            "above_half_health": 500.0,
-            "below_half_health": 250.0
-        },
-        "health": 12,
-        "bonus_movement_speed": 0.15,
-        "bow_chance": {
-            "above_half_health": 0.7,
-            "below_half_health": 0.3
-        },
-        "sharpness_chance": 0.5,
-        "knockback_chance": 0.5,
-        "power_chance": 0.6,
-        "punch_chance": 0.3
     },
     "misc": {
         "explosion_power": 8.0,

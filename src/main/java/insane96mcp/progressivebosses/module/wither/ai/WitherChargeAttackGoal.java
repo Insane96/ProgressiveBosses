@@ -142,7 +142,8 @@ public class WitherChargeAttackGoal extends Goal {
 				}
 				this.wither.level().getEntitiesOfClass(LivingEntity.class, this.wither.getBoundingBox().inflate(4f)).forEach(this::damageAndPush);
 				this.wither.stopCharging();
-				this.wither.initBarrage();
+				if (this.wither.stats.attack.barrage != null)
+					this.wither.initBarrage();
 			}
 			else if (this.targetPos == null) {
 				this.wither.stopCharging();
