@@ -15,6 +15,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -152,7 +153,8 @@ public class WitherChargeAttackGoal extends Goal {
 				//So it goes faster and faster
 				double mult = 60d / chargeTicks;
 				Vec3 diff = this.targetPos.subtract(this.wither.position()).normalize().multiply(mult, mult, mult);
-				this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
+				//this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
+				this.wither.move(MoverType.SELF, new Vec3(diff.x, diff.y * 0.5, diff.z));
 				this.wither.getLookControl().setLookAt(this.targetPos);
 				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1.5f, 2f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
@@ -178,15 +180,14 @@ public class WitherChargeAttackGoal extends Goal {
 				this.wither.level()
 						.getEntitiesOfClass(LivingEntity.class, axisAlignedBB)
 						.forEach(this::damageAndPush);
-			}
-		}
-		if (this.targetPos != null) {
-			double distance = this.targetPos.distanceToSqr(this.wither.position());
-			//If the wither's charging and is farther from the target point than the last tick OR is closer than sqrt(6) blocks OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-			if ((chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE && (distance - this.lastDistanceFromTarget >= 0 || distance < 10d)) || chargeTicks == 1)
-				this.wither.stopCharging();
 
-			this.lastDistanceFromTarget = distance;
+				double distance = this.targetPos.distanceToSqr(this.wither.position());
+				//If the wither's charging and is farther from the target point than the last tick OR is closer than sqrt(6) blocks OR is about to finish the invulnerability time then prevent the explosion and stop the attack
+				if ((chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE && (distance - this.lastDistanceFromTarget >= 0 || distance < 10d)) || chargeTicks == 1)
+					this.wither.stopCharging();
+
+				this.lastDistanceFromTarget = distance;
+			}
 		}
 	}
 

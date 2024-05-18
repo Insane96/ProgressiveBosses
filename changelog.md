@@ -2,13 +2,16 @@
 
 ## Upcoming
 * Reworked Levels, they are now different one from another, instead of being just stronger
-  * All the withers' skull and charge damage is now the same for all the withers
-    * Wither I: no charging minions. Also has no resistances. Reduced xp drop from 250 to 200
-    * Wither II: no barrages or minions. Charge happens more often. Wither effect is II but lasts less
-    * Wither III: no resistances, no charging. Minions spawn often and are stronger
-* .
-* Wither IV now drops 6 nether stars instead of 5
+  * All the withers' skull and charge damage is now the same for all the withers (8 and 16)
+  * Wither I: no charging minions. Also has no resistances. Reduced xp drop from 250 to 200
+  * Wither II: no barrages or minions. Charge happens more often. Wither effect is II but lasts less
+  * Wither III: no resistances, no charging. Minions spawn often and are stronger
+  * Wither IV: a beast of boss, only 300HP but with high resistance and charges continuously. Let's not talk about the minions
+* Rewards
+  * Wither IV now drops 6 nether stars instead of 5, 16 ancient debris instead of 8
+  * Wither III now drops 8 ancient debris instead of 4
 * Blue skulls damage against the wither now is multiplied by 0.5% of wither's max health
+* Barrage attacks are now slightly more precise
 * Wither minions are now immune to fall damage
 * Barrage attack now has higher chance to happen when wither's above half health
 

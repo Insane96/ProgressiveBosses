@@ -20,7 +20,7 @@
             ]
         },
         {
-            "rolls": 8,
+            "rolls": 16,
             "entries": [
                 {
                     "type": "minecraft:item",

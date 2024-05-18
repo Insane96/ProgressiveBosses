@@ -91,7 +91,7 @@ public class WitherRangedAttackGoal extends Goal {
 					return;
 				//noinspection DataFlowIssue - Shouldn't be able to get in here if barrage doesn't exist
 				if (this.wither.barrageTicks % (3 * this.wither.stats.attack.barrage.attackSpeed) == i * this.wither.stats.attack.barrage.attackSpeed) {
-					this.wither.performRangedAttack(i, target.getX() + Mth.nextDouble(this.wither.getRandom(), -1.5d, 1.5d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -1.5d, 1.5d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -1.5d, 1.5d), false);
+					this.wither.performRangedAttack(i, target.getX() + Mth.nextDouble(this.wither.getRandom(), -1d, 1d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -1d, 1d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -1d, 1d), false);
 				}
 			}
 			else if (distanceSqr <= (double)this.attackRadiusSqr && this.wither.getBarrageChargeUpTicks() <= 0 && --this.headAttackTimes[i] <= 0) {

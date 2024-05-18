@@ -33,7 +33,7 @@
     },
     "minion": {
         "minions_spawned": 3.0,
-        "max_minion_around": 9.0,
+        "max_minion_around": 10.0,
         "min_cooldown": {
             "above_half_health": 300.0,
             "below_half_health": 150.0

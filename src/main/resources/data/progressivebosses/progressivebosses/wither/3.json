@@ -4,9 +4,9 @@
         "skull_damage": 8.0,
         "skull_speed_multiplier": 2.5,
         "dangerous_skull_chance": 0.4,
-        "attack_speed_near": 40,
-        "attack_speed_far": 50,
-        "side_heads_attack_speed_divider": 1.5,
+        "attack_speed_near": 35,
+        "attack_speed_far": 40,
+        "side_heads_attack_speed_divider": 1,
         "effect_amplifier": 1,
         "effect_duration": {
             "easy": 10,
@@ -17,14 +17,17 @@
         "heal_on_skull_kill": 10,
         "charge": {
             "max_chance": {
-                "above_half_health": 0.06,
-                "below_half_health": 0.1
+                "above_half_health": 0.20,
+                "below_half_health": 0.07
             },
-            "damage": 12.0,
+            "damage": 16.0,
             "time": 20
         },
         "barrage": {
-            "chance": 0.05,
+            "chance": {
+                "above_half_health": 0.1,
+                "below_half_health": 0.04
+            },
             "min_duration": 50,
             "max_duration": 100,
             "attack_speed": 3
@@ -33,40 +36,40 @@
     "health": {
         "health": 300.0,
         "regeneration": 2.0,
-        "regen_when_hit": 0.6,
+        "regen_when_hit": 1,
         "regen_when_hit_duration": 35
     },
     "resistances": {
         "armor": {
-            "above_half_health": 17.0,
-            "below_half_health": 22.0
+            "above_half_health": 25.0,
+            "below_half_health": 25.0
         },
         "toughness": {
-            "above_half_health": 12.0,
+            "above_half_health": 16.0,
             "below_half_health": 16.0
         }
     },
     "minion": {
-        "minions_spawned": 5.0,
+        "minions_spawned": 3.0,
         "max_minion_around": 10.0,
         "min_cooldown": {
-            "above_half_health": 400.0,
-            "below_half_health": 200.0
+            "above_half_health": 300.0,
+            "below_half_health": 150.0
         },
         "max_cooldown": {
-            "above_half_health": 500.0,
-            "below_half_health": 250.0
+            "above_half_health": 300.0,
+            "below_half_health": 150.0
         },
-        "health": 15,
-        "bonus_movement_speed": 0.25,
+        "health": 10,
+        "bonus_movement_speed": 0.2,
         "bow_chance": {
             "above_half_health": 0.7,
             "below_half_health": 0.3
         },
-        "sharpness_chance": 1.2,
-        "knockback_chance": 1.2,
-        "power_chance": 1.6,
-        "punch_chance": 0.8
+        "sharpness_chance": 5,
+        "knockback_chance": 2,
+        "power_chance": 5,
+        "punch_chance": 1
     },
     "misc": {
         "explosion_power": 10.0,

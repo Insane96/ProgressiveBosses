@@ -81,7 +81,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public int destroyBlocksTick;
     public final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
     private static final Predicate<LivingEntity> NO_UNDEAD_SELECTOR = (livingEntity) -> livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
-    private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(48d).selector(NO_UNDEAD_SELECTOR);
+    private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().ignoreLineOfSight().range(48d).selector(NO_UNDEAD_SELECTOR);
     private static final TargetingConditions TARGETING_CONDITIONS_NEEDS_HEALING = TargetingConditions.forCombat().range(48d).selector(LivingEntity::attackable);
     public int barrageTicks;
     public WitherStats stats;
@@ -168,12 +168,15 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
     public void tickCharging() {
         int ticks = this.entityData.get(CHARGING);
-        if (ticks > 0) {
+        if (ticks > 0)
             ticks--;
-            this.entityData.set(CHARGING, ticks);
-        }
+        else if (ticks < 0)
+            ticks++;
+        this.entityData.set(CHARGING, ticks);
     }
     public boolean initCharging() {
+        if (this.isCharging())
+            return false;
         int chargeTime = 30;
         if (this.stats.attack.charge != null)
             chargeTime = this.stats.attack.charge.time;
@@ -181,7 +184,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return true;
     }
     public void stopCharging() {
-        this.entityData.set(CHARGING, 0);
+        this.entityData.set(CHARGING, -10);
     }
     public void tryCharge(float damageAmount) {
         if (this.stats.attack.charge == null

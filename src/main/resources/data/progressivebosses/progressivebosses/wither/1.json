@@ -20,7 +20,7 @@
                 "above_half_health": 0.15,
                 "below_half_health": 0.1
             },
-            "damage": 12.0,
+            "damage": 16.0,
             "time": 30
         }
     },
