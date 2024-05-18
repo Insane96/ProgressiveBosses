@@ -1,0 +1,50 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "has_nether_star": {
+            "trigger": "minecraft:inventory_changed",
+            "conditions": {
+                "items": [
+                    {
+                        "items": [
+                            "minecraft:nether_star"
+                        ]
+                    }
+                ]
+            }
+        },
+        "has_the_recipe_1": {
+            "trigger": "minecraft:recipe_unlocked",
+            "conditions": {
+                "recipe": "progressivebosses:corrupted_soul_sand_1"
+            }
+        },
+        "has_the_recipe_2": {
+            "trigger": "minecraft:recipe_unlocked",
+            "conditions": {
+                "recipe": "progressivebosses:corrupted_soul_sand_2"
+            }
+        },
+        "has_the_recipe_3": {
+            "trigger": "minecraft:recipe_unlocked",
+            "conditions": {
+                "recipe": "progressivebosses:corrupted_soul_sand_3"
+            }
+        }
+    },
+    "requirements": [
+        [
+            "has_nether_star",
+            "has_the_recipe_1",
+            "has_the_recipe_2",
+            "has_the_recipe_3"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "progressivebosses:corrupted_soul_sand_1",
+            "progressivebosses:corrupted_soul_sand_2",
+            "progressivebosses:corrupted_soul_sand_3"
+        ]
+    }
+}

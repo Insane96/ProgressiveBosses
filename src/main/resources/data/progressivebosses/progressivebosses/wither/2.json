@@ -1,0 +1,76 @@
+{
+    "level": 2,
+    "attack": {
+        "skull_damage": 13.0,
+        "skull_speed_multiplier": 2.1,
+        "dangerous_skull_damage": 0.4,
+        "attack_speed_near": 40,
+        "attack_speed_far": 45,
+        "side_heads_attack_speed_divider": 1.5,
+        "effect_amplifier": 1,
+        "effect_duration": {
+            "easy": 10,
+            "normal": 10,
+            "hard": 20
+        },
+        "attack_to_heal_threshold": 0.2,
+        "heal_on_skull_kill": 9,
+        "charge": {
+            "max_chance": 0.06,
+            "damage": 17.0,
+            "time": 25
+        },
+        "barrage": {
+            "chance": 0.05,
+            "min_duration": 50,
+            "max_duration": 90,
+            "attack_speed": 4
+        }
+    },
+    "health": {
+        "health": 500.0,
+        "regeneration": 1.5,
+        "regen_when_hit": 0.8,
+        "regen_when_hit_duration": 30
+    },
+    "resistances": {
+        "armor": {
+            "above_half_health": 13.0,
+            "below_half_health": 19.0
+        },
+        "toughness": {
+            "above_half_health": 9.0,
+            "below_half_health": 12.0
+        }
+    },
+    "minion": {
+        "minions_spawned": 3.0,
+        "max_minion_around": 6.0,
+        "min_cooldown": {
+            "above_half_health": 400.0,
+            "below_half_health": 200.0
+        },
+        "max_cooldown": {
+            "above_half_health": 500.0,
+            "below_half_health": 250.0
+        },
+        "health": 14,
+        "bonus_movement_speed": 0.2,
+        "bow_chance": {
+            "above_half_health": 0.7,
+            "below_half_health": 0.3
+        },
+        "sharpness_chance": 0.8,
+        "knockback_chance": 0.8,
+        "power_chance": 0.8,
+        "punch_chance": 0.5
+    },
+    "misc": {
+        "explosion_power": 9.0,
+        "explosion_causes_fire": false,
+        "ignore_wither_proof_blocks": true,
+        "nether_only": false
+    },
+    "xp_dropped": 950,
+    "loot_table": "progressivebosses:entities/wither_2"
+}

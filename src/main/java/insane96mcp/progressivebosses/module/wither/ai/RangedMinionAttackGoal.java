@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.module.wither.ai;
 
-import insane96mcp.progressivebosses.module.wither.entity.WitherMinion;
+import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.projectile.ProjectileUtil;

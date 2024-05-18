@@ -9,7 +9,7 @@
                     "name": "minecraft:enchanted_golden_apple",
                     "conditions": [
                         {
-                            "condition": "progressivebosses:random_chance_with_difficulty",
+                            "condition": "progressivebosses:random_chance_with_lvl",
                             "chance": 0.125
                         }
                     ]

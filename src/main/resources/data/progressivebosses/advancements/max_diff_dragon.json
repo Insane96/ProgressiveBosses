@@ -17,9 +17,9 @@
             "conditions": {
                 "entity": [
                     {
-                        "condition": "progressivebosses:difficulty",
+                        "condition": "progressivebosses:lvl",
                         "entity": "this",
-                        "difficulty": 8
+                        "lvl": 3
                     },
                     {
                         "condition": "minecraft:entity_properties",

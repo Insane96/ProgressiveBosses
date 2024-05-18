@@ -2,6 +2,8 @@
     "replace": false,
     "values": [
         "progressivebosses:nether_star_shard",
-        "minecraft:ancient_debris"
+        "progressivebosses:corrupted_soul_sand",
+        "minecraft:ancient_debris",
+        "minecraft:netherite_upgrade_smithing_template"
     ]
 }

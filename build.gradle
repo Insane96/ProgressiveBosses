@@ -83,13 +83,12 @@ configurations {
 
 dependencies {
     minecraft "net.neoforged:forge:${mc_version}-${neo_version}"
-    implementation fg.deobf("blank:InsaneLib:${lib_version}-mc${mc_version}")
+    implementation fg.deobf("jarlib:InsaneLib:${lib_version}-mc${mc_version}")
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
 tasks.named('jar', Jar).configure {
-    archiveClassifier = 'slim'
     manifest {
         attributes([
                 "Specification-Title"     : "${mod_id}",
