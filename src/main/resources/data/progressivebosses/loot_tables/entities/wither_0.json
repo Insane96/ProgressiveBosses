@@ -11,26 +11,6 @@
             ]
         },
         {
-            "rolls": 2,
-            "entries": [
-                {
-                    "type": "minecraft:item",
-                    "name": "minecraft:ancient_debris",
-                    "weight": 2,
-                    "functions": [
-                        {
-                            "function": "minecraft:set_count",
-                            "count": 2
-                        }
-                    ]
-                },
-                {
-                    "type": "minecraft:item",
-                    "name": "minecraft:netherite_upgrade_smithing_template"
-                }
-            ]
-        },
-        {
             "rolls": 1,
             "entries": [
                 {

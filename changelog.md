@@ -1,5 +1,17 @@
 # Changelog
 
+## Alpha 4.1.4
+* Wither no longer barrages if there are players nearby
+* Increased chance to charge below half health
+* Wither now tries to barrage after blowing up, with double the chance
+* Halved charge knockback
+* Changed wither loot
+  * First wither only drops a nether star
+  * Wither II drops 1 nether star, 2 nether star shards and a Netherite Smithing upgrade template
+  * Wither III drops 1 nether star, 3 nether star shards, 4 Ancient Debris and 2 Netherite Smithing upgrade template
+  * Wither IV drops 1 nether star, 6 nether star shards, 8 Ancient Debris and 4 Netherite Smithing upgrade template
+* Fixed wither no longer blowing up on charge when players nearby
+
 ## Alpha 4.1.3
 * Now requires InsaneLib 1.13.4
 * Ported stuff from 3.9.3 to 3.9.7

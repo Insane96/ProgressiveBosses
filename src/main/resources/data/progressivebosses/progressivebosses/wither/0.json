@@ -13,10 +13,13 @@
             "normal": 10,
             "hard": 20
         },
-        "attack_to_heal_threshold": 0.1,
+        "attack_to_heal_threshold": 0,
         "heal_on_skull_kill": 5,
         "charge": {
-            "max_chance": 0.06,
+            "max_chance": {
+                "above_half_health": 0.06,
+                "below_half_health": 0.1
+            },
             "damage": 8.0,
             "time": 35
         },

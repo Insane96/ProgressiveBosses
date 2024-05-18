@@ -16,7 +16,10 @@
         "attack_to_heal_threshold": 0.25,
         "heal_on_skull_kill": 10,
         "charge": {
-            "max_chance": 0.06,
+            "max_chance": {
+                "above_half_health": 0.06,
+                "below_half_health": 0.1
+            },
             "damage": 24.0,
             "time": 20
         },

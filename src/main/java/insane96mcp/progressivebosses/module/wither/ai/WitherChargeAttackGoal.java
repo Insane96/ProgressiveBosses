@@ -56,7 +56,7 @@ public class WitherChargeAttackGoal extends Goal {
 	}
 
 	public void start() {
-		this.wither.getNavigation().stop();
+  		this.wither.getNavigation().stop();
 		for (int h = 0; h < 3; h++)
 			this.wither.setAlternativeTarget(h, 0);
 
@@ -65,6 +65,7 @@ public class WitherChargeAttackGoal extends Goal {
 		List<Player> playersNearby = this.wither.level().getEntitiesOfClass(Player.class, this.wither.getBoundingBox().inflate(3f));
 		if (!playersNearby.isEmpty()) {
 			this.blowUp = true;
+			this.targetPos = this.wither.position();
 		}
 		else {
 			this.target = this.wither.getTarget();
@@ -109,14 +110,14 @@ public class WitherChargeAttackGoal extends Goal {
 	 * Keep ticking a continuous task that has already been started
 	 */
 	public void tick() {
-		if (!this.wither.isCharging()
-				|| this.target == null)
+		if (!this.wither.isCharging())
 			return;
 
 		int chargeTicks = this.wither.getChargingTicks();
 		if (chargeTicks > PBWither.CHARGE_ATTACK_TICK_CHARGE) {
 			this.wither.setDeltaMovement(Vec3.ZERO);
-			this.wither.lookAt(this.target, 30f, 30f);
+			if (this.target != null)
+				this.wither.lookAt(this.target, 30f, 30f);
 		}
 		else if (chargeTicks == PBWither.CHARGE_ATTACK_TICK_CHARGE) {
 			this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 4.0f, 2.0f);
@@ -141,6 +142,7 @@ public class WitherChargeAttackGoal extends Goal {
 				}
 				this.wither.level().getEntitiesOfClass(LivingEntity.class, this.wither.getBoundingBox().inflate(4f)).forEach(this::damageAndPush);
 				this.wither.stopCharging();
+				this.wither.initBarrage();
 			}
 			else if (this.targetPos == null) {
 				this.wither.stopCharging();
@@ -194,7 +196,7 @@ public class WitherChargeAttackGoal extends Goal {
 		float d2 = (float) (entity.getX() - this.wither.getX());
 		float d3 = (float) (entity.getZ() - this.wither.getZ());
 		float d4 = Math.max(d2 * d2 + d3 * d3, 0.1f);
-		entity.push(d2 / d4 * 10f, 0.7f, d3 / d4 * 10f);
+		entity.push(d2 / d4 * 5f, 0.7f, d3 / d4 * 5f);
 		if (entity instanceof ServerPlayer player)
 			player.hurtMarked = true;
 	}

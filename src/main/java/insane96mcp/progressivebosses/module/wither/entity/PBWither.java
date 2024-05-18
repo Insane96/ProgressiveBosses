@@ -208,7 +208,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 || this.getBarrageChargeUpTicks() > 0)
             return;
         double missingHealthPercentage = 1d - this.getHealth() / this.getMaxHealth();
-        double chance = this.stats.attack.charge.maxChance * missingHealthPercentage;
+        double chance = this.stats.attack.charge.maxChance.getValue(this) * missingHealthPercentage;
         chance *= (damageAmount / 10f);
         if (!this.isPowered() && !this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(5d)).isEmpty())
             chance = 0.25f;
@@ -251,11 +251,12 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         this.entityData.set(BARRAGE_CHARGE_UP, ticks);
     }
 
-    private void tryBarrage(float damageAmount) {
+    public void tryBarrage(float damageAmount) {
         if (this.stats.attack.barrage == null
                 || this.getBarrageChargeUpTicks() > 0
                 || this.barrageTicks > 0
-                || this.isCharging())
+                || this.isCharging()
+                || this.level().getNearestPlayer(this, 4d) == null)
             return;
         double chance = this.stats.attack.barrage.chance * (damageAmount / 10f);
         if (this.getRandom().nextDouble() < chance) {
@@ -268,7 +269,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return true;
     }
 
-    private void initBarrage() {
+    public void initBarrage() {
         double missingHealthPercentage = 1d - this.getHealth() / this.getMaxHealth();
         this.barrageTicks = (int) (((this.stats.attack.barrage.maxDuration - this.stats.attack.barrage.minDuration) * missingHealthPercentage) + this.stats.attack.barrage.minDuration);
     }
@@ -769,6 +770,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return LivingEntity.createLivingAttributes()
                 .add(Attributes.MAX_HEALTH, 300.0d)
                 .add(Attributes.FOLLOW_RANGE, 64.0d)
+                .add(Attributes.KNOCKBACK_RESISTANCE, 1d)
                 .add(Attributes.MOVEMENT_SPEED, 0.6d)
                 .add(Attributes.FLYING_SPEED, 0.6d);
     }
