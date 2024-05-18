@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Barrage attack now has higher chance to happen when wither's above half health
+
 ## Alpha 4.1.4
 * Wither no longer barrages if there are players nearby
 * Increased chance to charge below half health

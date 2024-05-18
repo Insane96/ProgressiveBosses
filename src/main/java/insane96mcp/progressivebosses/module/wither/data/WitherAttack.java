@@ -26,7 +26,7 @@ public class WitherAttack {
     @Nullable
     public WitherBarrage barrage;
 
-    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedDivider, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, PoweredValue maxChargeChance, float chargeDamage, int chargeTime, float barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
+    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedDivider, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, PoweredValue maxChargeChance, float chargeDamage, int chargeTime, PoweredValue barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
         this.skullDamage = skullDamage;
         this.skullSpeedMultiplier = skullSpeedMultiplier;
         this.dangerousSkullChance = dangerousSkullChance;
@@ -57,7 +57,7 @@ public class WitherAttack {
                     context.deserialize(jObject.get("effect_duration"), Difficulty.class),
                     GsonHelper.getAsFloat(jObject, "attack_to_heal_threshold"),
                     GsonHelper.getAsFloat(jObject, "heal_on_skull_kill"),
-                    new PoweredValue(0), 0, 0, 0, 1, 1, 1);
+                    new PoweredValue(0), 0, 0, new PoweredValue(0), 1, 1, 1);
             witherAttack.charge = witherCharge;
             witherAttack.barrage = witherBarrage;
             return witherAttack;
@@ -101,7 +101,7 @@ public class WitherAttack {
 
     public static class WitherBarrage {
         @SerializedName("chance")
-        public float chance;
+        public PoweredValue chance;
         @SerializedName("min_duration")
         public int minDuration;
         @SerializedName("max_duration")
@@ -109,7 +109,7 @@ public class WitherAttack {
         @SerializedName("attack_speed")
         public int attackSpeed;
 
-        public WitherBarrage(float chance, int minDuration, int maxDuration, int attackSpeed) {
+        public WitherBarrage(PoweredValue chance, int minDuration, int maxDuration, int attackSpeed) {
             this.chance = chance;
             this.minDuration = minDuration;
             this.maxDuration = maxDuration;
