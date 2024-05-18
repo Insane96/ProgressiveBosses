@@ -83,7 +83,7 @@ public class SetCountPerDifficulty extends LootItemConditionalFunction {
 
         public SetCountPerDifficulty deserialize(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootItemCondition[] lootItemConditions) {
             NumberProvider numberprovider = GsonHelper.getAsObject(jsonObject, "count", jsonDeserializationContext, NumberProvider.class);
-            return new SetCountPerDifficulty(lootItemConditions, numberprovider, Mth.clamp(GsonHelper.getAsFloat(jsonObject, "per_difficulty_chance"), 0f, 1f), GsonHelper.getAsInt(jsonObject, "difficulty_modifier", 0));
+            return new SetCountPerDifficulty(lootItemConditions, numberprovider, Mth.clamp(GsonHelper.getAsFloat(jsonObject, "per_difficulty_chance", 1f), 0f, 1f), GsonHelper.getAsInt(jsonObject, "difficulty_modifier", 0));
         }
     }
 }

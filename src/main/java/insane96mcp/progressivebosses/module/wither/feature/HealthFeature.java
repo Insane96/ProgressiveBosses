@@ -32,8 +32,11 @@ public class HealthFeature extends Feature {
 	@Label(name = "Bonus Regeneration", description = "How many half hearts will the Wither regen at max difficulty. This is added to the natural regeneration of the Wither (1 Health per Second).")
 	public static Double bonusRegen = 2.4d;
 	@Config(min = 0d, max = 2d)
-	@Label(name = "Bonus Regeneration Ratio When Hit", description = "Bonus regeneration will be multiplied by this ratio when the Wither has been hit in the last 3 seconds.")
+	@Label(name = "Bonus Regeneration Ratio When Hit", description = "Bonus regeneration will be multiplied by this ratio when the Wither has been hit in the last 'Bonus Regeneration When Hit Duration' ticks.")
 	public static Double bonusRegenRatioWhenHit = 0.6d;
+	@Config(min = 0)
+	@Label(name = "Bonus Regeneration When Hit Duration")
+	public static Integer bonusRegenerationWhenHitDuration = 60;
 
 	public HealthFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
@@ -70,7 +73,7 @@ public class HealthFeature extends Feature {
 		float heal = (float) Math.min(bonusRegen * DifficultyHelper.getScalingDifficulty(wither), maxBonusRegen);
 		heal /= 20f;
 
-		if (wither.tickCount - wither.getLastHurtByMobTimestamp() <= 60) // 3 seconds
+		if (wither.tickCount - wither.getLastHurtByMobTimestamp() <= bonusRegenerationWhenHitDuration)
 			heal *= bonusRegenRatioWhenHit;
 
 		if (heal > 0f)

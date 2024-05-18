@@ -13,6 +13,7 @@
         "EndCrystalMixin",
         "EndDragonFightMixin",
         "EnderDragonMixin",
+        "ItemEntityMixin",
         "ShulkerBulletMixin",
         "ShulkerMixin"
     ],

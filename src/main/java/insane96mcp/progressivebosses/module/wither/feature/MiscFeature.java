@@ -145,7 +145,8 @@ public class MiscFeature extends Feature {
 
 		event.getExplosion().radius = explosionPower;
 
-		event.getExplosion().fire = difficulty >= explosionCausesFireAtDifficulty;
+		if (explosionCausesFireAtDifficulty > -1)
+			event.getExplosion().fire = difficulty >= explosionCausesFireAtDifficulty;
 	}
 
 	@SubscribeEvent

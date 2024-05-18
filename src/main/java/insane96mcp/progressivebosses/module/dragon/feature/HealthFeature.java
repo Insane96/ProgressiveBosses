@@ -34,9 +34,12 @@ public class HealthFeature extends Feature {
 	@Config(min = 0)
 	@Label(name = "Bonus Crystal Regeneration", description = "How much health (when missing 100% health) will the Ender Dragon regen at max difficulty each second whenever she's attached to a Crystal. So if she's missing 30% health, this will be 30% effective. This is added to the normal Crystal regen.")
 	public static Double bonusCrystalRegen = 0d;
-	@Config(min = 0d, max = 2d)
-	@Label(name = "Bonus Regeneration Ratio When Hit", description = "Bonus regeneration (also bonus crystal regen) will be multiplied by this ratio when the Dragon has been hit in the last 3 seconds.")
+	@Config(min = 0d, max = 4d)
+	@Label(name = "Bonus Regeneration Ratio When Hit", description = "Bonus regeneration (also bonus crystal regen) will be multiplied by this ratio when the Dragon has been hit in the last 'Bonus Regeneration When Hit Duration' ticks.")
 	public static Double bonusRegenRatioWhenHit = 0.4d;
+	@Config(min = 0)
+	@Label(name = "Bonus Regeneration When Hit Duration")
+	public static Integer bonusRegenerationWhenHitDuration = 85;
 
 	public HealthFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
@@ -79,7 +82,7 @@ public class HealthFeature extends Feature {
 
 		heal /= 20f;
 
-		if (dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= 60) // 3 seconds
+		if (dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= bonusRegenerationWhenHitDuration) // 4.25 seconds
 			heal *= bonusRegenRatioWhenHit;
 
 		dragon.heal(heal);
