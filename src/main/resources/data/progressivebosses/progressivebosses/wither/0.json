@@ -2,10 +2,10 @@
     "level": 0,
     "attack": {
         "skull_damage": 8.0,
-        "skull_speed_multiplier": 1.5,
-        "dangerous_skull_damage": 0.4,
-        "attack_speed_near": 50,
-        "attack_speed_far": 60,
+        "skull_speed_multiplier": 2,
+        "dangerous_skull_chance": 0.4,
+        "attack_speed_near": 40,
+        "attack_speed_far": 50,
         "side_heads_attack_speed_divider": 1.5,
         "effect_amplifier": 0,
         "effect_duration": {
@@ -17,8 +17,8 @@
         "heal_on_skull_kill": 5,
         "barrage": {
             "chance": {
-                "above_half_health": 0.10,
-                "below_half_health": 0.04
+                "above_half_health": 0.2,
+                "below_half_health": 0.08
             },
             "min_duration": 40,
             "max_duration": 60,

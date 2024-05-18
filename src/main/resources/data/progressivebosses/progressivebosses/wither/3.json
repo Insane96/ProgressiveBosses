@@ -1,11 +1,11 @@
 {
     "level": 3,
     "attack": {
-        "skull_damage": 16.0,
+        "skull_damage": 8.0,
         "skull_speed_multiplier": 2.5,
-        "dangerous_skull_damage": 0.4,
-        "attack_speed_near": 35,
-        "attack_speed_far": 45,
+        "dangerous_skull_chance": 0.4,
+        "attack_speed_near": 40,
+        "attack_speed_far": 50,
         "side_heads_attack_speed_divider": 1.5,
         "effect_amplifier": 1,
         "effect_duration": {
@@ -20,7 +20,7 @@
                 "above_half_health": 0.06,
                 "below_half_health": 0.1
             },
-            "damage": 24.0,
+            "damage": 12.0,
             "time": 20
         },
         "barrage": {
@@ -31,7 +31,7 @@
         }
     },
     "health": {
-        "health": 600.0,
+        "health": 300.0,
         "regeneration": 2.0,
         "regen_when_hit": 0.6,
         "regen_when_hit_duration": 35
