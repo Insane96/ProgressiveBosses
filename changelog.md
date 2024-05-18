@@ -2,7 +2,13 @@
 
 ## 3.7.6
 * Backported changes from 1.20.1
-  * 
+  * Fixed first dragon dropping no experience
+  * Items in the `progressivebosses:wither_invulnerable` item tag are now invulnerable to wither damage (not only for 5 seconds from spawning)
+    * Nether Star Shards have been added to above tag, instead of being hardcoded
+  * Fixed possible game freeze with Elder Guardians (most notably with Bumblezone)
+  * Fixed Elder Guardian Health Feature not working
+  * Now requires InsaneLib 1.11.1
+  * Fixed Elder Guardians being able to be invincible if mods spawned more than 4 elder guardians
 * Backported changes from 1.19.4
   * Better Compatibility with YUNG's better end island
     * Cages now use the vanilla method to generate so YUNG's one now generate correctly

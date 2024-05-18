@@ -31,6 +31,9 @@ public class ResistancesFeature extends Feature {
 			return;
 
 		float damageReduction = (float) (resistancePerElderGuardianDefeated * elderGuardian.getPersistentData().getInt(Strings.Tags.DIFFICULTY));
+		//Cap damage reduction due to stupid mods messing with the system
+		if (damageReduction > 0.95f)
+			damageReduction = 0.95f;
 
 		event.setAmount(event.getAmount() * (1f - damageReduction));
 	}

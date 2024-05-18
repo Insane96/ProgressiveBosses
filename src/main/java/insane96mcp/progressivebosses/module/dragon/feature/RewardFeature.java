@@ -29,7 +29,7 @@ public class RewardFeature extends Feature {
 	@Label(name = "Bonus Experience", description = "How much more experience (percentage, 36 means +3600%) will Dragon drop at max Difficulty.")
 	public static Double bonusExperience = 36d;
 	@Config
-	@Label(name = "Dragon Egg per Player", description = "If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg ìì will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
+	@Label(name = "Dragon Egg per Player", description = "If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
 	public static Boolean dragonEggPerPlayer = true;
 	@Config
 	@Label(name = "Inject Default Loot", description = "If true default mod drops are added to the Ender Dragon.\n" +
@@ -55,8 +55,11 @@ public class RewardFeature extends Feature {
 				|| !(event.getEntity() instanceof EnderDragon dragon)
 				|| bonusExperience == 0d)
 			return;
+		float scalingDifficulty = DifficultyHelper.getScalingDifficulty(dragon);
+		if (scalingDifficulty == 0)
+			return;
 
-		event.setDroppedExperience((int) (event.getDroppedExperience() * bonusExperience * DifficultyHelper.getScalingDifficulty(dragon)));
+		event.setDroppedExperience((int) (event.getDroppedExperience() * bonusExperience * scalingDifficulty));
 	}
 
 	private static void dropEgg(EnderDragon dragon) {
