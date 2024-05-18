@@ -1,6 +1,9 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.module.elderguardian.feature.AttackFeature;
+import insane96mcp.insanelib.base.Feature;
+import insane96mcp.progressivebosses.module.elderguardian.ElderGuardianFeature;
+import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStats;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.level.Level;
