@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## Alpha 4.1.2
 * Wither
   * Slight rework to charge attack
     * The target is now decided as soon as the charge attack starts, instead of when the wither charges
@@ -16,6 +16,7 @@
     * Also reduced in hard difficulty from 40s to 20s and increased in easy from 0s to 10s
   * Reduced the explosion radius of skulls (1 -> 0.75 and 2 -> 1.5 for blue skulls)
   * Sped up barrage at Wither II
+  * Increased middle head attack range (24 -> 32)
   * Slowed down wither minion firing speed
   * Renamed `resistances_weaknesses` to `resistances` in Wither's json
 

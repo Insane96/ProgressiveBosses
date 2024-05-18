@@ -105,7 +105,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     protected void registerGoals() {
         //this.goalSelector.addGoal(0, new WitherDoNothingGoal());
         this.goalSelector.addGoal(1, new WitherChargeAttackGoal(this));
-        this.goalSelector.addGoal(2, new WitherRangedAttackGoal(this, 24f));
+        this.goalSelector.addGoal(2, new WitherRangedAttackGoal(this, 32f));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomFlyingGoal(this));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
