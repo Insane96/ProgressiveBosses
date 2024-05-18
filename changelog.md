@@ -1,6 +1,9 @@
 # Changelog
 
 ## Upcoming
+* Reworked Levels, they are now different one from another
+  * Wither I no longer charges, barrages or summons minions. Also has no resistances. Reduced xp drop from 250 to 200
+* Blue skulls now always deal 10% of wither's max health as damage
 * Barrage attack now has higher chance to happen when wither's above half health
 
 ## Alpha 4.1.4

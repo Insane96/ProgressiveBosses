@@ -153,8 +153,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         if (damageSource.is(DamageTypes.MAGIC) || damageSource.is(DamageTypes.INDIRECT_MAGIC)) {
             damageAmount *= 1.5f;
         }
+        //Dangerous skulls always deal 10% damage
         if (damageSource.getDirectEntity() instanceof PBWitherSkull witherSkull && witherSkull.isDangerous()) {
-            damageAmount *= 4;
+            damageAmount = this.getMaxHealth() * 0.1f;
         }
         boolean wasPowered = this.isPowered();
         super.actuallyHurt(damageSource, damageAmount);
