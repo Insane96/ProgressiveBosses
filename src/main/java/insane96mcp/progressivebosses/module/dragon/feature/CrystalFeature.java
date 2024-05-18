@@ -1,11 +1,11 @@
 package insane96mcp.progressivebosses.module.dragon.feature;
 
+import com.google.common.collect.ImmutableList;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.base.config.LoadFeature;
-import insane96mcp.insanelib.util.LogHelper;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
@@ -17,6 +17,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -29,17 +30,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
-import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.levelgen.feature.configurations.SpikeConfiguration;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Label(name = "Crystals", description = "Makes more Crystal spawn and with more cages.")
@@ -158,24 +156,28 @@ public class CrystalFeature extends Feature {
 
 		dragonTags.putBoolean(Strings.Tags.CRYSTAL_CAGES, true);
 
-		List<EndCrystal> crystals = new ArrayList<>();
+		ServerLevel serverLevel = (ServerLevel) dragon.level();
 
 		//Order from smaller towers to bigger ones
 		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level()));
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 
-		for(SpikeFeature.EndSpike spike : spikes) {
-			crystals.addAll(dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()));
-		}
-
-		//Remove all the crystals that already have cages around
-		crystals.removeIf(c -> c.level().getBlockState(c.blockPosition().above(2)).getBlock() == Blocks.IRON_BARS);
-
 		int crystalsInvolved = Math.round(difficulty - moreCagesAtDifficulty + 1);
 		int cagesGenerated = 0;
 
-		for (EndCrystal crystal : crystals) {
-			generateCage(crystal.level(), crystal.blockPosition());
+		for (SpikeFeature.EndSpike spike : spikes) {
+			Optional<EndCrystal> crystal = dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).stream().findAny();
+			if (crystal.isEmpty())
+				continue;
+
+			if (spike.isGuarded())
+				continue;
+
+			crystal.get().discard();
+			spike.guarded = true;
+			RandomSource random = RandomSource.create(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island to generate guarded
+			net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), serverLevel, serverLevel.getChunkSource().getGenerator(), random, crystal.get().blockPosition());
+			spike.guarded = false;
 
 			cagesGenerated++;
 			if (cagesGenerated == crystalsInvolved || cagesGenerated == maxBonusCages)
@@ -227,35 +229,36 @@ public class CrystalFeature extends Feature {
 		return source.is(DamageTypeTags.IS_EXPLOSION);
 	}
 
-	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER_RL = new ResourceLocation("endergetic:crystal_holder");
+	private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER = new ResourceLocation("endergetic:crystal_holder");
 
-	public static void generateCrystalInTower(Level world, double x, double y, double z) {
-		Vec3 centerPodium = Vec3.atBottomCenterOf(world.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION));
+	public static void generateCrystalInTower(Level level, double x, double y, double z) {
+		BlockPos centerPodium = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+		while (!level.getBlockState(centerPodium).is(Blocks.BEDROCK) && centerPodium.getY() > level.getSeaLevel()) {
+			centerPodium = centerPodium.below();
+		}
 
-		int spawnY = (int) (y - Mth.nextInt(world.getRandom(), 12, 24));
-		if (spawnY < centerPodium.y())
-			spawnY = (int) centerPodium.y();
+		int spawnY = (int) (y - Mth.nextInt(level.getRandom(), 12, 24));
+		if (spawnY < centerPodium.getY())
+			spawnY = centerPodium.getY();
 		BlockPos crystalPos = BlockPos.containing(x, spawnY, z);
 
 		Stream<BlockPos> blocks = BlockPos.betweenClosedStream(crystalPos.offset(-1, -1, -1), crystalPos.offset(1, 1, 1));
 
-		blocks.forEach(pos -> world.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
+		blocks.forEach(pos -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
 
 		BlockState baseBlockState = Blocks.BEDROCK.defaultBlockState();
 		if (ModList.get().isLoaded("endergetic"))
-			if (ForgeRegistries.BLOCKS.containsKey(ENDERGETIC_CRYSTAL_HOLDER_RL))
-				//noinspection ConstantConditions
-				baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_HOLDER_RL).defaultBlockState();
-			else
-				LogHelper.warn("The Endergetic Expansion is loaded but the %s block was not registered", ENDERGETIC_CRYSTAL_HOLDER_RL);
-		world.setBlockAndUpdate(crystalPos.offset(0, -1, 0), baseBlockState);
+			baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_HOLDER).defaultBlockState();
+		level.setBlockAndUpdate(crystalPos.offset(0, -1, 0), baseBlockState);
 
-		world.explode(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Level.ExplosionInteraction.BLOCK);
+		level.explode(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Level.ExplosionInteraction.BLOCK);
 
-		EndCrystal crystal = new EndCrystal(world, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
-		world.addFreshEntity(crystal);
+		EndCrystal crystal = new EndCrystal(level, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
+		level.addFreshEntity(crystal);
 	}
 
+
+	//TODO remove and regen the pillar
 	public static void generateCage(Level world, BlockPos pos) {
 		//Shamelessly copied from Vanilla Code
 		BlockPos.MutableBlockPos blockpos$mutable = new BlockPos.MutableBlockPos();

@@ -1,5 +1,17 @@
 # Changelog
 
+## Alpha 4.1.3
+* Now requires InsaneLib 1.13.4
+* Ported stuff from 3.9.3 to 3.9.7
+  * Fixed first dragon dropping no experience
+  * Items in the `progressivebosses:wither_invulnerable` item tag are now invulnerable to wither damage (not only for 5 seconds from spawning)
+    * Nether Star Shards have been added to above tag, instead of being hardcoded
+  * Fixed possible game freeze with Elder Guardians (most notably with Bumblezone)
+  * Fixed Elder Guardian Health Feature not working
+  * Better Compatibility with YUNG's better end island
+    * Cages now use the vanilla method to generate so YUNG's one now generate correctly
+    * Fixed Crystals spawning in towers too close to normal crystals
+
 ## Alpha 4.1.2
 * Wither
   * Slight rework to charge attack

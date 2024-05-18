@@ -201,11 +201,6 @@ public class ElderGuardianFeature extends Feature {
 			elderGuardian.heal(oElderGuardianStats.get().regenOnAttack / 2f);
 	}
 
-	public static int getAttackDuration(ElderGuardian elderGuardian) {
-		Optional<ElderGuardianStats> oElderGuardianStats = ElderGuardianFeature.getStats(elderGuardian);
-		return oElderGuardianStats.map(elderGuardianStats -> elderGuardianStats.attackDuration).orElse(60 /*Vanilla attack duration*/);
-	}
-
 	/*
 	 * Health
 	 */

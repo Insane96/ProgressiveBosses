@@ -24,12 +24,8 @@ public class RewardFeature extends Feature {
 	@Label(name = "Bonus Experience", description = "How much more experience (percentage, 36 means +3600%) will Dragon drop at max Difficulty.")
 	public static Double bonusExperience = 36d;
 	@Config
-	@Label(name = "Dragon Egg per Player", description = "If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg ìì will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
+	@Label(name = "Dragon Egg per Player", description = "If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
 	public static Boolean dragonEggPerPlayer = true;
-	@Config
-	@Label(name = "Inject Default Loot", description = "If true default mod drops are added to the Ender Dragon.\n" +
-			"Note that replacing the Ender Dragon loot table (e.g. via DataPack) will automatically remove the Injected loot.")
-	public static Boolean injectDefaultRewards = true;
 
 	public RewardFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
@@ -50,8 +46,11 @@ public class RewardFeature extends Feature {
 				|| !(event.getEntity() instanceof EnderDragon dragon)
 				|| bonusExperience == 0d)
 			return;
+		float scalingDifficulty = DifficultyHelper.getScalingDifficulty(dragon);
+		if (scalingDifficulty == 0)
+			return;
 
-		event.setDroppedExperience((int) (event.getDroppedExperience() * bonusExperience * DifficultyHelper.getScalingDifficulty(dragon)));
+		event.setDroppedExperience((int) (event.getDroppedExperience() * bonusExperience * scalingDifficulty));
 	}
 
 	private static void dropEgg(EnderDragon dragon) {
@@ -71,21 +70,4 @@ public class RewardFeature extends Feature {
 			dragon.level().setBlockAndUpdate(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.defaultBlockState());
 		}
 	}
-
-	/*@SubscribeEvent
-	public void onLootTableLoad(LootTableLoadEvent event) {
-		if (!this.isEnabled()
-				|| !injectDefaultRewards)
-			return;
-
-		ResourceLocation name = event.getName();
-		if (!"minecraft".equals(name.getNamespace()) || !"entities/ender_dragon".equals(name.getPath()))
-			return;
-
-		LootPool pool = new LootPool.Builder()
-				.setRolls(ConstantValue.exactly(1))
-				.add(LootTableReference.lootTableReference(new ResourceLocation(ProgressiveBosses.MOD_ID, "entities/ender_dragon")))
-				.build();
-		event.getTable().addPool(pool);
-	}*/
 }

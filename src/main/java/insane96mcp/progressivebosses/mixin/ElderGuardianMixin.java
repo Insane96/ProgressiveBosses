@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.mixin;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.elderguardian.ElderGuardianFeature;
+import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStats;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.entity.monster.Guardian;
@@ -13,6 +14,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Optional;
+
 @Mixin(ElderGuardian.class)
 public class ElderGuardianMixin extends Guardian {
 
@@ -22,9 +25,10 @@ public class ElderGuardianMixin extends Guardian {
 
 	@Inject(at = @At("HEAD"), method = "getAttackDuration()I", cancellable = true)
 	private void getAttackDuration(CallbackInfoReturnable<Integer> callback) {
-		if (!Feature.isEnabled(ElderGuardianFeature.class))
+		Optional<ElderGuardianStats> stats = ElderGuardianFeature.getStats((ElderGuardian) (Object) this);
+		if (stats.isEmpty())
 			return;
-		int attackDuration = ElderGuardianFeature.getAttackDuration((ElderGuardian) (Object) this);
+		int attackDuration = stats.get().attackDuration;
 		if (this.clientSideAttackTime > attackDuration)
 			this.clientSideAttackTime = attackDuration;
 		callback.setReturnValue(attackDuration);
