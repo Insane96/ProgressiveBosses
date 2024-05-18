@@ -13,8 +13,8 @@
             "normal": 10,
             "hard": 20
         },
-        "attack_to_heal_threshold": 0.15,
-        "heal_on_skull_kill": 9,
+        "attack_to_heal_threshold": 0.2,
+        "heal_on_skull_kill": 10,
         "barrage": {
             "chance": {
                 "above_half_health": 0.20,
@@ -49,7 +49,7 @@
             "below_half_health": 0.3
         },
         "sharpness_chance": 3,
-        "knockback_chance": 1.2,
+        "knockback_chance": 1.5,
         "power_chance": 3,
         "punch_chance": 0.8
     },

@@ -20,6 +20,7 @@ import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.Mth;
@@ -148,26 +149,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     @Override
-    protected void actuallyHurt(DamageSource damageSource, float damageAmount) {
-        //If it's magic damage
-        if (damageSource.is(DamageTypes.MAGIC) || damageSource.is(DamageTypes.INDIRECT_MAGIC)) {
-            damageAmount *= 1.5f;
-        }
-        //Dangerous skulls always deal 10% damage
-        if (damageSource.getDirectEntity() instanceof PBWitherSkull witherSkull && witherSkull.isDangerous()) {
-            damageAmount = this.getMaxHealth() * 0.1f;
-        }
-        boolean wasPowered = this.isPowered();
-        super.actuallyHurt(damageSource, damageAmount);
-        updateStats(wasPowered);
-
-        if (!this.isDeadOrDying()) {
-            tryCharge(damageAmount);
-            tryBarrage(damageAmount);
-        }
-    }
-
-    @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
         this.entityData.define(DATA_TARGET_A, 0);
@@ -193,14 +174,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         }
     }
     public boolean initCharging() {
-        if (this.stats.attack.charge != null) {
-            int chargeTime = this.stats.attack.charge.time;
-            /*if (!this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(3d)).isEmpty())
-                chargeTime /= 2;*/
-            this.entityData.set(CHARGING, chargeTime + CHARGE_ATTACK_TICK_CHARGE);
-            return true;
-        }
-        return false;
+        int chargeTime = 30;
+        if (this.stats.attack.charge != null)
+            chargeTime = this.stats.attack.charge.time;
+        this.entityData.set(CHARGING, chargeTime + CHARGE_ATTACK_TICK_CHARGE);
+        return true;
     }
     public void stopCharging() {
         this.entityData.set(CHARGING, 0);
@@ -606,9 +584,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public void performRangedAttack(int head, double pX, double pY, double pZ, boolean pIsDangerous) {
         if (head == 0)
             this.shotSkulls++;
-        if (!this.isSilent()) {
-            this.level().levelEvent(null, LevelEvent.SOUND_WITHER_BOSS_SHOOT, this.blockPosition(), 0);
-        }
+        if (!this.isSilent())
+            this.level().playSound(null, this.blockPosition(), SoundEvents.WITHER_SHOOT, SoundSource.HOSTILE, 4.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 
         double d0 = this.getHeadX(head);
         double d1 = this.getHeadY(head);
@@ -678,11 +655,29 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
             boolean wasPowered = this.isPowered();
             boolean hurt = super.hurt(pSource, pAmount);
-            if (hurt && !wasPowered && this.isPowered() && this.stats.attack.charge != null) {
+            if (hurt && !wasPowered && this.isPowered()) {
                 this.initCharging();
+                //this.level().explode(this, this.getX(), this.getEyeY(), this.getZ(), this.stats.misc.explosionPower, this.stats.misc.explosionCausesFire, Level.ExplosionInteraction.MOB);
                 this.minionCooldown = this.getChargingTicks();
             }
             return hurt;
+        }
+    }
+
+    @Override
+    protected void actuallyHurt(DamageSource damageSource, float damageAmount) {
+        //If it's magic damage
+        if (damageSource.is(DamageTypes.MAGIC) || damageSource.is(DamageTypes.INDIRECT_MAGIC))
+            damageAmount *= 1.5f;
+        if (damageSource.getDirectEntity() instanceof PBWitherSkull witherSkull && witherSkull.isDangerous())
+            damageAmount *= this.getMaxHealth() * 0.005f;
+        boolean wasPowered = this.isPowered();
+        super.actuallyHurt(damageSource, damageAmount);
+        updateStats(wasPowered);
+
+        if (!this.isDeadOrDying()) {
+            tryCharge(damageAmount);
+            tryBarrage(damageAmount);
         }
     }
 

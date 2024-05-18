@@ -193,7 +193,7 @@ public class WitherChargeAttackGoal extends Goal {
 	private void damageAndPush(LivingEntity entity) {
 		if (entity == this.wither)
 			return;
-		entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.charge == null ? 12f : this.wither.stats.attack.charge.damage);
+		entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.charge == null ? 16f : this.wither.stats.attack.charge.damage);
 		float d2 = (float) (entity.getX() - this.wither.getX());
 		float d3 = (float) (entity.getZ() - this.wither.getZ());
 		float d4 = Math.max(d2 * d2 + d3 * d3, 0.1f);

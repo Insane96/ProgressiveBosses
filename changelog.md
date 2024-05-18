@@ -2,9 +2,14 @@
 
 ## Upcoming
 * Reworked Levels, they are now different one from another, instead of being just stronger
-  * Wither I no longer charges or summons minions. Also has no resistances. Reduced xp drop from 250 to 200
-  * Wither II no longer barrages or summons minions. Charge happens more often. Wither effect is II but lasts less
-* Blue skulls now always deal 10% of wither's max health as damage
+  * All the withers' skull and charge damage is now the same for all the withers
+    * Wither I: no charging minions. Also has no resistances. Reduced xp drop from 250 to 200
+    * Wither II: no barrages or minions. Charge happens more often. Wither effect is II but lasts less
+    * Wither III: no resistances, no charging. Minions spawn often and are stronger
+* .
+* Wither IV now drops 6 nether stars instead of 5
+* Blue skulls damage against the wither now is multiplied by 0.5% of wither's max health
+* Wither minions are now immune to fall damage
 * Barrage attack now has higher chance to happen when wither's above half health
 
 ## Alpha 4.1.4

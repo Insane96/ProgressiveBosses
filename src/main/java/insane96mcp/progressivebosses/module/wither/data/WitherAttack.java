@@ -49,7 +49,7 @@ public class WitherAttack {
             WitherBarrage witherBarrage = jObject.has("barrage") ? context.deserialize(jObject.get("barrage"), WitherBarrage.class) : null;
             WitherAttack witherAttack = new WitherAttack(GsonHelper.getAsFloat(jObject, "skull_damage"),
                     GsonHelper.getAsFloat(jObject, "skull_speed_multiplier"),
-                    GsonHelper.getAsFloat(jObject, "dangerous_skull_damage"),
+                    GsonHelper.getAsFloat(jObject, "dangerous_skull_chance"),
                     GsonHelper.getAsInt(jObject, "attack_speed_near"),
                     GsonHelper.getAsInt(jObject, "attack_speed_far"),
                     GsonHelper.getAsFloat(jObject, "side_heads_attack_speed_divider"),
@@ -68,7 +68,7 @@ public class WitherAttack {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("skull_damage", src.skullDamage);
             jsonObject.addProperty("skull_speed_multiplier", src.skullSpeedMultiplier);
-            jsonObject.addProperty("dangerous_skull_damage", src.dangerousSkullChance);
+            jsonObject.addProperty("dangerous_skull_chance", src.dangerousSkullChance);
             jsonObject.addProperty("attack_speed_near", src.attackSpeedNear);
             jsonObject.addProperty("attack_speed_far", src.attackSpeedFar);
             jsonObject.addProperty("side_heads_attack_speed_divider", src.sideHeadsAttackSpeedDivider);

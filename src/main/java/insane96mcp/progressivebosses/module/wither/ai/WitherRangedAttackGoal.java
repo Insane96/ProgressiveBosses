@@ -23,10 +23,6 @@ public class WitherRangedAttackGoal extends Goal {
 		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
 	}
 
-	/**
-	 * Returns whether execution should begin. You can also read and cache any state necessary for execution in this
-	 * method as well.
-	 */
 	public boolean canUse() {
 		if (this.wither.getInvulnerableTicks() > 0)
 			return false;
@@ -42,23 +38,14 @@ public class WitherRangedAttackGoal extends Goal {
 		return anyHeadHasTarget;
 	}
 
-	/**
-	 * Returns whether an in-progress EntityAIBase should continue executing
-	 */
 	public boolean canContinueToUse() {
 		return this.canUse() || !this.wither.getNavigation().isDone();
 	}
 
-	/**
-	 * Reset the task's internal state. Called when this task is interrupted by another one
-	 */
 	public void stop() {
 		this.seeTime = 0;
 	}
 
-	/**
-	 * Keep ticking a continuous task that has already been started
-	 */
 	public void tick() {
 		for (int i = 0; i < 3; i++) {
 			int targetId = this.wither.getAlternativeTarget(i);
@@ -79,15 +66,16 @@ public class WitherRangedAttackGoal extends Goal {
 				}
 				else {
 					this.seeTime = 0;
-					if (this.unseenTargetTicks < 300)
+					if (this.unseenTargetTicks < 400) {
 						this.unseenTargetTicks += 2;
-					this.wither.tryCharge(this.unseenTargetTicks / 30f);
-					if (this.wither.isCharging())
-						this.unseenTargetTicks = 0;
+						this.wither.tryCharge(this.unseenTargetTicks / 30f);
+					}
+					else
+						this.wither.initCharging();
 				}
 			}
 
-			if (distanceSqr <= (double)this.attackRadiusSqr && this.seeTime > 0) {
+			if (distanceSqr <= (double)this.attackRadiusSqr /*9&& this.seeTime > 0*/) {
 				//Stops the wither from chasing the player
 				this.wither.setDeltaMovement(0d, wither.getDeltaMovement().y, 0d);
 			}
@@ -101,8 +89,6 @@ public class WitherRangedAttackGoal extends Goal {
 			if (this.wither.barrageTicks > 0) {
 				if (!canSee)
 					return;
-				/*if (i == 0)
-					this.wither.barrageTicks--;*/
 				//noinspection DataFlowIssue - Shouldn't be able to get in here if barrage doesn't exist
 				if (this.wither.barrageTicks % (3 * this.wither.stats.attack.barrage.attackSpeed) == i * this.wither.stats.attack.barrage.attackSpeed) {
 					this.wither.performRangedAttack(i, target.getX() + Mth.nextDouble(this.wither.getRandom(), -1.5d, 1.5d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -1.5d, 1.5d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -1.5d, 1.5d), false);

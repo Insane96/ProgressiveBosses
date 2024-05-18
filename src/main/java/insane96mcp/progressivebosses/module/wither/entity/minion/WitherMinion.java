@@ -242,6 +242,8 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 	}
 
 	public void actuallyHurt(DamageSource source, float amount) {
+		if (source.is(DamageTypes.FALL))
+			return;
 		if (source.is(DamageTypes.MAGIC) || source.is(DamageTypes.INDIRECT_MAGIC))
 			amount *= 1.5f;
 		if (source.getDirectEntity() != null && source.getDirectEntity().getType() == PBEntities.WITHER_SKULL.get())
@@ -280,7 +282,8 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		@Override
 		public boolean canUse() {
 			if (this.minion.getOwner() == null
-					|| !this.minion.getOwner().needsHealing())
+					|| !this.minion.getOwner().needsHealing()
+					|| this.minion.getOwner().isDeadOrDying())
 				return false;
 			this.path = this.minion.getNavigation().createPath(this.minion.getOwner(), 2);
 			return this.path != null;
@@ -288,7 +291,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 
 		@Override
 		public boolean canContinueToUse() {
-			return this.minion.getOwner() != null && this.minion.distanceTo(this.minion.getOwner()) > 4d;
+			return this.minion.getOwner() != null && this.minion.distanceTo(this.minion.getOwner()) > 4d && !this.minion.getOwner().isDeadOrDying();
 		}
 
 		@Override

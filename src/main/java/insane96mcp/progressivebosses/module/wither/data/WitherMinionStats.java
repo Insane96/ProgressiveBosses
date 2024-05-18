@@ -9,6 +9,7 @@ import insane96mcp.progressivebosses.setup.PBEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
@@ -44,11 +45,11 @@ public class WitherMinionStats {
     }
 
     public void setCooldown(PBWither wither) {
-        wither.minionCooldown = wither.getRandom().nextInt(this.minCooldown.getIntValue(wither), this.maxCooldown.getIntValue(wither));
+        this.setCooldown(wither, 1f);
     }
 
     public void setCooldown(PBWither wither, float divider) {
-        wither.minionCooldown = (int) (wither.getRandom().nextInt(this.minCooldown.getIntValue(wither), this.maxCooldown.getIntValue(wither)) / divider);
+        wither.minionCooldown = (int) (Mth.nextInt(wither.getRandom(), this.minCooldown.getIntValue(wither), this.maxCooldown.getIntValue(wither)) / divider);
     }
 
     public void trySpawnMinion(PBWither wither, boolean force) {
