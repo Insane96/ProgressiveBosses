@@ -1,5 +1,93 @@
 # Changelog
 
+## Alpha 4.1.3
+* Now requires InsaneLib 1.13.4
+* Ported stuff from 3.9.3 to 3.9.7
+  * Fixed first dragon dropping no experience
+  * Items in the `progressivebosses:wither_invulnerable` item tag are now invulnerable to wither damage (not only for 5 seconds from spawning)
+    * Nether Star Shards have been added to above tag, instead of being hardcoded
+  * Fixed possible game freeze with Elder Guardians (most notably with Bumblezone)
+  * Fixed Elder Guardian Health Feature not working
+  * Better Compatibility with YUNG's better end island
+    * Cages now use the vanilla method to generate so YUNG's one now generate correctly
+    * Fixed Crystals spawning in towers too close to normal crystals
+
+## Alpha 4.1.2
+* Wither
+  * Slight rework to charge attack
+    * The target is now decided as soon as the charge attack starts, instead of when the wither charges
+    * Now takes half the time to charge
+    * No longer takes half the time to blow up if there are players nearby
+    * Charge bounding box slightly increased (both when blowing up and when charging)
+    * The wither should no longer freak out when close the point where he's charging
+  * Added `heal_on_skull_kill` that defines how much health the wither regenerates when a skull kills an entity
+    * 5/7/9/10 healing at I to IV. Was 10
+  * Minion health is now configurable
+    * 10/12/14/15 health at I to IV. Was 15
+  * Wither effect duration is now configurable
+    * Also reduced in hard difficulty from 40s to 20s and increased in easy from 0s to 10s
+  * Reduced the explosion radius of skulls (1 -> 0.75 and 2 -> 1.5 for blue skulls)
+  * Sped up barrage at Wither II
+  * Increased middle head attack range (24 -> 32)
+  * Slowed down wither minion firing speed
+  * Renamed `resistances_weaknesses` to `resistances` in Wither's json
+
+## Alpha 4.1.1
+* Wither
+  * When he reaches half health and charges, after charging minions will spawn
+  * Can no longer heal back past half health, even if kills someone
+* Adventure mode range is now doubled when YUNG's Better Ocean Monuments is installed
+* Elder Guardian no longer spawn minions if any 6 guardians are nearby, not only minions
+* Removed Mining Fatigue from Ocean Monuments if Adventure mode is enabled
+
+## Alpha 4.1.0
+* Elder Guardian
+  * Now data packable!
+  * Now heal by 5 hp when the laser hits
+    * Removed passive regen
+  * Changed attack speed (3/1.75/0.5 -> 2.5/1.75/0.75 seconds to laser)
+  * Reduced damage reduction
+  * Reduced minion cooldown
+  * Elder Minions now have 50% less health
+* Wither
+  * Levels are now loaded through data packs instead of the config folder
+  * Now targets any creature when below a certain health threshold trying to heal back
+  * Heads attack cooldown is now reduced whenever the wither is hit
+  * Blue skulls chance has been increased and scales with how many normal skulls have been shot since last blue skulls
+  * Now weak to magic damage and always takes 1.5x damage from it
+    * This also applies to minions
+  * Now heals 10 hp instead of 5 when killing someone with a skull
+  * Minions now get near the wither to get sacrificed and let the wither heal
+  * Can now drop either Ancient Debris or Netherite Upgrade Templates
+
+## Alpha 4.0.1
+* Wither has now a really high chance to charge if there are players nearby when above half health
+* Loot
+  * Withers no longer drops Corrupted Soul Sand, instead can be crafted with soul sand/soil and nether stars
+  * Wither drops 1 nether star per level, plus 2/3/4 shards at levels II/III/IV
+  * Wither drops 4 debris per level, plus 2/3/4 at levels II/III/IV
+
+## Alpha 4.0.0 - Wither
+* Stats have been heavily adjusted to the new system and features
+* Wither now has 4 levels (from 8 difficulties)
+  * Each level stat can be configured separately in a `wither.json` file in the config folder
+  * Killing a Wither has a chance to drop a corrupted Soul Sand, which can be used in the center of the Wither summoning pattern to summon a higher level wither
+* Attacking
+  * Blue skulls can be sent back (like a ghast fireball) to hit the Wither
+  * Wither side heads now try to target another entity if it's the same as the middle head (so the wither should be able to attack two players at once)
+  * Wither side heads now attack twice as slower than the middle head
+  * Skulls speed is now slower at lower Levels
+  * The first Wither applies Wither I instead of II
+  * Charging now makes the wither blow up instead if there are players nearby
+  * Barraging now has a charge up animation before starting
+* Health
+  * Reduced at higher levels
+  * When brought to half health no longer goes back up over it with passive healing
+* Resistances and Weaknesses
+  * Replaced damage reduction with armor and armor toughness
+* All the wither past lvl II now ignore wither proof blocks
+* Heavily increased xp dropped and loot
+
 ## 3.9.7
 * Fixed first dragon dropping no experience
 
