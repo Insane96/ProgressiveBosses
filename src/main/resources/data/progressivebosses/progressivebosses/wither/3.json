@@ -35,7 +35,7 @@
     },
     "health": {
         "health": 300.0,
-        "regeneration": 2.0,
+        "regeneration": 2.5,
         "regen_when_hit": 1,
         "regen_when_hit_duration": 35
     },
