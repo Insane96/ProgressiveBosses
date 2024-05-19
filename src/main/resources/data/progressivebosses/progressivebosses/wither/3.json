@@ -4,16 +4,16 @@
         "skull_damage": 8.0,
         "skull_speed_multiplier": 2.5,
         "dangerous_skull_chance": 0.4,
-        "attack_speed_near": 35,
-        "attack_speed_far": 40,
-        "side_heads_attack_speed_divider": 1,
+        "attack_speed_near": 30,
+        "attack_speed_far": 30,
+        "side_heads_attack_speed_multiplier": 1.2,
         "effect_amplifier": 1,
         "effect_duration": {
             "easy": 10,
             "normal": 10,
             "hard": 20
         },
-        "attack_to_heal_threshold": 0.2,
+        "attack_to_heal_threshold": 0.25,
         "heal_on_skull_kill": 10,
         "charge": {
             "max_chance": {

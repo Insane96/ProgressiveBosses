@@ -1,5 +1,11 @@
 # Changelog
 
+## Alpha 4.1.6
+* Minor rebalancements to wither levels
+* Added info to corrupted soul sand
+* Renamed `side_heads_attack_speed_divider` to `side_heads_attack_speed_multiplier`
+* Fixed Wither always charging away
+
 ## Alpha 4.1.5
 * Reworked Levels, they are now different one from another, instead of being just stronger
   * All the withers' skull and charge damage is now the same for all the withers (8 and 16)

@@ -102,7 +102,7 @@ public class WitherRangedAttackGoal extends Goal {
 				double distanceRatio = distanceSqr / this.attackRadiusSqr;
 				this.headAttackTimes[i] = (int) (this.wither.stats.attack.attackSpeedNear + (attackSpeedDelta * distanceRatio)) + this.wither.getRandom().nextInt(-5, 6);
 				if (i != 0 && !this.wither.needsHealing())
-					this.headAttackTimes[i] = (int) (this.headAttackTimes[i] * this.wither.stats.attack.sideHeadsAttackSpeedDivider);
+					this.headAttackTimes[i] = (int) (this.headAttackTimes[i] * this.wither.stats.attack.sideHeadsAttackSpeedMultiplier);
 			}
 		}
 	}

@@ -16,7 +16,7 @@ public class WitherAttack {
     public float dangerousSkullChance;
     public int attackSpeedNear;
     public int attackSpeedFar;
-    public float sideHeadsAttackSpeedDivider;
+    public float sideHeadsAttackSpeedMultiplier;
     public int effectAmplifier;
     public Difficulty effectDuration;
     public float attackToHealThreshold;
@@ -26,13 +26,13 @@ public class WitherAttack {
     @Nullable
     public WitherBarrage barrage;
 
-    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedDivider, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, PoweredValue maxChargeChance, float chargeDamage, int chargeTime, PoweredValue barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
+    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedMultiplier, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, PoweredValue maxChargeChance, float chargeDamage, int chargeTime, PoweredValue barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
         this.skullDamage = skullDamage;
         this.skullSpeedMultiplier = skullSpeedMultiplier;
         this.dangerousSkullChance = dangerousSkullChance;
         this.attackSpeedNear = attackSpeedNear;
         this.attackSpeedFar = attackSpeedFar;
-        this.sideHeadsAttackSpeedDivider = sideHeadsAttackSpeedDivider;
+        this.sideHeadsAttackSpeedMultiplier = sideHeadsAttackSpeedMultiplier;
         this.effectAmplifier = effectAmplifier;
         this.effectDuration = effectDuration;
         this.attackToHealThreshold = attackToHealThreshold;
@@ -52,7 +52,7 @@ public class WitherAttack {
                     GsonHelper.getAsFloat(jObject, "dangerous_skull_chance"),
                     GsonHelper.getAsInt(jObject, "attack_speed_near"),
                     GsonHelper.getAsInt(jObject, "attack_speed_far"),
-                    GsonHelper.getAsFloat(jObject, "side_heads_attack_speed_divider"),
+                    GsonHelper.getAsFloat(jObject, "side_heads_attack_speed_multiplier"),
                     GsonHelper.getAsInt(jObject, "effect_amplifier"),
                     context.deserialize(jObject.get("effect_duration"), Difficulty.class),
                     GsonHelper.getAsFloat(jObject, "attack_to_heal_threshold"),
@@ -71,7 +71,7 @@ public class WitherAttack {
             jsonObject.addProperty("dangerous_skull_chance", src.dangerousSkullChance);
             jsonObject.addProperty("attack_speed_near", src.attackSpeedNear);
             jsonObject.addProperty("attack_speed_far", src.attackSpeedFar);
-            jsonObject.addProperty("side_heads_attack_speed_divider", src.sideHeadsAttackSpeedDivider);
+            jsonObject.addProperty("side_heads_attack_speed_multiplier", src.sideHeadsAttackSpeedMultiplier);
             jsonObject.addProperty("effect_amplifier", src.effectAmplifier);
             jsonObject.add("effect_duration", context.serialize(src.effectDuration));
             jsonObject.addProperty("attack_to_heal_threshold", src.attackToHealThreshold);

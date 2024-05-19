@@ -32,7 +32,8 @@ public class CorruptedSoulSand extends BaseEntityBlock {
         int lvl = 0;
         if (compoundTag != null)
             lvl = compoundTag.getInt("lvl");
-        pTooltip.add(Component.translatable(ProgressiveBosses.RESOURCE_PREFIX + "corrupted_soul_sand.corruption_level", lvl).withStyle(ChatFormatting.GRAY));
+        pTooltip.add(Component.translatable(ProgressiveBosses.MOD_ID + ".corrupted_soul_sand.corruption_level", lvl).withStyle(ChatFormatting.GRAY));
+        pTooltip.add(Component.translatable(ProgressiveBosses.MOD_ID + ".corrupted_soul_sand.info").withStyle(ChatFormatting.DARK_AQUA));
     }
 
     @Override

@@ -6,7 +6,7 @@
         "dangerous_skull_chance": 0.4,
         "attack_speed_near": 40,
         "attack_speed_far": 50,
-        "side_heads_attack_speed_divider": 1.2,
+        "side_heads_attack_speed_multiplier": 1.2,
         "effect_amplifier": 1,
         "effect_duration": {
             "easy": 10,
@@ -29,7 +29,7 @@
         "health": 1000.0,
         "regeneration": 3,
         "regen_when_hit": 1.5,
-        "regen_when_hit_duration": 30
+        "regen_when_hit_duration": 20
     },
     "minion": {
         "minions_spawned": 3.0,

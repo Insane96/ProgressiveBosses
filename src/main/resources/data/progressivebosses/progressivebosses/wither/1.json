@@ -6,7 +6,7 @@
         "dangerous_skull_chance": 0.4,
         "attack_speed_near": 40,
         "attack_speed_far": 50,
-        "side_heads_attack_speed_divider": 1.5,
+        "side_heads_attack_speed_multiplier": 1.2,
         "effect_amplifier": 1,
         "effect_duration": {
             "easy": 5,
@@ -17,7 +17,7 @@
         "heal_on_skull_kill": 7,
         "charge": {
             "max_chance": {
-                "above_half_health": 0.15,
+                "above_half_health": 0.20,
                 "below_half_health": 0.1
             },
             "damage": 16.0,
@@ -27,8 +27,8 @@
     "health": {
         "health": 300.0,
         "regeneration": 1.25,
-        "regen_when_hit": 1.0,
-        "regen_when_hit_duration": 30
+        "regen_when_hit": 0.75,
+        "regen_when_hit_duration": 40
     },
     "resistances": {
         "armor": {

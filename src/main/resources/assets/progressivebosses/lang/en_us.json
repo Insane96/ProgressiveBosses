@@ -21,7 +21,8 @@
   "progressivebosses:command.summoned_entity": "Summoned %s with difficulty %d",
   "progressivebosses:command.summon_invalid_entity": "Entity %s is not valid",
 
-  "progressivebosses:corrupted_soul_sand.corruption_level": "Corruption level: %d",
+  "progressivebosses.corrupted_soul_sand.corruption_level": "Corruption level: %d",
+  "progressivebosses.corrupted_soul_sand.info": "Use it in the middle of the Wither summoning structure",
 
   "entity.progressivebosses.wither.0": "Wither",
   "entity.progressivebosses.wither.1": "Wither II",

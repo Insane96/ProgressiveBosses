@@ -16,7 +16,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -65,7 +64,7 @@ public class WitherChargeAttackGoal extends Goal {
 		blocksToDrop.clear();
 		List<Player> playersNearby = this.wither.level().getEntitiesOfClass(Player.class, this.wither.getBoundingBox().inflate(3f));
 		if (!playersNearby.isEmpty()) {
-			if (this.wither.getHealth() / this.wither.getMaxHealth() > this.wither.stats.attack.healOnSkullKill) {
+			if (this.wither.getHealth() / this.wither.getMaxHealth() > this.wither.stats.attack.attackToHealThreshold) {
 				this.blowUp = true;
 				this.targetPos = this.wither.position();
 			}
@@ -157,8 +156,8 @@ public class WitherChargeAttackGoal extends Goal {
 				//So it goes faster and faster
 				double mult = 60d / chargeTicks;
 				Vec3 diff = this.targetPos.subtract(this.wither.position()).normalize().multiply(mult, mult, mult);
-				//this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
-				this.wither.move(MoverType.SELF, new Vec3(diff.x, diff.y * 0.5, diff.z));
+				this.wither.setDeltaMovement(diff.x, diff.y * 0.5, diff.z);
+				//this.wither.move(MoverType.SELF, new Vec3(diff.x, diff.y * 0.5, diff.z));
 				this.wither.getLookControl().setLookAt(this.targetPos);
 				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1.5f, 2f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
