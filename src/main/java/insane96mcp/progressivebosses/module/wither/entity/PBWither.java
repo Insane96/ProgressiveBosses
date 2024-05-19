@@ -184,7 +184,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return true;
     }
     public void stopCharging() {
-        this.entityData.set(CHARGING, -10);
+        this.entityData.set(CHARGING, -30);
     }
     public void tryCharge(float damageAmount) {
         if (this.stats.attack.charge == null

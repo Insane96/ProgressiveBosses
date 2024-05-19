@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Increased charge cooldown (0.5 -> 1.5 seconds)
+
 ## Alpha 4.1.6
 * Minor rebalancements to wither levels
 * Added info to corrupted soul sand
