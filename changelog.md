@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Increased charge cooldown (0.5 -> 1.5 seconds)
+* Wither is now tagged in the `forge:bosses` entity type tag
 
 ## Alpha 4.1.6
 * Minor rebalancements to wither levels
