@@ -1,8 +1,16 @@
 # Changelog
 
 ## Upcoming
+* Wither level changes (changed their names, no longer I, II, III, IV)
+  * All Withers: Withers now attack slower when player's close and faster when player's away
+  * Wither: Increased Skull damage and skull speed. Heavily increased barrage chance, duration and attack speed. Increased health
+  * Armored Wither: Now searches for targets to kill when below 40% health to heal. Increased Health
+  * Summoner Wither effect duration reduced, increased health threshold when searching for targets to heal. Increased minions spawned and their health.
+  * Ultimate Wither: Increased skull damage and health threshold when searching for targets to heal. Heavily increased barrage chance. Increased health. Reduced healing and healing on kill
 * Increased charge cooldown (0.5 -> 1.5 seconds)
 * Wither is now tagged in the `forge:bosses` entity type tag
+* Fixed withers not barraging when no players nearby
+* Fixed side heads searching for targets too far away
 
 ## Alpha 4.1.6
 * Minor rebalancements to wither levels

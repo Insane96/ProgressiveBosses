@@ -62,7 +62,7 @@ import java.util.function.Predicate;
 
 public class PBWither extends Monster implements PowerableMob, RangedAttackMob, ILvl {
     public static final int CHARGE_ATTACK_TICK_CHARGE = 30;
-    public static final int BARRAGE_CHARGE_UP_TICKS = 50;
+    public static final int BARRAGE_CHARGE_UP_TICKS = 30;
     private static final EntityDataAccessor<Integer> DATA_TARGET_A = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_TARGET_B = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_TARGET_C = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
@@ -184,7 +184,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return true;
     }
     public void stopCharging() {
-        this.entityData.set(CHARGING, -30);
+        this.entityData.set(CHARGING, this.needsHealing() ? -120 : -40);
     }
     public void tryCharge(float damageAmount) {
         if (this.stats.attack.charge == null
@@ -240,7 +240,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 || this.getBarrageChargeUpTicks() > 0
                 || this.barrageTicks > 0
                 || this.isCharging()
-                || this.level().getNearestPlayer(this, 4d) == null)
+                /*|| this.level().getNearestPlayer(this, 4d) == null*/)
             return;
         double chance = this.stats.attack.barrage.chance.getValue(this) * (damageAmount / 10f);
         if (this.getRandom().nextDouble() < chance) {
@@ -249,7 +249,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     public boolean initBarrageChargeUp() {
-        this.setBarrageChargeUpTicks(50);
+        this.setBarrageChargeUpTicks(30);
         return true;
     }
 
@@ -389,14 +389,14 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     protected int findNewTarget() {
-        List<Player> playersNearby = this.level().getNearbyEntities(Player.class, TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(48d, 24d, 48d));
+        List<Player> playersNearby = this.level().getNearbyEntities(Player.class, TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(32d, 24d, 32d));
         if (!playersNearby.isEmpty() && !this.needsHealing()) {
             if (playersNearby.size() == 1)
                 return playersNearby.get(0).getId();
             Player player = playersNearby.get(this.random.nextInt(playersNearby.size()));
             return player.getId();
         }
-        List<LivingEntity> livingsNearby = this.level().getNearbyEntities(LivingEntity.class, this.needsHealing() ? TARGETING_CONDITIONS_NEEDS_HEALING : TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(48d, 24d, 48d));
+        List<LivingEntity> livingsNearby = this.level().getNearbyEntities(LivingEntity.class, this.needsHealing() ? TARGETING_CONDITIONS_NEEDS_HEALING : TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(32d, 24d, 32d));
         if (!livingsNearby.isEmpty()) {
             LivingEntity livingEntity = livingsNearby.get(this.random.nextInt(livingsNearby.size()));
             return livingEntity.getId();
@@ -652,9 +652,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             if (this.destroyBlocksTick <= 0)
                 this.destroyBlocksTick = 10;
 
-            for (int i = 0; i < this.nextHeadUpdate.length; ++i) {
-                this.nextHeadUpdate[i] -= 3;
-            }
+            this.nextHeadUpdate[this.random.nextInt(2)] -= 8;
 
             boolean wasPowered = this.isPowered();
             boolean hurt = super.hurt(pSource, pAmount);

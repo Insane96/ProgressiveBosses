@@ -25,9 +25,9 @@
   "progressivebosses.corrupted_soul_sand.info": "Use it in the middle of the Wither summoning structure",
 
   "entity.progressivebosses.wither.0": "Wither",
-  "entity.progressivebosses.wither.1": "Wither II",
-  "entity.progressivebosses.wither.2": "Wither III",
-  "entity.progressivebosses.wither.3": "Wither IV",
+  "entity.progressivebosses.wither.1": "Armored Wither",
+  "entity.progressivebosses.wither.2": "Summoner Wither",
+  "entity.progressivebosses.wither.3": "Ultimate Wither",
 
   "entity.progressivebosses.ender_dragon.0": "Ender Dragon I",
   "entity.progressivebosses.ender_dragon.1": "Ender Dragon II",

@@ -1,10 +1,10 @@
 {
     "level": 3,
     "attack": {
-        "skull_damage": 8.0,
+        "skull_damage": 12.0,
         "skull_speed_multiplier": 2.5,
         "dangerous_skull_chance": 0.4,
-        "attack_speed_near": 30,
+        "attack_speed_near": 45,
         "attack_speed_far": 30,
         "side_heads_attack_speed_multiplier": 1.2,
         "effect_amplifier": 1,
@@ -13,20 +13,20 @@
             "normal": 10,
             "hard": 20
         },
-        "attack_to_heal_threshold": 0.25,
-        "heal_on_skull_kill": 10,
+        "attack_to_heal_threshold": 0.40,
+        "heal_on_skull_kill": 5,
         "charge": {
             "max_chance": {
                 "above_half_health": 0.20,
                 "below_half_health": 0.05
             },
-            "damage": 16.0,
+            "damage": 20.0,
             "time": 20
         },
         "barrage": {
             "chance": {
-                "above_half_health": 0.1,
-                "below_half_health": 0.04
+                "above_half_health": 0.4,
+                "below_half_health": 0.4
             },
             "min_duration": 50,
             "max_duration": 100,
@@ -34,8 +34,8 @@
         }
     },
     "health": {
-        "health": 300.0,
-        "regeneration": 2.5,
+        "health": 500.0,
+        "regeneration": 2,
         "regen_when_hit": 1,
         "regen_when_hit_duration": 35
     },

@@ -98,6 +98,7 @@ public class WitherChargeAttackGoal extends Goal {
 	 */
 	public void stop() {
 		this.wither.setDeltaMovement(this.wither.getDeltaMovement().multiply(0.02d, 0.02d, 0.02d));
+		this.wither.hurtMarked = true;
 		this.lastDistanceFromTarget = 0d;
 		this.targetPos = null;
 		this.blowUp = false;
@@ -186,7 +187,7 @@ public class WitherChargeAttackGoal extends Goal {
 
 				double distance = this.targetPos.distanceToSqr(this.wither.position());
 				//If the wither's charging and is farther from the target point than the last tick OR is closer than sqrt(6) blocks OR is about to finish the invulnerability time then prevent the explosion and stop the attack
-				if (distance - this.lastDistanceFromTarget >= 0 || distance < 10d || chargeTicks == 1)
+				if ((distance - this.lastDistanceFromTarget >= 0 && chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE - 1) || distance < 10d || chargeTicks == 1)
 					this.wither.stopCharging();
 
 				this.lastDistanceFromTarget = distance;
