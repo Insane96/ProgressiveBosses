@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## Alpha 4.1.8
 * Wither
   * Fixed wither skull not being tagged as a projectile thus ignoring projectile protection
   * Fixed ignoring charging cooldown
