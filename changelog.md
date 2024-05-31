@@ -1,5 +1,9 @@
 # Changelog
 
+## Alpha 4.1.9
+* Fixed wither bobbing up and down when below half health
+* Fixed targeting, again
+
 ## Alpha 4.1.8
 * Wither
   * Fixed wither skull not being tagged as a projectile thus ignoring projectile protection

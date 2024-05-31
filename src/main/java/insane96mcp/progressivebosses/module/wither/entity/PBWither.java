@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
 import com.google.common.collect.ImmutableList;
-import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.progressivebosses.module.ILvl;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
@@ -80,8 +79,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     //private final int[] idleHeadUpdates = new int[2];
     public int destroyBlocksTick;
     public final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
-    private static final Predicate<LivingEntity> NO_UNDEAD_SELECTOR = (livingEntity) -> livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
-    private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().ignoreLineOfSight().range(48d).selector(NO_UNDEAD_SELECTOR);
+    public static final Predicate<LivingEntity> NO_UNDEAD_SELECTOR = (livingEntity) -> livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
+    private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(48d).selector(NO_UNDEAD_SELECTOR);
     private static final TargetingConditions TARGETING_CONDITIONS_NEEDS_HEALING = TargetingConditions.forCombat().range(48d).selector(LivingEntity::attackable);
     public int barrageTicks;
     public WitherStats stats;
@@ -111,8 +110,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         this.targetSelector.addGoal(1, new HurtByTargetGoal(this));
-        this.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(this, Player.class, false, false, NO_UNDEAD_SELECTOR));
-        this.targetSelector.addGoal(3, new ILNearestAttackableTargetGoal<>(this, LivingEntity.class, false, false, NO_UNDEAD_SELECTOR));
+        this.targetSelector.addGoal(2, new WitherNearestAttackableTargetGoal<>(this, Player.class, true));
+        this.targetSelector.addGoal(3, new WitherNearestAttackableTargetGoal<>(this, LivingEntity.class, false));
     }
 
     @Override
@@ -310,18 +309,18 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         else if (!this.isCharging()) {
             Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0D, 1.0D);
             if (!this.level().isClientSide) {
-                if (this.getAlternativeTarget(0) > 0) {
-                    Entity entity = this.level().getEntity(this.getAlternativeTarget(0));
-                    if (entity != null) {
-                        double d0 = -0.02d;
-                        if (this.isPowered() || this.getY() >= entity.getY() + 10d)
-                            d0 *= 5d;
-                        if ((this.getY() < entity.getY() || (!this.isPowered() && this.getY() < entity.getY() + 5.0D))) {
+                if (this.getTarget() != null) {
+                    if (this.getTarget() != null) {
+                        double d0 = 0d;
+                        float f = !this.isPowered() ? 5 : 0;
+                        if (this.getY() >= this.getTarget().getY() + f + 1)
+                            d0 = -0.15d;
+                        if ((this.getY() < this.getTarget().getY() || (this.getY() < this.getTarget().getY() + f))) {
                             d0 = 0.3D;
                         }
 
                         vec3 = new Vec3(vec3.x, d0, vec3.z);
-                        Vec3 vec31 = new Vec3(entity.getX() - this.getX(), 0.0D, entity.getZ() - this.getZ());
+                        Vec3 vec31 = new Vec3(this.getTarget().getX() - this.getX(), 0.0D, this.getTarget().getZ() - this.getZ());
                         if (vec31.horizontalDistanceSqr() > 9.0D) {
                             Vec3 vec32 = vec31.normalize();
                             vec3 = vec3.add(vec32.x * 0.3D - vec3.x * 0.6D, 0.0D, vec32.z * 0.3D - vec3.z * 0.6D);
@@ -392,20 +391,22 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     protected int findNewTarget() {
-        List<Player> playersNearby = this.level().getNearbyEntities(Player.class, TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(32d, 24d, 32d));
-        if (!playersNearby.isEmpty() && !this.needsHealing()) {
-            if (playersNearby.size() == 1)
-                return playersNearby.get(0).getId();
-            Player player = playersNearby.get(this.random.nextInt(playersNearby.size()));
-            return player.getId();
+        if (!this.needsHealing()) {
+            List<Player> playersNearby = this.level().getNearbyEntities(Player.class, TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(32d, 24d, 32d));
+            if (!playersNearby.isEmpty()) {
+                if (playersNearby.size() == 1)
+                    return playersNearby.get(0).getId();
+                Player player = playersNearby.get(this.random.nextInt(playersNearby.size()));
+                return player.getId();
+            }
+            if (this.getTarget() != null)
+                return this.getTarget().getId();
         }
         List<LivingEntity> livingsNearby = this.level().getNearbyEntities(LivingEntity.class, this.needsHealing() ? TARGETING_CONDITIONS_NEEDS_HEALING : TARGETING_CONDITIONS, this, this.getBoundingBox().inflate(32d, 24d, 32d));
         if (!livingsNearby.isEmpty()) {
             LivingEntity livingEntity = livingsNearby.get(this.random.nextInt(livingsNearby.size()));
             return livingEntity.getId();
         }
-        if (this.getTarget() != null)
-            return this.getTarget().getId();
         return 0;
 
     }
