@@ -20,7 +20,7 @@
         "heal_on_skull_kill": 7,
         "charge": {
             "max_chance": {
-                "above_half_health": 0.25,
+                "above_half_health": 0.075,
                 "below_half_health": 0.1
             },
             "damage": 15.0,

@@ -20,16 +20,16 @@
         "heal_on_skull_kill": 5,
         "charge": {
             "max_chance": {
-                "above_half_health": 0.25,
-                "below_half_health": 0.1
+                "above_half_health": 0.08,
+                "below_half_health": 0.12
             },
             "damage": 20.0,
-            "time": 40
+            "time": 35
         },
         "barrage": {
             "chance": {
-                "above_half_health": 0.4,
-                "below_half_health": 0.4
+                "above_half_health": 0.3,
+                "below_half_health": 0.3
             },
             "min_duration": 50,
             "max_duration": 100,
@@ -39,16 +39,16 @@
     "health": {
         "health": 500.0,
         "regeneration": 2,
-        "regen_when_hit": 1,
-        "regen_when_hit_duration": 35
+        "regen_when_hit": 0.5,
+        "regen_when_hit_duration": 50
     },
     "resistances": {
         "armor": {
-            "above_half_health": 25.0,
+            "above_half_health": 20.0,
             "below_half_health": 25.0
         },
         "toughness": {
-            "above_half_health": 16.0,
+            "above_half_health": 12.0,
             "below_half_health": 16.0
         }
     },
