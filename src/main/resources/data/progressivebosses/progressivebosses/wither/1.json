@@ -23,8 +23,8 @@
                 "above_half_health": 0.25,
                 "below_half_health": 0.1
             },
-            "damage": 16.0,
-            "time": 30
+            "damage": 15.0,
+            "time": 40
         }
     },
     "health": {

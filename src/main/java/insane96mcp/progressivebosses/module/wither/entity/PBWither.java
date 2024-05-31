@@ -179,9 +179,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public boolean initCharging() {
         if (this.isCharging())
             return false;
-        int chargeTime = 30;
+        int chargeTime = 40;
         if (this.stats.attack.charge != null)
             chargeTime = this.stats.attack.charge.time;
+        double missingHealthPercentage = 1d - this.getHealth() / this.getMaxHealth();
+        chargeTime -= (int) (20 * missingHealthPercentage);
         this.entityData.set(CHARGING, chargeTime + CHARGE_ATTACK_TICK_CHARGE);
         return true;
     }
@@ -193,9 +195,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 || this.isCharging()
                 || this.getBarrageChargeUpTicks() > 0)
             return;
-        double missingHealthPercentage = 1d - this.getHealth() / this.getMaxHealth();
-        double chance = this.stats.attack.charge.maxChance.getValue(this) * missingHealthPercentage;
-        chance *= (damageAmount / 10f);
+        double chance = this.stats.attack.charge.maxChance.getValue(this) * (damageAmount / 10f);
         if (!this.isPowered() && !this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(5d)).isEmpty())
             chance = 0.25f;
         if (this.getRandom().nextDouble() < chance)
@@ -483,8 +483,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             float regen = this.stats.health.regeneration / 20f;
             if (this.stats.health.regenWhenHit != 1f && this.tickCount > this.getLastHurtByMobTimestamp() && this.tickCount - this.getLastHurtByMobTimestamp() < this.stats.health.regenWhenHitDuration)
                 regen *= this.stats.health.regenWhenHit;
-            if (!this.isPowered() || (this.getHealth() + regen) / this.getMaxHealth() < 0.5f)
-                this.heal(regen);
+            this.heal(regen);
 
             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
 
@@ -628,10 +627,10 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
     @Override
     public void heal(float healAmount) {
-        boolean wasPowered = this.isPowered();
-        if (this.getHealth() + healAmount > this.getMaxHealth() / 2f) {
-            healAmount = this.getMaxHealth() / 2f - this.getHealth() - 1f;
+        if (this.isPowered() && this.getHealth() + healAmount > this.getMaxHealth() / 2f) {
+            healAmount = this.getMaxHealth() / 2f - this.getHealth();
         }
+        boolean wasPowered = this.isPowered();
         super.heal(healAmount);
         updateStats(wasPowered);
     }

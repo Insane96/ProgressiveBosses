@@ -24,7 +24,7 @@
                 "below_half_health": 0.1
             },
             "damage": 20.0,
-            "time": 20
+            "time": 40
         },
         "barrage": {
             "chance": {
