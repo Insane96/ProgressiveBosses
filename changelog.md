@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## Alpha 4.1.7
 * Wither level changes (changed their names, no longer I, II, III, IV)
   * All Withers: Withers now attack slower when player's close and faster when player's away
   * Wither: Increased Skull damage and skull speed. Heavily increased barrage chance, duration and attack speed. Increased health
