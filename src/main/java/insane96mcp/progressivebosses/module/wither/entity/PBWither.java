@@ -87,6 +87,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public int minionCooldown;
     public boolean chargeBelow;
     public int shotSkulls;
+    private int forceChargeTicks = 20;
+    private int secondPhaseCharge;
 
     public PBWither(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -188,7 +190,10 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return true;
     }
     public void stopCharging() {
-        this.entityData.set(CHARGING, this.needsHealing() ? -120 : -40);
+        int cooldown = 40;
+        if (this.needsHealing())
+            cooldown = -120;
+        this.entityData.set(CHARGING, -cooldown);
     }
     public void tryCharge(float damageAmount) {
         if (this.stats.attack.charge == null
@@ -487,6 +492,15 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
 
+            if (!this.isCharging() && this.secondPhaseCharge > 0 && this.forceChargeTicks > 0) {
+                this.forceChargeTicks--;
+                if (this.forceChargeTicks == 0) {
+                    this.initCharging();
+                    this.entityData.set(CHARGING, this.getChargingTicks() - (3 - this.secondPhaseCharge) * 8);
+                    this.secondPhaseCharge--;
+                    this.forceChargeTicks = this.random.nextInt(6) + 3;
+                }
+            }
             if (!this.isCharging())
                 this.tickMinion();
             this.tickCharging();
@@ -669,8 +683,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             boolean hurt = super.hurt(pSource, pAmount);
             if (hurt && !wasPowered && this.isPowered()) {
                 this.initCharging();
-                //this.level().explode(this, this.getX(), this.getEyeY(), this.getZ(), this.stats.misc.explosionPower, this.stats.misc.explosionCausesFire, Level.ExplosionInteraction.MOB);
-                this.minionCooldown = this.getChargingTicks();
+                this.secondPhaseCharge = 2;
+                this.forceChargeTicks = this.random.nextInt(6) + 3;
             }
             return hurt;
         }
