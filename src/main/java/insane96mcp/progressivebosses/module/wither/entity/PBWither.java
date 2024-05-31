@@ -165,10 +165,10 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return this.entityData.get(CHARGING);
     }
     public boolean isCharging() {
-        return this.entityData.get(CHARGING) > 0;
+        return getChargingTicks() > 0;
     }
     public boolean isChargingInCooldown() {
-        return this.entityData.get(CHARGING) < 0;
+        return getChargingTicks() < 0;
     }
     public void tickCharging() {
         int ticks = this.entityData.get(CHARGING);
@@ -192,7 +192,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public void stopCharging() {
         int cooldown = 40;
         if (this.needsHealing())
-            cooldown = -120;
+            cooldown = 120;
         this.entityData.set(CHARGING, -cooldown);
     }
     public void tryCharge(float damageAmount) {
@@ -486,8 +486,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             }
 
             float regen = this.stats.health.regeneration / 20f;
-            if (this.stats.health.regenWhenHit != 1f && this.tickCount > this.getLastHurtByMobTimestamp() && this.tickCount - this.getLastHurtByMobTimestamp() < this.stats.health.regenWhenHitDuration)
-                regen *= this.stats.health.regenWhenHit;
+            if (this.stats.health.regenWhenHit != this.stats.health.regeneration && this.tickCount > this.getLastHurtByMobTimestamp() && this.tickCount - this.getLastHurtByMobTimestamp() < this.stats.health.regenWhenHitDuration)
+                regen = this.stats.health.regenWhenHit / 20f;
             this.heal(regen);
 
             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
