@@ -64,18 +64,22 @@ public class WitherChargeAttackGoal extends Goal {
 		blocksToDrop.clear();
 		List<Player> playersNearby = this.wither.level().getEntitiesOfClass(Player.class, this.wither.getBoundingBox().inflate(3f));
 		if (!playersNearby.isEmpty()) {
-			if (this.wither.getHealth() / this.wither.getMaxHealth() > this.wither.stats.attack.attackToHealThreshold) {
-				this.blowUp = true;
-				this.targetPos = this.wither.position();
-			}
-			else {
-				this.targetPos = this.wither.position().add((this.wither.getRandom().nextInt(5) - 2) * 10, (this.wither.getRandom().nextInt(5) - 2) * 10, (this.wither.getRandom().nextInt(5) - 2) * 10);
-			}
-		}
+            if (this.wither.needsHealing()) {
+                this.targetPos = this.wither.position().add((this.wither.getRandom().nextInt(5) - 2) * 10, (this.wither.getRandom().nextInt(5) - 2) * 10, (this.wither.getRandom().nextInt(5) - 2) * 10);
+            }
+            else {
+                this.blowUp = true;
+                this.targetPos = this.wither.position();
+            }
+        }
 		else {
 			LivingEntity target = this.wither.getTarget();
-			if (target == null)
-				target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
+			if (target == null) {
+				playersNearby = this.wither.level().getEntitiesOfClass(Player.class, this.wither.getBoundingBox().inflate(64f));
+				if (!playersNearby.isEmpty())
+					target = playersNearby.get(this.wither.getRandom().nextInt(playersNearby.size()));
+				//target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
+			}
 			if (target != null) {
 				this.wither.lookAt(target, 30f, 30f);
 				this.targetPos = target.position().add(0, -1.5d, 0);
