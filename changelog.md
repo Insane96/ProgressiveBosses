@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Wither's blue skull chance now has lower chance to appear when below half health
+* Slight buff to wither drops
 
 ## Alpha 4.1.9
 * Fixed wither bobbing up and down when below half health
