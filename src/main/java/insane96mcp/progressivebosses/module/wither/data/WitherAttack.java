@@ -13,7 +13,7 @@ import java.lang.reflect.Type;
 public class WitherAttack {
     public float skullDamage;
     public float skullSpeedMultiplier;
-    public float dangerousSkullChance;
+    public PoweredValue dangerousSkullChance;
     public int attackSpeedNear;
     public int attackSpeedFar;
     public float sideHeadsAttackSpeedMultiplier;
@@ -26,7 +26,7 @@ public class WitherAttack {
     @Nullable
     public WitherBarrage barrage;
 
-    public WitherAttack(float skullDamage, float skullSpeedMultiplier, float dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedMultiplier, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, PoweredValue maxChargeChance, float chargeDamage, int chargeTime, PoweredValue barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
+    public WitherAttack(float skullDamage, float skullSpeedMultiplier, PoweredValue dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedMultiplier, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, PoweredValue maxChargeChance, float chargeDamage, int chargeTime, PoweredValue barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
         this.skullDamage = skullDamage;
         this.skullSpeedMultiplier = skullSpeedMultiplier;
         this.dangerousSkullChance = dangerousSkullChance;
@@ -49,7 +49,7 @@ public class WitherAttack {
             WitherBarrage witherBarrage = jObject.has("barrage") ? context.deserialize(jObject.get("barrage"), WitherBarrage.class) : null;
             WitherAttack witherAttack = new WitherAttack(GsonHelper.getAsFloat(jObject, "skull_damage"),
                     GsonHelper.getAsFloat(jObject, "skull_speed_multiplier"),
-                    GsonHelper.getAsFloat(jObject, "dangerous_skull_chance"),
+                    context.deserialize(jObject.get("dangerous_skull_chance"), PoweredValue.class),
                     GsonHelper.getAsInt(jObject, "attack_speed_near"),
                     GsonHelper.getAsInt(jObject, "attack_speed_far"),
                     GsonHelper.getAsFloat(jObject, "side_heads_attack_speed_multiplier"),
@@ -68,7 +68,7 @@ public class WitherAttack {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("skull_damage", src.skullDamage);
             jsonObject.addProperty("skull_speed_multiplier", src.skullSpeedMultiplier);
-            jsonObject.addProperty("dangerous_skull_chance", src.dangerousSkullChance);
+            jsonObject.add("dangerous_skull_chance", context.serialize(src.dangerousSkullChance));
             jsonObject.addProperty("attack_speed_near", src.attackSpeedNear);
             jsonObject.addProperty("attack_speed_far", src.attackSpeedFar);
             jsonObject.addProperty("side_heads_attack_speed_multiplier", src.sideHeadsAttackSpeedMultiplier);

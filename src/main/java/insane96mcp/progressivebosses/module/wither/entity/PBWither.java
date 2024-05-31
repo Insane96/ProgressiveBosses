@@ -584,7 +584,13 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     public void performRangedAttack(int head, LivingEntity target) {
-        this.performRangedAttack(head, target.getX(), target.getY() + (double)target.getEyeHeight() * 0.5D, target.getZ(), head == 0 && this.random.nextFloat() < this.stats.attack.dangerousSkullChance * (this.shotSkulls / 10f));
+        this.performRangedAttack(
+                head,
+                target.getX(),
+                target.getY() + (double)target.getEyeHeight() * 0.5D,
+                target.getZ(),
+                head == 0 && this.random.nextFloat() < this.stats.attack.dangerousSkullChance.getValue(this) * (this.shotSkulls / 10f)
+        );
     }
 
     /**

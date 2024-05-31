@@ -3,7 +3,10 @@
     "attack": {
         "skull_damage": 12.0,
         "skull_speed_multiplier": 2.5,
-        "dangerous_skull_chance": 0.4,
+        "dangerous_skull_chance": {
+            "above_half_health": 0.4,
+            "below_half_health": 0.3
+        },
         "attack_speed_near": 45,
         "attack_speed_far": 30,
         "side_heads_attack_speed_multiplier": 1.2,

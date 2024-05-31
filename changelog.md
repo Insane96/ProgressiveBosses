@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Wither's blue skull chance now has lower chance to appear when below half health
+
 ## Alpha 4.1.9
 * Fixed wither bobbing up and down when below half health
 * Fixed targeting, again
