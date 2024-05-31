@@ -70,7 +70,7 @@ public class WitherRangedAttackGoal extends Goal {
 						this.unseenTargetTicks += 2;
 						this.wither.tryCharge(this.unseenTargetTicks / 30f);
 					}
-					else
+					else if (!this.wither.isChargingInCooldown())
 						this.wither.initCharging();
 				}
 			}

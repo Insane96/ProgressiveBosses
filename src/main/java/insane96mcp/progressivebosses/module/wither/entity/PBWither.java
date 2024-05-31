@@ -166,6 +166,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public boolean isCharging() {
         return this.entityData.get(CHARGING) > 0;
     }
+    public boolean isChargingInCooldown() {
+        return this.entityData.get(CHARGING) < 0;
+    }
     public void tickCharging() {
         int ticks = this.entityData.get(CHARGING);
         if (ticks > 0)
@@ -401,6 +404,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             LivingEntity livingEntity = livingsNearby.get(this.random.nextInt(livingsNearby.size()));
             return livingEntity.getId();
         }
+        if (this.getTarget() != null)
+            return this.getTarget().getId();
         return 0;
 
     }

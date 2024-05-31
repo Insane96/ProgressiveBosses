@@ -13,7 +13,7 @@
             "normal": 5,
             "hard": 10
         },
-        "attack_to_heal_threshold": 0.40,
+        "attack_to_heal_threshold": 0.30,
         "heal_on_skull_kill": 7,
         "charge": {
             "max_chance": {

@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Wither
+  * Fixed ignoring charging cooldown
+  * Fixed side heads ignoring the target if too far away
+
 ## Alpha 4.1.7
 * Wither level changes (changed their names, no longer I, II, III, IV)
   * All Withers: Withers now attack slower when player's close and faster when player's away
