@@ -64,13 +64,13 @@ public class WitherRangedAttackGoal extends Goal {
 					if (this.unseenTargetTicks > 0)
 						this.unseenTargetTicks--;
 				}
-				else {
+				else if (!this.wither.isChargingInCooldown()){
 					this.seeTime = 0;
 					if (this.unseenTargetTicks < 400) {
 						this.unseenTargetTicks += 2;
 						this.wither.tryCharge(this.unseenTargetTicks / 30f);
 					}
-					else if (!this.wither.isChargingInCooldown())
+					else
 						this.wither.initCharging();
 				}
 			}
