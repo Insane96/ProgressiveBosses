@@ -4,6 +4,7 @@
 * Wither
   * Fixed ignoring charging cooldown
   * Fixed side heads ignoring the target if too far away
+  * Fixed not being in the `forge:bosses` tag
 
 ## Alpha 4.1.7
 * Wither level changes (changed their names, no longer I, II, III, IV)
