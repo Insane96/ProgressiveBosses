@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Wither
+  * Fixed wither skull not being tagged as a projectile thus ignoring projectile protection
   * Fixed ignoring charging cooldown
   * Fixed side heads ignoring the target if too far away
   * Fixed not being in the `forge:bosses` tag
