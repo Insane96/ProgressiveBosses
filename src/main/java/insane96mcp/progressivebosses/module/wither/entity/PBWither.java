@@ -29,7 +29,6 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -719,8 +718,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         }
     }
 
-    public boolean addEffect(MobEffectInstance pEffectInstance, @javax.annotation.Nullable Entity pEntity) {
-        return false;
+    public boolean canBeAffected(MobEffectInstance pPotioneffect) {
+        return pPotioneffect.getEffect().isInstantenous() && super.canBeAffected(pPotioneffect);
     }
 
     public float getHeadYRot(int pHead) {
@@ -771,10 +770,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
      */
     public boolean canChangeDimensions() {
         return false;
-    }
-
-    public boolean canBeAffected(MobEffectInstance pPotioneffect) {
-        return pPotioneffect.getEffect() != MobEffects.WITHER && super.canBeAffected(pPotioneffect);
     }
 
     public static class WaterAvoidingRandomFlyingGoal extends RandomStrollGoal {

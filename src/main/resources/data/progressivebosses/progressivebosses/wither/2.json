@@ -24,12 +24,12 @@
                 "below_half_health": 0.3
             },
             "min_duration": 50,
-            "max_duration": 90,
+            "max_duration": 100,
             "attack_speed": 4
         }
     },
     "health": {
-        "health": 1000.0,
+        "health": 400.0,
         "regeneration": 3,
         "regen_when_hit": 1.5,
         "regen_when_hit_duration": 20

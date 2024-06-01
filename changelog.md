@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Fixed Wither roses not dropping
+* Fixed Wither immune to instant health / damage arrows
 
 ## Alpha 4.1.10
 * Wither charging chance is no longer based off missing health, instead the charge-up time is lower when lower health 
