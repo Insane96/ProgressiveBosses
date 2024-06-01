@@ -498,6 +498,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                     this.entityData.set(CHARGING, this.getChargingTicks() - (3 - this.secondPhaseCharge) * 8);
                     this.secondPhaseCharge--;
                     this.forceChargeTicks = this.random.nextInt(6) + 3;
+                    if (this.secondPhaseCharge == 0)
+                        this.minionCooldown = 10;
                 }
             }
             if (!this.isCharging())

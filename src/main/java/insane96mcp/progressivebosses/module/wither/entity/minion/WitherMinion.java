@@ -76,8 +76,8 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 
 		minion.setPos(pos);
-		minion.setLvl(lvl);
 		minion.summonedByPoweredWither = isPowered;
+		minion.setLvl(lvl);
 		minion.setDropChance(EquipmentSlot.MAINHAND, -2f);
 		minion.setCanPickUpLoot(false);
 		minion.setPersistenceRequired();
@@ -261,7 +261,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 
 	public static AttributeSupplier.Builder prepareAttributes() {
 		return LivingEntity.createLivingAttributes()
-				.add(Attributes.ATTACK_DAMAGE, 1.0d)
+				.add(Attributes.ATTACK_DAMAGE, 3d)
 				.add(Attributes.MAX_HEALTH, 15.0d)
 				.add(Attributes.FOLLOW_RANGE, 64.0d)
 				.add(Attributes.MOVEMENT_SPEED, 0.25d)

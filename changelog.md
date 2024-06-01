@@ -1,8 +1,18 @@
 # Changelog
 
-## Upcoming
+## Alpha 4.1.11
+* Rebalanced Summoner Wither
+  * Side heads now attack faster
+  * Heals much more on kill and passively
+  * Barrage attack speed is faster
+  * Health is now the same as other withers (1000 -> 500)
+  * Minions are summoned more often
+* Increased Wither Minions base damage (1 -> 3)
+* Wither now summons minions (if can) when finishes the 3 charges when brought below half health 
+* Reduced bow chance for wither minions
 * Fixed Wither roses not dropping
 * Fixed Wither immune to instant health / damage arrows
+* Fixed Wither Minions not spawning with correct equipment
 
 ## Alpha 4.1.10
 * Wither charging chance is no longer based off missing health, instead the charge-up time is lower when lower health 
