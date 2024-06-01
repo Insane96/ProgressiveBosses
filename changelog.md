@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Fixed wither minions dropping wither roses
+
 ## Alpha 4.1.11
 * Rebalanced Summoner Wither
   * Side heads now attack faster

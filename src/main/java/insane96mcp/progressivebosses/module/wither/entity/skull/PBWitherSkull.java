@@ -10,6 +10,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -28,7 +29,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
 public class PBWitherSkull extends AbstractHurtingProjectile {
-    ResourceKey<DamageType> DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_skull"));
+    static ResourceKey<DamageType> DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_skull"));
+    static final TagKey<EntityType<?>> NO_WITHER_ROSE = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "no_wither_rose"));
     LivingEntity originalOwner;
 
     private static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(PBWitherSkull.class, EntityDataSerializers.BOOLEAN);
@@ -83,7 +85,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
                         if (owner instanceof PBWither wither)
                             heal = wither.stats.attack.healOnSkullKill;
                         livingOwner.heal(heal);
-                        this.createWitherRose();
+                        this.createWitherRose(entityHit);
                     }
                 }
             }
@@ -158,10 +160,12 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
         return false;
     }
 
-    public void createWitherRose() {
+    public void createWitherRose(Entity entityHit) {
+        if (entityHit.getType().is(NO_WITHER_ROSE) || !(entityHit instanceof LivingEntity))
+            return;
         boolean hasPlacedRose = false;
         if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this.originalOwner)) {
-            BlockPos blockpos = this.blockPosition();
+            BlockPos blockpos = entityHit.blockPosition();
             BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
             if (this.level().isEmptyBlock(blockpos) && blockstate.canSurvive(this.level(), blockpos)) {
                 this.level().setBlock(blockpos, blockstate, 3);
