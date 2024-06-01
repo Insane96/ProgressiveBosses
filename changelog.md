@@ -7,7 +7,7 @@
 * Minor rebalance to some withers
 * Increased Ultimate Wither experience
 * Wither now charges random players in range instead of the closest one
-* Wither's blue skull chance now has lower chance to appear when below half health
+* Wither's blue skull chance is now lower when below half health
 * Slight buff to wither drops
 * Fixed Wither not healing above half health
 * More fixes
