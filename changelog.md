@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Fixed Wither roses not dropping
+
 ## Alpha 4.1.10
 * Wither charging chance is no longer based off missing health, instead the charge-up time is lower when lower health 
   * Increased time to charge from 1.5s to 2s. At 0 hp he can charge in 1s
