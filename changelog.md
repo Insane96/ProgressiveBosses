@@ -3,9 +3,9 @@
 ## Alpha 4.1.11
 * Rebalanced Summoner Wither
   * Side heads now attack faster
+  * Health is now the same as other withers (1000 -> 500)
   * Heals much more on kill and passively
   * Barrage attack speed is faster
-  * Health is now the same as other withers (1000 -> 500)
   * Minions are summoned more often
 * Increased Wither Minions base damage (1 -> 3)
 * Wither now summons minions (if can) when finishes the 3 charges when brought below half health 
