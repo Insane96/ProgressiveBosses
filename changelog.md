@@ -1,10 +1,11 @@
 # Changelog
 
-## Upcoming
+## Alpha 4.1.10
 * Wither charging chance is no longer based off missing health, instead the charge-up time is lower when lower health 
   * Increased time to charge from 1.5s to 2s. At 0 hp he can charge in 1s
 * When brought to half health Wither now charges 3 times in rapid succession
 * Minor rebalance to some withers
+* Increased Ultimate Wither experience
 * Wither now charges random players in range instead of the closest one
 * Wither's blue skull chance now has lower chance to appear when below half health
 * Slight buff to wither drops

@@ -53,8 +53,8 @@
         }
     },
     "minion": {
-        "minions_spawned": 3.0,
-        "max_minion_around": 10.0,
+        "minions_spawned": 5.0,
+        "max_minion_around": 15.0,
         "min_cooldown": {
             "above_half_health": 300.0,
             "below_half_health": 150.0
@@ -80,6 +80,6 @@
         "ignore_wither_proof_blocks": true,
         "nether_only": true
     },
-    "xp_dropped": 1300,
+    "xp_dropped": 2000,
     "loot_table": "progressivebosses:entities/wither_3"
 }
