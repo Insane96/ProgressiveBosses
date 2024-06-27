@@ -3,6 +3,7 @@
 ## Upcoming
 * Fixed wither minions dropping wither roses
   * Wither skeletons also no longer drop wither roses
+* Fixed Wither Minions dropping no xp (now drop 2)
 
 ## Alpha 4.1.11
 * Rebalanced Summoner Wither

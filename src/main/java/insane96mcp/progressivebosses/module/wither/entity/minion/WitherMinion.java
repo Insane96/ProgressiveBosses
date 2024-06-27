@@ -60,6 +60,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 	public WitherMinion(EntityType<? extends AbstractSkeleton> type, Level worldIn) {
 		super(type, worldIn);
 		this.reassesMinionWeapon();
+		this.xpReward = 2;
 	}
 
 	@Nullable
