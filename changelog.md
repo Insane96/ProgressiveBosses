@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## Alpha 4.1.12
 * Fixed wither minions dropping wither roses
   * Wither skeletons also no longer drop wither roses
 * Fixed Wither Minions dropping no xp (now drop 2)
