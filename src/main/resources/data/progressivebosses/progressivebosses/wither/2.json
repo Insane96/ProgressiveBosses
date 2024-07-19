@@ -16,7 +16,7 @@
             "normal": 5,
             "hard": 10
         },
-        "attack_to_heal_threshold": 0.40,
+        "attack_to_heal_threshold": 0.35,
         "heal_on_skull_kill": 25,
         "barrage": {
             "chance": {
