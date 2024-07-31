@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+* Increased damage taken by blue skulls
+  * Damage from blue skulls is multiplied by 0.8% -> 1% of its max health
+
 ## Alpha 4.1.12
 * Fixed wither minions dropping wither roses
   * Wither skeletons also no longer drop wither roses
