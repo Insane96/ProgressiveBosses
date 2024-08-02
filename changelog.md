@@ -1,7 +1,7 @@
 # Changelog
 
 ## Upcoming
-* Increased damage taken by blue skulls
+* Increased damage taken by wither from blue skulls
   * Damage from blue skulls is multiplied by 0.8% -> 1% of its max health
 
 ## Alpha 4.1.12
