@@ -35,6 +35,8 @@ public class WitherFeature extends Feature {
 
 	@SubscribeEvent
 	public void onSkullPlaced(BlockEvent.EntityPlaceEvent event) {
+		if (!this.isEnabled())
+			return;
 		SummonHelper.checkSpawnFromSkullPlacement(event.getState(), event.getPos(), (Level) event.getLevel(), event.getEntity());
     }
 
