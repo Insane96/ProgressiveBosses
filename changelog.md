@@ -1,6 +1,7 @@
 # Changelog
 
 ## Upcoming
+* Wither module can now be disabled without having to mess with Data Packs
 * Increased damage taken by wither from blue skulls
   * Damage from blue skulls is multiplied by 0.8% -> 1% of its max health
 
