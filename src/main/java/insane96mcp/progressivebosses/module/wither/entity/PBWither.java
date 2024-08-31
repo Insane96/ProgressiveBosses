@@ -86,7 +86,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public int minionCooldown;
     public boolean chargeBelow;
     public int shotSkulls;
-    private int forceChargeTicks = 20;
+    //private int forceChargeTicks = 20;
     private int secondPhaseCharge;
 
     public PBWither(EntityType<? extends Monster> pEntityType, Level pLevel) {
@@ -199,7 +199,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
     public void stopCharging() {
         int cooldown = 40;
-        if (this.needsHealing())
+        if (this.secondPhaseCharge > 0)
+            cooldown = this.random.nextInt(6) + 3;
+        else if (this.needsHealing())
             cooldown = 120;
         this.setChargingCooldown(cooldown);
     }
@@ -503,15 +505,17 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
             this.bossEvent.setProgress(this.getHealth() / this.getMaxHealth());
 
-            if (!this.isCharging() && this.secondPhaseCharge > 0 && this.forceChargeTicks > 0) {
-                this.forceChargeTicks--;
-                if (this.forceChargeTicks == 0) {
+            if (!this.isCharging() && !this.isChargingInCooldown() && this.secondPhaseCharge > 0) {
+                this.secondPhaseCharge--;
+                if (this.secondPhaseCharge == 0) {
+                    if (this.stats.attack.charge.secondPhaseMinion)
+                        this.minionCooldown = 10;
+                    if (this.stats.attack.charge.secondPhaseBarrage)
+                        this.initBarrageChargeUp();
+                }
+                else {
                     this.initCharging();
                     this.setChargingTicks(this.getChargingTicks() - Math.min(this.stats.attack.charge.secondPhaseMaxReduction, (this.stats.attack.charge.secondPhaseTimes - this.secondPhaseCharge) * this.stats.attack.charge.secondPhaseTickReduction));
-                    this.secondPhaseCharge--;
-                    this.forceChargeTicks = this.random.nextInt(6) + 3;
-                    if (this.secondPhaseCharge == 0)
-                        this.minionCooldown = 10;
                 }
             }
             if (!this.isCharging())
@@ -524,8 +528,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public boolean needsHealing() {
         return this.getHealth() / this.getMaxHealth() < this.stats.attack.attackToHealThreshold;
     }
-
-
 
     public boolean canDestroyBlock(BlockPos pos, BlockState state) {
         if (this.stats.misc.ignoreWitherProofBlocks)
@@ -696,8 +698,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             boolean hurt = super.hurt(pSource, pAmount);
             if (hurt && !wasPowered && this.isPowered() && this.stats.attack.charge != null && this.stats.attack.charge.secondPhase) {
                 this.initCharging();
-                this.secondPhaseCharge = this.stats.attack.charge.secondPhaseTimes - 1;
-                this.forceChargeTicks = this.random.nextInt(6) + 3;
+                this.secondPhaseCharge = this.stats.attack.charge.secondPhaseTimes;
             }
             return hurt;
         }

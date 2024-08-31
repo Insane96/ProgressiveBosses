@@ -19,7 +19,7 @@ public class PBEntities {
 	public static final RegistryObject<EntityType<PBWither>> WITHER = REGISTRY.register("wither", () -> EntityType.Builder.of(PBWither::new, MobCategory.MONSTER)
 			.fireImmune()
 			.immuneTo(Blocks.WITHER_ROSE)
-			.sized(0.7f, 2.4f)
+			.sized(0.8f, 2.5f)
 			.clientTrackingRange(8)
 			.build("wither"));
 
