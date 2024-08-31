@@ -50,5 +50,5 @@
         "nether_only": false
     },
     "xp_dropped": 600,
-    "loot_table": "progressivebosses:entities/wither_1"
+    "loot_table": "progressivebosses:entities/wither/armored"
 }

@@ -22,6 +22,14 @@ public class PoweredValue {
         this.belowHalfHealth = value;
     }
 
+    public static PoweredValue of(float value) {
+        return new PoweredValue(value);
+    }
+
+    public static PoweredValue of(float aboveHalfHealth, float belowHalfHealth) {
+        return new PoweredValue(aboveHalfHealth, belowHalfHealth);
+    }
+
     public float getValue(PBWither wither) {
         return wither.isPowered() && wither.getInvulnerableTicks() == 0 ? this.belowHalfHealth : this.aboveHalfHealth;
     }
@@ -43,7 +51,7 @@ public class PoweredValue {
         public PoweredValue deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             if (json.isJsonPrimitive())
                 return new PoweredValue(json.getAsFloat());
-            return new PoweredValue(GsonHelper.getAsFloat(json.getAsJsonObject(), "above_half_health"),
+            return PoweredValue.of(GsonHelper.getAsFloat(json.getAsJsonObject(), "above_half_health"),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "below_half_health"));
         }
 

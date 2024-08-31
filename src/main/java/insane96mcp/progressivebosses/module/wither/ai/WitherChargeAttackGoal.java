@@ -128,10 +128,14 @@ public class WitherChargeAttackGoal extends Goal {
 				this.wither.lookAt(EntityAnchorArgument.Anchor.EYES, this.targetPos);
 		}
 		else if (chargeTicks == PBWither.CHARGE_ATTACK_TICK_CHARGE) {
+			if (this.targetPos == null) {
+				this.wither.stopCharging();
+				return;
+			}
 			this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_SPAWN, SoundSource.HOSTILE, 4.0f, 2.0f);
             this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
 		}
-		else if (chargeTicks < PBWither.CHARGE_ATTACK_TICK_CHARGE) {
+		else {
 			if (this.blowUp) {
 				this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE);
 				((ServerLevel) this.wither.level()).sendParticles(ParticleTypes.EXPLOSION_EMITTER, this.wither.getX(), this.wither.getY(), this.wither.getZ(), 2, 0f, 0f, 0f, 1f);

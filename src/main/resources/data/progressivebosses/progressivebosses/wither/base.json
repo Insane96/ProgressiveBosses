@@ -26,6 +26,13 @@
             "min_duration": 50,
             "max_duration": 100,
             "attack_speed": 4
+        },
+        "charge": {
+            "base_time": 40,
+            "second_phase": true,
+            "second_phase_times": 10,
+            "second_phase_tick_reduction": 3,
+            "second_phase_max_reduction": 15
         }
     },
     "health": {
@@ -41,5 +48,5 @@
         "nether_only": false
     },
     "xp_dropped": 200,
-    "loot_table": "progressivebosses:entities/wither_0"
+    "loot_table": "progressivebosses:entities/wither/base"
 }

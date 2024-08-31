@@ -3,6 +3,11 @@
 ## Upcoming
 * Increased damage taken by wither from blue skulls
   * Damage from blue skulls is multiplied by 0.8% -> 1% of its max health
+* Charge Object
+  * Added `second_phase` in Wither's charge object. If true, the wither will charge 3 times in rapid succession
+  * Added `second_phase_times`, `second_phase_tick_reduction` and `second_phase_max_reduction` to configure the second phase charging times, tick reduction and max reduction
+  * Renamed `chance_on_hit` to `chance_on_hit`
+  * Renamed `time` to `base_time`
 
 ## Alpha 4.1.12
 * Fixed wither minions dropping wither roses

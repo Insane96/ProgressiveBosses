@@ -81,5 +81,5 @@
         "nether_only": true
     },
     "xp_dropped": 2000,
-    "loot_table": "progressivebosses:entities/wither_3"
+    "loot_table": "progressivebosses:entities/wither/ultimate"
 }

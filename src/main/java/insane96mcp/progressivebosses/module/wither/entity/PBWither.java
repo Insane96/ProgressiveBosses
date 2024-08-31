@@ -72,8 +72,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     private static final int INVULNERABLE_TICKS = 220;
     private final float[] xRotHeads = new float[2];
     private final float[] yRotHeads = new float[2];
-    private final float[] xRotOHeads = new float[2];
-    private final float[] yRotOHeads = new float[2];
+    //private final float[] xRotOHeads = new float[2];
+    //private final float[] yRotOHeads = new float[2];
     private final int[] nextHeadUpdate = new int[2];
     //private final int[] idleHeadUpdates = new int[2];
     public int destroyBlocksTick;
@@ -123,6 +123,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(this.getType())) + "." + this.getLvl());
     }
 
+    @SuppressWarnings("deprecation")
     @Nullable
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
@@ -163,6 +164,12 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public int getChargingTicks() {
         return this.entityData.get(CHARGING);
     }
+    private void setChargingTicks(int ticks) {
+        this.entityData.set(CHARGING, Math.max(ticks, CHARGE_ATTACK_TICK_CHARGE));
+    }
+    private void setChargingCooldown(int cooldown) {
+        this.entityData.set(CHARGING, -cooldown);
+    }
     public boolean isCharging() {
         return getChargingTicks() > 0;
     }
@@ -170,13 +177,14 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return getChargingTicks() < 0;
     }
     public void tickCharging() {
-        int ticks = this.entityData.get(CHARGING);
+        int ticks = this.getChargingTicks();
         if (ticks > 0)
             ticks--;
         else if (ticks < 0)
             ticks++;
         this.entityData.set(CHARGING, ticks);
     }
+
     public boolean initCharging() {
         if (this.isCharging())
             return false;
@@ -185,21 +193,24 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             chargeTime = this.stats.attack.charge.time;
         double missingHealthPercentage = 1d - this.getHealth() / this.getMaxHealth();
         chargeTime -= (int) (20 * missingHealthPercentage);
-        this.entityData.set(CHARGING, chargeTime + CHARGE_ATTACK_TICK_CHARGE);
+        this.setChargingTicks(chargeTime + CHARGE_ATTACK_TICK_CHARGE);
         return true;
     }
+
     public void stopCharging() {
         int cooldown = 40;
         if (this.needsHealing())
             cooldown = 120;
-        this.entityData.set(CHARGING, -cooldown);
+        this.setChargingCooldown(cooldown);
     }
+
     public void tryCharge(float damageAmount) {
         if (this.stats.attack.charge == null
                 || this.isCharging()
-                || this.getBarrageChargeUpTicks() > 0)
+                || this.getBarrageChargeUpTicks() > 0
+                || this.stats.attack.charge.chanceOnHit == null)
             return;
-        double chance = this.stats.attack.charge.maxChance.getValue(this) * (damageAmount / 10f);
+        double chance = this.stats.attack.charge.chanceOnHit.getValue(this) * (damageAmount / 10f);
         if (!this.isPowered() && !this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(5d)).isEmpty())
             chance = 0.25f;
         if (this.getRandom().nextDouble() < chance)
@@ -261,6 +272,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
     public void initBarrage() {
         double missingHealthPercentage = 1d - this.getHealth() / this.getMaxHealth();
+        //noinspection DataFlowIssue - Can't be null from where it's called
         this.barrageTicks = (int) (((this.stats.attack.barrage.maxDuration - this.stats.attack.barrage.minDuration) * missingHealthPercentage) + this.stats.attack.barrage.minDuration);
     }
 
@@ -345,10 +357,10 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
         super.aiStep();
 
-        for(int head = 0; head < 2; ++head) {
+        /*for(int head = 0; head < 2; ++head) {
             this.yRotOHeads[head] = this.yRotHeads[head];
             this.xRotOHeads[head] = this.xRotHeads[head];
-        }
+        }*/
 
         for(int head = 0; head < 2; ++head) {
             int targetId = this.getAlternativeTarget(head + 1);
@@ -495,7 +507,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 this.forceChargeTicks--;
                 if (this.forceChargeTicks == 0) {
                     this.initCharging();
-                    this.entityData.set(CHARGING, this.getChargingTicks() - (3 - this.secondPhaseCharge) * 8);
+                    this.setChargingTicks(this.getChargingTicks() - Math.min(this.stats.attack.charge.secondPhaseMaxReduction, (this.stats.attack.charge.secondPhaseTimes - this.secondPhaseCharge) * this.stats.attack.charge.secondPhaseTickReduction));
                     this.secondPhaseCharge--;
                     this.forceChargeTicks = this.random.nextInt(6) + 3;
                     if (this.secondPhaseCharge == 0)
@@ -682,9 +694,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
             boolean wasPowered = this.isPowered();
             boolean hurt = super.hurt(pSource, pAmount);
-            if (hurt && !wasPowered && this.isPowered()) {
+            if (hurt && !wasPowered && this.isPowered() && this.stats.attack.charge != null && this.stats.attack.charge.secondPhase) {
                 this.initCharging();
-                this.secondPhaseCharge = 2;
+                this.secondPhaseCharge = this.stats.attack.charge.secondPhaseTimes - 1;
                 this.forceChargeTicks = this.random.nextInt(6) + 3;
             }
             return hurt;

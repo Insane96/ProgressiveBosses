@@ -19,6 +19,10 @@ public class Difficulty {
         this.hard = hard;
     }
 
+    public static Difficulty of(float easy, float normal, float hard) {
+        return new Difficulty(easy, normal, hard);
+    }
+
     public int getInt(Level level) {
         return (int) getFloat(level);
     }

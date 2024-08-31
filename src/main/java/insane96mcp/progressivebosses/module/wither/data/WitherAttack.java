@@ -1,32 +1,39 @@
 package insane96mcp.progressivebosses.module.wither.data;
 
-import com.google.gson.*;
-import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import insane96mcp.progressivebosses.data.Difficulty;
-import net.minecraft.util.GsonHelper;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 
-@JsonAdapter(WitherAttack.Serializer.class)
 public class WitherAttack {
+    @SerializedName("skull_damage")
     public float skullDamage;
+    @SerializedName("skull_speed_multiplier")
     public float skullSpeedMultiplier;
+    @SerializedName("dangerous_skull_chance")
     public PoweredValue dangerousSkullChance;
+    @SerializedName("attack_speed_near")
     public int attackSpeedNear;
+    @SerializedName("attack_speed_far")
     public int attackSpeedFar;
+    @SerializedName("side_heads_attack_speed_multiplier")
     public float sideHeadsAttackSpeedMultiplier;
+    @SerializedName("effect_amplifier")
     public int effectAmplifier;
+    @SerializedName("effect_duration")
     public Difficulty effectDuration;
+    @SerializedName("attack_to_heal_threshold")
     public float attackToHealThreshold;
+    @SerializedName("heal_on_skull_kill")
     public float healOnSkullKill;
+    @SerializedName("charge")
     @Nullable
     public WitherCharge charge;
+    @SerializedName("barrage")
     @Nullable
     public WitherBarrage barrage;
 
-    public WitherAttack(float skullDamage, float skullSpeedMultiplier, PoweredValue dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedMultiplier, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, PoweredValue maxChargeChance, float chargeDamage, int chargeTime, PoweredValue barrageChance, int minBarrageDuration, int maxBarrageDuration, int barrageAttackSpeed) {
+    private WitherAttack(float skullDamage, float skullSpeedMultiplier, PoweredValue dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedMultiplier, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, @Nullable WitherCharge charge, @Nullable WitherBarrage barrage) {
         this.skullDamage = skullDamage;
         this.skullSpeedMultiplier = skullSpeedMultiplier;
         this.dangerousSkullChance = dangerousSkullChance;
@@ -37,65 +44,176 @@ public class WitherAttack {
         this.effectDuration = effectDuration;
         this.attackToHealThreshold = attackToHealThreshold;
         this.healOnSkullKill = healOnSkullKill;
-        this.charge = new WitherCharge(maxChargeChance, chargeDamage, chargeTime);
-        this.barrage = new WitherBarrage(barrageChance, minBarrageDuration, maxBarrageDuration, barrageAttackSpeed);
+        this.charge = charge;
+        this.barrage = barrage;
     }
 
-    public static class Serializer implements JsonSerializer<WitherAttack>, JsonDeserializer<WitherAttack> {
-        @Override
-        public WitherAttack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            JsonObject jObject = json.getAsJsonObject();
-            WitherCharge witherCharge = jObject.has("charge") ? context.deserialize(jObject.get("charge"), WitherCharge.class) : null;
-            WitherBarrage witherBarrage = jObject.has("barrage") ? context.deserialize(jObject.get("barrage"), WitherBarrage.class) : null;
-            WitherAttack witherAttack = new WitherAttack(GsonHelper.getAsFloat(jObject, "skull_damage"),
-                    GsonHelper.getAsFloat(jObject, "skull_speed_multiplier"),
-                    context.deserialize(jObject.get("dangerous_skull_chance"), PoweredValue.class),
-                    GsonHelper.getAsInt(jObject, "attack_speed_near"),
-                    GsonHelper.getAsInt(jObject, "attack_speed_far"),
-                    GsonHelper.getAsFloat(jObject, "side_heads_attack_speed_multiplier"),
-                    GsonHelper.getAsInt(jObject, "effect_amplifier"),
-                    context.deserialize(jObject.get("effect_duration"), Difficulty.class),
-                    GsonHelper.getAsFloat(jObject, "attack_to_heal_threshold"),
-                    GsonHelper.getAsFloat(jObject, "heal_on_skull_kill"),
-                    new PoweredValue(0), 0, 0, new PoweredValue(0), 1, 1, 1);
-            witherAttack.charge = witherCharge;
-            witherAttack.barrage = witherBarrage;
-            return witherAttack;
+    public static class Builder {
+        private float skullDamage = 8f;
+        private float skullSpeedMultiplier = 1.5f;
+        private PoweredValue dangerousSkullChance = PoweredValue.of(0.4f, 0.3f);
+        private int attackSpeedNear = 50;
+        private int attackSpeedFar = 60;
+        private float sideHeadsAttackSpeedMultiplier = 1.5f;
+        private int effectAmplifier = 0;
+        private Difficulty effectDuration = Difficulty.of(10, 10, 20);
+        private float attackToHealThreshold = 0.1f;
+        private float healOnSkullKill = 10;
+        private WitherCharge charge = new WitherCharge.Builder().build();
+        private WitherBarrage barrage = new WitherBarrage.Builder().build();
+
+        public Builder skullDamage(float skullDamage) {
+            this.skullDamage = skullDamage;
+            return this;
         }
 
-        @Override
-        public JsonElement serialize(WitherAttack src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("skull_damage", src.skullDamage);
-            jsonObject.addProperty("skull_speed_multiplier", src.skullSpeedMultiplier);
-            jsonObject.add("dangerous_skull_chance", context.serialize(src.dangerousSkullChance));
-            jsonObject.addProperty("attack_speed_near", src.attackSpeedNear);
-            jsonObject.addProperty("attack_speed_far", src.attackSpeedFar);
-            jsonObject.addProperty("side_heads_attack_speed_multiplier", src.sideHeadsAttackSpeedMultiplier);
-            jsonObject.addProperty("effect_amplifier", src.effectAmplifier);
-            jsonObject.add("effect_duration", context.serialize(src.effectDuration));
-            jsonObject.addProperty("attack_to_heal_threshold", src.attackToHealThreshold);
-            jsonObject.addProperty("heal_on_skull_kill", src.healOnSkullKill);
-            if (src.charge != null)
-                jsonObject.add("charge", context.serialize(src.charge));
-            if (src.barrage != null)
-                jsonObject.add("barrage", context.serialize(src.barrage));
-            return jsonObject;
+        public Builder skullSpeedMultiplier(float skullSpeedMultiplier) {
+            this.skullSpeedMultiplier = skullSpeedMultiplier;
+            return this;
+        }
+
+        public Builder dangerousSkullChance(PoweredValue dangerousSkullChance) {
+            this.dangerousSkullChance = dangerousSkullChance;
+            return this;
+        }
+
+        public Builder attackSpeedNear(int attackSpeedNear) {
+            this.attackSpeedNear = attackSpeedNear;
+            return this;
+        }
+
+        public Builder attackSpeedFar(int attackSpeedFar) {
+            this.attackSpeedFar = attackSpeedFar;
+            return this;
+        }
+
+        public Builder sideHeadsAttackSpeedMultiplier(float sideHeadsAttackSpeedMultiplier) {
+            this.sideHeadsAttackSpeedMultiplier = sideHeadsAttackSpeedMultiplier;
+            return this;
+        }
+
+        public Builder effectAmplifier(int effectAmplifier) {
+            this.effectAmplifier = effectAmplifier;
+            return this;
+        }
+
+        public Builder effectDuration(Difficulty effectDuration) {
+            this.effectDuration = effectDuration;
+            return this;
+        }
+
+        public Builder attackToHealThreshold(float attackToHealThreshold) {
+            this.attackToHealThreshold = attackToHealThreshold;
+            return this;
+        }
+
+        public Builder healOnSkullKill(float healOnSkullKill) {
+            this.healOnSkullKill = healOnSkullKill;
+            return this;
+        }
+
+        public Builder charge(@Nullable WitherCharge charge) {
+            this.charge = charge;
+            return this;
+        }
+
+        public Builder barrage(@Nullable WitherBarrage barrage) {
+            this.barrage = barrage;
+            return this;
+        }
+
+        public WitherAttack build() {
+            return new WitherAttack(
+                    skullDamage,
+                    skullSpeedMultiplier,
+                    dangerousSkullChance,
+                    attackSpeedNear,
+                    attackSpeedFar,
+                    sideHeadsAttackSpeedMultiplier,
+                    effectAmplifier,
+                    effectDuration,
+                    attackToHealThreshold,
+                    healOnSkullKill,
+                    charge,
+                    barrage
+            );
         }
     }
 
     public static class WitherCharge {
-        @SerializedName("max_chance")
-        public PoweredValue maxChance;
+        @SerializedName("chance_on_hit")
+        @Nullable
+        public PoweredValue chanceOnHit;
         @SerializedName("damage")
         public float damage;
-        @SerializedName("time")
+        @SerializedName("base_time")
         public int time;
+        @SerializedName("second_phase")
+        public boolean secondPhase;
+        @SerializedName("second_phase_times")
+        public int secondPhaseTimes;
+        @SerializedName("second_phase_tick_reduction")
+        public int secondPhaseTickReduction;
+        @SerializedName("second_phase_max_reduction")
+        public int secondPhaseMaxReduction;
 
-        public WitherCharge(PoweredValue maxChance, float damage, int time) {
-            this.maxChance = maxChance;
+        private WitherCharge(@Nullable PoweredValue chanceOnHit, float damage, @Nullable int time, boolean secondPhase, int secondPhaseTimes, int secondPhaseTickReduction, int secondPhaseMaxReduction) {
+            this.chanceOnHit = chanceOnHit;
             this.damage = damage;
             this.time = time;
+            this.secondPhase = secondPhase;
+            this.secondPhaseTimes = secondPhaseTimes;
+            this.secondPhaseTickReduction = secondPhaseTickReduction;
+            this.secondPhaseMaxReduction = secondPhaseMaxReduction;
+        }
+
+        public static class Builder {
+            private PoweredValue chanceOnHit = PoweredValue.of(0.06f, 0.12f);
+            private float damage = 8;
+            private int time = 70;
+            private boolean secondPhase = true;
+            private int secondPhaseTimes = 3;
+            private int secondPhaseTickReduction = 8;
+            private int secondPhaseMaxReduction = 16;
+
+            public Builder chanceOnHit(PoweredValue chanceOnHit) {
+                this.chanceOnHit = chanceOnHit;
+                return this;
+            }
+
+            public Builder damage(float damage) {
+                this.damage = damage;
+                return this;
+            }
+
+            public Builder time(int time) {
+                this.time = time;
+                return this;
+            }
+
+            public Builder secondPhase(boolean secondPhase) {
+                this.secondPhase = secondPhase;
+                return this;
+            }
+
+            public Builder secondPhaseTimes(int secondPhaseTimes) {
+                this.secondPhaseTimes = secondPhaseTimes;
+                return this;
+            }
+
+            public Builder secondPhaseTickReduction(int secondPhaseTickReduction) {
+                this.secondPhaseTickReduction = secondPhaseTickReduction;
+                return this;
+            }
+
+            public Builder secondPhaseMaxReduction(int secondPhaseMaxReduction) {
+                this.secondPhaseMaxReduction = secondPhaseMaxReduction;
+                return this;
+            }
+
+            public WitherCharge build() {
+                return new WitherCharge(chanceOnHit, damage, time, secondPhase, secondPhaseTimes, secondPhaseTickReduction, secondPhaseMaxReduction);
+            }
         }
     }
 
@@ -109,11 +227,42 @@ public class WitherAttack {
         @SerializedName("attack_speed")
         public int attackSpeed;
 
-        public WitherBarrage(PoweredValue chance, int minDuration, int maxDuration, int attackSpeed) {
+        private WitherBarrage(PoweredValue chance, int minDuration, int maxDuration, int attackSpeed) {
             this.chance = chance;
             this.minDuration = minDuration;
             this.maxDuration = maxDuration;
             this.attackSpeed = attackSpeed;
+        }
+
+        public static class Builder {
+            private PoweredValue chance = PoweredValue.of(0.10f, 0.04f);
+            private int minDuration = 40;
+            private int maxDuration = 60;
+            private int attackSpeed = 5;
+
+            public Builder chance(PoweredValue chance) {
+                this.chance = chance;
+                return this;
+            }
+
+            public Builder minDuration(int minDuration) {
+                this.minDuration = minDuration;
+                return this;
+            }
+
+            public Builder maxDuration(int maxDuration) {
+                this.maxDuration = maxDuration;
+                return this;
+            }
+
+            public Builder attackSpeed(int attackSpeed) {
+                this.attackSpeed = attackSpeed;
+                return this;
+            }
+
+            public WitherBarrage build() {
+                return new WitherBarrage(chance, minDuration, maxDuration, attackSpeed);
+            }
         }
     }
 }
