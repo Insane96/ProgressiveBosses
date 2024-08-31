@@ -7,25 +7,25 @@ import javax.annotation.Nullable;
 
 public class WitherAttack {
     @SerializedName("skull_damage")
-    public float skullDamage;
+    public float skullDamage = 8f;
     @SerializedName("skull_speed_multiplier")
-    public float skullSpeedMultiplier;
+    public float skullSpeedMultiplier = 1f;
     @SerializedName("dangerous_skull_chance")
-    public PoweredValue dangerousSkullChance;
+    public PoweredValue dangerousSkullChance = PoweredValue.of(0.05f);
     @SerializedName("attack_speed_near")
-    public int attackSpeedNear;
+    public int attackSpeedNear = 40;
     @SerializedName("attack_speed_far")
-    public int attackSpeedFar;
+    public int attackSpeedFar = 40;
     @SerializedName("side_heads_attack_speed_multiplier")
-    public float sideHeadsAttackSpeedMultiplier;
+    public float sideHeadsAttackSpeedMultiplier = 1f;
     @SerializedName("effect_amplifier")
-    public int effectAmplifier;
+    public int effectAmplifier = 0;
     @SerializedName("effect_duration")
-    public Difficulty effectDuration;
+    public Difficulty effectDuration = Difficulty.of(10, 10, 20);
     @SerializedName("attack_to_heal_threshold")
     public float attackToHealThreshold;
     @SerializedName("heal_on_skull_kill")
-    public float healOnSkullKill;
+    public float healOnSkullKill = 5;
     @SerializedName("charge")
     @Nullable
     public WitherCharge charge;
@@ -33,7 +33,7 @@ public class WitherAttack {
     @Nullable
     public WitherBarrage barrage;
 
-    private WitherAttack(float skullDamage, float skullSpeedMultiplier, PoweredValue dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedMultiplier, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, @Nullable WitherCharge charge, @Nullable WitherBarrage barrage) {
+    /*private WitherAttack(float skullDamage, float skullSpeedMultiplier, PoweredValue dangerousSkullChance, int attackSpeedNear, int attackSpeedFar, float sideHeadsAttackSpeedMultiplier, int effectAmplifier, Difficulty effectDuration, float attackToHealThreshold, float healOnSkullKill, @Nullable WitherCharge charge, @Nullable WitherBarrage barrage) {
         this.skullDamage = skullDamage;
         this.skullSpeedMultiplier = skullSpeedMultiplier;
         this.dangerousSkullChance = dangerousSkullChance;
@@ -46,97 +46,73 @@ public class WitherAttack {
         this.healOnSkullKill = healOnSkullKill;
         this.charge = charge;
         this.barrage = barrage;
-    }
+    }*/
 
     public static class Builder {
-        private float skullDamage = 8f;
-        private float skullSpeedMultiplier = 1.5f;
-        private PoweredValue dangerousSkullChance = PoweredValue.of(0.4f, 0.3f);
-        private int attackSpeedNear = 50;
-        private int attackSpeedFar = 60;
-        private float sideHeadsAttackSpeedMultiplier = 1.5f;
-        private int effectAmplifier = 0;
-        private Difficulty effectDuration = Difficulty.of(10, 10, 20);
-        private float attackToHealThreshold = 0.1f;
-        private float healOnSkullKill = 10;
-        private WitherCharge charge = new WitherCharge.Builder().build();
-        private WitherBarrage barrage = new WitherBarrage.Builder().build();
+        private WitherAttack instance = new WitherAttack();
 
         public Builder skullDamage(float skullDamage) {
-            this.skullDamage = skullDamage;
+            instance.skullDamage = skullDamage;
             return this;
         }
 
         public Builder skullSpeedMultiplier(float skullSpeedMultiplier) {
-            this.skullSpeedMultiplier = skullSpeedMultiplier;
+            instance.skullSpeedMultiplier = skullSpeedMultiplier;
             return this;
         }
 
         public Builder dangerousSkullChance(PoweredValue dangerousSkullChance) {
-            this.dangerousSkullChance = dangerousSkullChance;
+            instance.dangerousSkullChance = dangerousSkullChance;
             return this;
         }
 
         public Builder attackSpeedNear(int attackSpeedNear) {
-            this.attackSpeedNear = attackSpeedNear;
+            instance.attackSpeedNear = attackSpeedNear;
             return this;
         }
 
         public Builder attackSpeedFar(int attackSpeedFar) {
-            this.attackSpeedFar = attackSpeedFar;
+            instance.attackSpeedFar = attackSpeedFar;
             return this;
         }
 
         public Builder sideHeadsAttackSpeedMultiplier(float sideHeadsAttackSpeedMultiplier) {
-            this.sideHeadsAttackSpeedMultiplier = sideHeadsAttackSpeedMultiplier;
+            instance.sideHeadsAttackSpeedMultiplier = sideHeadsAttackSpeedMultiplier;
             return this;
         }
 
         public Builder effectAmplifier(int effectAmplifier) {
-            this.effectAmplifier = effectAmplifier;
+            instance.effectAmplifier = effectAmplifier;
             return this;
         }
 
         public Builder effectDuration(Difficulty effectDuration) {
-            this.effectDuration = effectDuration;
+            instance.effectDuration = effectDuration;
             return this;
         }
 
         public Builder attackToHealThreshold(float attackToHealThreshold) {
-            this.attackToHealThreshold = attackToHealThreshold;
+            instance.attackToHealThreshold = attackToHealThreshold;
             return this;
         }
 
         public Builder healOnSkullKill(float healOnSkullKill) {
-            this.healOnSkullKill = healOnSkullKill;
+            instance.healOnSkullKill = healOnSkullKill;
             return this;
         }
 
         public Builder charge(@Nullable WitherCharge charge) {
-            this.charge = charge;
+            instance.charge = charge;
             return this;
         }
 
         public Builder barrage(@Nullable WitherBarrage barrage) {
-            this.barrage = barrage;
+            instance.barrage = barrage;
             return this;
         }
 
         public WitherAttack build() {
-            return new WitherAttack(
-                    skullDamage,
-                    skullSpeedMultiplier,
-                    dangerousSkullChance,
-                    attackSpeedNear,
-                    attackSpeedFar,
-                    sideHeadsAttackSpeedMultiplier,
-                    effectAmplifier,
-                    effectDuration,
-                    attackToHealThreshold,
-                    healOnSkullKill,
-                    charge,
-                    barrage
-            );
+            return instance;
         }
     }
 
