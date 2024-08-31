@@ -155,6 +155,10 @@ public class WitherAttack {
         public int secondPhaseTickReduction;
         @SerializedName("second_phase_max_reduction")
         public int secondPhaseMaxReduction;
+        @SerializedName("second_phase_barrage")
+        public int secondPhaseBarrage;
+        @SerializedName("second_phase_minion")
+        public int secondPhaseMinion;
 
         public static class Builder {
             private final WitherCharge instance = new WitherCharge();
@@ -191,6 +195,16 @@ public class WitherAttack {
 
             public Builder secondPhaseMaxReduction(int secondPhaseMaxReduction) {
                 instance.secondPhaseMaxReduction = secondPhaseMaxReduction;
+                return this;
+            }
+
+            public Builder secondPhaseBarrage(int secondPhaseBarrage) {
+                instance.secondPhaseBarrage = secondPhaseBarrage;
+                return this;
+            }
+
+            public Builder secondPhaseMinion(int secondPhaseMinion) {
+                instance.secondPhaseMinion = secondPhaseMinion;
                 return this;
             }
 
