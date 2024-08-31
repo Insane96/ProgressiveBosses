@@ -68,7 +68,7 @@ public class WitherRangedAttackGoal extends Goal {
 					this.seeTime = 0;
 					if (this.unseenTargetTicks < 400) {
 						this.unseenTargetTicks += 2;
-						this.wither.tryCharge(this.unseenTargetTicks / 30f);
+						this.wither.tryChargeOnHit(this.unseenTargetTicks / 30f);
 					}
 					else
 						this.wither.initCharging();

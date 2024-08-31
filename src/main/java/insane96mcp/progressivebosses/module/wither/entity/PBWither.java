@@ -190,7 +190,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             return false;
         int chargeTime = 40;
         if (this.stats.attack.charge != null)
-            chargeTime = this.stats.attack.charge.time;
+            chargeTime = this.stats.attack.charge.baseTime;
         double missingHealthPercentage = 1d - this.getHealth() / this.getMaxHealth();
         chargeTime -= (int) (20 * missingHealthPercentage);
         this.setChargingTicks(chargeTime + CHARGE_ATTACK_TICK_CHARGE);
@@ -204,11 +204,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         this.setChargingCooldown(cooldown);
     }
 
-    public void tryCharge(float damageAmount) {
+    public void tryChargeOnHit(float damageAmount) {
         if (this.stats.attack.charge == null
                 || this.isCharging()
                 || this.getBarrageChargeUpTicks() > 0
-                || this.stats.attack.charge.chanceOnHit == null)
+                || this.stats.attack.charge.chanceOnHit.isZero())
             return;
         double chance = this.stats.attack.charge.chanceOnHit.getValue(this) * (damageAmount / 10f);
         if (!this.isPowered() && !this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(5d)).isEmpty())
@@ -715,7 +715,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         updateStats(wasPowered);
 
         if (!this.isDeadOrDying()) {
-            tryCharge(damageAmount);
+            tryChargeOnHit(damageAmount);
             tryBarrage(damageAmount);
         }
     }

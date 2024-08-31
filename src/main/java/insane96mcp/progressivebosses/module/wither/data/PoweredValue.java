@@ -9,6 +9,8 @@ import java.lang.reflect.Type;
 
 @JsonAdapter(PoweredValue.Serializer.class)
 public class PoweredValue {
+    public static final PoweredValue ZERO = new PoweredValue(0f);
+
     public float aboveHalfHealth;
     public float belowHalfHealth;
 
@@ -44,6 +46,10 @@ public class PoweredValue {
 
     public int getIntValue(boolean isPowered) {
         return (int) (isPowered ? this.belowHalfHealth : this.aboveHalfHealth);
+    }
+
+    public boolean isZero() {
+        return this == ZERO || (this.aboveHalfHealth == 0f && this.belowHalfHealth == 0f);
     }
 
     public static class Serializer implements JsonSerializer<PoweredValue>, JsonDeserializer<PoweredValue> {

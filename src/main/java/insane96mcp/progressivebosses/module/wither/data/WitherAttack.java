@@ -141,15 +141,14 @@ public class WitherAttack {
     }
 
     public static class WitherCharge {
-        @SerializedName("chance_on_hit")
-        @Nullable
-        public PoweredValue chanceOnHit;
         @SerializedName("damage")
-        public float damage;
+        public float damage = 8f;
         @SerializedName("base_time")
-        public int time;
+        public int baseTime = 60;
+        @SerializedName("chance_on_hit")
+        public PoweredValue chanceOnHit = PoweredValue.ZERO;
         @SerializedName("second_phase")
-        public boolean secondPhase;
+        public boolean secondPhase = false;
         @SerializedName("second_phase_times")
         public int secondPhaseTimes;
         @SerializedName("second_phase_tick_reduction")
@@ -157,111 +156,85 @@ public class WitherAttack {
         @SerializedName("second_phase_max_reduction")
         public int secondPhaseMaxReduction;
 
-        private WitherCharge(@Nullable PoweredValue chanceOnHit, float damage, @Nullable int time, boolean secondPhase, int secondPhaseTimes, int secondPhaseTickReduction, int secondPhaseMaxReduction) {
-            this.chanceOnHit = chanceOnHit;
-            this.damage = damage;
-            this.time = time;
-            this.secondPhase = secondPhase;
-            this.secondPhaseTimes = secondPhaseTimes;
-            this.secondPhaseTickReduction = secondPhaseTickReduction;
-            this.secondPhaseMaxReduction = secondPhaseMaxReduction;
-        }
-
         public static class Builder {
-            private PoweredValue chanceOnHit = PoweredValue.of(0.06f, 0.12f);
-            private float damage = 8;
-            private int time = 70;
-            private boolean secondPhase = true;
-            private int secondPhaseTimes = 3;
-            private int secondPhaseTickReduction = 8;
-            private int secondPhaseMaxReduction = 16;
-
-            public Builder chanceOnHit(PoweredValue chanceOnHit) {
-                this.chanceOnHit = chanceOnHit;
-                return this;
-            }
+            private final WitherCharge instance = new WitherCharge();
 
             public Builder damage(float damage) {
-                this.damage = damage;
+                instance.damage = damage;
                 return this;
             }
 
-            public Builder time(int time) {
-                this.time = time;
+            public Builder baseTime(int baseTime) {
+                instance.baseTime = baseTime;
+                return this;
+            }
+
+            public Builder chanceOnHit(PoweredValue chanceOnHit) {
+                instance.chanceOnHit = chanceOnHit;
                 return this;
             }
 
             public Builder secondPhase(boolean secondPhase) {
-                this.secondPhase = secondPhase;
+                instance.secondPhase = secondPhase;
                 return this;
             }
 
             public Builder secondPhaseTimes(int secondPhaseTimes) {
-                this.secondPhaseTimes = secondPhaseTimes;
+                instance.secondPhaseTimes = secondPhaseTimes;
                 return this;
             }
 
             public Builder secondPhaseTickReduction(int secondPhaseTickReduction) {
-                this.secondPhaseTickReduction = secondPhaseTickReduction;
+                instance.secondPhaseTickReduction = secondPhaseTickReduction;
                 return this;
             }
 
             public Builder secondPhaseMaxReduction(int secondPhaseMaxReduction) {
-                this.secondPhaseMaxReduction = secondPhaseMaxReduction;
+                instance.secondPhaseMaxReduction = secondPhaseMaxReduction;
                 return this;
             }
 
             public WitherCharge build() {
-                return new WitherCharge(chanceOnHit, damage, time, secondPhase, secondPhaseTimes, secondPhaseTickReduction, secondPhaseMaxReduction);
+                return instance;
             }
         }
     }
 
     public static class WitherBarrage {
         @SerializedName("chance")
-        public PoweredValue chance;
+        public PoweredValue chance = PoweredValue.of(0.05f);
         @SerializedName("min_duration")
-        public int minDuration;
+        public int minDuration = 40;
         @SerializedName("max_duration")
-        public int maxDuration;
+        public int maxDuration = 60;
         @SerializedName("attack_speed")
-        public int attackSpeed;
-
-        private WitherBarrage(PoweredValue chance, int minDuration, int maxDuration, int attackSpeed) {
-            this.chance = chance;
-            this.minDuration = minDuration;
-            this.maxDuration = maxDuration;
-            this.attackSpeed = attackSpeed;
-        }
+        public int attackSpeed = 5;
 
         public static class Builder {
-            private PoweredValue chance = PoweredValue.of(0.10f, 0.04f);
-            private int minDuration = 40;
-            private int maxDuration = 60;
-            private int attackSpeed = 5;
+            private final WitherBarrage instance = new WitherBarrage();
 
             public Builder chance(PoweredValue chance) {
-                this.chance = chance;
+                instance.chance = chance;
                 return this;
             }
 
             public Builder minDuration(int minDuration) {
-                this.minDuration = minDuration;
+                instance.minDuration = minDuration;
                 return this;
             }
 
             public Builder maxDuration(int maxDuration) {
-                this.maxDuration = maxDuration;
+                instance.maxDuration = maxDuration;
                 return this;
             }
 
             public Builder attackSpeed(int attackSpeed) {
-                this.attackSpeed = attackSpeed;
+                instance.attackSpeed = attackSpeed;
                 return this;
             }
 
             public WitherBarrage build() {
-                return new WitherBarrage(chance, minDuration, maxDuration, attackSpeed);
+                return instance;
             }
         }
     }

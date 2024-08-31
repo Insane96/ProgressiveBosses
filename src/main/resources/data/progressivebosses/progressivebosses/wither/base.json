@@ -32,7 +32,9 @@
             "second_phase": true,
             "second_phase_times": 10,
             "second_phase_tick_reduction": 3,
-            "second_phase_max_reduction": 15
+            "second_phase_max_reduction": 15,
+            "second_phase_barrage": true,
+            "second_phase_minion": true
         }
     },
     "health": {
