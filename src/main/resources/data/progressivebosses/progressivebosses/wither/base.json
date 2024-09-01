@@ -1,7 +1,7 @@
 {
     "level": 0,
     "attack": {
-        "skull_damage": 10.0,
+        "skull_damage": 8.0,
         "skull_speed_multiplier": 2.5,
         "dangerous_skull_chance": {
             "above_half_health": 0.4,
@@ -29,10 +29,12 @@
             "attack_cooldown_on_end": 50
         },
         "charge": {
-            "base_time": 35,
-            "second_phase": true,
-            "second_phase_times": 1,
-            "second_phase_barrage": true
+            "second_phase": {
+                "damage": 12.0,
+                "time_to_charge": 40,
+                "second_phase_times": 2,
+                "second_phase_barrage": true
+            }
         }
     },
     "health": {

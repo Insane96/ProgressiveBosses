@@ -71,11 +71,11 @@ public class WitherRangedAttackGoal extends Goal {
 						this.wither.tryChargeOnHit(this.unseenTargetTicks / 30f);
 					}
 					else
-						this.wither.initCharging();
+						this.wither.initCharging(WitherChargeAttackGoal.ChargeType.TARGET_LINE_OF_SIGHT);
 				}
 			}
 
-			if (distanceSqr <= (double)this.attackRadiusSqr /*9&& this.seeTime > 0*/) {
+			if (distanceSqr <= (double)this.attackRadiusSqr/* && this.seeTime > 0*/) {
 				//Stops the wither from chasing the player
 				this.wither.setDeltaMovement(0d, wither.getDeltaMovement().y, 0d);
 			}
@@ -87,8 +87,8 @@ public class WitherRangedAttackGoal extends Goal {
 				this.wither.getLookControl().setLookAt(target, 30.0F, 30.0F);
 
 			if (this.wither.barrageTicks > 0) {
-				if (!canSee)
-					return;
+				/*if (!canSee)
+					return;*/
 				//noinspection DataFlowIssue - Shouldn't be able to get in here if barrage doesn't exist
 				if (this.wither.barrageTicks % (3 * this.wither.stats.attack.barrage.attackSpeed) == i * this.wither.stats.attack.barrage.attackSpeed) {
 					this.wither.performRangedAttack(i, target.getX() + Mth.nextDouble(this.wither.getRandom(), -1d, 1d), target.getY() + (double)target.getEyeHeight() * 0.5D + Mth.nextDouble(this.wither.getRandom(), -1d, 1d), target.getZ() + Mth.nextDouble(this.wither.getRandom(), -1d, 1d), false);

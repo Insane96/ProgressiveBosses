@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.module.wither.ai;
 
 import com.mojang.datafixers.util.Pair;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.wither.data.WitherAttack;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.commands.arguments.EntityAnchorArgument;
@@ -28,13 +29,19 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class WitherChargeAttackGoal extends Goal {
+
+	private static float DEFAULT_DAMAGE = 8f;
+	private static int DEFAULT_TIME_TO_CHARGE = 50;
+
 	public static ResourceKey<DamageType> WITHER_CHARGE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_charge"));
 
 	private final PBWither wither;
@@ -44,7 +51,7 @@ public class WitherChargeAttackGoal extends Goal {
 
 	public WitherChargeAttackGoal(PBWither wither) {
 		this.wither = wither;
-		this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.LOOK, Flag.TARGET));
+		this.setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP, Flag.LOOK, Flag.TARGET));
 	}
 
 	/**
@@ -87,9 +94,8 @@ public class WitherChargeAttackGoal extends Goal {
 				this.targetPos = this.targetPos.add(forward.multiply(4d, 4d, 4d));
 				this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
 			}
-			else if (this.wither.chargeBelow) {
+			else if (this.wither.chargeType == ChargeType.STUCK) {
 				this.targetPos = this.wither.position().add(0, -3, 0);
-				this.wither.chargeBelow = false;
 			}
 			else {
 				this.wither.stopCharging();
@@ -141,11 +147,11 @@ public class WitherChargeAttackGoal extends Goal {
 				((ServerLevel) this.wither.level()).sendParticles(ParticleTypes.EXPLOSION_EMITTER, this.wither.getX(), this.wither.getY(), this.wither.getZ(), 2, 0f, 0f, 0f, 1f);
 				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1f, 2f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
-				if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
+				if (ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
 					blocks.forEach(blockPos -> {
 						BlockState state = wither.level().getBlockState(blockPos);
 						if (this.wither.canDestroyBlock(blockPos, state)
-								&& net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
+								&& ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
 							BlockEntity tileentity = state.hasBlockEntity() ? this.wither.level().getBlockEntity(blockPos) : null;
 							LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel)this.wither.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, tileentity);
 							state.getDrops(lootcontext$builder).forEach(itemStack -> addBlockDrops(blocksToDrop, itemStack, blockPos));
@@ -171,11 +177,11 @@ public class WitherChargeAttackGoal extends Goal {
 				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1.5f, 2f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
 				AtomicBoolean hasBrokenBlocks = new AtomicBoolean(false);
-				if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
+				if (ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
 					blocks.forEach(blockPos -> {
 						BlockState state = wither.level().getBlockState(blockPos);
 						if (this.wither.canDestroyBlock(blockPos, state)
-								&& net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
+								&& ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
 							BlockEntity tileentity = state.hasBlockEntity() ? this.wither.level().getBlockEntity(blockPos) : null;
 							LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel)this.wither.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, tileentity);
 							state.getDrops(lootcontext$builder).forEach(itemStack -> addBlockDrops(blocksToDrop, itemStack, blockPos));
@@ -206,7 +212,7 @@ public class WitherChargeAttackGoal extends Goal {
 	private void damageAndPush(LivingEntity entity) {
 		if (entity == this.wither)
 			return;
-		entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.charge == null ? 16f : this.wither.stats.attack.charge.damage);
+		entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.charge == null ? 16f : WitherAttack.WitherCharge.getDamage(this.wither));
 		float d2 = (float) (entity.getX() - this.wither.getX());
 		float d3 = (float) (entity.getZ() - this.wither.getZ());
 		float d4 = Math.max(d2 * d2 + d3 * d3, 0.1f);
@@ -236,5 +242,33 @@ public class WitherChargeAttackGoal extends Goal {
 		}
 
 		p_46068_.add(Pair.of(p_46069_, p_46070_));
+	}
+
+	public enum ChargeType {
+		ON_HIT(wither -> wither.stats.attack.charge.onHit == null ? DEFAULT_DAMAGE : wither.stats.attack.charge.onHit.damage,
+				wither -> wither.stats.attack.charge.onHit == null ? DEFAULT_TIME_TO_CHARGE : wither.stats.attack.charge.onHit.timeToCharge),
+		SECOND_PHASE(wither -> wither.stats.attack.charge.secondPhase == null ? DEFAULT_DAMAGE : wither.stats.attack.charge.secondPhase.damage,
+				wither -> wither.stats.attack.charge.secondPhase == null ? DEFAULT_TIME_TO_CHARGE : wither.stats.attack.charge.secondPhase.timeToCharge),
+		//TODO
+		TARGET_LINE_OF_SIGHT(wither -> wither.stats.attack.charge.onHit == null ? DEFAULT_DAMAGE : wither.stats.attack.charge.onHit.damage,
+				wither -> wither.stats.attack.charge.onHit == null ? DEFAULT_TIME_TO_CHARGE : wither.stats.attack.charge.onHit.timeToCharge),
+		STUCK(wither -> DEFAULT_DAMAGE,
+				wither -> DEFAULT_TIME_TO_CHARGE);
+
+		public final Function<PBWither, Float> getDamage;
+		public final Function<PBWither, Integer> getTimeToCharge;
+
+		ChargeType(Function<PBWither, Float> damage, Function<PBWither, Integer> timeToCharge) {
+			this.getDamage = damage;
+			this.getTimeToCharge = timeToCharge;
+		}
+
+		public float getDamage(PBWither wither) {
+			return this.getDamage.apply(wither);
+		}
+
+		public int getTimeToCharge(PBWither wither) {
+			return this.getTimeToCharge.apply(wither);
+		}
 	}
 }

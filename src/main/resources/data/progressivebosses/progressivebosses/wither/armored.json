@@ -19,15 +19,20 @@
         "attack_to_heal_threshold": 0.25,
         "heal_on_skull_kill": 7,
         "charge": {
-            "chance_on_hit": {
-                "above_half_health": 0.075,
-                "below_half_health": 0.1
+            "on_hit": {
+                "chance": {
+                    "above_half_health": 0.075,
+                    "below_half_health": 0.1
+                },
+                "damage": 12.0,
+                "time_to_charge": 40
             },
-            "damage": 15.0,
-            "base_time": 40,
-            "second_phase": true,
-            "second_phase_times": 3,
-            "second_phase_tick_reduction": 8
+            "second_phase": {
+                "damage": 12.0,
+                "time_to_charge": 40,
+                "second_phase_times": 3,
+                "second_phase_tick_reduction": 8
+            }
         }
     },
     "health": {

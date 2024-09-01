@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.capability.Difficulty;
+import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.setup.Strings;
@@ -122,7 +123,7 @@ public class PBCommand {
         int setToCharge = 0;
         for (Entity target : pTargets) {
             if (target instanceof PBWither pbWither) {
-                if (pbWither.initCharging())
+                if (pbWither.initCharging(WitherChargeAttackGoal.ChargeType.ON_HIT))
                     setToCharge++;
             }
         }

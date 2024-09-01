@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.module.wither.data;
 
 import com.google.gson.annotations.SerializedName;
 import insane96mcp.progressivebosses.data.Difficulty;
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 
 import javax.annotation.Nullable;
 
@@ -117,76 +118,126 @@ public class WitherAttack {
     }
 
     public static class WitherCharge {
-        @SerializedName("damage")
-        public float damage = 8f;
-        @SerializedName("base_time")
-        public int baseTime = 60;
-        @SerializedName("chance_on_hit")
-        public PoweredValue chanceOnHit = PoweredValue.ZERO;
+        @SerializedName("on_hit")
+        public OnHit onHit;
         @SerializedName("second_phase")
-        public boolean secondPhase = false;
-        @SerializedName("second_phase_times")
-        public int secondPhaseTimes;
-        @SerializedName("second_phase_tick_reduction")
-        public int secondPhaseTickReduction;
-        @SerializedName("second_phase_max_reduction")
-        public int secondPhaseMaxReduction = Integer.MAX_VALUE;
-        @SerializedName("second_phase_barrage")
-        public boolean secondPhaseBarrage;
-        @SerializedName("second_phase_minion")
-        public boolean secondPhaseMinion;
+        public SecondPhase secondPhase;
 
         public static class Builder {
             private final WitherCharge instance = new WitherCharge();
 
-            public Builder damage(float damage) {
-                instance.damage = damage;
+            public Builder onHit(OnHit onHit) {
+                instance.onHit = onHit;
                 return this;
             }
 
-            public Builder baseTime(int baseTime) {
-                instance.baseTime = baseTime;
-                return this;
-            }
-
-            public Builder chanceOnHit(PoweredValue chanceOnHit) {
-                instance.chanceOnHit = chanceOnHit;
-                return this;
-            }
-
-            public Builder secondPhase(boolean secondPhase) {
+            public Builder secondPhase(SecondPhase secondPhase) {
                 instance.secondPhase = secondPhase;
-                return this;
-            }
-
-            public Builder secondPhaseTimes(int secondPhaseTimes) {
-                instance.secondPhaseTimes = secondPhaseTimes;
-                return this;
-            }
-
-            public Builder secondPhaseTickReduction(int secondPhaseTickReduction) {
-                instance.secondPhaseTickReduction = secondPhaseTickReduction;
-                return this;
-            }
-
-            public Builder secondPhaseMaxReduction(int secondPhaseMaxReduction) {
-                instance.secondPhaseMaxReduction = secondPhaseMaxReduction;
-                return this;
-            }
-
-            public Builder secondPhaseBarrage(boolean secondPhaseBarrage) {
-                instance.secondPhaseBarrage = secondPhaseBarrage;
-                return this;
-            }
-
-            public Builder secondPhaseMinion(boolean secondPhaseMinion) {
-                instance.secondPhaseMinion = secondPhaseMinion;
                 return this;
             }
 
             public WitherCharge build() {
                 return instance;
             }
+        }
+
+        public static abstract class BaseCharge {
+            @SerializedName("damage")
+            public float damage;
+            @SerializedName("time_to_charge")
+            public int timeToCharge;
+        }
+
+        public static class OnHit extends BaseCharge {
+            @SerializedName("chance")
+            public PoweredValue chance;
+
+            public static class Builder {
+                private final OnHit instance = new OnHit();
+
+                public Builder chance(PoweredValue chance) {
+                    instance.chance = chance;
+                    return this;
+                }
+
+                public Builder damage(float damage) {
+                    instance.damage = damage;
+                    return this;
+                }
+
+                public Builder timeToCharge(int timeToCharge) {
+                    instance.timeToCharge = timeToCharge;
+                    return this;
+                }
+
+                public OnHit build() {
+                    return instance;
+                }
+            }
+        }
+
+        public static class SecondPhase extends BaseCharge {
+            @SerializedName("times")
+            public int times;
+            @SerializedName("tick_reduction")
+            public int tickReduction;
+            @SerializedName("max_reduction")
+            public int maxReduction;
+            @SerializedName("barrage")
+            public boolean barrage;
+            @SerializedName("minion")
+            public boolean minion;
+
+            public static class Builder {
+                private final SecondPhase instance = new SecondPhase();
+
+                public Builder times(int times) {
+                    instance.times = times;
+                    return this;
+                }
+
+                public Builder tickReduction(int tickReduction) {
+                    instance.tickReduction = tickReduction;
+                    return this;
+                }
+
+                public Builder maxReduction(int maxReduction) {
+                    instance.maxReduction = maxReduction;
+                    return this;
+                }
+
+                public Builder barrage(boolean barrage) {
+                    instance.barrage = barrage;
+                    return this;
+                }
+
+                public Builder minion(boolean minion) {
+                    instance.minion = minion;
+                    return this;
+                }
+
+                public Builder damage(float damage) {
+                    instance.damage = damage;
+                    return this;
+                }
+
+                public Builder timeToCharge(int timeToCharge) {
+                    instance.timeToCharge = timeToCharge;
+                    return this;
+                }
+
+                public SecondPhase build() {
+                    return instance;
+                }
+            }
+        }
+
+        public static float getDamage(PBWither wither) {
+            return wither.chargeType.getDamage(wither);
+        }
+
+        public static int getTimeToCharge(PBWither wither) {
+            return wither.chargeType.getTimeToCharge(wither);
         }
     }
 
