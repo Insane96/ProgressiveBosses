@@ -28,7 +28,7 @@
                 "time_to_charge": 35
             },
             "second_phase": {
-                "damage": 15.0,
+                "damage": 12.0,
                 "time_to_charge": 35,
                 "times": 4,
                 "tick_reduction": 7,
@@ -36,7 +36,7 @@
                 "minion": true
             },
             "target_unseen": {
-                "damage": 15.0,
+                "damage": 12.0,
                 "time_to_charge": 35,
                 "seconds_unseen": 2,
                 "chance_per_second": 0.04

@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Wither attacks now go on cooldown when barrage finishes
+* Wither charge knockback is now reduced by knockback resistance attribute
 * Barrage attack no longer stops when can't see the target
 * Renamed barrage `chance` to `chance_on_hit`
 * Reworked charge object

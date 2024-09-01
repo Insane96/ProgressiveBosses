@@ -17,6 +17,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -212,11 +213,13 @@ public class WitherChargeAttackGoal extends Goal {
 	private void damageAndPush(LivingEntity entity) {
 		if (entity == this.wither)
 			return;
-		entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.charge == null ? 16f : WitherAttack.WitherCharge.getDamage(this.wither));
+		entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.charge == null ? 12f : WitherAttack.WitherCharge.getDamage(this.wither));
 		float d2 = (float) (entity.getX() - this.wither.getX());
 		float d3 = (float) (entity.getZ() - this.wither.getZ());
 		float d4 = Math.max(d2 * d2 + d3 * d3, 0.1f);
-		entity.push(d2 / d4 * 5f, 0.7f, d3 / d4 * 5f);
+		float horizontalPush = (float) (5f * (1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)));
+		float verticalPush = (float) (0.65f * (1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)));
+		entity.push(d2 / d4 * horizontalPush, verticalPush, d3 / d4 * horizontalPush);
 		if (entity instanceof ServerPlayer player)
 			player.hurtMarked = true;
 	}

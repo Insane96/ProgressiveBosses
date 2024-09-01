@@ -30,13 +30,13 @@
         },
         "charge": {
             "second_phase": {
-                "damage": 10.0,
+                "damage": 8.0,
                 "time_to_charge": 40,
                 "times": 2,
                 "barrage": true
             },
             "target_unseen": {
-                "damage": 10.0,
+                "damage": 8.0,
                 "time_to_charge": 40,
                 "seconds_unseen": 3,
                 "chance_per_second": 0.03

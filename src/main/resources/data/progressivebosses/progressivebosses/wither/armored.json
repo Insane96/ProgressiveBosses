@@ -28,13 +28,13 @@
                 "time_to_charge": 40
             },
             "second_phase": {
-                "damage": 10.0,
+                "damage": 8.0,
                 "time_to_charge": 40,
                 "times": 3,
                 "tick_reduction": 8
             },
             "target_unseen": {
-                "damage": 10.0,
+                "damage": 8.0,
                 "time_to_charge": 40,
                 "seconds_unseen": 3,
                 "chance_per_second": 0.03
