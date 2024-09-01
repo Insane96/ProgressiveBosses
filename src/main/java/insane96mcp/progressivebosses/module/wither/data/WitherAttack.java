@@ -122,6 +122,8 @@ public class WitherAttack {
         public OnHit onHit;
         @SerializedName("second_phase")
         public SecondPhase secondPhase;
+        @SerializedName("target_unseen")
+        public TargetUnseen targetUnseen;
 
         public static class Builder {
             private final WitherCharge instance = new WitherCharge();
@@ -133,6 +135,11 @@ public class WitherAttack {
 
             public Builder secondPhase(SecondPhase secondPhase) {
                 instance.secondPhase = secondPhase;
+                return this;
+            }
+
+            public Builder targetUnseen(TargetUnseen targetUnseen) {
+                instance.targetUnseen = targetUnseen;
                 return this;
             }
 
@@ -227,6 +234,48 @@ public class WitherAttack {
                 }
 
                 public SecondPhase build() {
+                    return instance;
+                }
+            }
+        }
+
+        public static class TargetUnseen extends BaseCharge {
+            @SerializedName("seconds_unseen")
+            public int secondsUnseen;
+            @SerializedName("chance_per_second")
+            public float chancePerSecond;
+            @SerializedName("max_chance")
+            public float maxChance = 1f;
+
+            public static class Builder {
+                private final TargetUnseen instance = new TargetUnseen();
+
+                public Builder secondsUnseen(int secondsUnseen) {
+                    instance.secondsUnseen = secondsUnseen;
+                    return this;
+                }
+
+                public Builder chancePerSecond(float chancePerSecond) {
+                    instance.chancePerSecond = chancePerSecond;
+                    return this;
+                }
+
+                public Builder maxChance(float max_chance) {
+                    instance.maxChance = max_chance;
+                    return this;
+                }
+
+                public Builder damage(float damage) {
+                    instance.damage = damage;
+                    return this;
+                }
+
+                public Builder timeToCharge(int timeToCharge) {
+                    instance.timeToCharge = timeToCharge;
+                    return this;
+                }
+
+                public TargetUnseen build() {
                     return instance;
                 }
             }

@@ -10,8 +10,7 @@ import java.util.EnumSet;
 public class WitherRangedAttackGoal extends Goal {
 	private final PBWither wither;
 	public final int[] headAttackTimes = new int[3];
-	private int unseenTargetTicks = 0;
-	private int seeTime;
+	private int unseenTargetSeconds = 0;
 	private final float attackRadiusSqr;
 
 	public WitherRangedAttackGoal(PBWither wither, float attackRadius) {
@@ -43,7 +42,7 @@ public class WitherRangedAttackGoal extends Goal {
 	}
 
 	public void stop() {
-		this.seeTime = 0;
+		/*this.seeTime = 0;*/
 	}
 
 	public void tick() {
@@ -58,22 +57,18 @@ public class WitherRangedAttackGoal extends Goal {
 			double distanceSqr = this.wither.distanceToSqr(target.getX(), target.getY(), target.getZ());
 			boolean canSee = this.wither.getSensing().hasLineOfSight(target);
 
-			if (i == 0) {
+			if (i == 0 && this.wither.tickCount % 20 == 0) {
 				if (canSee) {
-					++this.seeTime;
-					if (this.unseenTargetTicks > 0)
-						this.unseenTargetTicks--;
+					if (this.unseenTargetSeconds > 0)
+						this.unseenTargetSeconds--;
 				}
-				else if (!this.wither.isChargingInCooldown()){
-					this.seeTime = 0;
-					if (this.unseenTargetTicks < 400) {
-						this.unseenTargetTicks += 2;
-						this.wither.tryChargeOnHit(this.unseenTargetTicks / 30f);
-					}
-					else
-						this.wither.initCharging(WitherChargeAttackGoal.ChargeType.TARGET_LINE_OF_SIGHT);
-				}
-			}
+				else if (this.wither.canCharge() && this.wither.stats.attack.charge != null && this.wither.stats.attack.charge.targetUnseen != null) {
+                    this.unseenTargetSeconds++;
+                    int seconds = this.unseenTargetSeconds - this.wither.stats.attack.charge.targetUnseen.secondsUnseen;
+                    if (seconds > 0)
+                        this.wither.tryCharge(Math.min(seconds * this.wither.stats.attack.charge.targetUnseen.chancePerSecond, this.wither.stats.attack.charge.targetUnseen.maxChance), WitherChargeAttackGoal.ChargeType.TARGET_UNSEEN);
+                }
+            }
 
 			if (distanceSqr <= (double)this.attackRadiusSqr/* && this.seeTime > 0*/) {
 				//Stops the wither from chasing the player

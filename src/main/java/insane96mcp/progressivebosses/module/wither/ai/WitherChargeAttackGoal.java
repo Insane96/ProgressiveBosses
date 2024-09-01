@@ -249,9 +249,8 @@ public class WitherChargeAttackGoal extends Goal {
 				wither -> wither.stats.attack.charge.onHit == null ? DEFAULT_TIME_TO_CHARGE : wither.stats.attack.charge.onHit.timeToCharge),
 		SECOND_PHASE(wither -> wither.stats.attack.charge.secondPhase == null ? DEFAULT_DAMAGE : wither.stats.attack.charge.secondPhase.damage,
 				wither -> wither.stats.attack.charge.secondPhase == null ? DEFAULT_TIME_TO_CHARGE : wither.stats.attack.charge.secondPhase.timeToCharge),
-		//TODO
-		TARGET_LINE_OF_SIGHT(wither -> wither.stats.attack.charge.onHit == null ? DEFAULT_DAMAGE : wither.stats.attack.charge.onHit.damage,
-				wither -> wither.stats.attack.charge.onHit == null ? DEFAULT_TIME_TO_CHARGE : wither.stats.attack.charge.onHit.timeToCharge),
+		TARGET_UNSEEN(wither -> wither.stats.attack.charge.targetUnseen == null ? DEFAULT_DAMAGE : wither.stats.attack.charge.targetUnseen.damage,
+				wither -> wither.stats.attack.charge.targetUnseen == null ? DEFAULT_TIME_TO_CHARGE : wither.stats.attack.charge.targetUnseen.timeToCharge),
 		STUCK(wither -> DEFAULT_DAMAGE,
 				wither -> DEFAULT_TIME_TO_CHARGE);
 

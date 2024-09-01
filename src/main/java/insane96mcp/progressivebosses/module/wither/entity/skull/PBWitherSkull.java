@@ -114,7 +114,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
     protected void onHit(HitResult pResult) {
         super.onHit(pResult);
         if (!this.level().isClientSide) {
-            this.level().explode(this, this.getX(), this.getY(), this.getZ(), this.isDangerous() ? 1.5f : 0.75f, false, Level.ExplosionInteraction.MOB);
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), this.isDangerous() ? 1.5f : 1f, false, Level.ExplosionInteraction.MOB);
             this.discard();
         }
     }

@@ -24,16 +24,22 @@
                     "above_half_health": 0.08,
                     "below_half_health": 0.06
                 },
-                "damage": 20.0,
+                "damage": 15.0,
                 "time_to_charge": 35
             },
             "second_phase": {
-                "damage": 20.0,
+                "damage": 15.0,
                 "time_to_charge": 35,
                 "times": 4,
                 "tick_reduction": 7,
                 "barrage": true,
                 "minion": true
+            },
+            "target_unseen": {
+                "damage": 15.0,
+                "time_to_charge": 35,
+                "seconds_unseen": 2,
+                "chance_per_second": 0.04
             }
         },
         "barrage": {

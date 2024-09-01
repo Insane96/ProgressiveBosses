@@ -30,10 +30,16 @@
         },
         "charge": {
             "second_phase": {
-                "damage": 12.0,
+                "damage": 10.0,
                 "time_to_charge": 40,
-                "second_phase_times": 1,
-                "second_phase_minion": true
+                "times": 1,
+                "minion": true
+            },
+            "target_unseen": {
+                "damage": 10.0,
+                "time_to_charge": 40,
+                "seconds_unseen": 3,
+                "chance_per_second": 0.03
             }
         }
     },

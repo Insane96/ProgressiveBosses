@@ -2,11 +2,13 @@
 
 ## Upcoming
 * Wither attacks now go on cooldown when barrage finishes
+* Barrage attack no longer stops when can't see the target
 * Renamed barrage `chance` to `chance_on_hit`
 * Reworked charge object
-  * Now contains `on_hit`, `second_phase` and `target_line_of_sight`. All contain `damage` and `time_to_charge`.
+  * Now contains `on_hit`, `second_phase` and `target_unseen`. All contain `damage` and `time_to_charge`.
   * `on_hit` contains `chance`. If present the wither has a chance to charge when attacked equal to `chance` multiplied by 10% of the damage received.
   * `second_phase` contains `times`, `tick_reduction`, `max_reduction`, `barrage` and `minion`. If present the Wither will charge `times` number of times in succession. `tick_reduction` reduces the time between each charge. `max_reduction` is the maximum reduction between each charge. If true, `barrage` will make the wither start a barrage attack as soon as the charges end. `minion` will make the wither summon minions as soon as the charges end.
+  * `target_unseen` contains `seconds_unseen`, `chance_per_second`, `max_chance`. `seconds_unseen` is how much time until the wither has a chance to charge. `chance_per_second` is how much chance multiplied by seconds passed has the wither to charge each second.
 
 ## Alpha 4.1.13
 * Increased damage taken by wither from blue skulls

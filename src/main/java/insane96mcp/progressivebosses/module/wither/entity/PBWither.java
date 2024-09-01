@@ -215,11 +215,17 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         if (!this.canCharge()
                 || this.stats.attack.charge.onHit == null)
             return;
-        double chance = this.stats.attack.charge.onHit.chance.getValue(this) * (damageAmount / 10f);
+        float chance = this.stats.attack.charge.onHit.chance.getValue(this) * (damageAmount / 10f);
         if (!this.isPowered() && !this.level().getEntitiesOfClass(Player.class, this.getBoundingBox().inflate(5d)).isEmpty())
             chance = 0.25f;
+        tryCharge(chance, WitherChargeAttackGoal.ChargeType.ON_HIT);
+    }
+
+    public void tryCharge(float chance, WitherChargeAttackGoal.ChargeType chargeType) {
+        if (!this.canCharge())
+            return;
         if (this.getRandom().nextDouble() < chance)
-            this.initCharging(WitherChargeAttackGoal.ChargeType.ON_HIT);
+            this.initCharging(chargeType);
     }
 
     private void updateStats(boolean wasPowered) {
