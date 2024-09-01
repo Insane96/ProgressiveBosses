@@ -1,5 +1,13 @@
 # Changelog
 
+* Change resistances to attributes
+
+## Upcoming
+* Buffed wither drops
+  * Armored wither drops ~~2 stars + 2 shards~~ -> 3 stars
+  * Summoner wither drops ~~3 stars + 3 shards~~ -> 5 stars
+  * Ultimate wither drops ~~5 stars~~ -> 8 stars
+
 ## Alpha 4.1.14
 * Wither attacks now go on cooldown when barrage finishes (`attack_cooldown_on_end`)
 * Wither charge knockback is now reduced by knockback resistance attribute

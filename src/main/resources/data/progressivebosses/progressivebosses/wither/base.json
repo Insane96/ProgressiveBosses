@@ -2,7 +2,7 @@
     "level": 0,
     "attack": {
         "skull_damage": 8.0,
-        "skull_speed_multiplier": 2.5,
+        "skull_speed_multiplier": 2,
         "dangerous_skull_chance": {
             "above_half_health": 0.4,
             "below_half_health": 0.3

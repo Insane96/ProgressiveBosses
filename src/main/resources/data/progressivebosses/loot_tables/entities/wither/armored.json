@@ -34,22 +34,7 @@
                     "functions": [
                         {
                             "function": "minecraft:set_count",
-                            "count": 2
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "rolls": 1,
-            "entries": [
-                {
-                    "type": "minecraft:item",
-                    "name": "progressivebosses:nether_star_shard",
-                    "functions": [
-                        {
-                            "function": "minecraft:set_count",
-                            "count": 2
+                            "count": 3
                         }
                     ]
                 }

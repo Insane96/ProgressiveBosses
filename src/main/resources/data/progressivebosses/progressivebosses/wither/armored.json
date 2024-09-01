@@ -31,7 +31,7 @@
                 "damage": 8.0,
                 "time_to_charge": 40,
                 "times": 3,
-                "tick_reduction": 8
+                "tick_reduction": 10
             },
             "target_unseen": {
                 "damage": 8.0,
