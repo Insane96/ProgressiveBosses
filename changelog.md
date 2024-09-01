@@ -1,7 +1,7 @@
 # Changelog
 
-## Upcoming
-* Wither attacks now go on cooldown when barrage finishes
+## Alpha 4.1.14
+* Wither attacks now go on cooldown when barrage finishes (`attack_cooldown_on_end`)
 * Wither charge knockback is now reduced by knockback resistance attribute
 * Barrage attack no longer stops when can't see the target
 * Renamed barrage `chance` to `chance_on_hit`
