@@ -191,20 +191,22 @@ public class WitherAttack {
     }
 
     public static class WitherBarrage {
-        @SerializedName("chance")
-        public PoweredValue chance = PoweredValue.of(0.05f);
+        @SerializedName("chance_on_hit")
+        public PoweredValue chanceOnHit = PoweredValue.of(0.05f);
         @SerializedName("min_duration")
         public int minDuration = 40;
         @SerializedName("max_duration")
         public int maxDuration = 60;
         @SerializedName("attack_speed")
         public int attackSpeed = 5;
+        @SerializedName("attack_cooldown_on_end")
+        public int attackCooldownOnEnd = 0;
 
         public static class Builder {
             private final WitherBarrage instance = new WitherBarrage();
 
-            public Builder chance(PoweredValue chance) {
-                instance.chance = chance;
+            public Builder chanceOnHit(PoweredValue chanceOnHit) {
+                instance.chanceOnHit = chanceOnHit;
                 return this;
             }
 
@@ -220,6 +222,11 @@ public class WitherAttack {
 
             public Builder attackSpeed(int attackSpeed) {
                 instance.attackSpeed = attackSpeed;
+                return this;
+            }
+
+            public Builder attackCooldownOnEnd(int attackCooldownOnEnd) {
+                instance.attackCooldownOnEnd = attackCooldownOnEnd;
                 return this;
             }
 

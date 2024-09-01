@@ -19,16 +19,17 @@
         "attack_to_heal_threshold": 0,
         "heal_on_skull_kill": 5,
         "barrage": {
-            "chance": {
+            "chance_on_hit": {
                 "above_half_health": 0.3,
-                "below_half_health": 0.3
+                "below_half_health": 0.2
             },
             "min_duration": 50,
             "max_duration": 100,
-            "attack_speed": 4
+            "attack_speed": 4,
+            "attack_cooldown_on_end": 50
         },
         "charge": {
-            "base_time": 40,
+            "base_time": 35,
             "second_phase": true,
             "second_phase_times": 1,
             "second_phase_barrage": true

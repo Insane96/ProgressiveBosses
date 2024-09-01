@@ -88,6 +88,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public int shotSkulls;
     //private int forceChargeTicks = 20;
     private int secondPhaseCharge;
+    public WitherRangedAttackGoal rangedAttackGoal;
 
     public PBWither(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -105,8 +106,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
     protected void registerGoals() {
         //this.goalSelector.addGoal(0, new WitherDoNothingGoal());
+        this.rangedAttackGoal = new WitherRangedAttackGoal(this, 32f);
         this.goalSelector.addGoal(1, new WitherChargeAttackGoal(this));
-        this.goalSelector.addGoal(2, new WitherRangedAttackGoal(this, 32f));
+        this.goalSelector.addGoal(2, this.rangedAttackGoal);
         this.goalSelector.addGoal(5, new WaterAvoidingRandomFlyingGoal(this));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
@@ -242,8 +244,14 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 initBarrage();
             this.setBarrageChargeUpTicks(barrage);
         }
-        if (this.barrageTicks > 0)
+        if (this.barrageTicks > 0) {
             this.barrageTicks--;
+            if (this.barrageTicks == 0 && this.stats.attack.barrage.attackCooldownOnEnd > 0) {
+                for (int i = 0; i < 3; i++) {
+                    this.rangedAttackGoal.headAttackTimes[i] += this.stats.attack.barrage.attackCooldownOnEnd;
+                }
+            }
+        }
     }
 
     public int getBarrageChargeUpTicks() {
@@ -261,7 +269,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 || this.isCharging()
                 /*|| this.level().getNearestPlayer(this, 4d) == null*/)
             return;
-        double chance = this.stats.attack.barrage.chance.getValue(this) * (damageAmount / 10f);
+        double chance = this.stats.attack.barrage.chanceOnHit.getValue(this) * (damageAmount / 10f);
         if (this.getRandom().nextDouble() < chance) {
             this.initBarrageChargeUp();
         }

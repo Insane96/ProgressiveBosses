@@ -9,7 +9,7 @@ import java.util.EnumSet;
 
 public class WitherRangedAttackGoal extends Goal {
 	private final PBWither wither;
-	private final int[] headAttackTimes = new int[3];
+	public final int[] headAttackTimes = new int[3];
 	private int unseenTargetTicks = 0;
 	private int seeTime;
 	private final float attackRadiusSqr;

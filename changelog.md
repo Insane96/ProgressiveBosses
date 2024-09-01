@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+* Wither attacks now go on cooldown when barrage finishes
+* Renamed barrage `chance` to `chance_on_hit`
+
 ## Alpha 4.1.13
 * Increased damage taken by wither from blue skulls
   * Damage from blue skulls is multiplied by 0.8% -> 1% of its max health
