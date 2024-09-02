@@ -70,6 +70,11 @@ public class WitherChargeAttackGoal extends Goal {
 
 		this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.WITHER_DEATH, SoundSource.HOSTILE, 5.0f, 2.0f);
 		blocksToDrop.clear();
+		if (this.wither.chargeType == ChargeType.STUCK) {
+			this.targetPos = this.wither.position().add(0, -5, 0);
+			return;
+		}
+
 		List<Player> playersNearby = this.wither.level().getEntitiesOfClass(Player.class, this.wither.getBoundingBox().inflate(3f));
 		if (!playersNearby.isEmpty()) {
             if (this.wither.needsHealing()) {
@@ -88,15 +93,12 @@ public class WitherChargeAttackGoal extends Goal {
 					target = playersNearby.get(this.wither.getRandom().nextInt(playersNearby.size()));
 				//target = this.wither.level().getNearestPlayer(this.wither.getX(), this.wither.getY(), this.wither.getZ(), 64d, true);
 			}
-			if (target != null) {
+			else if (target != null) {
 				this.wither.lookAt(target, 30f, 30f);
 				this.targetPos = target.position().add(0, -1.5d, 0);
 				Vec3 forward = this.targetPos.subtract(this.wither.position()).normalize();
 				this.targetPos = this.targetPos.add(forward.multiply(4d, 4d, 4d));
 				this.lastDistanceFromTarget = this.targetPos.distanceToSqr(this.wither.position());
-			}
-			else if (this.wither.chargeType == ChargeType.STUCK) {
-				this.targetPos = this.wither.position().add(0, -3, 0);
 			}
 			else {
 				this.wither.stopCharging();
