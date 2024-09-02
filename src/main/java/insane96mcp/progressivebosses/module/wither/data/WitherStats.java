@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
 import insane96mcp.insanelib.data.SerializableAttributeModifier;
+import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -45,7 +46,7 @@ public class WitherStats {
         if (this.attributeModifiers != null) {
             List<SerializableAttributeModifier> listToAdd = wither.isPowered() ? this.attributeModifiers.belowHalfHealth : this.attributeModifiers.aboveHalfHealth;
             for (SerializableAttributeModifier modifier : listToAdd) {
-                wither.getAttribute(modifier.attribute().get()).addPermanentModifier(modifier.getModifier());
+                MCUtils.applyModifier(wither, modifier.attribute().get(), modifier.getModifier(), true);
             }
         }
         if (this.minion != null)

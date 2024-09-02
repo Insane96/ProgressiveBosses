@@ -1,10 +1,14 @@
 package insane96mcp.progressivebosses.module.wither.data;
 
+import com.google.gson.*;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.annotations.SerializedName;
 import insane96mcp.progressivebosses.data.Difficulty;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
+import net.minecraft.util.GsonHelper;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Type;
 
 public class WitherAttack {
     @SerializedName("skull_damage")
@@ -125,29 +129,6 @@ public class WitherAttack {
         @SerializedName("target_unseen")
         public TargetUnseen targetUnseen;
 
-        public static class Builder {
-            private final WitherCharge instance = new WitherCharge();
-
-            public Builder onHit(OnHit onHit) {
-                instance.onHit = onHit;
-                return this;
-            }
-
-            public Builder secondPhase(SecondPhase secondPhase) {
-                instance.secondPhase = secondPhase;
-                return this;
-            }
-
-            public Builder targetUnseen(TargetUnseen targetUnseen) {
-                instance.targetUnseen = targetUnseen;
-                return this;
-            }
-
-            public WitherCharge build() {
-                return instance;
-            }
-        }
-
         public static abstract class BaseCharge {
             @SerializedName("damage")
             public float damage;
@@ -155,34 +136,34 @@ public class WitherAttack {
             public int timeToCharge;
         }
 
+        @JsonAdapter(OnHit.Serializer.class)
         public static class OnHit extends BaseCharge {
             @SerializedName("chance")
             public PoweredValue chance;
 
-            public static class Builder {
-                private final OnHit instance = new OnHit();
-
-                public Builder chance(PoweredValue chance) {
-                    instance.chance = chance;
-                    return this;
+            public static class Serializer implements JsonSerializer<OnHit>, JsonDeserializer<OnHit> {
+                @Override
+                public OnHit deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                    JsonObject jObject = json.getAsJsonObject();
+                    OnHit onHit = new OnHit();
+                    onHit.chance = context.deserialize(jObject.get("chance"), PoweredValue.class);
+                    onHit.damage = GsonHelper.getAsFloat(jObject, "damage");
+                    onHit.timeToCharge = GsonHelper.getAsInt(jObject, "time_to_charge");
+                    return onHit;
                 }
 
-                public Builder damage(float damage) {
-                    instance.damage = damage;
-                    return this;
-                }
-
-                public Builder timeToCharge(int timeToCharge) {
-                    instance.timeToCharge = timeToCharge;
-                    return this;
-                }
-
-                public OnHit build() {
-                    return instance;
+                @Override
+                public JsonElement serialize(OnHit src, Type typeOfSrc, JsonSerializationContext context) {
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.add("chance", context.serialize(src.chance));
+                    jsonObject.addProperty("damage", src.damage);
+                    jsonObject.addProperty("time_to_charge", src.timeToCharge);
+                    return jsonObject;
                 }
             }
         }
 
+        @JsonAdapter(SecondPhase.Serializer.class)
         public static class SecondPhase extends BaseCharge {
             @SerializedName("times")
             public int times;
@@ -195,88 +176,67 @@ public class WitherAttack {
             @SerializedName("minion")
             public boolean minion;
 
-            public static class Builder {
-                private final SecondPhase instance = new SecondPhase();
-
-                public Builder times(int times) {
-                    instance.times = times;
-                    return this;
+            public static class Serializer implements JsonSerializer<SecondPhase>, JsonDeserializer<SecondPhase> {
+                @Override
+                public SecondPhase deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                    JsonObject jObject = json.getAsJsonObject();
+                    SecondPhase secondPhase = new SecondPhase();
+                    secondPhase.times = GsonHelper.getAsInt(jObject, "times");
+                    secondPhase.tickReduction = GsonHelper.getAsInt(jObject, "tick_reduction", 0);
+                    secondPhase.maxReduction = GsonHelper.getAsInt(jObject, "max_reduction", Integer.MAX_VALUE);
+                    secondPhase.barrage = GsonHelper.getAsBoolean(jObject, "barrage", false);
+                    secondPhase.minion = GsonHelper.getAsBoolean(jObject, "minion", false);
+                    secondPhase.damage = GsonHelper.getAsFloat(jObject, "damage");
+                    secondPhase.timeToCharge = GsonHelper.getAsInt(jObject, "time_to_charge");
+                    return secondPhase;
                 }
 
-                public Builder tickReduction(int tickReduction) {
-                    instance.tickReduction = tickReduction;
-                    return this;
-                }
-
-                public Builder maxReduction(int maxReduction) {
-                    instance.maxReduction = maxReduction;
-                    return this;
-                }
-
-                public Builder barrage(boolean barrage) {
-                    instance.barrage = barrage;
-                    return this;
-                }
-
-                public Builder minion(boolean minion) {
-                    instance.minion = minion;
-                    return this;
-                }
-
-                public Builder damage(float damage) {
-                    instance.damage = damage;
-                    return this;
-                }
-
-                public Builder timeToCharge(int timeToCharge) {
-                    instance.timeToCharge = timeToCharge;
-                    return this;
-                }
-
-                public SecondPhase build() {
-                    return instance;
+                @Override
+                public JsonElement serialize(SecondPhase src, Type typeOfSrc, JsonSerializationContext context) {
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("times", src.times);
+                    jsonObject.addProperty("tick_reduction", src.tickReduction);
+                    jsonObject.addProperty("max_reduction", src.maxReduction);
+                    jsonObject.addProperty("barrage", src.barrage);
+                    jsonObject.addProperty("minion", src.minion);
+                    jsonObject.addProperty("damage", src.damage);
+                    jsonObject.addProperty("time_to_charge", src.timeToCharge);
+                    return jsonObject;
                 }
             }
         }
 
+        @JsonAdapter(TargetUnseen.Serializer.class)
         public static class TargetUnseen extends BaseCharge {
             @SerializedName("seconds_unseen")
             public int secondsUnseen;
             @SerializedName("chance_per_second")
             public float chancePerSecond;
             @SerializedName("max_chance")
-            public float maxChance = 1f;
+            public float maxChance;
 
-            public static class Builder {
-                private final TargetUnseen instance = new TargetUnseen();
-
-                public Builder secondsUnseen(int secondsUnseen) {
-                    instance.secondsUnseen = secondsUnseen;
-                    return this;
+            public static class Serializer implements JsonSerializer<TargetUnseen>, JsonDeserializer<TargetUnseen> {
+                @Override
+                public TargetUnseen deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+                    JsonObject jObject = json.getAsJsonObject();
+                    TargetUnseen targetUnseen = new TargetUnseen();
+                    targetUnseen.secondsUnseen = GsonHelper.getAsInt(jObject, "seconds_unseen");
+                    targetUnseen.chancePerSecond = GsonHelper.getAsFloat(jObject, "chance_per_second");
+                    targetUnseen.maxChance = GsonHelper.getAsFloat(jObject, "max_chance", 1f);
+                    targetUnseen.damage = GsonHelper.getAsFloat(jObject, "damage");
+                    targetUnseen.timeToCharge = GsonHelper.getAsInt(jObject, "time_to_charge");
+                    return targetUnseen;
                 }
 
-                public Builder chancePerSecond(float chancePerSecond) {
-                    instance.chancePerSecond = chancePerSecond;
-                    return this;
-                }
-
-                public Builder maxChance(float max_chance) {
-                    instance.maxChance = max_chance;
-                    return this;
-                }
-
-                public Builder damage(float damage) {
-                    instance.damage = damage;
-                    return this;
-                }
-
-                public Builder timeToCharge(int timeToCharge) {
-                    instance.timeToCharge = timeToCharge;
-                    return this;
-                }
-
-                public TargetUnseen build() {
-                    return instance;
+                @Override
+                public JsonElement serialize(TargetUnseen src, Type typeOfSrc, JsonSerializationContext context) {
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("seconds_unseen", src.secondsUnseen);
+                    jsonObject.addProperty("chance_per_second", src.chancePerSecond);
+                    jsonObject.addProperty("max_chance", src.maxChance);
+                    jsonObject.addProperty("damage", src.damage);
+                    jsonObject.addProperty("time_to_charge", src.timeToCharge);
+                    return jsonObject;
                 }
             }
         }
@@ -301,38 +261,7 @@ public class WitherAttack {
         public int attackSpeed = 5;
         @SerializedName("attack_cooldown_on_end")
         public int attackCooldownOnEnd = 0;
-
-        public static class Builder {
-            private final WitherBarrage instance = new WitherBarrage();
-
-            public Builder chanceOnHit(PoweredValue chanceOnHit) {
-                instance.chanceOnHit = chanceOnHit;
-                return this;
-            }
-
-            public Builder minDuration(int minDuration) {
-                instance.minDuration = minDuration;
-                return this;
-            }
-
-            public Builder maxDuration(int maxDuration) {
-                instance.maxDuration = maxDuration;
-                return this;
-            }
-
-            public Builder attackSpeed(int attackSpeed) {
-                instance.attackSpeed = attackSpeed;
-                return this;
-            }
-
-            public Builder attackCooldownOnEnd(int attackCooldownOnEnd) {
-                instance.attackCooldownOnEnd = attackCooldownOnEnd;
-                return this;
-            }
-
-            public WitherBarrage build() {
-                return instance;
-            }
-        }
+        @SerializedName("inaccuracy")
+        public PoweredValue inaccuracy = PoweredValue.ZERO;
     }
 }

@@ -26,7 +26,8 @@
             "min_duration": 50,
             "max_duration": 100,
             "attack_speed": 4,
-            "attack_cooldown_on_end": 50
+            "attack_cooldown_on_end": 50,
+            "inaccuracy": 1
         },
         "charge": {
             "second_phase": {

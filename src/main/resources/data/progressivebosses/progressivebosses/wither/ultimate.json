@@ -20,7 +20,7 @@
         "heal_on_skull_kill": 5,
         "charge": {
             "on_hit": {
-                "chance_on_hit": {
+                "chance": {
                     "above_half_health": 0.08,
                     "below_half_health": 0.06
                 },
@@ -45,12 +45,13 @@
         "barrage": {
             "chance": {
                 "above_half_health": 0.3,
-                "below_half_health": 0.1
+                "below_half_health": 0.2
             },
             "min_duration": 50,
             "max_duration": 100,
             "attack_speed": 2,
-            "attack_cooldown_on_end": 40
+            "attack_cooldown_on_end": 40,
+            "inaccuracy": 0.5
         }
     },
     "health": {
