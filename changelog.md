@@ -8,6 +8,7 @@
 * Goodbye `resistances` welcome `attribute_modifiers`
   * Contains two objects `above_half_health` and `below_half_health`, being a list of attribute modifiers
 * Fixed charging to get unstuck not working properly if there are players nearby
+* Wither charge no longer pushes players in creative
 
 ## Alpha 4.1.14
 * Wither attacks now go on cooldown when barrage finishes (`attack_cooldown_on_end`)
