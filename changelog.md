@@ -1,6 +1,10 @@
 # Changelog
 
+* Death animation (similar to bedrock edition)
+
 ## Upcoming
+* Nether Stars (and shards) can no longer be destroyed in-world (e.g. lava, cactus, etc)
+  * Added a new item tag `progressivebosses:nether_star_immune`
 * Buffed wither drops
   * Armored wither drops ~~2 stars + 2 shards~~ -> 3 stars
   * Summoner wither drops ~~3 stars + 3 shards~~ -> 5 stars

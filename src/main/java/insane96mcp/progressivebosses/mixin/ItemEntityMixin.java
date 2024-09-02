@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.mixin;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
@@ -23,6 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ItemEntityMixin extends Entity implements TraceableEntity {
 
 	private static final TagKey<Item> WITHER_INVULNERABLE = ItemTags.create(new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_invulnerable"));
+	private static final TagKey<Item> WORLD_INVULNERABLE = ItemTags.create(new ResourceLocation(ProgressiveBosses.MOD_ID, "world_invulnerable"));
 
 	public ItemEntityMixin(EntityType<?> p_19870_, Level p_19871_) {
 		super(p_19870_, p_19871_);
@@ -32,7 +34,9 @@ public abstract class ItemEntityMixin extends Entity implements TraceableEntity 
 
 	@Inject(at = @At("HEAD"), method = "hurt", cancellable = true)
 	public void onItemHurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-		if (!this.getItem().isEmpty() && this.getItem().is(WITHER_INVULNERABLE) && source.getEntity() instanceof WitherBoss)
+		if (!this.getItem().isEmpty()
+				&& ((this.getItem().is(WITHER_INVULNERABLE) && source.getEntity() instanceof WitherBoss)
+					|| (this.getItem().is(WORLD_INVULNERABLE) && !source.is(DamageTypeTags.BYPASSES_RESISTANCE))))
 			cir.setReturnValue(false);
 	}
 }
