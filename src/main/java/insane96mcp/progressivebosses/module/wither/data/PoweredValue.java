@@ -33,11 +33,11 @@ public class PoweredValue {
     }
 
     public float getValue(PBWither wither) {
-        return wither.isPowered() && wither.getInvulnerableTicks() == 0 ? this.belowHalfHealth : this.aboveHalfHealth;
+        return getValue(wither.isPowered() && wither.getInvulnerableTicks() == 0);
     }
 
     public int getIntValue(PBWither wither) {
-        return (int) (wither.isPowered() ? this.belowHalfHealth : this.aboveHalfHealth);
+        return (int) getValue(wither);
     }
 
     public float getValue(boolean isPowered) {
@@ -45,7 +45,7 @@ public class PoweredValue {
     }
 
     public int getIntValue(boolean isPowered) {
-        return (int) (isPowered ? this.belowHalfHealth : this.aboveHalfHealth);
+        return (int) (getValue(isPowered));
     }
 
     public boolean isZero() {

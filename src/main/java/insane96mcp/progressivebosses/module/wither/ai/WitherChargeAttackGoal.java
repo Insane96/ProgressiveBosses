@@ -221,8 +221,10 @@ public class WitherChargeAttackGoal extends Goal {
 		float d4 = Math.max(d2 * d2 + d3 * d3, 0.1f);
 		float horizontalPush = (float) (5f * (1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)));
 		float verticalPush = (float) (0.65f * (1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)));
+		if (entity instanceof ServerPlayer player && player.getAbilities().flying)
+			return;
 		entity.push(d2 / d4 * horizontalPush, verticalPush, d3 / d4 * horizontalPush);
-		if (entity instanceof ServerPlayer player)
+		if (entity instanceof Player player)
 			player.hurtMarked = true;
 	}
 

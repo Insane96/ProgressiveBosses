@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.module.wither.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
-import insane96mcp.progressivebosses.data.Resistances;
+import insane96mcp.insanelib.data.SerializableAttributeModifier;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
@@ -12,6 +12,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 @JsonAdapter(WitherStats.Serializer.class)
 public class WitherStats {
@@ -21,18 +22,18 @@ public class WitherStats {
     public WitherAttack attack;
     public WitherHealth health;
     @Nullable
-    public Resistances resistancesWeaknesses;
+    public PoweredAttributeModifiers attributeModifiers;
     @Nullable
     public WitherMinionStats minion;
     public WitherMiscStats misc;
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public WitherStats(int level, WitherAttack attack, WitherHealth health, @Nullable Resistances resistancesWeaknesses, @Nullable WitherMinionStats minion, WitherMiscStats misc, int xpDropped, ResourceLocation lootTable) {
+    public WitherStats(int level, WitherAttack attack, WitherHealth health, @Nullable PoweredAttributeModifiers attributeModifiers, @Nullable WitherMinionStats minion, WitherMiscStats misc, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.attack = attack;
         this.health = health;
-        this.resistancesWeaknesses = resistancesWeaknesses;
+        this.attributeModifiers = attributeModifiers;
         this.minion = minion;
         this.misc = misc;
         this.xpDropped = xpDropped;
@@ -41,13 +42,14 @@ public class WitherStats {
 
     public void apply(PBWither wither) {
         wither.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.health.health);
-        if (this.resistancesWeaknesses != null) {
-            wither.getAttribute(Attributes.ARMOR).setBaseValue(this.resistancesWeaknesses.armor.getValue(wither));
-            wither.getAttribute(Attributes.ARMOR_TOUGHNESS).setBaseValue(this.resistancesWeaknesses.toughness.getValue(wither));
+        if (this.attributeModifiers != null) {
+            List<SerializableAttributeModifier> listToAdd = wither.isPowered() ? this.attributeModifiers.belowHalfHealth : this.attributeModifiers.aboveHalfHealth;
+            for (SerializableAttributeModifier modifier : listToAdd) {
+                wither.getAttribute(modifier.attribute().get()).addPermanentModifier(modifier.getModifier());
+            }
         }
-        if (this.minion != null) {
+        if (this.minion != null)
             this.minion.setCooldown(wither, 2f);
-        }
         wither.lootTable = this.lootTable;
         wither.xpReward = this.xpDropped;
     }
@@ -60,7 +62,7 @@ public class WitherStats {
         return new WitherStats(0,
                 new WitherAttack.Builder().build(),
                 new WitherHealth(300f, 1f, 1f, 30),
-                new Resistances(new PoweredValue(6f, 13f), new PoweredValue(3f, 4f)),
+                null,//new Resistances(new PoweredValue(6f, 13f), new PoweredValue(3f, 4f)),
                 new WitherMinionStats(new PoweredValue(1), new PoweredValue(2), new PoweredValue(400, 200), new PoweredValue(500, 250), new PoweredValue(15f), new PoweredValue(0.10f), new PoweredValue(0.7f, 0.3f), 0.2f, 0.2f, 0.3f, 0.1f),
                 new WitherMiscStats(7f, false, false, false),
                 250, new ResourceLocation("progressivebosses:entities/wither_0"));
@@ -73,7 +75,7 @@ public class WitherStats {
         public WitherStats deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String sLootTable = GsonHelper.getAsString(json.getAsJsonObject(), "loot_table", VANILLA_LOOT_TABLE.getPath());
             ResourceLocation lootTable = ResourceLocation.tryParse(sLootTable);
-            Resistances resistances = json.getAsJsonObject().has("resistances") ? context.deserialize(json.getAsJsonObject().get("resistances"), Resistances.class) : null;
+            PoweredAttributeModifiers resistances = json.getAsJsonObject().has("attribute_modifiers") ? context.deserialize(json.getAsJsonObject().get("attribute_modifiers"), PoweredAttributeModifiers.class) : null;
             WitherMinionStats witherMinionStats = json.getAsJsonObject().has("minion") ? context.deserialize(json.getAsJsonObject().get("minion"), WitherMinionStats.class) : null;
             return new WitherStats(GsonHelper.getAsInt(json.getAsJsonObject(), "level"),
                     context.deserialize(json.getAsJsonObject().get("attack"), WitherAttack.class),
@@ -91,8 +93,8 @@ public class WitherStats {
             jsonObject.addProperty("level", src.level);
             jsonObject.add("attack", context.serialize(src.attack));
             jsonObject.add("health", context.serialize(src.health));
-            if (src.resistancesWeaknesses != null)
-                jsonObject.add("resistances", context.serialize(src.resistancesWeaknesses));
+            if (src.attributeModifiers != null)
+                jsonObject.add("attribute_modifiers", context.serialize(src.attributeModifiers));
             if (src.minion != null)
                 jsonObject.add("minion", context.serialize(src.minion));
             jsonObject.add("misc", context.serialize(src.misc));

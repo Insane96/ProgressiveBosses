@@ -1,12 +1,12 @@
 # Changelog
 
-* Change resistances to attributes
-
 ## Upcoming
 * Buffed wither drops
   * Armored wither drops ~~2 stars + 2 shards~~ -> 3 stars
   * Summoner wither drops ~~3 stars + 3 shards~~ -> 5 stars
   * Ultimate wither drops ~~5 stars~~ -> 8 stars
+* Goodbye `resistances` welcome `attribute_modifiers`
+  * Contains two objects `above_half_health` and `below_half_health`, being a list of attribute modifiers
 * Fixed charging to get unstuck not working properly if there are players nearby
 
 ## Alpha 4.1.14

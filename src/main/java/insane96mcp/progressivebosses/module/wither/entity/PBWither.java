@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.module.wither.entity;
 
 import com.google.common.collect.ImmutableList;
+import insane96mcp.insanelib.data.SerializableAttributeModifier;
 import insane96mcp.progressivebosses.module.ILvl;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
@@ -31,7 +32,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.FlyingMoveControl;
@@ -164,6 +164,21 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         this.entityData.define(BARRAGE_CHARGE_UP, 0);
     }
 
+    private void updateStats(boolean wasPowered) {
+        if (this.stats.attributeModifiers == null)
+            return;
+        if (wasPowered != this.isPowered()) {
+            List<SerializableAttributeModifier> listToRemove = wasPowered ? this.stats.attributeModifiers.belowHalfHealth : this.stats.attributeModifiers.aboveHalfHealth;
+            List<SerializableAttributeModifier> listToAdd = wasPowered ? this.stats.attributeModifiers.aboveHalfHealth : this.stats.attributeModifiers.belowHalfHealth;
+            for (SerializableAttributeModifier modifier : listToRemove) {
+                this.getAttribute(modifier.attribute().get()).removeModifier(modifier.uuid());
+            }
+            for (SerializableAttributeModifier modifier : listToAdd) {
+                this.getAttribute(modifier.attribute().get()).addPermanentModifier(modifier.getModifier());
+            }
+        }
+    }
+
     public int getChargingTicks() {
         return this.entityData.get(CHARGING);
     }
@@ -226,19 +241,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             return;
         if (this.getRandom().nextDouble() < chance)
             this.initCharging(chargeType);
-    }
-
-    private void updateStats(boolean wasPowered) {
-        if (this.stats.resistancesWeaknesses == null)
-            return;
-        if (wasPowered != this.isPowered()) {
-            AttributeInstance instance = this.getAttribute(Attributes.ARMOR);
-            if (instance != null)
-                instance.setBaseValue(this.stats.resistancesWeaknesses.armor.getValue(this));
-            instance = this.getAttribute(Attributes.ARMOR_TOUGHNESS);
-            if (instance != null)
-                instance.setBaseValue(this.stats.resistancesWeaknesses.toughness.getValue(this));
-        }
     }
 
     private void tickBarrage() {
