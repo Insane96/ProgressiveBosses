@@ -9,7 +9,7 @@
         },
         "attack_speed_near": 45,
         "attack_speed_far": 30,
-        "side_heads_attack_speed_multiplier": 1.2,
+        "side_heads_attack_speed_multiplier": 1,
         "effect_amplifier": 1,
         "effect_duration": {
             "easy": 10,
