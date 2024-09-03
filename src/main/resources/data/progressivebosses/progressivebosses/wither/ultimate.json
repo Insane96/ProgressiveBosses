@@ -116,6 +116,10 @@
         "power_chance": 5,
         "punch_chance": 1
     },
+    "death": {
+        "explosion_power": 11.0,
+        "explosion_causes_fire": false
+    },
     "misc": {
         "explosion_power": 9.0,
         "explosion_causes_fire": false,

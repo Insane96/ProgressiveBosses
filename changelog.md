@@ -1,8 +1,9 @@
 # Changelog
 
-* Death animation (similar to bedrock edition)
-
 ## Upcoming
+* [Wither now has a death animation when dying](https://youtube.com/shorts/J8IGIIoF9O4)
+  * Blows up before disappearing
+  * Configurable with a new `death` object in the wither json
 * Nether Stars (and shards) can no longer be destroyed in-world (e.g. lava, cactus, etc)
   * Added a new item tag `progressivebosses:nether_star_immune`
 * Buffed wither drops

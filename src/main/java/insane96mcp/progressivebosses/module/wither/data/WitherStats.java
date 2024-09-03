@@ -26,16 +26,18 @@ public class WitherStats {
     public PoweredAttributeModifiers attributeModifiers;
     @Nullable
     public WitherMinionStats minion;
+    public WitherDeath death;
     public WitherMiscStats misc;
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public WitherStats(int level, WitherAttack attack, WitherHealth health, @Nullable PoweredAttributeModifiers attributeModifiers, @Nullable WitherMinionStats minion, WitherMiscStats misc, int xpDropped, ResourceLocation lootTable) {
+    public WitherStats(int level, WitherAttack attack, WitherHealth health, @Nullable PoweredAttributeModifiers attributeModifiers, @Nullable WitherMinionStats minion, WitherDeath death, WitherMiscStats misc, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.attack = attack;
         this.health = health;
         this.attributeModifiers = attributeModifiers;
         this.minion = minion;
+        this.death = death;
         this.misc = misc;
         this.xpDropped = xpDropped;
         this.lootTable = lootTable;
@@ -59,16 +61,6 @@ public class WitherStats {
         wither.setHealth(wither.getMaxHealth());
     }
 
-    public static WitherStats getDefaultStats() {
-        return new WitherStats(0,
-                new WitherAttack.Builder().build(),
-                new WitherHealth(300f, 1f, 1f, 30),
-                null,//new Resistances(new PoweredValue(6f, 13f), new PoweredValue(3f, 4f)),
-                new WitherMinionStats(new PoweredValue(1), new PoweredValue(2), new PoweredValue(400, 200), new PoweredValue(500, 250), new PoweredValue(15f), new PoweredValue(0.10f), new PoweredValue(0.7f, 0.3f), 0.2f, 0.2f, 0.3f, 0.1f),
-                new WitherMiscStats(7f, false, false, false),
-                250, new ResourceLocation("progressivebosses:entities/wither_0"));
-    }
-
     public static final java.lang.reflect.Type LIST_TYPE = new TypeToken<ArrayList<WitherStats>>(){}.getType();
 
     public static class Serializer implements JsonSerializer<WitherStats>, JsonDeserializer<WitherStats> {
@@ -83,6 +75,7 @@ public class WitherStats {
                     context.deserialize(json.getAsJsonObject().get("health"), WitherHealth.class),
                     resistances,
                     witherMinionStats,
+                    context.deserialize(json.getAsJsonObject().get("death"), WitherDeath.class),
                     context.deserialize(json.getAsJsonObject().get("misc"), WitherMiscStats.class),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "xp_dropped"),
                     lootTable);
@@ -98,6 +91,7 @@ public class WitherStats {
                 jsonObject.add("attribute_modifiers", context.serialize(src.attributeModifiers));
             if (src.minion != null)
                 jsonObject.add("minion", context.serialize(src.minion));
+            jsonObject.add("death", context.serialize(src.death));
             jsonObject.add("misc", context.serialize(src.misc));
             jsonObject.addProperty("xp_dropped", src.xpDropped);
             if (!src.lootTable.equals(VANILLA_LOOT_TABLE))

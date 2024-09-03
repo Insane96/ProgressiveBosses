@@ -50,6 +50,10 @@
         "regen_when_hit": 1.0,
         "regen_when_hit_duration": 30
     },
+    "death": {
+        "explosion_power": 8.0,
+        "explosion_causes_fire": false
+    },
     "misc": {
         "explosion_power": 7.0,
         "explosion_causes_fire": false,

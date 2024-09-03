@@ -447,7 +447,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 dyingAnimationTicks--;
                 this.setDyingAnimationTicks(dyingAnimationTicks);
                 if (dyingAnimationTicks == 0) {
-                    float explosionRadius = this.stats.misc.explosionPower;
+                    float explosionRadius = this.stats.death.explosionPower;
                     List<ItemEntity> droppedBlocks = new ArrayList<>();
                     if (ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
                         BlockPos.betweenClosedStream(this.getBoundingBox().inflate(3f)).forEach(blockPos -> {
@@ -463,7 +463,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                         });
                     }
 
-                    this.level().explode(this, this.getX(), this.getEyeY(), this.getZ(), explosionRadius, this.stats.misc.explosionCausesFire, Level.ExplosionInteraction.MOB);
+                    this.level().explode(this, this.getX(), this.getEyeY(), this.getZ(), explosionRadius, this.stats.death.explosionCausesFire, Level.ExplosionInteraction.MOB);
                     this.die(this.deathDamageSource);
                     droppedBlocks.forEach(this.level()::addFreshEntity);
                     this.discard();
@@ -807,7 +807,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             tryChargeOnHit(damageAmount);
             tryBarrageOnHit(damageAmount);
         }
-        else {
+        else if (this.stats.death != null) {
             this.setHealth(0.01f);
             this.setDyingAnimationTicks(100);
             this.playSound(SoundEvents.WITHER_SPAWN, 4.0F, 0.75F);

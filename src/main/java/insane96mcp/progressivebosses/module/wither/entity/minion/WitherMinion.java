@@ -7,11 +7,11 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.ILvl;
 import insane96mcp.progressivebosses.module.wither.ai.RangedMinionAttackGoal;
 import insane96mcp.progressivebosses.module.wither.data.WitherMinionStats;
-import insane96mcp.progressivebosses.module.wither.data.WitherStats;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.setup.Strings;
+import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -143,12 +143,15 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 	@Override
 	public void setLvl(int lvl) {
 		this.lvl = lvl;
-		if (WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
-			this.stats = WitherStatsReloadListener.STATS_MAP.get(lvl).minion;
+		if (!WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
+			lvl = 0;
+			if (!WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
+				this.discard();
+				LogHelper.warn("Failed to load wither stats, wither minion discarded");
+				return;
+			}
 		}
-		else {
-			this.stats = WitherStats.getDefaultStats().minion;
-		}
+		this.stats = WitherStatsReloadListener.STATS_MAP.get(lvl).minion;
 		if (this.stats == null)
 			this.discard();
 		else
