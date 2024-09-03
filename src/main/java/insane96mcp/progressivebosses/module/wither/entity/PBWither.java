@@ -312,7 +312,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     private void tickMinion() {
-        if (this.stats.minion != null && --this.minionCooldown <= 0) {
+        if (this.stats.minion != null && --this.minionCooldown <= 0 && !this.isCharging()) {
             this.stats.minion.trySpawnMinion(this, false);
         }
     }

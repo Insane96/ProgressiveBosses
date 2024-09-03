@@ -4,8 +4,10 @@
 * [Wither now has a death animation when dying](https://youtube.com/shorts/J8IGIIoF9O4)
   * Blows up before disappearing
   * Configurable with a new `death` object in the wither json
+* Wither no longer summons minions while charging
+* Netherite blocks are now Wither Immune
 * Nether Stars (and shards) can no longer be destroyed in-world (e.g. lava, cactus, etc)
-  * Added a new item tag `progressivebosses:nether_star_immune`
+  * Added a new item tag `progressivebosses:world_immune`
 * Buffed wither drops
   * Armored wither drops ~~2 stars + 2 shards~~ -> 3 stars
   * Summoner wither drops ~~3 stars + 3 shards~~ -> 5 stars

@@ -25,21 +25,21 @@
                     "below_half_health": 0.06
                 },
                 "damage": 15.0,
-                "time_to_charge": 35
+                "time_to_charge": 30
             },
             "second_phase": {
                 "damage": 12.0,
-                "time_to_charge": 35,
+                "time_to_charge": 30,
                 "times": 4,
-                "tick_reduction": 7,
+                "tick_reduction": 5,
                 "barrage": true,
                 "minion": true
             },
             "target_unseen": {
                 "damage": 12.0,
-                "time_to_charge": 35,
+                "time_to_charge": 40,
                 "seconds_unseen": 2,
-                "chance_per_second": 0.04
+                "chance_per_second": 0.05
             }
         },
         "barrage": {
@@ -73,7 +73,7 @@
                 "uuid": "b2c80704-fae6-45b0-a0c8-be6b1d2e9cb5",
                 "name": "Wither Armor Toughness",
                 "attribute": "minecraft:generic.armor_toughness",
-                "amount": 12,
+                "amount": 8,
                 "operation": "addition"
             }
         ],
@@ -82,14 +82,14 @@
                 "uuid": "b2c80704-fae6-45b0-a0c8-be6b1d2e9cb5",
                 "name": "Wither Armor",
                 "attribute": "minecraft:generic.armor",
-                "amount": 25,
+                "amount": 24,
                 "operation": "addition"
             },
             {
                 "uuid": "b2c80704-fae6-45b0-a0c8-be6b1d2e9cb5",
                 "name": "Wither Armor Toughness",
                 "attribute": "minecraft:generic.armor_toughness",
-                "amount": 16,
+                "amount": 12,
                 "operation": "addition"
             }
         ]

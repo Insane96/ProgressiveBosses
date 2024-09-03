@@ -287,7 +287,8 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		public boolean canUse() {
 			if (this.minion.getOwner() == null
 					|| !this.minion.getOwner().needsHealing()
-					|| this.minion.getOwner().isDeadOrDying())
+					|| this.minion.getOwner().isDeadOrDying()
+					|| this.minion.getOwner().isRemoved())
 				return false;
 			this.path = this.minion.getNavigation().createPath(this.minion.getOwner(), 2);
 			return this.path != null;
@@ -295,7 +296,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 
 		@Override
 		public boolean canContinueToUse() {
-			return this.minion.getOwner() != null && this.minion.distanceTo(this.minion.getOwner()) > 4d && !this.minion.getOwner().isDeadOrDying();
+			return this.minion.getOwner() != null && this.minion.distanceTo(this.minion.getOwner()) > 4d && !this.minion.getOwner().isDeadOrDying() && !this.minion.getOwner().isRemoved();
 		}
 
 		@Override
