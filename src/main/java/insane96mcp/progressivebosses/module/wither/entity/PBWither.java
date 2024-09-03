@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableList;
 import insane96mcp.insanelib.data.SerializableAttributeModifier;
 import insane96mcp.progressivebosses.module.ILvl;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
+import insane96mcp.progressivebosses.module.wither.ai.WitherInvulnerableGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
 import insane96mcp.progressivebosses.module.wither.data.WitherAttack;
 import insane96mcp.progressivebosses.module.wither.data.WitherStats;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.entity.skull.PBWitherSkull;
+import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -18,6 +20,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerBossEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -44,18 +47,26 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.AirAndWaterRandomPos;
 import net.minecraft.world.entity.ai.util.HoverRandomPos;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LevelEvent;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -67,6 +78,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     private static final EntityDataAccessor<Integer> DATA_TARGET_C = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final List<EntityDataAccessor<Integer>> DATA_TARGETS = ImmutableList.of(DATA_TARGET_A, DATA_TARGET_B, DATA_TARGET_C);
     private static final EntityDataAccessor<Integer> DATA_ID_INV = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_ID_DYING = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> LVL = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> CHARGING = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> BARRAGE_CHARGE_UP = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
@@ -91,6 +103,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public WitherRangedAttackGoal rangedAttackGoal;
     public WitherChargeAttackGoal.ChargeType chargeType;
 
+    public DamageSource deathDamageSource = null;
+
     public PBWither(EntityType<? extends Monster> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.moveControl = new FlyingMoveControl(this, 10, false);
@@ -108,6 +122,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     protected void registerGoals() {
         //this.goalSelector.addGoal(0, new WitherDoNothingGoal());
         this.rangedAttackGoal = new WitherRangedAttackGoal(this, 32f);
+        this.goalSelector.addGoal(0, new WitherInvulnerableGoal(this));
         this.goalSelector.addGoal(1, new WitherChargeAttackGoal(this));
         this.goalSelector.addGoal(2, this.rangedAttackGoal);
         this.goalSelector.addGoal(5, new WaterAvoidingRandomFlyingGoal(this));
@@ -159,6 +174,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         this.entityData.define(DATA_TARGET_B, 0);
         this.entityData.define(DATA_TARGET_C, 0);
         this.entityData.define(DATA_ID_INV, 0);
+        this.entityData.define(DATA_ID_DYING, 0);
         this.entityData.define(LVL, 0);
         this.entityData.define(CHARGING, 0);
         this.entityData.define(BARRAGE_CHARGE_UP, 0);
@@ -305,14 +321,17 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
      * Called when spawning the wither from the "corrupted soul sand"
      */
     public void setLvl(int lvl) {
+        if (!WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
+            lvl = 0;
+            if (!WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
+                this.discard();
+                LogHelper.warn("Failed to load wither stats, wither discarded");
+                return;
+            }
+        }
         this.entityData.set(LVL, lvl);
-        if (WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
-            this.stats = WitherStatsReloadListener.STATS_MAP.get(lvl);
-            this.stats.apply(this);
-        }
-        else {
-            this.stats = WitherStats.getDefaultStats();
-        }
+        this.stats = WitherStatsReloadListener.STATS_MAP.get(lvl);
+        this.stats.apply(this);
         this.bossEvent.setName(this.getDisplayName());
     }
 
@@ -380,7 +399,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             this.xRotOHeads[head] = this.xRotHeads[head];
         }*/
 
-        for(int head = 0; head < 2; ++head) {
+        for (int head = 0; head < 2; ++head) {
             int targetId = this.getAlternativeTarget(head + 1);
             Entity target = null;
             if (targetId > 0) {
@@ -406,7 +425,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
         boolean isPowered = this.isPowered();
 
-        for(int l = 0; l < 3; ++l) {
+        for (int l = 0; l < 3; ++l) {
             double headX = this.getHeadX(l);
             double headY = this.getHeadY(l);
             double headZ = this.getHeadZ(l);
@@ -422,6 +441,57 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             }
         }
 
+        int dyingAnimationTicks = this.getDyingAnimationTicks();
+        if (dyingAnimationTicks > 0) {
+            if (!this.level().isClientSide) {
+                dyingAnimationTicks--;
+                this.setDyingAnimationTicks(dyingAnimationTicks);
+                if (dyingAnimationTicks == 0) {
+                    float explosionRadius = this.stats.misc.explosionPower;
+                    List<ItemEntity> droppedBlocks = new ArrayList<>();
+                    if (ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
+                        BlockPos.betweenClosedStream(this.getBoundingBox().inflate(3f)).forEach(blockPos -> {
+                            BlockState state = this.level().getBlockState(blockPos);
+                            if (this.canDestroyBlock(blockPos, state)
+                                    && ForgeEventFactory.onEntityDestroyBlock(this, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
+                                BlockEntity blockEntity = state.hasBlockEntity() ? this.level().getBlockEntity(blockPos) : null;
+                                LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity).withParameter(LootContextParams.EXPLOSION_RADIUS, explosionRadius);
+                                state.getDrops(lootcontext$builder).forEach(itemStack -> droppedBlocks.add(new ItemEntity(this.level(), blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack)));
+                                this.level().setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
+                                //hasBrokenBlocks.set(true);
+                            }
+                        });
+                    }
+
+                    this.level().explode(this, this.getX(), this.getEyeY(), this.getZ(), explosionRadius, this.stats.misc.explosionCausesFire, Level.ExplosionInteraction.MOB);
+                    this.die(this.deathDamageSource);
+                    droppedBlocks.forEach(this.level()::addFreshEntity);
+                    this.discard();
+                }
+                else if (dyingAnimationTicks % 20 == 0) {
+                    this.playSound(SoundEvents.WITHER_HURT, 4f, 1f - (100 - dyingAnimationTicks) * 0.005f);
+                }
+            }
+            else {
+                int speed = 20;
+                speed += (100 - dyingAnimationTicks) / 2;
+                if (dyingAnimationTicks <= 5)
+                    speed -= (5 - dyingAnimationTicks) * 10;
+                float rotation = this.yHeadRot + speed;
+                this.setYRot(rotation);
+                this.setYBodyRot(rotation);
+                this.setYHeadRot(rotation);
+                for (int i = 0; i < 2; i++) {
+                    this.yRotHeads[i] = rotation;
+                }
+
+                if (dyingAnimationTicks == 2) {
+                    for (int i = 0; i < 15; i++) {
+                        this.level().addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX() + this.random.nextFloat() * 8 - 4, this.getEyeY() + this.random.nextFloat() * 8 - 4, this.getZ() + this.random.nextFloat() * 8 - 4, 0.0D, 0.0D, 0.0D);
+                    }
+                }
+            }
+        }
     }
 
     protected int findNewTarget() {
@@ -459,7 +529,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
             this.setInvulnerableTicks(newInvulTicks);
         }
-        else {
+        else if (this.getDyingAnimationTicks() <= 0){
             super.customServerAiStep();
 
             //Update Heads targets
@@ -692,6 +762,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
         if (this.getInvulnerableTicks() > 0 && !pSource.is(DamageTypeTags.BYPASSES_INVULNERABILITY))
             return false;
+        if (this.getDyingAnimationTicks() > 0)
+            return false;
 
         if (this.isPowered()) {
             Entity entity = pSource.getDirectEntity();
@@ -735,6 +807,12 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             tryChargeOnHit(damageAmount);
             tryBarrageOnHit(damageAmount);
         }
+        else {
+            this.setHealth(0.01f);
+            this.setDyingAnimationTicks(100);
+            this.playSound(SoundEvents.WITHER_SPAWN, 4.0F, 0.75F);
+            this.deathDamageSource = damageSource;
+        }
     }
 
     /**
@@ -767,6 +845,14 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
     public void setInvulnerableTicks(int pInvulnerableTicks) {
         this.entityData.set(DATA_ID_INV, pInvulnerableTicks);
+    }
+
+    public int getDyingAnimationTicks() {
+        return this.entityData.get(DATA_ID_DYING);
+    }
+
+    public void setDyingAnimationTicks(int dyingAnimationTicks) {
+        this.entityData.set(DATA_ID_DYING, dyingAnimationTicks);
     }
 
     /**

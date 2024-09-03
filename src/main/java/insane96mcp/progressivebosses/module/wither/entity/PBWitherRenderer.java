@@ -11,6 +11,7 @@ import net.minecraft.resources.ResourceLocation;
 public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWither>> {
     private static final ResourceLocation WITHER_CHARGING_LOCATION = new ResourceLocation(ProgressiveBosses.MOD_ID, "textures/entity/wither/wither_charge.png");
     private static final ResourceLocation WITHER_INVULNERABLE_LOCATION = new ResourceLocation("textures/entity/wither/wither_invulnerable.png");
+    private static final ResourceLocation WITHER_DYING_LOCATION = new ResourceLocation("textures/entity/wither/wither_dying.png");
     private static final ResourceLocation WITHER_LOCATION = new ResourceLocation("textures/entity/wither/wither.png");
 
     public PBWitherRenderer(EntityRendererProvider.Context context) {
@@ -26,6 +27,10 @@ public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWith
      * Returns the location of an entity's texture.
      */
     public ResourceLocation getTextureLocation(PBWither pEntity) {
+        int d = pEntity.getDyingAnimationTicks();
+        if (d > 0)
+            return WITHER_LOCATION;
+
         int c = pEntity.getChargingTicks();
         if (c > 0)
             return c < 30 || (c > 50 && c % 10 < 5) || (c < 50 && c % 4 >= 2) ? WITHER_CHARGING_LOCATION : WITHER_LOCATION;
@@ -34,14 +39,20 @@ public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWith
         return i > 0 && (i > 80 || i / 5 % 2 != 1) ? WITHER_INVULNERABLE_LOCATION : WITHER_LOCATION;
     }
 
+    @Override
+    protected float getWhiteOverlayProgress(PBWither pLivingEntity, float pPartialTicks) {
+        int d = pLivingEntity.getDyingAnimationTicks();
+        if (d > 0)
+            return (95 - pLivingEntity.getDyingAnimationTicks()) / 100f;
+        return super.getWhiteOverlayProgress(pLivingEntity, pPartialTicks);
+    }
+
+    @Override
+    protected boolean isShaking(PBWither pEntity) {
+        return pEntity.getDyingAnimationTicks() > 0;
+    }
+
     protected void scale(PBWither wither, PoseStack poseStack, float partialTick) {
-        /*int chargingTicks = wither.getChargingTicks();
-        if (chargingTicks > 0) {
-            float scale = 1f;
-            //TODO Replace with WitherAttackStats.chargeTime
-            scale += (wither - ((float)chargingTicks - partialTick)) * 0.003f;
-            poseStack.scale(scale, scale, scale);
-        }*/
         int barragingChargingTicks = wither.getBarrageChargeUpTicks();
         if (barragingChargingTicks > 0) {
             float scale = 1f;
@@ -55,6 +66,13 @@ public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWith
         int invulnerableTicks = wither.getInvulnerableTicks();
         if (invulnerableTicks > 0) {
             scale -= ((float)invulnerableTicks - partialTick) / 220.0F * 0.5F;
+        }
+
+        int dyingAnimationTicks = wither.getDyingAnimationTicks();
+        if (dyingAnimationTicks > 0) {
+            scale += (100f - (dyingAnimationTicks - partialTick)) * 0.01f;
+            if (dyingAnimationTicks <= 5)
+                scale -= (5f - (dyingAnimationTicks - partialTick + 0.5f)) * 0.45f;
         }
 
         poseStack.scale(scale, scale, scale);

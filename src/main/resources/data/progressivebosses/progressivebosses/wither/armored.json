@@ -82,7 +82,7 @@
         ]
     },
     "misc": {
-        "explosion_power": 8.0,
+        "explosion_power": 7.0,
         "explosion_causes_fire": false,
         "ignore_wither_proof_blocks": true,
         "nether_only": false

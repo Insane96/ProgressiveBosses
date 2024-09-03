@@ -73,7 +73,7 @@
         "punch_chance": 0.8
     },
     "misc": {
-        "explosion_power": 9.0,
+        "explosion_power": 7.0,
         "explosion_causes_fire": false,
         "ignore_wither_proof_blocks": true,
         "nether_only": false
