@@ -12,7 +12,7 @@
   * Base wither drops 200 -> 500 xp
   * Armored wither drops ~~2 stars + 2 shards~~ -> 3 stars and 600 -> 1,500 xp
   * Summoner wither drops ~~3 stars + 3 shards~~ -> 5 stars and 1,000 -> 3,000 xp
-  * Ultimate wither drops ~~5 stars~~ -> 8 stars and 2,000 -> 10,000 xp
+  * Ultimate wither drops ~~5 stars~~ -> 8 stars and 2,000 -> 8,000 xp
 * Ultimate Wither barrage is now slightly less inaccurate
   * Also made barrage inaccuracy configurable
 * Goodbye `resistances` welcome `attribute_modifiers`

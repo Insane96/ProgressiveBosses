@@ -126,6 +126,6 @@
         "ignore_wither_proof_blocks": true,
         "nether_only": true
     },
-    "xp_dropped": 10000,
+    "xp_dropped": 8000,
     "loot_table": "progressivebosses:entities/wither/ultimate"
 }
