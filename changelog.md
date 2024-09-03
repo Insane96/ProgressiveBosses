@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## Alpha 4.2.0
 * [Wither now has a death animation when dying](https://youtube.com/shorts/J8IGIIoF9O4)
   * Blows up before disappearing
   * Configurable with a new `death` object in the wither json
@@ -14,7 +14,7 @@
   * Summoner wither drops ~~3 stars + 3 shards~~ -> 5 stars and 1,000 -> 3,000 xp
   * Ultimate wither drops ~~5 stars~~ -> 8 stars and 2,000 -> 8,000 xp
 * Ultimate Wither barrage is now slightly less inaccurate
-  * Also made barrage inaccuracy configurable
+  * Also made barrage `inaccuracy` configurable
 * Goodbye `resistances` welcome `attribute_modifiers`
   * Contains two objects `above_half_health` and `below_half_health`, being a list of attribute modifiers
 * Fixed charging to get unstuck not working properly if there are players nearby
