@@ -9,7 +9,7 @@
         },
         "attack_speed_near": 50,
         "attack_speed_far": 40,
-        "side_heads_attack_speed_multiplier": 1.2,
+        "side_heads_attack_speed_multiplier": 1.1,
         "effect_amplifier": 0,
         "effect_duration": {
             "easy": 10,
@@ -60,6 +60,6 @@
         "ignore_wither_proof_blocks": false,
         "nether_only": false
     },
-    "xp_dropped": 200,
+    "xp_dropped": 500,
     "loot_table": "progressivebosses:entities/wither/base"
 }

@@ -9,7 +9,7 @@
         },
         "attack_speed_near": 50,
         "attack_speed_far": 40,
-        "side_heads_attack_speed_multiplier": 0.8,
+        "side_heads_attack_speed_multiplier": 1.25,
         "effect_amplifier": 1,
         "effect_duration": {
             "easy": 5,
@@ -82,6 +82,6 @@
         "ignore_wither_proof_blocks": true,
         "nether_only": false
     },
-    "xp_dropped": 1000,
+    "xp_dropped": 3000,
     "loot_table": "progressivebosses:entities/wither/summoner"
 }

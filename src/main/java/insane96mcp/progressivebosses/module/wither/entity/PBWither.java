@@ -149,6 +149,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
     }
 
+    @Override
+    protected boolean isAlwaysExperienceDropper() {
+        return true;
+    }
+
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("Invul", this.getInvulnerableTicks());
