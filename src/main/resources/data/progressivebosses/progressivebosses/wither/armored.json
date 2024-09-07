@@ -36,8 +36,8 @@
             "target_unseen": {
                 "damage": 8.0,
                 "time_to_charge": 40,
-                "seconds_unseen": 3,
-                "chance_per_second": 0.03
+                "seconds_unseen": 2,
+                "chance_per_second": 0.04
             }
         }
     },

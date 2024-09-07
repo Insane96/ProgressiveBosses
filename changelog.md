@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Wither and Wither Minions are now affected by IguanaTweaks' Smite and Water Coolant enchantments
+* Minor rebalance to charge when unseen
 
 ## Alpha 4.2.0
 * [Wither now has a death animation when dying](https://youtube.com/shorts/J8IGIIoF9O4)
