@@ -2,8 +2,8 @@ package insane96mcp.progressivebosses.module.wither;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
+import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBEntities;

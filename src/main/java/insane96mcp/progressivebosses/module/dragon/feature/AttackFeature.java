@@ -2,9 +2,9 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
+import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.base.config.LoadFeature;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;

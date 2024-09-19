@@ -1,6 +1,7 @@
 # Changelog
 
-## Upcoming
+## Alpha 4.2.1
+* Requires InsaneLib 1.15.0
 * Wither and Wither Minions are now affected by IguanaTweaks' Smite and Water Coolant enchantments
 * Minor rebalance to charge when unseen
 * Wither charge no longer pushes players in creative not flying
