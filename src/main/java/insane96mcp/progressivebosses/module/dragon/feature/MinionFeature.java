@@ -3,11 +3,9 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
-import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.util.MCUtils;
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
@@ -46,7 +44,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Label(name = "Minions", description = "Shulkers that will make you float around.")
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class MinionFeature extends Feature {
 
 	@Config(min = 0)

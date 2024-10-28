@@ -2,24 +2,17 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
-import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.util.MCUtils;
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 @Label(name = "Health", description = "Bonus Health and Bonus regeneration.")
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class HealthFeature extends Feature {
 
 	@Config(min = 0)
@@ -43,19 +36,6 @@ public class HealthFeature extends Feature {
 
 	public HealthFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);
-	}
-
-	@SubscribeEvent
-	public void onSpawn(EntityJoinLevelEvent event) {
-		//noinspection ConstantConditions
-		if (event.getLevel().isClientSide
-				|| !this.isEnabled()
-				|| bonusHealth == 0d
-				|| !(event.getEntity() instanceof EnderDragon dragon)
-				|| dragon.getAttribute(Attributes.MAX_HEALTH).getModifier(Strings.AttributeModifiers.BONUS_HEALTH_UUID) != null)
-			return;
-
-		MCUtils.applyModifier(dragon, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, bonusHealth * DifficultyHelper.getScalingDifficulty(dragon), AttributeModifier.Operation.ADDITION);
 	}
 
 	@SubscribeEvent

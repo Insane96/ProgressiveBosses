@@ -10,7 +10,6 @@ public class Strings {
 
 		public static final String KILLED_DRAGONS = ProgressiveBosses.RESOURCE_PREFIX + "killed_dragons";
 		public static final String FIRST_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "first_dragon";
-		public static final String EGGS_TO_DROP = ProgressiveBosses.RESOURCE_PREFIX + "eggs_to_drop";
 		public static final String CRYSTAL_CAGES = ProgressiveBosses.RESOURCE_PREFIX + "crystal_cages";
 		public static final String MORE_CRYSTALS = ProgressiveBosses.RESOURCE_PREFIX + "more_crystals";
 		public static final String CRYSTAL_RESPAWN = ProgressiveBosses.RESOURCE_PREFIX + "crystal_respawn";

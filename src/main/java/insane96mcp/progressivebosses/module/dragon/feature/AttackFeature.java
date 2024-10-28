@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
-import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
@@ -44,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Label(name = "Attack", description = "Makes the dragon hit harder in various different ways")
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class AttackFeature extends Feature {
 	static ResourceKey<DamageType> DRAGON_FIREBALL_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_fireball"));
 

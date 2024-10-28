@@ -2,10 +2,8 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
-import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -19,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 @Label(name = "Resistances & Vulnerabilities", description = "Handles the Damage Resistances and Vulnerabilities")
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class ResistancesFeature extends Feature {
 
 	@Config(min = 0d, max = 1d)

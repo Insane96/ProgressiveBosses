@@ -3,11 +3,9 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import com.google.common.collect.ImmutableList;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
-import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.util.MathHelper;
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.DifficultyHelper;
@@ -41,7 +39,6 @@ import java.util.*;
 import java.util.stream.Stream;
 
 @Label(name = "Crystals", description = "Makes more Crystal spawn and with more cages.")
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class CrystalFeature extends Feature {
 	@Config(min = -1)
 	@Label(name = "More Cages at Difficulty", description = "At this difficulty cages will start to appear around other crystals too. -1 will disable this feature.")

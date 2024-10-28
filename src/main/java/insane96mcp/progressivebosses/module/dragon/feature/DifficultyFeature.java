@@ -3,12 +3,11 @@ package insane96mcp.progressivebosses.module.dragon.feature;
 import com.google.common.util.concurrent.AtomicDouble;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.Label;
-import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.util.LogHelper;
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.capability.Difficulty;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +24,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Label(name = "Difficulty Settings", description = "How difficulty is handled for the Dragon.")
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon", canBeDisabled = false)
 public class DifficultyFeature extends Feature {
 
 	@Config(min = 1)
@@ -84,7 +82,7 @@ public class DifficultyFeature extends Feature {
 			});
 		}
 
-		dragonTags.putInt(Strings.Tags.EGGS_TO_DROP, playersFirstDragon.get());
+		dragonTags.putInt(DragonFeature.EGGS_TO_DROP, playersFirstDragon.get());
 
 		if (!sumKilledDragonDifficulty)
 			dragonDifficulty.set(dragonDifficulty.get() / players.size());
