@@ -5,19 +5,23 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStatsReloadListener;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.util.List;
 import java.util.Optional;
 
 @Label(name = "Ender Dragon Feature")
@@ -25,7 +29,7 @@ import java.util.Optional;
 public class DragonFeature extends Feature {
     public static final String LEVEL = ProgressiveBosses.RESOURCE_PREFIX + "level";
 
-    public static final String EGGS_TO_DROP = ProgressiveBosses.RESOURCE_PREFIX + "eggs_to_drop";
+    public static final String HAS_KILLED_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "has_killed_dragon";
 
     @Config
     @Label(name = "Dragon Egg per Player", description = "If true whenever a player, that has never killed the dragon, kills the dragon a Dragon Egg will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
@@ -70,7 +74,29 @@ public class DragonFeature extends Feature {
                 || !(event.getEntity() instanceof EnderDragon dragon))
             return;
 
+        tryHeal(dragon);
         dropEgg(dragon);
+    }
+
+    private static void tryHeal(EnderDragon dragon) {
+        if (!dragon.isAlive()
+                || dragon.getPhaseManager().getCurrentPhase().getPhase() == EnderDragonPhase.DYING
+                || dragon.tickCount % 10 != 5)
+            return;
+        Optional<DragonStats> stats = getDragonStats(dragon);
+        if (stats.isEmpty())
+            return;
+
+        if (stats.get().health.regeneration == 0f)
+            return;
+
+        float heal = stats.get().health.regeneration;
+        heal /= 2f;
+
+        if (dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= stats.get().health.regenWhenHitDuration)
+            heal *= stats.get().health.regenWhenHitRatio;
+
+        dragon.heal(heal);
     }
 
     private static void dropEgg(EnderDragon dragon) {
@@ -78,9 +104,20 @@ public class DragonFeature extends Feature {
                 || dragon.dragonDeathTime != 100)
             return;
 
-        CompoundTag tags = dragon.getPersistentData();
+        int radius = 256;
+        BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
+        BlockPos pos2 = new BlockPos(radius, radius, radius);
+        AABB bb = new AABB(pos1, pos2);
 
-        int eggsToDrop = tags.getInt(EGGS_TO_DROP);
+        List<ServerPlayer> players = dragon.level().getEntitiesOfClass(ServerPlayer.class, bb);
+
+        int eggsToDrop = 0;
+        for (ServerPlayer player : players) {
+            if (MCUtils.getOrCreatePersistedData(player).contains(HAS_KILLED_DRAGON))
+                continue;
+            eggsToDrop++;
+            MCUtils.getOrCreatePersistedData(player).putBoolean(HAS_KILLED_DRAGON, true);
+        }
 
         if (dragon.getDragonFight() != null && !dragon.getDragonFight().hasPreviouslyKilledDragon()) {
             eggsToDrop--;

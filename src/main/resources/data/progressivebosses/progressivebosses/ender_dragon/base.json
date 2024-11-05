@@ -1,12 +1,12 @@
 {
     "level": 0,
     "health": {
-        "health": 100.0,
-        "regeneration": 1.0,
-        "crystal_regeneration": 1.0,
-        "regen_when_hit": 1.0,
-        "regen_when_hit_duration": 30
+        "health": 500.0,
+        "regeneration": 0.5,
+        "crystal_regeneration": 1.5,
+        "regen_when_hit_ratio": 0.8,
+        "regen_when_hit_duration": 0
     },
-    "xp_dropped": 100000,
+    "xp_dropped": 5000,
     "loot_table": "progressivebosses:entities/ender_dragon/base"
 }

@@ -2,8 +2,8 @@ package insane96mcp.progressivebosses.mixin;
 
 import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.base.Feature;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.feature.AttackFeature;
-import insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonChargePlayerPhase;
@@ -34,9 +34,12 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 		super(dragonIn);
 	}
 
+	/**
+	 * Try to charge or acid ball when charging ends
+	 */
 	@Inject(at = @At("HEAD"), method = "doServerTick", cancellable = true)
 	public void doServerTick(CallbackInfo ci) {
-		if (!Feature.isEnabled(DifficultyFeature.class))
+		if (!Feature.isEnabled(DragonFeature.class))
 			return;
 		if (this.targetLocation == null) {
 			LOGGER.warn("Aborting charge player as no target was set.");
@@ -54,7 +57,6 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 			if (d0 < 100.0D || d0 > 22500.0D || this.dragon.horizontalCollision || this.dragon.verticalCollision) {
 				++this.timeSinceCharge;
 			}
-
 		}
 		ci.cancel();
 	}

@@ -159,7 +159,7 @@ public class AttackFeature extends Feature {
 		CompoundTag tags = dragon.getPersistentData();
 		float difficulty = tags.getFloat(Strings.Tags.DIFFICULTY);
 
-		double chance = chargePlayerMaxChance * (difficulty / DifficultyFeature.maxDifficulty);
+		double chance = chargePlayerMaxChance /* * (difficulty / DifficultyFeature.maxDifficulty)*/;
 
 		BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
 		AABB boundingBox = new AABB(centerPodium).inflate(64d);
@@ -206,7 +206,7 @@ public class AttackFeature extends Feature {
 		if (difficulty == 0f)
 			return false;
 
-		double chance = fireballMaxChance * (difficulty / DifficultyFeature.maxDifficulty);
+		double chance = fireballMaxChance /* * (difficulty / DifficultyFeature.maxDifficulty)*/;
 
 		double rng = dragon.getRandom().nextDouble();
 

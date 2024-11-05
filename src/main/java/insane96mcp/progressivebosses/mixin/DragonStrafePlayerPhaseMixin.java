@@ -1,8 +1,8 @@
 package insane96mcp.progressivebosses.mixin;
 
 import insane96mcp.insanelib.base.Feature;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.feature.AttackFeature;
-import insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -34,9 +34,12 @@ public abstract class DragonStrafePlayerPhaseMixin extends AbstractDragonPhaseIn
 		super(dragonIn);
 	}
 
+	/**
+	 * Try charge or fireball on phase end
+	 */
 	@Inject(at = @At("HEAD"), method = "doServerTick", cancellable = true)
 	public void doServerTick(CallbackInfo ci) {
-		if (!Feature.isEnabled(DifficultyFeature.class))
+		if (!Feature.isEnabled(DragonFeature.class))
 			return;
 		if (this.attackTarget == null) {
 			LogHelper.warn("Skipping player strafe phase because no player was found");
