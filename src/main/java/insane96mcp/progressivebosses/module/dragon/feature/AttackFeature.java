@@ -227,8 +227,8 @@ public class AttackFeature extends Feature {
 
 
 	public static boolean onFireballImpact(DragonFireball fireball, @Nullable Entity shooter, HitResult result) {
-		if (!isEnabled(AttackFeature.class))
-			return false;
+		/*if (!isEnabled(AttackFeature.class))
+			return false;*/
 
 		onImpactExplosion(fireball, shooter, result);
 		return onImpact3DCloud(fireball, result);

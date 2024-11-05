@@ -12,15 +12,22 @@ import insane96mcp.progressivebosses.module.dragon.data.DragonStatsReloadListene
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -126,6 +133,43 @@ public class DragonFeature extends Feature {
         for (int i = 0; i < eggsToDrop; i++) {
             dragon.level().setBlockAndUpdate(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.defaultBlockState());
         }
+    }
+
+    @SubscribeEvent
+    public void onDragonDamage(LivingDamageEvent event) {
+        if (!this.isEnabled()
+                || !(event.getEntity() instanceof EnderDragon dragon))
+            return;
+
+        Optional<DragonStats> stats = getDragonStats(dragon);
+        if (stats.isEmpty())
+            return;
+        meleeDamageMultiplier(event, dragon, stats.get());
+        rangedDamageMultiplier(event, dragon, stats.get());
+        explosionDamageReduction(event, dragon, stats.get());
+    }
+
+    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);
+
+    private static void meleeDamageMultiplier(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!(event.getSource().getDirectEntity() instanceof LivingEntity))
+            return;
+        if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
+            event.setAmount(event.getAmount() * stats.vulnerabilities.meleeDamageMultiplierWhenSitting);
+        else
+            event.setAmount(event.getAmount() * stats.vulnerabilities.meleeDamageMultiplierWhenNotSitting);
+    }
+
+    private static void rangedDamageMultiplier(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!(event.getSource().getDirectEntity() instanceof Projectile))
+            return;
+        event.setAmount(event.getAmount() * stats.vulnerabilities.rangedDamageMultiplier);
+    }
+
+    private static void explosionDamageReduction(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!(event.getSource().is(DamageTypeTags.IS_EXPLOSION) && !event.getSource().is(DamageTypes.FIREWORKS)))
+            return;
+        event.setAmount(event.getAmount() * stats.vulnerabilities.explosionDamageMultiplier);
     }
 
     public static Optional<DragonStats> getDragonStats(EnderDragon dragon) {
