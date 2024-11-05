@@ -18,6 +18,7 @@ public class DragonStats {
     public int level;
     public DragonHealth health;
     public DragonVulnerabilities vulnerabilities;
+    public DragonCrystal crystal;
     /*public WitherAttack attack;
     @Nullable
     public PoweredAttributeModifiers attributeModifiers;
@@ -28,10 +29,11 @@ public class DragonStats {
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonStats(int level, DragonHealth health, DragonVulnerabilities vulnerabilities, int xpDropped, ResourceLocation lootTable) {
+    public DragonStats(int level, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.health = health;
         this.vulnerabilities = vulnerabilities;
+        this.crystal = crystal;
         this.xpDropped = xpDropped;
         this.lootTable = lootTable;
     }
@@ -52,6 +54,7 @@ public class DragonStats {
             return new DragonStats(GsonHelper.getAsInt(json.getAsJsonObject(), "level"),
                     context.deserialize(json.getAsJsonObject().get("health"), DragonHealth.class),
                     context.deserialize(json.getAsJsonObject().get("vulnerabilities"), DragonVulnerabilities.class),
+                    context.deserialize(json.getAsJsonObject().get("crystal"), DragonCrystal.class),
                     //context.deserialize(json.getAsJsonObject().get("attack"), WitherAttack.class),
                     //resistances,
                     //witherMinionStats,
@@ -67,6 +70,7 @@ public class DragonStats {
             jsonObject.addProperty("level", src.level);
             jsonObject.add("health", context.serialize(src.health));
             jsonObject.add("vulnerabilities", context.serialize(src.vulnerabilities));
+            jsonObject.add("crystal", context.serialize(src.crystal));
             //jsonObject.add("attack", context.serialize(src.attack));
             //if (src.attributeModifiers != null)
             //    jsonObject.add("attribute_modifiers", context.serialize(src.attributeModifiers));

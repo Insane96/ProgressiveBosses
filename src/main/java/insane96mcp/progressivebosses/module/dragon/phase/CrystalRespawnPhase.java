@@ -1,16 +1,19 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
-import insane96mcp.progressivebosses.module.dragon.feature.CrystalFeature;
+import com.google.common.collect.ImmutableList;
 import insane96mcp.progressivebosses.utils.LogHelper;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
+import net.minecraft.world.level.levelgen.feature.configurations.SpikeConfiguration;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -31,10 +34,6 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		super(dragonIn);
 	}
 
-	/**
-	 * Gives the phase a chance to update its status.
-	 * Called by dragon's onLivingUpdate. Only used when !worldObj.isClientSide.
-	 */
 	public void doServerTick() {
 		if (this.targetLocation == null) {
 			if (this.spikesToRespawn.isEmpty()) {
@@ -56,14 +55,13 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			if (tick <= 75 && tick % 5 == 0)
 				dragon.playSound(SoundEvents.ENDER_DRAGON_GROWL, 4F, 1.0F);
 			if (tick >= TICK_RESPAWN_CRYSTAL) {
-				double x = spikesToRespawn.get(0).getCenterX();
-				double y = spikesToRespawn.get(0).getHeight();
-				double z = spikesToRespawn.get(0).getCenterZ();
-				EndCrystal crystal = new EndCrystal(dragon.level(), x + 0.5, y + 1, z + 0.5);
-				crystal.setShowBottom(true);
-				crystal.level().explode(dragon, x + 0.5, y + 1.5, z + 0.5, 5f, Level.ExplosionInteraction.NONE);
-				dragon.level().addFreshEntity(crystal);
-				CrystalFeature.generateCage(crystal.level(), crystal.blockPosition());
+				SpikeFeature.EndSpike spike = spikesToRespawn.get(0);
+				boolean wasGuarded = spike.guarded;
+				spike.guarded = true;
+				this.dragon.level().explode(null, spike.getCenterX() + 0.5F, spike.getHeight(), spike.getCenterZ() + 0.5F, 5.0F, Level.ExplosionInteraction.BLOCK);
+				RandomSource random = RandomSource.create(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island to generate guarded
+				net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), (ServerLevel) this.dragon.level(), ((ServerLevel) this.dragon.level()).getChunkSource().getGenerator(), random, new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
+				spike.guarded = wasGuarded;
 				spikesToRespawn.remove(0);
 				if (this.spikesToRespawn.isEmpty())
 					LogHelper.info("No more crystals to respawn left");

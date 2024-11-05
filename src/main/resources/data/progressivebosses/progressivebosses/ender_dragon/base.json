@@ -13,6 +13,11 @@
         "explosion_damage_multiplier": 0.4,
         "ranged_damage_multiplier": 1
     },
+    "crystal": {
+        "cages": 3,
+        "bonus_crystals": 1,
+        "crystals_respawned": 3
+    },
     "xp_dropped": 5000,
     "loot_table": "progressivebosses:entities/ender_dragon/base"
 }

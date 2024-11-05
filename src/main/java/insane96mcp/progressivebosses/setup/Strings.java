@@ -12,7 +12,6 @@ public class Strings {
 		public static final String FIRST_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "first_dragon";
 		public static final String CRYSTAL_CAGES = ProgressiveBosses.RESOURCE_PREFIX + "crystal_cages";
 		public static final String MORE_CRYSTALS = ProgressiveBosses.RESOURCE_PREFIX + "more_crystals";
-		public static final String CRYSTAL_RESPAWN = ProgressiveBosses.RESOURCE_PREFIX + "crystal_respawn";
 		public static final String DRAGON_MINION = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion";
 		public static final String DRAGON_LARVA = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva";
 		public static final String DRAGON_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion_cooldown";

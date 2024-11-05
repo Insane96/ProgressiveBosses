@@ -1,6 +1,9 @@
 # Changelog
 
 ## Upcoming
+* Data packable Ender Dragon
+  * Cages around crystals now generate during the respawn animation instead of the end
+  * Crystals are now respawned from the shortest one
 * Rebalancements
   * Wither Charge Attack now ignores armor
   * Ultimate wither charge attack damage slightly increased (12 -> 13)
