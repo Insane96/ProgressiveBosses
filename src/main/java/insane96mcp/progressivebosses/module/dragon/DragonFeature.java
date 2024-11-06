@@ -288,7 +288,8 @@ public class DragonFeature extends Feature {
 
     public static void tickLarva(EnderDragon dragon) {
         Optional<DragonStats> stats = getDragonStats(dragon);
-        if (stats.isEmpty())
+        if (stats.isEmpty()
+                || stats.get().larva.spawned <= 0)
             return;
 
         CompoundTag dragonTags = dragon.getPersistentData();
@@ -342,7 +343,8 @@ public class DragonFeature extends Feature {
 
     public static void tickMinion(EnderDragon dragon) {
         Optional<DragonStats> stats = getDragonStats(dragon);
-        if (stats.isEmpty())
+        if (stats.isEmpty()
+                || stats.get().minion.spawned <= 0)
             return;
 
         Level level = dragon.level();
