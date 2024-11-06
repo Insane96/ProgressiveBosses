@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.entity;
 
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
-import insane96mcp.progressivebosses.module.dragon.feature.LarvaFeature;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -10,6 +9,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -71,7 +71,7 @@ public class Larva extends Monster {
 
 	@Override
 	public boolean hurt(DamageSource damageSource, float amount) {
-		if (LarvaFeature.shouldTakeReducedDamage(damageSource))
+		if (damageSource.getEntity() instanceof EnderDragon)
 			return super.hurt(damageSource, amount * 0.1f);
 		return super.hurt(damageSource, amount);
 	}

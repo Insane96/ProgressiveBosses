@@ -19,6 +19,7 @@ public class DragonStats {
     public DragonHealth health;
     public DragonVulnerabilities vulnerabilities;
     public DragonCrystal crystal;
+    public DragonLarva larva;
     /*public WitherAttack attack;
     @Nullable
     public PoweredAttributeModifiers attributeModifiers;
@@ -29,11 +30,12 @@ public class DragonStats {
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonStats(int level, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, int xpDropped, ResourceLocation lootTable) {
+    public DragonStats(int level, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, DragonLarva larva, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.health = health;
         this.vulnerabilities = vulnerabilities;
         this.crystal = crystal;
+        this.larva = larva;
         this.xpDropped = xpDropped;
         this.lootTable = lootTable;
     }
@@ -55,11 +57,7 @@ public class DragonStats {
                     context.deserialize(json.getAsJsonObject().get("health"), DragonHealth.class),
                     context.deserialize(json.getAsJsonObject().get("vulnerabilities"), DragonVulnerabilities.class),
                     context.deserialize(json.getAsJsonObject().get("crystal"), DragonCrystal.class),
-                    //context.deserialize(json.getAsJsonObject().get("attack"), WitherAttack.class),
-                    //resistances,
-                    //witherMinionStats,
-                    //context.deserialize(json.getAsJsonObject().get("death"), WitherDeath.class),
-                    //context.deserialize(json.getAsJsonObject().get("misc"), WitherMiscStats.class),
+                    context.deserialize(json.getAsJsonObject().get("larva"), DragonLarva.class),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "xp_dropped"),
                     lootTable);
         }
@@ -71,13 +69,7 @@ public class DragonStats {
             jsonObject.add("health", context.serialize(src.health));
             jsonObject.add("vulnerabilities", context.serialize(src.vulnerabilities));
             jsonObject.add("crystal", context.serialize(src.crystal));
-            //jsonObject.add("attack", context.serialize(src.attack));
-            //if (src.attributeModifiers != null)
-            //    jsonObject.add("attribute_modifiers", context.serialize(src.attributeModifiers));
-            //if (src.minion != null)
-            //    jsonObject.add("minion", context.serialize(src.minion));
-            //jsonObject.add("death", context.serialize(src.death));
-            //jsonObject.add("misc", context.serialize(src.misc));
+            jsonObject.add("larva", context.serialize(src.larva));
             jsonObject.addProperty("xp_dropped", src.xpDropped);
             if (!src.lootTable.equals(VANILLA_LOOT_TABLE))
                 jsonObject.addProperty("loot_table", src.lootTable.toString());

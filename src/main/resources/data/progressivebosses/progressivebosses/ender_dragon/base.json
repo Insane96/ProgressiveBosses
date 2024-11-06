@@ -19,6 +19,12 @@
         "bonus_crystals": 1,
         "crystals_respawned": 1
     },
+    "larva": {
+        "health": 6,
+        "spawned": 1,
+        "min_cooldown": 800,
+        "max_cooldown": 1400
+    },
     "xp_dropped": 5000,
     "loot_table": "progressivebosses:entities/ender_dragon/base"
 }

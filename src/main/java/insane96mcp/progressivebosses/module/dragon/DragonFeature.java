@@ -10,7 +10,10 @@ import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStatsReloadListener;
+import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
+import insane96mcp.progressivebosses.setup.PBEntities;
+import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -22,6 +25,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
@@ -34,6 +39,8 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -55,6 +62,8 @@ public class DragonFeature extends Feature {
      * How many times has the dragon respawned crystals
      */
     public static final String CRYSTAL_RESPAWN = ProgressiveBosses.RESOURCE_PREFIX + "crystal_respawn";
+
+    public static final String DRAGON_LARVA_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva_cooldown";
 
     @Config
     @Label(name = "Explosion Immune", description = "Crystals can no longer be destroyed by other explosions.")
@@ -84,8 +93,10 @@ public class DragonFeature extends Feature {
         dragon.getPersistentData().putBoolean(ProgressiveBosses.RESOURCE_PREFIX + "processed", true);
 
         moreCrystals(dragon, stats.get());
+        setupLarvaCooldown(dragon, stats.get());
     }
 
+    //region Crystal inside pillars
     private static void moreCrystals(EnderDragon dragon, DragonStats stats) {
         List<EndCrystal> crystals = new ArrayList<>();
 
@@ -134,6 +145,12 @@ public class DragonFeature extends Feature {
         EndCrystal crystal = new EndCrystal(level, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
         level.addFreshEntity(crystal);
     }
+    //endregion
+
+    public static void setupLarvaCooldown(EnderDragon dragon, DragonStats stats) {
+        int cooldown = (int) (Mth.nextInt(dragon.getRandom(), stats.larva.minCooldown, stats.larva.maxCooldown) * 0.5d);
+        dragon.getPersistentData().putInt(DRAGON_LARVA_COOLDOWN, cooldown);
+    }
 
     @SubscribeEvent
     public void onExpDrop(LivingExperienceDropEvent event) {
@@ -156,6 +173,7 @@ public class DragonFeature extends Feature {
 
         tryHeal(dragon);
         dropEgg(dragon);
+        tickLarva(dragon);
     }
 
     private static void tryHeal(EnderDragon dragon) {
@@ -206,6 +224,60 @@ public class DragonFeature extends Feature {
         for (int i = 0; i < eggsToDrop; i++) {
             dragon.level().setBlockAndUpdate(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.defaultBlockState());
         }
+    }
+
+    public static void tickLarva(EnderDragon dragon) {
+        Optional<DragonStats> stats = getDragonStats(dragon);
+        if (stats.isEmpty())
+            return;
+
+        CompoundTag dragonTags = dragon.getPersistentData();
+        if (dragon.getHealth() <= 0)
+            return;
+
+        int cooldown = dragonTags.getInt(DragonFeature.DRAGON_LARVA_COOLDOWN);
+        if (cooldown > 0) {
+            dragonTags.putInt(DragonFeature.DRAGON_LARVA_COOLDOWN, cooldown - 1);
+            return;
+        }
+
+        //If there is no player on the main island don't spawn larvae
+        Level level = dragon.level();
+        BlockPos centerPodium = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+        AABB bb = new AABB(centerPodium).inflate(64d);
+        List<ServerPlayer> players = level.getEntitiesOfClass(ServerPlayer.class, bb);
+
+        if (players.isEmpty())
+            return;
+
+        cooldown = Mth.nextInt(level.random, stats.get().larva.minCooldown, stats.get().larva.maxCooldown);
+        dragonTags.putInt(DragonFeature.DRAGON_LARVA_COOLDOWN, cooldown - 1);
+
+        for (int i = 0; i < stats.get().larva.spawned; i++) {
+            float angle = level.random.nextFloat() * (float) Math.PI * 2f;
+            float x = (float) Math.floor(Math.cos(angle) * 3.33f);
+            float z = (float) Math.floor(Math.sin(angle) * 3.33f);
+            int y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 255, z)).getY();
+            summonLarva(level, new Vec3(x + 0.5, y, z + 0.5), stats.get());
+        }
+    }
+
+    public static void summonLarva(Level level, Vec3 pos, DragonStats stats) {
+        Larva larva = new Larva(PBEntities.LARVA.get(), level);
+        CompoundTag minionTags = larva.getPersistentData();
+
+        minionTags.putBoolean("mobspropertiesrandomness:processed", true);
+        //TODO Scaling health
+
+        larva.setPos(pos.x, pos.y, pos.z);
+        larva.setPersistenceRequired();
+
+        //MCUtils.applyModifier(larva, Attributes.ATTACK_DAMAGE, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS_UUID, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS, 0.35, AttributeModifier.Operation.ADDITION);
+        MCUtils.applyModifier(larva, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2.5d, AttributeModifier.Operation.MULTIPLY_BASE);
+        larva.getAttribute(Attributes.MAX_HEALTH).setBaseValue(stats.larva.health);
+        larva.setHealth(stats.larva.health);
+
+        level.addFreshEntity(larva);
     }
 
     @SubscribeEvent
