@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.module.dragon.feature.MinionFeature;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -14,6 +15,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Optional;
+
 @Mixin(ShulkerBullet.class)
 public abstract class ShulkerBulletMixin extends Projectile {
 
@@ -24,21 +27,21 @@ public abstract class ShulkerBulletMixin extends Projectile {
 
 	@ModifyArg(method = "onHitEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"), index = 0)
 	private MobEffectInstance applyBlindness(MobEffectInstance mobEffectInstance) {
-		if (this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-			return new MobEffectInstance(MobEffects.BLINDNESS, MinionFeature.blindingDuration);
+		if (this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET)) {
+			int duration = 150;
+			if (this.getOwner() != null) {
+				Optional<DragonStats> stats = DragonFeature.getDragonStats(this.getOwner().getPersistentData().getByte(DragonFeature.LEVEL));
+				if (stats.isPresent())
+					duration = stats.get().minion.blindingDuration;
+			}
+			return new MobEffectInstance(MobEffects.BLINDNESS, duration);
+		}
 		else
 			return mobEffectInstance;
 	}
 
-	/*@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;Lnet/minecraft/world/entity/Entity;)Z"), method = "onHitEntity(Lnet/minecraft/world/phys/EntityHitResult;)V")
-	private void onEntityHit(MobEffectInstance instance, Entity entity) {
-		//ShulkerBullet $this = (ShulkerBullet) (Object) this;
-		//if ($this.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET))
-		//	entity.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 150));
-	}*/
-
 	@Inject(at = @At("HEAD"), method = "tick()V")
 	public void tick(CallbackInfo callback) {
-		MinionFeature.onBulletTick((ShulkerBullet) (Object) this);
+		DragonFeature.onBulletTick((ShulkerBullet) (Object) this);
 	}
 }

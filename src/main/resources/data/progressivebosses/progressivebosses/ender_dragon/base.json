@@ -25,6 +25,14 @@
         "min_cooldown": 800,
         "max_cooldown": 1400
     },
+    "minion": {
+        "health": 20,
+        "spawned": 1,
+        "min_cooldown": 1400,
+        "max_cooldown": 2000,
+        "blinding_chance": 0.4,
+        "blinding_duration": 150
+    },
     "xp_dropped": 5000,
     "loot_table": "progressivebosses:entities/ender_dragon/base"
 }
