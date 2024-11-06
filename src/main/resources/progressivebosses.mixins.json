@@ -8,6 +8,8 @@
         "DragonFireballMixin",
         "DragonHoldingPatternPhaseMixin",
         "DragonLandingPhaseMixin",
+        "DragonRespawnAnimationMixin",
+        "DragonSittingAttackingPhaseMixin",
         "DragonStrafePlayerPhaseMixin",
         "ElderGuardianMixin",
         "EndCrystalMixin",
@@ -17,5 +19,8 @@
         "ShulkerBulletMixin",
         "ShulkerMixin"
     ],
-    "minVersion": "0.8"
+    "minVersion": "0.8",
+    "client": [
+        "LevelRendererMixin"
+    ]
 }

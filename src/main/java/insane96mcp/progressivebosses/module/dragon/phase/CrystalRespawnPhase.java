@@ -8,6 +8,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
@@ -62,6 +63,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 				RandomSource random = RandomSource.create(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island to generate guarded
 				net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), (ServerLevel) this.dragon.level(), ((ServerLevel) this.dragon.level()).getChunkSource().getGenerator(), random, new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
 				spike.guarded = wasGuarded;
+				this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).forEach(endCrystal -> endCrystal.setInvulnerable(false));
 				spikesToRespawn.remove(0);
 				if (this.spikesToRespawn.isEmpty())
 					LogHelper.info("No more crystals to respawn left");
@@ -88,7 +90,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	 * Returns the maximum amount dragon may rise or fall during this phase
 	 */
 	public float getFlySpeed() {
-		return 12F;
+		return 2F;
 	}
 
 	@Override
@@ -125,6 +127,10 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 
 	public static EnderDragonPhase<CrystalRespawnPhase> getPhaseType() {
 		return CRYSTAL_RESPAWN;
+	}
+
+	public static boolean isInThisPhase(EnderDragon dragon) {
+		return dragon.getPhaseManager().getCurrentPhase().getPhase() == CRYSTAL_RESPAWN;
 	}
 
 	public static void init() {

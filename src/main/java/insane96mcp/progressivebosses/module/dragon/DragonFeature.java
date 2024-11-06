@@ -219,9 +219,40 @@ public class DragonFeature extends Feature {
             return;
         meleeDamageMultiplier(event, dragon, stats.get());
         rangedDamageMultiplier(event, dragon, stats.get());
-        explosionDamageReduction(event, dragon, stats.get());
+        explosionDamageMultiplier(event, dragon, stats.get());
+        respawningCrystalDamageMultiplier(event, dragon, stats.get());
 
         tryRespawningCrystalPhase(dragon, stats.get());
+    }
+
+    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);
+
+    private static void meleeDamageMultiplier(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!(event.getSource().getDirectEntity() instanceof LivingEntity))
+            return;
+        if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
+            event.setAmount(event.getAmount() * stats.vulnerabilities.meleeDamageMultiplierWhenSitting);
+        else
+            event.setAmount(event.getAmount() * stats.vulnerabilities.meleeDamageMultiplierWhenNotSitting);
+    }
+
+    private static void rangedDamageMultiplier(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!(event.getSource().getDirectEntity() instanceof Projectile))
+            return;
+        event.setAmount(event.getAmount() * stats.vulnerabilities.rangedDamageMultiplier);
+    }
+
+    private static void explosionDamageMultiplier(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!(event.getSource().is(DamageTypeTags.IS_EXPLOSION) && !event.getSource().is(DamageTypes.FIREWORKS)))
+            return;
+        event.setAmount(event.getAmount() * stats.vulnerabilities.explosionDamageMultiplier);
+    }
+
+    private static void respawningCrystalDamageMultiplier(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!dragon.getPhaseManager().getCurrentPhase().isSitting() ||
+                !CrystalRespawnPhase.isInThisPhase(dragon))
+            return;
+        event.setAmount(event.getAmount() * stats.vulnerabilities.respawningCrystalDamageMultiplier);
     }
 
     private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF, EnderDragonPhase.CHARGING_PLAYER, EnderDragonPhase.STRAFE_PLAYER);
@@ -270,29 +301,6 @@ public class DragonFeature extends Feature {
      */
     private static float getChanceAtValue(float value, float max, float min) {
         return Mth.clamp((max - min - (value - min)) / (max - min), 0f, 1f);
-    }
-
-    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> sittingPhases = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);
-
-    private static void meleeDamageMultiplier(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
-        if (!(event.getSource().getDirectEntity() instanceof LivingEntity))
-            return;
-        if (sittingPhases.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
-            event.setAmount(event.getAmount() * stats.vulnerabilities.meleeDamageMultiplierWhenSitting);
-        else
-            event.setAmount(event.getAmount() * stats.vulnerabilities.meleeDamageMultiplierWhenNotSitting);
-    }
-
-    private static void rangedDamageMultiplier(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
-        if (!(event.getSource().getDirectEntity() instanceof Projectile))
-            return;
-        event.setAmount(event.getAmount() * stats.vulnerabilities.rangedDamageMultiplier);
-    }
-
-    private static void explosionDamageReduction(LivingDamageEvent event, EnderDragon dragon, DragonStats stats) {
-        if (!(event.getSource().is(DamageTypeTags.IS_EXPLOSION) && !event.getSource().is(DamageTypes.FIREWORKS)))
-            return;
-        event.setAmount(event.getAmount() * stats.vulnerabilities.explosionDamageMultiplier);
     }
 
     public static boolean onCrystalDamagedByExplosion(DamageSource source) {

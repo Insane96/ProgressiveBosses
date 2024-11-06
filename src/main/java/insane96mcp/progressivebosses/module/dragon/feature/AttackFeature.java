@@ -188,10 +188,10 @@ public class AttackFeature extends Feature {
 
 		dragon.getPhaseManager().setPhase(EnderDragonPhase.CHARGING_PLAYER);
 		Vec3 targetPos = player.position();
-		if (targetPos.y < dragon.getY())
+		/*if (targetPos.y < dragon.getY())
 			targetPos = targetPos.add(0d, -5d, 0d);
 		else
-			targetPos = targetPos.add(0d, 6d, 0d);
+			targetPos = targetPos.add(0d, 6d, 0d);*/
 		dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(targetPos);
 	}
 

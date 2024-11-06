@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(DragonChargePlayerPhase.class)
 public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseInstance {
@@ -61,11 +60,11 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 		ci.cancel();
 	}
 
-	@Inject(at = @At("HEAD"), method = "getFlySpeed()F", cancellable = true)
+	/*@Inject(at = @At("HEAD"), method = "getFlySpeed()F", cancellable = true)
 	private void getFlySpeed(CallbackInfoReturnable<Float> callback) {
 		if (AttackFeature.increaseMaxRiseAndFall)
 			callback.setReturnValue(24f);
-	}
+	}*/
 
 	@Shadow public abstract void begin();
 
