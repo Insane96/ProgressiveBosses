@@ -12,7 +12,7 @@
         "melee_damage_multiplier_when_not_sitting": 1.4,
         "explosion_damage_multiplier": 0.4,
         "ranged_damage_multiplier": 1,
-        "respawning_crystal_damage_multiplier": 1.5
+        "respawning_crystal_damage_multiplier": 2
     },
     "crystal": {
         "cages": 3,

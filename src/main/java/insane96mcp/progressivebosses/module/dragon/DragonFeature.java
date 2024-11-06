@@ -220,7 +220,6 @@ public class DragonFeature extends Feature {
         meleeDamageMultiplier(event, dragon, stats.get());
         rangedDamageMultiplier(event, dragon, stats.get());
         explosionDamageMultiplier(event, dragon, stats.get());
-        respawningCrystalDamageMultiplier(event, dragon, stats.get());
 
         tryRespawningCrystalPhase(dragon, stats.get());
     }
@@ -255,7 +254,7 @@ public class DragonFeature extends Feature {
         event.setAmount(event.getAmount() * stats.vulnerabilities.respawningCrystalDamageMultiplier);
     }
 
-    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF, EnderDragonPhase.CHARGING_PLAYER, EnderDragonPhase.STRAFE_PLAYER);
+    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF);
 
     public static void tryRespawningCrystalPhase(EnderDragon dragon, DragonStats stats) {
         CompoundTag dragonTags = dragon.getPersistentData();
@@ -290,9 +289,13 @@ public class DragonFeature extends Feature {
 
         List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level()));
         spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
-        for (int i = 0; i < crystalsToRespawn; i++) {
-            SpikeFeature.EndSpike targetSpike = spikes.get(i);
-            phase.addCrystalRespawn(targetSpike);
+        int spawned = 0;
+        for (SpikeFeature.EndSpike spike : spikes) {
+            if (!dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox(), EndCrystal::showsBottom).isEmpty())
+                continue;
+            phase.addCrystalRespawn(spike);
+            if (++spawned >= crystalsToRespawn)
+                break;
         }
     }
 

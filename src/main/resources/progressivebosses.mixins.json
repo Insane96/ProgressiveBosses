@@ -4,6 +4,7 @@
     "compatibilityLevel": "JAVA_8",
     "refmap": "progressivebosses.refmap.json",
     "mixins": [
+        "AbstractDragonSittingPhaseMixin",
         "DragonChargePlayerPhaseMixin",
         "DragonFireballMixin",
         "DragonHoldingPatternPhaseMixin",

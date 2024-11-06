@@ -1,6 +1,8 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.google.common.collect.ImmutableList;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -19,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	private static EnderDragonPhase<CrystalRespawnPhase> CRYSTAL_RESPAWN;
@@ -84,6 +87,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	public void begin() {
 		this.targetLocation = null;
 		this.spikesToRespawn.clear();
+		this.tick = 0;
 	}
 
 	/**
@@ -115,10 +119,13 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 
 	@Override
 	public float onHurt(DamageSource source, float amount) {
+		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
+		if (stats.isEmpty())
+			return amount;
 		if (source.is(DamageTypeTags.IS_EXPLOSION) && !source.getMsgId().equals("fireworks"))
 			return amount;
 
-		return amount * 1.5f;
+		return amount * stats.get().vulnerabilities.respawningCrystalDamageMultiplier;
 	}
 
 	public EnderDragonPhase<CrystalRespawnPhase> getPhase() {
