@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.mixin;
 
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.DragonMinion;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -42,6 +43,6 @@ public abstract class ShulkerBulletMixin extends Projectile {
 
 	@Inject(at = @At("HEAD"), method = "tick()V")
 	public void tick(CallbackInfo callback) {
-		DragonFeature.onBulletTick((ShulkerBullet) (Object) this);
+		DragonMinion.onBulletTick((ShulkerBullet) (Object) this);
 	}
 }

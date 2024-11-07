@@ -46,6 +46,9 @@ public class DragonStats {
         dragon.getAttribute(Attributes.MAX_HEALTH).setBaseValue(stats.health.health);
         dragon.setHealth(stats.health.health);
         dragon.lootTable = stats.lootTable;
+        DragonCrystal.moreCrystals(dragon, stats);
+        DragonLarva.setupLarvaCooldown(dragon, stats);
+        DragonMinion.setupMinionCooldown(dragon, stats);
     }
 
     public static final Type LIST_TYPE = new TypeToken<ArrayList<DragonStats>>(){}.getType();

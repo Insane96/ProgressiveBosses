@@ -2,9 +2,13 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 
 import java.lang.reflect.Type;
+import java.util.Optional;
 
 @JsonAdapter(DragonHealth.Serializer.class)
 public class DragonHealth {
@@ -20,6 +24,27 @@ public class DragonHealth {
         this.crystalRegeneration = crystalRegeneration;
         this.regenWhenHitRatio = regenWhenHitRatio;
         this.regenWhenHitDuration = regenWhenHitDuration;
+    }
+
+    public static void tryHeal(EnderDragon dragon) {
+        if (!dragon.isAlive()
+                || dragon.getPhaseManager().getCurrentPhase().getPhase() == EnderDragonPhase.DYING
+                || dragon.tickCount % 10 != 5)
+            return;
+        Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
+        if (stats.isEmpty())
+            return;
+
+        if (stats.get().health.regeneration == 0f)
+            return;
+
+        float heal = stats.get().health.regeneration;
+        heal /= 2f;
+
+        if (dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= stats.get().health.regenWhenHitDuration)
+            heal *= stats.get().health.regenWhenHitRatio;
+
+        dragon.heal(heal);
     }
 
     public static class Serializer implements JsonSerializer<DragonHealth>, JsonDeserializer<DragonHealth> {

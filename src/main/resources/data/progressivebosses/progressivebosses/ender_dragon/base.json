@@ -12,12 +12,12 @@
         "melee_damage_multiplier_when_not_sitting": 1.4,
         "explosion_damage_multiplier": 0.4,
         "ranged_damage_multiplier": 1,
-        "respawning_crystal_damage_multiplier": 2
+        "respawning_crystal_damage_multiplier": 1.5
     },
     "crystal": {
         "cages": 3,
-        "bonus_crystals": 1,
-        "crystals_respawned": 1
+        "bonus_crystals": 0,
+        "crystals_respawned": 2
     },
     "larva": {
         "health": 6,

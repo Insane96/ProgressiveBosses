@@ -2,12 +2,24 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.lang.reflect.Type;
+import java.util.Arrays;
+import java.util.List;
 
 @JsonAdapter(DragonVulnerabilities.Serializer.class)
 public class DragonVulnerabilities {
+    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> CENTER_PODIUM_PHASES = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.TAKEOFF);
+
     public float meleeDamageMultiplierWhenSitting;
     public float meleeDamageMultiplierWhenNotSitting;
     public float rangedDamageMultiplier;
@@ -43,5 +55,26 @@ public class DragonVulnerabilities {
             jsonObject.addProperty("respawning_crystal_damage_multiplier", src.respawningCrystalDamageMultiplier);
             return jsonObject;
         }
+    }
+
+    public static void meleeDamageMultiplier(LivingHurtEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!(event.getSource().getDirectEntity() instanceof LivingEntity))
+            return;
+        if (CENTER_PODIUM_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
+            event.setAmount(event.getAmount() * stats.vulnerabilities.meleeDamageMultiplierWhenSitting);
+        else
+            event.setAmount(event.getAmount() * stats.vulnerabilities.meleeDamageMultiplierWhenNotSitting);
+    }
+
+    public static void rangedDamageMultiplier(LivingHurtEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!(event.getSource().getDirectEntity() instanceof Projectile))
+            return;
+        event.setAmount(event.getAmount() * stats.vulnerabilities.rangedDamageMultiplier);
+    }
+
+    public static void explosionDamageMultiplier(LivingHurtEvent event, EnderDragon dragon, DragonStats stats) {
+        if (!(event.getSource().is(DamageTypeTags.IS_EXPLOSION) && !event.getSource().is(DamageTypes.FIREWORKS)))
+            return;
+        event.setAmount(event.getAmount() * stats.vulnerabilities.explosionDamageMultiplier);
     }
 }
