@@ -18,7 +18,8 @@
         "EnderDragonMixin",
         "ItemEntityMixin",
         "ShulkerBulletMixin",
-        "ShulkerMixin"
+        "ShulkerMixin",
+        "SpikeFeatureMixin"
     ],
     "minVersion": "0.8",
     "client": [

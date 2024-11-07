@@ -6,6 +6,7 @@
   * Crystals are now respawned from the shortest one
   * Arrows shot to the dragon when at the center will now get sent back (without fire)
   * Ender Dragon now take 40% more damage from melee attacks when not at the center podium and 50% more damage when respawning crystals
+  * Small pillars with cages now have obsidian blocks below the corner to prevent breaking them from below
   * Fixed Vanilla bugs
     * Fixed [MC-272431](https://bugs.mojang.com/browse/MC-272431)
       * This makes the ender dragon fly up and down faster, like she used to do back in 1.12
