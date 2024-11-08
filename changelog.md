@@ -14,6 +14,7 @@
     * Fixed Ender Dragon growl sound playing 20 times (making it really loud) when about to respawn and when at the center breathing (it's now 4 times)
     * Fixed Crystals destroyed on dragon respawning leaving behind fire
     * Fixed Ender Dragon growl sound being played in a too small radius making it unaudible from ground level
+    * Fixed head and neck placements
 * Rebalancements
   * Wither Charge Attack now ignores armor
   * Ultimate wither charge attack damage slightly increased (12 -> 13)

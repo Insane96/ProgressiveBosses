@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
@@ -27,6 +28,8 @@ import java.util.Optional;
 @Debug(export = true)
 public class EnderDragonMixin extends Mob {
 	@Shadow @Final private EnderDragonPart wing1;
+
+	@Shadow public float oFlapTime;
 
 	protected EnderDragonMixin(EntityType<? extends Mob> type, Level worldIn) {
 		super(type, worldIn);
@@ -61,5 +64,53 @@ public class EnderDragonMixin extends Mob {
 		if (!part.name.equals("wing"))
 			return original;
 		return original * 1.5f;
+	}
+
+	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=5.5", ordinal = 0))
+	public float neckOffsetX(float original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return DragonFeature.neckOffsetXZ();
+	}
+
+	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=5.5", ordinal = 2))
+	public float neckOffsetZ(float original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return DragonFeature.neckOffsetXZ();
+	}
+
+	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=6.5", ordinal = 0))
+	public float headOffsetX(float original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return DragonFeature.headOffsetXZ();
+	}
+
+	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=6.5", ordinal = 2))
+	public float headOffsetZ(float original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return DragonFeature.headOffsetXZ();
+	}
+
+	@ModifyReturnValue(method = "getHeadYOffset", at = @At(value = "RETURN", ordinal = 0))
+	public float headOffsetSittingY(float original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return DragonFeature.headOffsetSittingY();
+	}
+
+	@ModifyReturnValue(method = "getHeadYOffset", at = @At(value = "RETURN", ordinal = 1))
+	public float headOffsetY(float original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return DragonFeature.headOffsetY(original);
 	}
 }

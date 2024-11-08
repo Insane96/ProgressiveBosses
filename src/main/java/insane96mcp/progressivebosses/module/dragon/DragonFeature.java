@@ -37,6 +37,7 @@ public class DragonFeature extends Feature {
     @Config
     @Label(name = "Enable Fixes", description = """
             Enable some fixes for the Ender Dragon:
+             - Dragon Head and Neck have been repositioned correctly
              - Dragon will now play the growl sound only 4 times/second when respawning and when at the center breathing instead of 20/second (so your ears shouldn't blow up anymore)
              - When the crystals that respawn the dragon in the center are destroyed, the fire is extinguished
              - Ender Dragon can now rise and fall faster (somewhere around 1.14 the multiplier for the y speed was reduced to 0.01 instead of 0.1 https://bugs.mojang.com/browse/MC-272431)""")
@@ -158,5 +159,21 @@ public class DragonFeature extends Feature {
 
     public static Optional<DragonStats> getDragonStats(int lvl) {
         return Optional.ofNullable(DragonStatsReloadListener.STATS_MAP.get(lvl));
+    }
+
+    public static float neckOffsetXZ() {
+        return 3.8f;
+    }
+
+    public static float headOffsetXZ() {
+        return 6f;
+    }
+
+    public static float headOffsetSittingY() {
+        return 0.5f;
+    }
+
+    public static float headOffsetY(float original) {
+        return original + 1.5f;
     }
 }
