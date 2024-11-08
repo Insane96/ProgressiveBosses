@@ -70,7 +70,7 @@ public class EnderDragonMixin extends Mob {
 
 	@ModifyVariable(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "STORE", ordinal = 0), argsOnly = true)
 	public float onDamageAmount(float original, EnderDragonPart part, DamageSource source, float amount) {
-		if (!part.name.equals("wing"))
+		if (!part.name.equals("wing") && !part.name.equals("neck"))
 			return original;
 		return original * 1.5f;
 	}

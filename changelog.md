@@ -2,7 +2,7 @@
 
 ## Upcoming
 * Data packable Ender Dragon
-  * Ender Dragon now takes more damage on Wings
+  * Ender Dragon now takes more damage on wings and neck
   * Cages around crystals now generate during the respawn animation instead of the end
   * Crystals are now respawned from the shortest one
   * Arrows shot to the dragon when at the center will now get sent back (without fire)
