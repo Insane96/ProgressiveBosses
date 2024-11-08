@@ -10,7 +10,7 @@
 
   "entity.progressivebosses.larva": "Dragon Larva",
   "progressivebosses:dragon_minion": "Dragon Minion",
-  "death.attack.progressivebosses:dragon_fireball": "%1$s was fireballed by %2$s",
+  "death.attack.progressivebosses:dragon_fireball": "%1$s was acidballed by %2$s",
 
   "progressivebosses:elder_minion": "Elder Minion",
 

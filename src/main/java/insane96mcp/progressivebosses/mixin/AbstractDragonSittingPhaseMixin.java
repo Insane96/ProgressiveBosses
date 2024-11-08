@@ -23,7 +23,7 @@ public abstract class AbstractDragonSittingPhaseMixin extends AbstractDragonPhas
 		if (source.getDirectEntity() instanceof AbstractArrow abstractArrow) {
 			abstractArrow.setYRot(abstractArrow.getYRot() + 180.0F);
 			abstractArrow.yRotO += 180.0F;
-			abstractArrow.setDeltaMovement(abstractArrow.getDeltaMovement().scale(10d));
+			abstractArrow.setDeltaMovement(abstractArrow.getDeltaMovement().scale(5d));
 		}
 	}
 }

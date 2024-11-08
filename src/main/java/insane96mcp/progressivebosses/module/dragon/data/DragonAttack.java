@@ -289,7 +289,7 @@ public class DragonAttack {
                 areaEffectCloud.setParticle(ParticleTypes.DRAGON_BREATH);
                 areaEffectCloud.setRadius(3.0F);
                 areaEffectCloud.setDuration(300);
-                areaEffectCloud.setWaitTime(10);
+                areaEffectCloud.setWaitTime(15);
                 areaEffectCloud.setRadiusPerTick((7.0F - areaEffectCloud.getRadius()) / (float) areaEffectCloud.getDuration());
                 areaEffectCloud.addEffect(new MobEffectInstance(MobEffects.HARM, 1, 1));
                 if (!list.isEmpty()) {
@@ -331,7 +331,7 @@ public class DragonAttack {
         dragonfireballentity.moveTo(x, y, z, 0.0F, 0.0F);
         dragon.level().addFreshEntity(dragonfireballentity);
 
-        float fireballs = Mth.nextInt(dragon.getRandom(), stats.get().attack.minAcidballShot, stats.get().attack.maxAcidballShot);
+        float fireballs = Mth.nextInt(dragon.getRandom(), stats.get().attack.minAcidballShot, stats.get().attack.maxAcidballShot) - 1; //-1 because she already shots one
 
         for (int i = 0; i < fireballs; i++) {
             x = dragon.head.getX() - vector3d2.x;

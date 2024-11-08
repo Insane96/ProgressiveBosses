@@ -12,15 +12,22 @@ import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.level.Level;
+import org.spongepowered.asm.mixin.Debug;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Optional;
 
 @Mixin(EnderDragon.class)
+@Debug(export = true)
 public class EnderDragonMixin extends Mob {
+	@Shadow @Final private EnderDragonPart wing1;
+
 	protected EnderDragonMixin(EntityType<? extends Mob> type, Level worldIn) {
 		super(type, worldIn);
 	}
@@ -47,5 +54,12 @@ public class EnderDragonMixin extends Mob {
 				|| !DragonFeature.enableFixes)
 			return original;
 		return 0.1d;
+	}
+
+	@ModifyVariable(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "STORE", ordinal = 0), argsOnly = true)
+	public float onDamageAmount(float original, EnderDragonPart part, DamageSource source, float amount) {
+		if (!part.name.equals("wing"))
+			return original;
+		return original * 1.5f;
 	}
 }

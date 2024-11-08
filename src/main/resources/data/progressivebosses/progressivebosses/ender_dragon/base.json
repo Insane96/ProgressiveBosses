@@ -12,7 +12,7 @@
         "melee_damage_multiplier_when_not_sitting": 1.4,
         "explosion_damage_multiplier": 0.4,
         "ranged_damage_multiplier": 1,
-        "respawning_crystal_damage_multiplier": 1.5
+        "respawning_crystal_damage_multiplier": 1.4
     },
     "crystal": {
         "cages": 3,
@@ -36,12 +36,12 @@
     "attack": {
         "melee_damage_dealt_multiplier": 1,
         "acid_damage_dealt_multiplier": 1,
-        "charge_chance": 0.10,
+        "charge_chance": 0.15,
         "strafe_chance": 0.15,
         "acidball_speed_multiplier": 2,
         "acidball_impact_damage": 6,
         "min_acidball_shot": 1,
-        "max_acidball_shot": 2
+        "max_acidball_shot": 3
     },
     "xp_dropped": 5000,
     "loot_table": "progressivebosses:entities/ender_dragon/base"
