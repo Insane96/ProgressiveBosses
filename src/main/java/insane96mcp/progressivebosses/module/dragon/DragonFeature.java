@@ -71,7 +71,7 @@ public class DragonFeature extends Feature {
                 || dragon.getPersistentData().contains(ProgressiveBosses.RESOURCE_PREFIX + "processed"))
             return;
 
-        if (!dragon.getPersistentData().contains(LEVEL) && dragon.getDragonFight() != null && dragon.getDragonFight().portalLocation != null) {
+        if (!dragon.getPersistentData().contains(LEVEL)) {
             dragon.getPersistentData().putByte(LEVEL, dragonLvl);
         }
 

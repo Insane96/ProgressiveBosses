@@ -6,10 +6,12 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.boss.EnderDragonPart;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.level.Level;
@@ -48,8 +50,15 @@ public class EnderDragonMixin extends Mob {
 	public float onCrystalHeal(float original) {
 		Optional<DragonStats> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
 		//Divided by 2 because it's healed twice per second
-        return stats.map(dragonStats -> dragonStats.health.crystalRegeneration / 2f).orElse(original);
-    }
+		return stats.map(dragonStats -> dragonStats.health.crystalRegeneration / 2f).orElse(original);
+	}
+
+	@ModifyExpressionValue(method = "onCrystalDestroyed", at = @At(value = "CONSTANT", args = "floatValue=10.0"))
+	public float onAttachedCrystalDamage(float original, EndCrystal pCrystal, BlockPos pPos, DamageSource pDamageSource) {
+		if (!pCrystal.showsBottom())
+			return original;
+		return this.getMaxHealth() * 0.15f;
+	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "doubleValue=0.01"))
 	public double onYDeltaSpeed(double original) {
