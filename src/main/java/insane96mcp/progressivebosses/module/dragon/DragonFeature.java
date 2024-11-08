@@ -32,12 +32,12 @@ public class DragonFeature extends Feature {
 
     @Config
     @Label(name = "Explosion Immune Crystals", description = "Crystals can no longer be destroyed by other explosions.")
-    public static Boolean explosionImmune = true;
+    public static Boolean explosionImmuneCrystals = true;
 
     @Config
     @Label(name = "Enable Fixes", description = """
             Enable some fixes for the Ender Dragon:
-             - Dragon will now play the growl sound only 4 times in a second when respawning and when at the center breathing instead of every tick (so your ears shouldn't blow up anymore)
+             - Dragon will now play the growl sound only 4 times/second when respawning and when at the center breathing instead of 20/second (so your ears shouldn't blow up anymore)
              - When the crystals that respawn the dragon in the center are destroyed, the fire is extinguished
              - Ender Dragon can now rise and fall faster (somewhere around 1.14 the multiplier for the y speed was reduced to 0.01 instead of 0.1 https://bugs.mojang.com/browse/MC-272431)""")
     public static Boolean enableFixes = true;
@@ -57,6 +57,7 @@ public class DragonFeature extends Feature {
             return;
         onDragonJoinLevel(event);
         DragonMinion.onShulkerSpawn(event);
+        DragonAttack.setAcidBallSpeedMultiplier(event.getEntity());
     }
 
     public void onDragonJoinLevel(EntityJoinLevelEvent event) {
@@ -134,6 +135,7 @@ public class DragonFeature extends Feature {
 
         DragonMinion.onMinionHurt(event);
         onDragonHurt(event);
+        DragonAttack.onHurtLiving(event);
     }
 
     public void onDragonHurt(LivingHurtEvent event) {
@@ -144,9 +146,7 @@ public class DragonFeature extends Feature {
         if (stats.isEmpty())
             return;
 
-        DragonVulnerabilities.meleeDamageMultiplier(event, dragon, stats.get());
-        DragonVulnerabilities.rangedDamageMultiplier(event, dragon, stats.get());
-        DragonVulnerabilities.explosionDamageMultiplier(event, dragon, stats.get());
+        DragonVulnerabilities.damageMultipliers(event, dragon, stats.get());
 
         DragonCrystal.tryRespawningCrystalPhase(dragon, stats.get());
     }

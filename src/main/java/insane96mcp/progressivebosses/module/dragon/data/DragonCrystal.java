@@ -163,7 +163,7 @@ public class DragonCrystal {
 
     public static boolean onCrystalDamagedByExplosion(DamageSource source) {
         if (!Feature.isEnabled(DragonFeature.class)
-                || !DragonFeature.explosionImmune)
+                || !DragonFeature.explosionImmuneCrystals)
             return false;
 
         return source.is(DamageTypeTags.IS_EXPLOSION);

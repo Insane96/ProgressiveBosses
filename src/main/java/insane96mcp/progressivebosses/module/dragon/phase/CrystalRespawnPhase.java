@@ -88,6 +88,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		this.targetLocation = null;
 		this.spikesToRespawn.clear();
 		this.tick = 0;
+		this.dragon.sittingDamageReceived = this.dragon.getMaxHealth() * 0.10f;
 	}
 
 	/**

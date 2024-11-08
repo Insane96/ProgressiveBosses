@@ -21,6 +21,7 @@ public class DragonStats {
     public DragonCrystal crystal;
     public DragonLarva larva;
     public DragonMinion minion;
+    public DragonAttack attack;
     /*public WitherAttack attack;
     @Nullable
     public PoweredAttributeModifiers attributeModifiers;
@@ -31,13 +32,14 @@ public class DragonStats {
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonStats(int level, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, DragonLarva larva, DragonMinion minion, int xpDropped, ResourceLocation lootTable) {
+    public DragonStats(int level, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, DragonLarva larva, DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.health = health;
         this.vulnerabilities = vulnerabilities;
         this.crystal = crystal;
         this.larva = larva;
         this.minion = minion;
+        this.attack = attack;
         this.xpDropped = xpDropped;
         this.lootTable = lootTable;
     }
@@ -64,6 +66,7 @@ public class DragonStats {
                     context.deserialize(json.getAsJsonObject().get("crystal"), DragonCrystal.class),
                     context.deserialize(json.getAsJsonObject().get("larva"), DragonLarva.class),
                     context.deserialize(json.getAsJsonObject().get("minion"), DragonMinion.class),
+                    context.deserialize(json.getAsJsonObject().get("attack"), DragonAttack.class),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "xp_dropped"),
                     lootTable);
         }
@@ -77,6 +80,7 @@ public class DragonStats {
             jsonObject.add("crystal", context.serialize(src.crystal));
             jsonObject.add("larva", context.serialize(src.larva));
             jsonObject.add("minion", context.serialize(src.minion));
+            jsonObject.add("attack", context.serialize(src.attack));
             jsonObject.addProperty("xp_dropped", src.xpDropped);
             if (!src.lootTable.equals(VANILLA_LOOT_TABLE))
                 jsonObject.addProperty("loot_table", src.lootTable.toString());

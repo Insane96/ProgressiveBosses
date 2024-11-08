@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.mixin;
 import com.mojang.logging.LogUtils;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.feature.AttackFeature;
+import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonChargePlayerPhase;
@@ -45,7 +45,7 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 			this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
 		} else if (this.timeSinceCharge > 0 && this.timeSinceCharge++ >= 10) {
 			//If no charge or fireball then go back to holding pattern
-			if (!AttackFeature.onPhaseEnd(this.dragon))
+			if (!DragonAttack.onPhaseEnd(this.dragon))
 				this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
 			//Otherwise reset the phase, in case she charges again
 			else
