@@ -44,7 +44,7 @@ public class EnderDragonMixin extends Mob {
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "doubleValue=0.01"))
 	public double onYDeltaSpeed(double original) {
 		if (!Feature.isEnabled(DragonFeature.class)
-				|| DragonFeature.enableFixes)
+				|| !DragonFeature.enableFixes)
 			return original;
 		return 0.1d;
 	}
