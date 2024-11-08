@@ -20,7 +20,7 @@
   * Ultimate wither charge attack damage slightly increased (12 -> 13)
   * Other wither's charge damage has been reduced (8 -> 6.5)
 
-## Alpha 4.2.1
+## Beta 4.2.1
 * Requires InsaneLib 1.15.0
 * Wither and Wither Minions are now affected by IguanaTweaks' Smite and Water Coolant enchantments
 * Minor rebalance to charge when unseen
