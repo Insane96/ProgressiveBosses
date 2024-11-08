@@ -35,6 +35,14 @@ public class DragonFeature extends Feature {
     public static Boolean explosionImmune = true;
 
     @Config
+    @Label(name = "Enable Fixes", description = """
+            Enable some fixes for the Ender Dragon:
+             - Dragon will now play the growl sound only 4 times in a second when respawning and when at the center breathing instead of every tick (so your ears shouldn't blow up anymore)
+             - When the crystals that respawn the dragon in the center are destroyed, the fire is extinguished
+             - Ender Dragon can now rise and fall faster (somewhere around 1.14 the multiplier for the y speed was reduced to 0.01 instead of 0.1 https://bugs.mojang.com/browse/MC-272431)""")
+    public static Boolean enableFixes = true;
+
+    @Config
     @Label(name = "Dragon Egg per Player", description = "If true, whenever a player that has never killed the dragon, kills the dragon, a Dragon Egg will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
     public static Boolean dragonEggPerPlayer = true;
 

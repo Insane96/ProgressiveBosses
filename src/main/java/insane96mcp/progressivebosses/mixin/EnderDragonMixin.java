@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
@@ -42,6 +43,9 @@ public class EnderDragonMixin extends Mob {
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "doubleValue=0.01"))
 	public double onYDeltaSpeed(double original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| DragonFeature.enableFixes)
+			return original;
 		return 0.1d;
 	}
 }

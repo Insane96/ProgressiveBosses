@@ -65,9 +65,6 @@ public class AttackFeature extends Feature {
 						The actual chance is: (this_value * (difficulty / max difficulty)).""")
 	public static Double fireballMaxChance = 0.35d;
 	@Config
-	@Label(name = "Increase Max Rise and Fall", description = "Since around 1.13/1.14 the Ender Dragon can no longer dive for more than about 3 blocks so she takes a lot to rise / fall. With this active the dragon will be able to rise and fall many more blocks, making easier to hit the player and approach the center.")
-	public static Boolean increaseMaxRiseAndFall = true;
-	@Config
 	@Label(name = "Fireball Explosion Magic Damage", description = "On impact the Acid Fireball will deal magic damage in an area.")
 	public static Boolean fireballExplosionDamages = true;
 	@Config
