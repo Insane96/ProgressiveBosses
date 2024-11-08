@@ -1,7 +1,9 @@
 package insane96mcp.progressivebosses.mixin;
 
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStatsReloadListener;
+import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
@@ -21,6 +23,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Mixin(EndDragonFight.class)
 public class EndDragonFightMixin {
@@ -28,6 +31,8 @@ public class EndDragonFightMixin {
 	@Shadow @Final private ServerLevel level;
 
 	@Shadow @Nullable private BlockPos portalLocation;
+
+	@Shadow @Nullable private List<EndCrystal> respawnCrystals;
 
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;spawnExitPortal(Z)V"), method = "respawnDragon")
 	private void respawnDragon(List<EndCrystal> p_64092_, CallbackInfo callback) {
@@ -37,6 +42,17 @@ public class EndDragonFightMixin {
 			endCrystal.discard();
 			level.setBlockAndUpdate(endCrystal.blockPosition(), Blocks.AIR.defaultBlockState());
 		}
+
+		if (this.respawnCrystals != null) {
+			byte lvl = 0;
+			for (EndCrystal crystal : this.respawnCrystals) {
+				if (crystal instanceof CorruptedEndCrystal) {
+					lvl = 1;
+					break;
+				}
+			}
+			DragonFeature.dragonLvl = lvl;
+		}
 	}
 
 	@Inject(method = "respawnDragon", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;spawnExitPortal(Z)V", shift = At.Shift.AFTER))
@@ -44,10 +60,20 @@ public class EndDragonFightMixin {
 		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel(this.level));
 		//Order from smaller towers to bigger ones
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
-		//TODO change level based on crystal used to respawn
-		DragonStats stats = DragonStatsReloadListener.STATS_MAP.get(0);
+		int lvl = 0;
+		for (EndCrystal crystal : pCrystals) {
+			if (crystal instanceof CorruptedEndCrystal) {
+				lvl = 1;
+				break;
+			}
+		}
+		Optional<DragonStats> stats = DragonFeature.getDragonStats(lvl);
+		if (stats.isEmpty()) {
+			LogHelper.warn("Failed to get Dragon Stats for level %s", lvl);
+			return;
+		}
 
-		int cages = stats.crystal.cages;
+		int cages = stats.get().crystal.cages;
 
 		//Reset all spikes
 		for (SpikeFeature.EndSpike spike : spikes) {

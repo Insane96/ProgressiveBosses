@@ -1,0 +1,48 @@
+{
+    "level": 1,
+    "health": {
+        "health": 1000.0,
+        "regeneration": 1,
+        "crystal_regeneration": 1,
+        "regen_when_hit_ratio": 0.75,
+        "regen_when_hit_duration": 50
+    },
+    "vulnerabilities": {
+        "melee_damage_multiplier_when_sitting": 1,
+        "melee_damage_multiplier_when_not_sitting": 1.4,
+        "explosion_damage_multiplier": 0.4,
+        "ranged_damage_multiplier": 1,
+        "respawning_crystal_damage_multiplier": 1.4
+    },
+    "crystal": {
+        "cages": 10,
+        "bonus_crystals": 5,
+        "crystals_respawned": 5
+    },
+    "larva": {
+        "health": 6,
+        "spawned": 8,
+        "min_cooldown": 800,
+        "max_cooldown": 1400
+    },
+    "minion": {
+        "health": 20,
+        "spawned": 2,
+        "min_cooldown": 1400,
+        "max_cooldown": 2000,
+        "blinding_chance": 0.4,
+        "blinding_duration": 150
+    },
+    "attack": {
+        "melee_damage_dealt_multiplier": 2,
+        "acid_damage_dealt_multiplier": 2,
+        "charge_chance": 0.40,
+        "strafe_chance": 0.40,
+        "acidball_speed_multiplier": 2.5,
+        "acidball_impact_damage": 12,
+        "min_acidball_shot": 3,
+        "max_acidball_shot": 9
+    },
+    "xp_dropped": 5000,
+    "loot_table": "progressivebosses:entities/ender_dragon/base"
+}

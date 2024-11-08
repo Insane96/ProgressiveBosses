@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.setup;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
@@ -42,4 +43,14 @@ public class PBEntities {
 			.sized(0.6f, 0.45f)
 			.clientTrackingRange(8)
 			.build("larva"));
+
+	public static final RegistryObject<EntityType<CorruptedEndCrystal>> CORRUPTED_END_CRYSTAL = REGISTRY.register(
+			"corrupted_end_crystal",
+			() -> EntityType.Builder.of((EntityType<CorruptedEndCrystal> pEntityType, Level pLevel) -> new CorruptedEndCrystal(pEntityType, pLevel),
+			MobCategory.MISC)
+				.sized(2.0F, 2.0F)
+				.clientTrackingRange(16)
+				.updateInterval(Integer.MAX_VALUE)
+				.build("corrupted_end_crystal")
+	);
 }

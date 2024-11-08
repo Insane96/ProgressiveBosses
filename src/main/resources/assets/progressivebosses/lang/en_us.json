@@ -29,10 +29,9 @@
   "entity.progressivebosses.wither.2": "Summoner Wither",
   "entity.progressivebosses.wither.3": "Ultimate Wither",
 
-  "entity.progressivebosses.ender_dragon.0": "Ender Dragon I",
-  "entity.progressivebosses.ender_dragon.1": "Ender Dragon II",
-  "entity.progressivebosses.ender_dragon.2": "Ender Dragon III",
-  "entity.progressivebosses.ender_dragon.3": "Ender Dragon IV",
+  "entity.minecraft.ender_dragon.0": "Ender Dragon",
+  "entity.minecraft.ender_dragon.1": "Corrupted Ender Dragon",
+  "item.progressivebosses.corrupted_end_crystal": "Corrupted End Crystal",
 
   "dragon.first_killed": "Congrats on killing your first Dragon. Be aware that every Dragon you kill will make the next one harder to fight.",
   "wither.first_summon": "You spawned your first Wither. Be aware that every Wither you spawn will make the next one harder to fight.",

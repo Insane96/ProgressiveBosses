@@ -9,7 +9,9 @@ import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.data.*;
 import insane96mcp.progressivebosses.utils.LogHelper;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.block.Blocks;
@@ -19,6 +21,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +50,8 @@ public class DragonFeature extends Feature {
     @Label(name = "Dragon Egg per Player", description = "If true, whenever a player that has never killed the dragon, kills the dragon, a Dragon Egg will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
     public static Boolean dragonEggPerPlayer = true;
 
+    public static byte dragonLvl = 0;
+
     public DragonFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         super(module, enabledByDefault, canBeDisabled);
     }
@@ -66,12 +71,17 @@ public class DragonFeature extends Feature {
                 || dragon.getPersistentData().contains(ProgressiveBosses.RESOURCE_PREFIX + "processed"))
             return;
 
+        if (!dragon.getPersistentData().contains(LEVEL) && dragon.getDragonFight() != null && dragon.getDragonFight().portalLocation != null) {
+            dragon.getPersistentData().putByte(LEVEL, dragonLvl);
+        }
+
         Optional<DragonStats> stats = getDragonStats(dragon);
         if (stats.isEmpty()) {
-            LogHelper.info("Failed to get Dragon Stats for level %s", dragon.getPersistentData().getByte(LEVEL));
+            LogHelper.warn("Failed to get Dragon Stats for level %s", dragon.getPersistentData().getByte(LEVEL));
             return;
         }
         DragonStats.apply(dragon, stats.get());
+        dragon.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(dragon.getType())) + "." + dragon.getPersistentData().getByte(LEVEL)));
         dragon.getPersistentData().putBoolean(ProgressiveBosses.RESOURCE_PREFIX + "processed", true);
     }
 
