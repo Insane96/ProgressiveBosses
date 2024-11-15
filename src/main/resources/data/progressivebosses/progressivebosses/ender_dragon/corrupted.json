@@ -34,14 +34,14 @@
         "blinding_duration": 150
     },
     "attack": {
-        "melee_damage_dealt_multiplier": 2.5,
-        "acid_damage_dealt_multiplier": 2,
+        "melee_damage_dealt_multiplier": 2.7,
+        "acid_damage_dealt_multiplier": 2.2,
         "charge_chance": 0.40,
         "strafe_chance": 0.40,
         "acidball_speed_multiplier": 2.5,
         "acidball_impact_damage": 12,
-        "min_acidball_shot": 3,
-        "max_acidball_shot": 9
+        "min_acidball_shot": 4,
+        "max_acidball_shot": 8
     },
     "xp_dropped": 20000,
     "loot_table": "progressivebosses:entities/ender_dragon/corrupted"
