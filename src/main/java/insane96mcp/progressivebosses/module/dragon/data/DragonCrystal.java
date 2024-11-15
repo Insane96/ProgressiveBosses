@@ -72,6 +72,8 @@ public class DragonCrystal {
     }
 
     public static void moreCrystals(EnderDragon dragon, DragonStats stats) {
+        if (stats.crystal.bonusCrystals <= 0)
+            return;
         List<EndCrystal> crystals = new ArrayList<>();
 
         //Order from smaller towers to bigger ones

@@ -13,6 +13,7 @@ import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
@@ -95,7 +96,13 @@ public class DragonFeature extends Feature {
         Optional<DragonStats> stats = getDragonStats(dragon);
         if (stats.isEmpty())
             return;
-        event.setDroppedExperience(stats.get().xpDropped);
+        //This will 100% break if any other mod changes experience dropped
+        if (event.getDroppedExperience() == Mth.floor(12000 * 0.08F)
+                || event.getDroppedExperience() == Mth.floor(500 * 0.08F))
+            event.setDroppedExperience(Mth.floor(stats.get().xpDropped * 0.08f));
+        else if (event.getDroppedExperience() == Mth.floor(12000 * 0.2F)
+                || event.getDroppedExperience() == Mth.floor(500 * 0.2F))
+            event.setDroppedExperience(Mth.floor(stats.get().xpDropped * 0.2f));
     }
 
     @SubscribeEvent
@@ -180,7 +187,7 @@ public class DragonFeature extends Feature {
     }
 
     public static float headOffsetSittingY() {
-        return 0.5f;
+        return 0f;
     }
 
     public static float headOffsetY(float original) {
