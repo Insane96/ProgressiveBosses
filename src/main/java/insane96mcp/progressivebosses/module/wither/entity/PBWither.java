@@ -47,7 +47,6 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.AirAndWaterRandomPos;
 import net.minecraft.world.entity.ai.util.HoverRandomPos;
-import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
@@ -66,7 +65,6 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -451,17 +449,17 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             if (!this.level().isClientSide) {
                 dyingAnimationTicks--;
                 this.setDyingAnimationTicks(dyingAnimationTicks);
-                if (dyingAnimationTicks == 0) {
+                if (dyingAnimationTicks <= 3) {
                     float explosionRadius = this.stats.death.explosionPower;
-                    List<ItemEntity> droppedBlocks = new ArrayList<>();
-                    if (ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
-                        BlockPos.betweenClosedStream(this.getBoundingBox().inflate(3f)).forEach(blockPos -> {
+                    //List<ItemEntity> droppedBlocks = new ArrayList<>();
+                    if (dyingAnimationTicks == 3 && ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
+                        BlockPos.betweenClosedStream(this.getBoundingBox().inflate(4f)).forEach(blockPos -> {
                             BlockState state = this.level().getBlockState(blockPos);
                             if (this.canDestroyBlock(blockPos, state)
                                     && ForgeEventFactory.onEntityDestroyBlock(this, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
                                 BlockEntity blockEntity = state.hasBlockEntity() ? this.level().getBlockEntity(blockPos) : null;
                                 LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity).withParameter(LootContextParams.EXPLOSION_RADIUS, explosionRadius);
-                                state.getDrops(lootcontext$builder).forEach(itemStack -> droppedBlocks.add(new ItemEntity(this.level(), blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack)));
+                                //state.getDrops(lootcontext$builder).forEach(itemStack -> droppedBlocks.add(new ItemEntity(this.level(), blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack)));
                                 this.level().setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
                                 //hasBrokenBlocks.set(true);
                             }
@@ -469,9 +467,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                     }
 
                     this.level().explode(this, this.getX(), this.getEyeY(), this.getZ(), explosionRadius, this.stats.death.explosionCausesFire, Level.ExplosionInteraction.MOB);
-                    this.die(this.deathDamageSource);
-                    droppedBlocks.forEach(this.level()::addFreshEntity);
-                    this.discard();
+                    if (dyingAnimationTicks == 0) {
+                        this.die(this.deathDamageSource);
+                        //droppedBlocks.forEach(this.level()::addFreshEntity);
+                        this.discard();
+                    }
                 }
                 else if (dyingAnimationTicks % 20 == 0) {
                     this.playSound(SoundEvents.WITHER_HURT, 4f, 1f - (100 - dyingAnimationTicks) * 0.005f);
@@ -490,9 +490,19 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                     this.yRotHeads[i] = rotation;
                 }
 
-                if (dyingAnimationTicks == 2) {
-                    for (int i = 0; i < 15; i++) {
-                        this.level().addParticle(ParticleTypes.EXPLOSION_EMITTER, this.getX() + this.random.nextFloat() * 8 - 4, this.getEyeY() + this.random.nextFloat() * 8 - 4, this.getZ() + this.random.nextFloat() * 8 - 4, 0.0D, 0.0D, 0.0D);
+                if (dyingAnimationTicks < 3) {
+                    for (int x = -2; x <= 2; x++) {
+                        for (int y = -2; y <= 2; y++) {
+                            for (int z = -2; z <= 2; z++) {
+                                double x1 = this.getX() + (this.random.nextDouble() * 3f - 1.5f) + x * 3;
+                                double y1 = this.getEyeY() + (this.random.nextDouble() * 3f - 1.5f) + y * 3;
+                                double z1 = this.getZ() + (this.random.nextDouble() * 3f - 1.5f) + z * 3;
+                                //double x1 = this.getX() + x * 3;
+                                //double y1 = this.getEyeY() + y * 3;
+                                //double z1 = this.getZ() + z * 3;
+                                this.level().addParticle(ParticleTypes.EXPLOSION, x1, y1, z1, this.random.nextFloat(), 0.0D, 0.0D);
+                            }
+                        }
                     }
                 }
             }

@@ -20,6 +20,7 @@
   * Wither Charge Attack now ignores armor
   * Ultimate wither charge attack damage slightly increased (12 -> 13)
   * Other wither's charge damage has been reduced (8 -> 6.5)
+* Enhanced a bit the wither's death explosion
 
 ## Beta 4.2.1
 * Requires InsaneLib 1.15.0
