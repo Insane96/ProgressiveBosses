@@ -15,10 +15,7 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.level.Level;
-import org.spongepowered.asm.mixin.Debug;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -29,12 +26,32 @@ import java.util.Optional;
 @Mixin(EnderDragon.class)
 @Debug(export = true)
 public class EnderDragonMixin extends Mob {
-	@Shadow @Final private EnderDragonPart wing1;
 
 	@Shadow public float oFlapTime;
 
+	@Mutable
+	@Shadow @Final private EnderDragonPart[] subEntities;
+
+	@Mutable
+	@Shadow @Final public EnderDragonPart head;
+	@Shadow @Final private EnderDragonPart neck;
+	@Shadow @Final private EnderDragonPart body;
+	@Shadow @Final private EnderDragonPart tail1;
+	@Shadow @Final private EnderDragonPart tail2;
+	@Shadow @Final private EnderDragonPart tail3;
+	@Shadow @Final private EnderDragonPart wing1;
+	@Shadow @Final private EnderDragonPart wing2;
+
 	protected EnderDragonMixin(EntityType<? extends Mob> type, Level worldIn) {
 		super(type, worldIn);
+	}
+
+	@ModifyExpressionValue(method = "<init>", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
+    private float onHeadSize(float original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return 1.5f;
 	}
 
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;reallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", shift = At.Shift.AFTER), method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z")
