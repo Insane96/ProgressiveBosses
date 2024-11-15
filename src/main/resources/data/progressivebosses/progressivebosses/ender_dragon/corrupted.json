@@ -2,8 +2,8 @@
     "level": 1,
     "health": {
         "health": 1000.0,
-        "regeneration": 1,
-        "crystal_regeneration": 1,
+        "regeneration": 0.5,
+        "crystal_regeneration": 2.5,
         "regen_when_hit_ratio": 0.75,
         "regen_when_hit_duration": 50
     },
@@ -15,7 +15,7 @@
         "respawning_crystal_damage_multiplier": 1.4
     },
     "crystal": {
-        "cages": 10,
+        "cages": 6,
         "bonus_crystals": 3,
         "crystals_respawned": 5
     },
@@ -28,8 +28,8 @@
     "minion": {
         "health": 20,
         "spawned": 2,
-        "min_cooldown": 1400,
-        "max_cooldown": 2000,
+        "min_cooldown": 1200,
+        "max_cooldown": 1600,
         "blinding_chance": 0.4,
         "blinding_duration": 150
     },
@@ -44,5 +44,5 @@
         "max_acidball_shot": 9
     },
     "xp_dropped": 20000,
-    "loot_table": "progressivebosses:entities/ender_dragon/base"
+    "loot_table": "progressivebosses:entities/ender_dragon/corrupted"
 }

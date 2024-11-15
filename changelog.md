@@ -1,5 +1,7 @@
 # Changelog
 
+* Dragon should try respawning crystal at the end of a phase
+
 ## Upcoming
 * Data packable Ender Dragon
   * Ender Dragon now takes more damage on wings and neck
@@ -9,11 +11,11 @@
   * Ender Dragon now take 40% more damage from melee attacks when not at the center podium and 50% more damage when respawning crystals
   * Small pillars with cages now have obsidian blocks below the corner to prevent breaking them from below
   * Crystals attached to the dragon when destroyed now deal 15% of max health as damage
+  * Fixed Crystals destroyed on dragon respawning leaving behind fire
   * Fixed Vanilla bugs
     * Fixed [MC-272431](https://bugs.mojang.com/browse/MC-272431)
       * This makes the ender dragon fly up and down faster, like she used to do back in 1.12
     * Fixed Ender Dragon growl sound playing 20 times (making it really loud) when about to respawn and when at the center breathing (it's now 4 times)
-    * Fixed Crystals destroyed on dragon respawning leaving behind fire
     * Fixed Ender Dragon growl sound being played in a too small radius making it inaudible from ground level
     * Fixed head and neck placements and head size
 * Rebalancements

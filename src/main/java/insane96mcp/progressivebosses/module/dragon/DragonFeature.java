@@ -7,6 +7,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
@@ -14,6 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.AABB;
@@ -176,6 +178,15 @@ public class DragonFeature extends Feature {
 
     public static Optional<DragonStats> getDragonStats(int lvl) {
         return Optional.ofNullable(DragonStatsReloadListener.STATS_MAP.get(lvl));
+    }
+
+    public static byte getDragonLvl(List<EndCrystal> respawningCrystals) {
+        for (EndCrystal crystal : respawningCrystals) {
+            if (crystal instanceof CorruptedEndCrystal) {
+                return 1;
+            }
+        }
+        return 0;
     }
 
     public static float neckOffsetXZ() {
