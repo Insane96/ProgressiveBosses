@@ -110,7 +110,6 @@ public class DragonLarva {
         CompoundTag minionTags = larva.getPersistentData();
 
         minionTags.putBoolean("mobspropertiesrandomness:processed", true);
-        //TODO Scaling health
 
         larva.setPos(pos.x, pos.y, pos.z);
         larva.setPersistenceRequired();

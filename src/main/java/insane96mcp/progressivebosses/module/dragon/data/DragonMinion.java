@@ -159,7 +159,6 @@ public class DragonMinion {
         minionTags.putByte(DragonFeature.LEVEL, (byte) stats.level);
 
         minionTags.putBoolean("mobspropertiesrandomness:processed", true);
-        //TODO Scaling health
 
         boolean isBlindingMinion = world.getRandom().nextDouble() < stats.minion.blindingChance;
 
