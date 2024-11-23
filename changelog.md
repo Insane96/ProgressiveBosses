@@ -1,6 +1,7 @@
 # Changelog
 
 * Dragon should try respawning crystal at the end of a phase
+* Dragon breath attack while flying
 
 ## Upcoming
 * Data packable Ender Dragon

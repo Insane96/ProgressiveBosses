@@ -1,7 +1,7 @@
 {
     "level": 1,
     "health": {
-        "health": 1000.0,
+        "health": 800.0,
         "regeneration": 0.5,
         "crystal_regeneration": 2.5,
         "regen_when_hit_ratio": 0.75,
@@ -36,7 +36,7 @@
     "attack": {
         "melee_damage_dealt_multiplier": 2.7,
         "acid_damage_dealt_multiplier": 2.2,
-        "charge_chance": 0.40,
+        "charge_chance": 0.50,
         "strafe_chance": 0.40,
         "acidball_speed_multiplier": 2.5,
         "acidball_impact_damage": 12,
