@@ -37,6 +37,7 @@ public abstract class DragonStrafePlayerPhaseMixin extends AbstractDragonPhaseIn
 	/**
 	 * Try charge or fireball on phase end
 	 */
+	//TODO Use event
 	@Inject(at = @At("HEAD"), method = "doServerTick", cancellable = true)
 	public void doServerTick(CallbackInfo ci) {
 		if (!Feature.isEnabled(DragonFeature.class))

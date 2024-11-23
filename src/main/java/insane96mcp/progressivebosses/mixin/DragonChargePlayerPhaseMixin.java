@@ -36,6 +36,7 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 	/**
 	 * Try to charge or acid ball when charging ends
 	 */
+	//TODO Use event
 	@Inject(at = @At("HEAD"), method = "doServerTick", cancellable = true)
 	public void doServerTick(CallbackInfo ci) {
 		if (!Feature.isEnabled(DragonFeature.class))

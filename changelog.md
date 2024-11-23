@@ -3,6 +3,7 @@
 * Dragon should try respawning crystal at the end of a phase
 * Dragon breath attack while flying
 * Minions should shoot like blazes
+* Speed up sitting phase
 
 ## Upcoming
 * Data packable Ender Dragon

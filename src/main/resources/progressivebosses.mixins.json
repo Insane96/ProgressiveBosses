@@ -16,6 +16,7 @@
         "EndCrystalMixin",
         "EndDragonFightMixin",
         "EnderDragonMixin",
+        "EnderDragonPhaseManagerMixin",
         "ItemEntityMixin",
         "ShulkerBulletMixin",
         "ShulkerMixin",

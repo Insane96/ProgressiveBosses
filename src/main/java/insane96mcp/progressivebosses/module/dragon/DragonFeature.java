@@ -7,6 +7,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.event.DragonPhaseChangeEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
 import insane96mcp.progressivebosses.utils.LogHelper;
@@ -46,7 +47,8 @@ public class DragonFeature extends Feature {
              - Dragon Head and Neck have been repositioned correctly
              - Dragon will now play the growl sound only 4 times/second when respawning and when at the center breathing instead of 20/second (so your ears shouldn't blow up anymore)
              - When the crystals that respawn the dragon in the center are destroyed, the fire is extinguished
-             - Ender Dragon can now rise and fall faster (somewhere around 1.14 the multiplier for the y speed was reduced to 0.01 instead of 0.1 https://bugs.mojang.com/browse/MC-272431)""")
+             - Ender Dragon can now rise and fall faster (somewhere around 1.14 the multiplier for the y speed was reduced to 0.01 instead of 0.1 https://bugs.mojang.com/browse/MC-272431)
+             - Dragon is set exactly at the center of the well""")
     public static Boolean enableFixes = true;
 
     @Config
@@ -146,6 +148,22 @@ public class DragonFeature extends Feature {
         for (int i = 0; i < eggsToDrop; i++) {
             dragon.level().setBlockAndUpdate(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.defaultBlockState());
         }
+    }
+
+    @SubscribeEvent
+    public void onSetPhase(DragonPhaseChangeEvent event) {
+        if (!this.isEnabled())
+            return;
+
+        /*BlockPos centerPodium = event.getDragon().level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+        AABB bb = new AABB(centerPodium).inflate(64d);
+        ServerPlayer player = (ServerPlayer) DragonAttack.getRandomPlayer(event.getDragon().level(), bb);
+
+        if (player == null)
+            return;
+
+        event.setNewPhase(EnderDragonPhase.CHARGING_PLAYER);
+        event.getDragon().getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());*/
     }
 
     @SubscribeEvent

@@ -23,6 +23,7 @@ public class DragonHoldingPatternPhaseMixin extends AbstractDragonPhaseInstance 
 		super(pDragon);
 	}
 
+	//TODO Use event
 	@Inject(at = @At("HEAD"), method = "findNewTarget()V", cancellable = true)
 	private void findNewTarget(CallbackInfo callback) {
 		if (this.currentPath == null || !this.currentPath.isDone())

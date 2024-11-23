@@ -6,6 +6,7 @@ import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
+//TODO move
 @Mod.EventBusSubscriber(modid = ProgressiveBosses.MOD_ID)
 public class CapabilityEvent {
 	@SubscribeEvent

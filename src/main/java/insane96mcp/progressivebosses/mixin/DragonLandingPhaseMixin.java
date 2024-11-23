@@ -1,5 +1,7 @@
 package insane96mcp.progressivebosses.mixin;
 
+import insane96mcp.insanelib.base.Feature;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonLandingPhase;
@@ -38,6 +40,9 @@ public class DragonLandingPhaseMixin extends AbstractDragonPhaseInstance {
 
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;setPhase(Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhase;)V", shift = At.Shift.AFTER), method = "doServerTick")
 	private void setCorrectSittingPosition(CallbackInfo ci) {
+		if (!Feature.isEnabled(DragonFeature.class)
+			|| !DragonFeature.enableFixes)
+			return;
 		//noinspection ConstantConditions since I call it after the dragon reaches the center podium it shouldn't be null
 		this.dragon.setPos(this.targetLocation);
 	}
