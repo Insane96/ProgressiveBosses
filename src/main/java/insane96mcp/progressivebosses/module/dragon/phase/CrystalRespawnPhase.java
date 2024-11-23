@@ -31,14 +31,17 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	private boolean respawning = false;
 	private final ArrayList<SpikeFeature.EndSpike> spikesToRespawn = new ArrayList<>();
 
-	@SuppressWarnings("FieldCanBeLocal")
-	private final int TICK_RESPAWN_CRYSTAL = 100;
-
 	public CrystalRespawnPhase(EnderDragon dragonIn) {
 		super(dragonIn);
 	}
 
 	public void doServerTick() {
+		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
+		if (stats.isEmpty()) {
+			dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
+			return;
+		}
+
 		if (this.targetLocation == null) {
 			if (this.spikesToRespawn.isEmpty()) {
 				dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
@@ -55,10 +58,10 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		}
 		else {
 			tick++;
-			dragon.setDeltaMovement(Vec3.ZERO);
-			if (tick <= 75 && tick % 5 == 0)
+			//dragon.setDeltaMovement(Vec3.ZERO);
+			if (tick <= stats.get().crystal.timeToRespawn - 15 && tick % 5 == 0)
 				dragon.playSound(SoundEvents.ENDER_DRAGON_GROWL, 4F, 1.0F);
-			if (tick >= TICK_RESPAWN_CRYSTAL) {
+			if (tick >= stats.get().crystal.timeToRespawn) {
 				SpikeFeature.EndSpike spike = spikesToRespawn.get(0);
 				boolean wasGuarded = spike.guarded;
 				spike.guarded = true;
@@ -135,10 +138,6 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 
 	public static EnderDragonPhase<CrystalRespawnPhase> getPhaseType() {
 		return CRYSTAL_RESPAWN;
-	}
-
-	public static boolean isInThisPhase(EnderDragon dragon) {
-		return dragon.getPhaseManager().getCurrentPhase().getPhase() == CRYSTAL_RESPAWN;
 	}
 
 	public static void init() {

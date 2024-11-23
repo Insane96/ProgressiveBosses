@@ -46,11 +46,13 @@ public class DragonCrystal {
     public int cages;
     public int bonusCrystals;
     public int crystalsRespawned;
+    public int timeToRespawn;
 
-    public DragonCrystal(int cages, int bonusCrystals, int crystalsRespawned) {
+    public DragonCrystal(int cages, int bonusCrystals, int crystalsRespawned, int timeToRespawn) {
         this.cages = cages;
         this.bonusCrystals = bonusCrystals;
         this.crystalsRespawned = crystalsRespawned;
+        this.timeToRespawn = timeToRespawn;
     }
 
     public static class Serializer implements JsonSerializer<DragonCrystal>, JsonDeserializer<DragonCrystal> {
@@ -58,7 +60,8 @@ public class DragonCrystal {
         public DragonCrystal deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return new DragonCrystal(GsonHelper.getAsInt(json.getAsJsonObject(), "cages"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "bonus_crystals"),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "crystals_respawned"));
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "crystals_respawned"),
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "time_to_respawn"));
         }
 
         @Override
@@ -67,6 +70,7 @@ public class DragonCrystal {
             jsonObject.addProperty("cages", src.cages);
             jsonObject.addProperty("bonus_crystals", src.bonusCrystals);
             jsonObject.addProperty("crystals_respawned", src.crystalsRespawned);
+            jsonObject.addProperty("time_to_respawn", src.timeToRespawn);
             return jsonObject;
         }
     }

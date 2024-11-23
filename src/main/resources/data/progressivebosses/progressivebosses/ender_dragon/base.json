@@ -9,15 +9,16 @@
     },
     "vulnerabilities": {
         "melee_damage_multiplier_when_sitting": 1,
-        "melee_damage_multiplier_when_not_sitting": 1.4,
-        "explosion_damage_multiplier": 0.4,
+        "melee_damage_multiplier_when_not_sitting": 1.3,
+        "explosion_damage_multiplier": 0.5,
         "ranged_damage_multiplier": 1,
         "respawning_crystal_damage_multiplier": 1.4
     },
     "crystal": {
         "cages": 3,
         "bonus_crystals": 0,
-        "crystals_respawned": 2
+        "crystals_respawned": 2,
+        "time_to_respawn": 100
     },
     "larva": {
         "health": 6,
