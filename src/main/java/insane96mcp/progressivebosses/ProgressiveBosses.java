@@ -1,21 +1,21 @@
 package insane96mcp.progressivebosses;
 
-import insane96mcp.progressivebosses.capability.DifficultyProvider;
 import insane96mcp.progressivebosses.commands.PBCommand;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStatsReloadListener;
+import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
+import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
 import insane96mcp.progressivebosses.setup.*;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -39,9 +39,10 @@ public class ProgressiveBosses {
 	public ProgressiveBosses() {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC, MOD_ID + "/common.toml");
 		MinecraftForge.EVENT_BUS.register(this);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::registerEntityRenderers);
-		FMLJavaModLoadingContext.get().getModEventBus().addListener(ClientSetup::creativeTabsBuildContents);
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+		modEventBus.addListener(ClientSetup::registerEntityRenderers);
+		modEventBus.addListener(ClientSetup::creativeTabsBuildContents);
+		modEventBus.addListener(this::registerAttributes);
 		PBItems.REGISTRY.register(modEventBus);
 		PBEntities.REGISTRY.register(modEventBus);
 		PBBlocks.BLOCKS.register(modEventBus);
@@ -55,21 +56,21 @@ public class ProgressiveBosses {
 		DispenserBlock.registerBehavior(Items.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());
 	}
 
-	@SubscribeEvent
-	public void attachCapabilitiesEntity(final AttachCapabilitiesEvent<Entity> event)
-	{
-		if (event.getObject() instanceof Player)
-			event.addCapability(DifficultyProvider.IDENTIFIER, new DifficultyProvider());
-	}
-
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onAddReloadListener(AddReloadListenerEvent event) {
 		event.addListener(DragonStatsReloadListener.INSTANCE);
 		event.addListener(WitherStatsReloadListener.INSTANCE);
 		event.addListener(ElderGuardianStatsReloadListener.INSTANCE);
 	}
+
 	@SubscribeEvent
 	public void registerCommands(RegisterCommandsEvent event) {
 		PBCommand.register(event.getDispatcher());
+	}
+
+	public void registerAttributes(EntityAttributeCreationEvent event) {
+		event.put(PBEntities.WITHER.get(), PBWither.prepareAttributes().build());
+		event.put(PBEntities.WITHER_MINION.get(), WitherMinion.prepareAttributes().build());
+		event.put(PBEntities.LARVA.get(), Larva.prepareAttributes().build());
 	}
 }
