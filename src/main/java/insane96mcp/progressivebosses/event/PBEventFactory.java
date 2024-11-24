@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.event;
 
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -8,8 +9,18 @@ import javax.annotation.Nullable;
 
 public class PBEventFactory {
     public static EnderDragonPhase<?> onDragonChangePhase(EnderDragon dragon, @Nullable EnderDragonPhase<?> currentPhase, EnderDragonPhase<?> newPhase) {
-        DragonPhaseChangeEvent event = new DragonPhaseChangeEvent(dragon, currentPhase, newPhase);
+        DragonPhaseEvent.Change event = new DragonPhaseEvent.Change(dragon, currentPhase, newPhase);
         MinecraftForge.EVENT_BUS.post(event);
         return event.getNewPhase();
+    }
+
+    public static void onDragonPhaseEnd(EnderDragon dragon, DragonPhaseInstance phase) {
+        DragonPhaseEvent.End event = new DragonPhaseEvent.End(dragon, phase);
+        MinecraftForge.EVENT_BUS.post(event);
+    }
+
+    public static void onDragonPhaseBegin(EnderDragon dragon, DragonPhaseInstance phase) {
+        DragonPhaseEvent.Begin event = new DragonPhaseEvent.Begin(dragon, phase);
+        MinecraftForge.EVENT_BUS.post(event);
     }
 }

@@ -9,7 +9,9 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EnderDragonPhaseManager.class)
 public abstract class EnderDragonPhaseManagerMixin {
@@ -17,10 +19,26 @@ public abstract class EnderDragonPhaseManagerMixin {
 
 	@Shadow public abstract DragonPhaseInstance getCurrentPhase();
 
+	@Shadow public abstract <T extends DragonPhaseInstance> T getPhase(EnderDragonPhase<T> pPhase);
+
 	@ModifyVariable(method = "setPhase", at = @At(value = "HEAD", ordinal = 0), argsOnly = true)
 	public EnderDragonPhase<?> progressivebosses$setPhaseEvent(EnderDragonPhase<?> pPhase) {
 		if (this.dragon.level().isClientSide)
 			return pPhase;
 		return PBEventFactory.onDragonChangePhase(this.dragon, this.getCurrentPhase() == null ? null : this.getCurrentPhase().getPhase(), pPhase);
+	}
+
+	@Inject(method = "setPhase", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;end()V", shift = At.Shift.AFTER))
+	public void progressivebosses$phaseEndEvent(EnderDragonPhase<?> pPhase, CallbackInfo ci) {
+		if (this.dragon.level().isClientSide)
+			return;
+		PBEventFactory.onDragonPhaseEnd(this.dragon, this.getCurrentPhase());
+	}
+
+	@Inject(method = "setPhase", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;begin()V", shift = At.Shift.AFTER))
+	public void progressivebosses$phaseBeginEvent(EnderDragonPhase<?> pPhase, CallbackInfo ci) {
+		if (this.dragon.level().isClientSide)
+			return;
+		PBEventFactory.onDragonPhaseBegin(this.dragon, this.getPhase(pPhase));
 	}
 }

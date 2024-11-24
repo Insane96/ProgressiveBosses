@@ -7,7 +7,7 @@ import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.event.DragonPhaseChangeEvent;
+import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
 import insane96mcp.progressivebosses.utils.LogHelper;
@@ -151,19 +151,32 @@ public class DragonFeature extends Feature {
     }
 
     @SubscribeEvent
-    public void onSetPhase(DragonPhaseChangeEvent event) {
+    public void onSetPhase(DragonPhaseEvent.Change event) {
         if (!this.isEnabled())
             return;
 
-        /*BlockPos centerPodium = event.getDragon().level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-        AABB bb = new AABB(centerPodium).inflate(64d);
-        ServerPlayer player = (ServerPlayer) DragonAttack.getRandomPlayer(event.getDragon().level(), bb);
-
-        if (player == null)
+        Optional<DragonStats> stats = getDragonStats(event.getDragon());
+        if (stats.isEmpty())
             return;
 
-        event.setNewPhase(EnderDragonPhase.CHARGING_PLAYER);
-        event.getDragon().getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());*/
+        if (DragonCrystal.onPhaseChange(event, event.getDragon(), stats.get()))
+            return;
+
+        if (DragonAttack.onPhaseChange(event, event.getDragon(), stats.get()))
+            return;
+    }
+
+    @SubscribeEvent
+    public void onPhaseBegin(DragonPhaseEvent.Begin event) {
+        if (!this.isEnabled())
+            return;
+
+        Optional<DragonStats> stats = getDragonStats(event.getDragon());
+        if (stats.isEmpty())
+            return;
+
+        DragonCrystal.onPhaseBegin(event, event.getDragon(), stats.get());
+        DragonAttack.onPhaseBegin(event, event.getDragon(), stats.get());
     }
 
     @SubscribeEvent
@@ -185,8 +198,6 @@ public class DragonFeature extends Feature {
             return;
 
         DragonVulnerabilities.damageMultipliers(event, dragon, stats.get());
-
-        DragonCrystal.tryRespawningCrystalPhase(dragon, stats.get());
     }
 
     public static Optional<DragonStats> getDragonStats(EnderDragon dragon) {

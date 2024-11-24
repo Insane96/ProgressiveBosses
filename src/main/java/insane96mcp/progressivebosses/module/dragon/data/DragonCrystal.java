@@ -5,6 +5,7 @@ import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import net.minecraft.core.BlockPos;
@@ -124,16 +125,17 @@ public class DragonCrystal {
         level.addFreshEntity(crystal);
     }
 
-    public static void tryRespawningCrystalPhase(EnderDragon dragon, DragonStats stats) {
+    /**
+     * Returns true if the phase has been changed
+     */
+    public static boolean onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
         CompoundTag dragonTags = dragon.getPersistentData();
 
-        if (!VALID_CRYSTAL_RESPAWN_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
-            return;
+        if (event.getOldPhase() != null
+                && !VALID_CRYSTAL_RESPAWN_PHASES.contains(event.getOldPhase()))
+            return false;
 
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
-        if (healthRatio >= 0.80d)
-            return;
-
         byte crystalRespawn = dragonTags.getByte(CRYSTAL_RESPAWN);
 
         //The first time, the chance is 0% at >=80% health and 100% at <=60% health. The health threshold decreases by 35% every time the enderdragon respawns the crystals
@@ -143,18 +145,22 @@ public class DragonCrystal {
         float chance = getChanceAtValue(healthRatio, 0.80f - (crystalRespawn * 0.35f), 0.20f - (crystalRespawn * 0.35f));
 
         if (dragon.getRandom().nextFloat() > chance)
-            return;
+            return false;
 
         dragonTags.putByte(CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
 
+        event.setNewPhase(CrystalRespawnPhase.getPhaseType());
+        return true;
+    }
+
+    public static void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon, DragonStats stats) {
         double crystalsToRespawn = stats.crystal.crystalsRespawned;
         crystalsToRespawn = MathHelper.getAmountWithDecimalChance(dragon.getRandom(), crystalsToRespawn);
         if (crystalsToRespawn == 0d)
             return;
 
-        dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
-        CrystalRespawnPhase phase = (CrystalRespawnPhase) dragon.getPhaseManager().getCurrentPhase();
-
+        if (!(event.getPhaseInstance() instanceof CrystalRespawnPhase phase))
+            return;
         List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level()));
         spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
         int spawned = 0;
