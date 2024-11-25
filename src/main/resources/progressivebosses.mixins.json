@@ -9,6 +9,8 @@
         "DragonLandingPhaseMixin",
         "DragonRespawnAnimationMixin",
         "DragonSittingAttackingPhaseMixin",
+        "DragonSittingFlamingPhaseMixin",
+        "DragonSittingScanningPhaseMixin",
         "DragonStrafePlayerPhaseMixin",
         "ElderGuardianMixin",
         "EndCrystalMixin",

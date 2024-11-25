@@ -16,24 +16,25 @@ public class DragonStats {
     private static final ResourceLocation VANILLA_LOOT_TABLE = new ResourceLocation("entities/ender_dragon");
 
     public int level;
+    public float maxSittingDamageReceived;
+    public int roarTime;
+    public int sittingScanningIdleTime;
+    public int sittingFlamingTime;
     public DragonHealth health;
     public DragonVulnerabilities vulnerabilities;
     public DragonCrystal crystal;
     public DragonLarva larva;
     public DragonMinion minion;
     public DragonAttack attack;
-    /*public WitherAttack attack;
-    @Nullable
-    public PoweredAttributeModifiers attributeModifiers;
-    @Nullable
-    public WitherMinionStats minion;
-    public WitherDeath death;
-    public WitherMiscStats misc;*/
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonStats(int level, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, DragonLarva larva, DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
+    public DragonStats(int level, float maxSittingDamageReceived, int roarTime, int sittingScanningIdleTime, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, DragonLarva larva, DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
+        this.maxSittingDamageReceived = maxSittingDamageReceived;
+        this.roarTime = roarTime;
+        this.sittingScanningIdleTime = sittingScanningIdleTime;
+        this.sittingFlamingTime = sittingFlamingTime;
         this.health = health;
         this.vulnerabilities = vulnerabilities;
         this.crystal = crystal;
@@ -61,6 +62,10 @@ public class DragonStats {
             String sLootTable = GsonHelper.getAsString(json.getAsJsonObject(), "loot_table", VANILLA_LOOT_TABLE.getPath());
             ResourceLocation lootTable = ResourceLocation.tryParse(sLootTable);
             return new DragonStats(GsonHelper.getAsInt(json.getAsJsonObject(), "level"),
+                    GsonHelper.getAsFloat(json.getAsJsonObject(), "max_sitting_damage_received"),
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "roar_time"),
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "sitting_scanning_idle_time", 0),
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "sitting_flaming_time", 0),
                     context.deserialize(json.getAsJsonObject().get("health"), DragonHealth.class),
                     context.deserialize(json.getAsJsonObject().get("vulnerabilities"), DragonVulnerabilities.class),
                     context.deserialize(json.getAsJsonObject().get("crystal"), DragonCrystal.class),
@@ -75,6 +80,10 @@ public class DragonStats {
         public JsonElement serialize(DragonStats src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("level", src.level);
+            jsonObject.addProperty("max_sitting_damage_received", src.maxSittingDamageReceived);
+            jsonObject.addProperty("roar_time", src.roarTime);
+            jsonObject.addProperty("sitting_scanning_idle_time", src.sittingScanningIdleTime);
+            jsonObject.addProperty("sitting_flaming_time", src.sittingFlamingTime);
             jsonObject.add("health", context.serialize(src.health));
             jsonObject.add("vulnerabilities", context.serialize(src.vulnerabilities));
             jsonObject.add("crystal", context.serialize(src.crystal));

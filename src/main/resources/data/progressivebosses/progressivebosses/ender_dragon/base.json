@@ -1,5 +1,9 @@
 {
     "level": 0,
+    "max_sitting_damage_received": 0.2,
+    "roar_time": 20,
+    "sitting_scanning_idle_time": 50,
+    "sitting_flaming_time": 100,
     "health": {
         "health": 800.0,
         "regeneration": 1,
