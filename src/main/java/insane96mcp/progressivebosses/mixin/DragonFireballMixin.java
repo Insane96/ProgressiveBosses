@@ -20,7 +20,7 @@ public class DragonFireballMixin extends AbstractHurtingProjectile {
 
 	@Inject(at = @At("HEAD"), method = "onHit(Lnet/minecraft/world/phys/HitResult;)V", cancellable = true)
 	private void onHit(HitResult result, CallbackInfo callback) {
-		if (DragonAttack.onFireballImpact((DragonFireball) (Object) this, this.getOwner(), result))
+		if (DragonAttack.onAcidBallImpact((DragonFireball) (Object) this, this.getOwner(), result))
 			callback.cancel();
 	}
 }

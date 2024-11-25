@@ -43,14 +43,14 @@ import java.util.Optional;
 public class DragonAttack {
     public float meleeDamageDealtMultiplier;
     public float acidDamageDealtMultiplier;
-    public float chargeChance;
-    public float strafeChance;
+    public DragonValue chargeChance;
+    public DragonValue strafeChance;
     public float acidballSpeedMultiplier;
     public float acidballImpactDamage;
     public int minAcidballShot;
     public int maxAcidballShot;
 
-    public DragonAttack(float meleeDamageDealtMultiplier, float acidDamageDealtMultiplier, float chargeChance, float strafeChance, float acidballSpeedMultiplier, float acidballImpactDamage, int minAcidballShot, int maxAcidballShot) {
+    public DragonAttack(float meleeDamageDealtMultiplier, float acidDamageDealtMultiplier, DragonValue chargeChance, DragonValue strafeChance, float acidballSpeedMultiplier, float acidballImpactDamage, int minAcidballShot, int maxAcidballShot) {
         this.meleeDamageDealtMultiplier = meleeDamageDealtMultiplier;
         this.acidDamageDealtMultiplier = acidDamageDealtMultiplier;
         this.chargeChance = chargeChance;
@@ -64,15 +64,16 @@ public class DragonAttack {
     public static class Serializer implements JsonSerializer<DragonAttack>, JsonDeserializer<DragonAttack> {
         @Override
         public DragonAttack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jObject = json.getAsJsonObject();
             return new DragonAttack(
-                    GsonHelper.getAsFloat(json.getAsJsonObject(), "melee_damage_dealt_multiplier"),
-                    GsonHelper.getAsFloat(json.getAsJsonObject(), "acid_damage_dealt_multiplier"),
-                    GsonHelper.getAsFloat(json.getAsJsonObject(), "charge_chance"),
-                    GsonHelper.getAsFloat(json.getAsJsonObject(), "strafe_chance"),
-                    GsonHelper.getAsFloat(json.getAsJsonObject(), "acidball_speed_multiplier"),
-                    GsonHelper.getAsFloat(json.getAsJsonObject(), "acidball_impact_damage"),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "min_acidball_shot"),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "max_acidball_shot")
+                    GsonHelper.getAsFloat(jObject, "melee_damage_dealt_multiplier"),
+                    GsonHelper.getAsFloat(jObject, "acid_damage_dealt_multiplier"),
+                    context.deserialize(jObject.get("charge_chance"), DragonValue.class),
+                    context.deserialize(jObject.get("strafe_chance"), DragonValue.class),
+                    GsonHelper.getAsFloat(jObject, "acidball_speed_multiplier"),
+                    GsonHelper.getAsFloat(jObject, "acidball_impact_damage"),
+                    GsonHelper.getAsInt(jObject, "min_acidball_shot"),
+                    GsonHelper.getAsInt(jObject, "max_acidball_shot")
             );
         }
 
@@ -81,8 +82,8 @@ public class DragonAttack {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("melee_damage_dealt_multiplier", src.meleeDamageDealtMultiplier);
             jsonObject.addProperty("acid_damage_dealt_multiplier", src.acidDamageDealtMultiplier);
-            jsonObject.addProperty("charge_chance", src.chargeChance);
-            jsonObject.addProperty("strafe_chance", src.strafeChance);
+            jsonObject.add("charge_chance", context.serialize(src.chargeChance));
+            jsonObject.add("strafe_chance", context.serialize(src.strafeChance));
             jsonObject.addProperty("acidball_speed_multiplier", src.acidballSpeedMultiplier);
             jsonObject.addProperty("acidball_impact_damage", src.acidballImpactDamage);
             jsonObject.addProperty("min_acidball_shot", src.minAcidballShot);
@@ -150,11 +151,11 @@ public class DragonAttack {
             if (dragon.getRandom().nextBoolean())
                 chargePlayer(event, dragon, stats);
             else
-                fireballPlayer(event, dragon, stats);
+                strafePlayer(event, dragon, stats);
         else if (chargePlayer)
             chargePlayer(event, dragon, stats);
         else if (strafePlayer)
-            fireballPlayer(event, dragon, stats);
+            strafePlayer(event, dragon, stats);
 
         return chargePlayer || strafePlayer;
     }
@@ -177,10 +178,9 @@ public class DragonAttack {
     }
 
     private static boolean shouldChargePlayer(EnderDragon dragon, DragonStats stats) {
-        if (stats.attack.chargeChance == 0f)
+        double chance = stats.attack.chargeChance.getValue(dragon);
+        if (chance == 0f)
             return false;
-
-        double chance = stats.attack.chargeChance;
 
         BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
         AABB boundingBox = new AABB(centerPodium).inflate(64d);
@@ -205,15 +205,14 @@ public class DragonAttack {
     }
 
     private static boolean shouldStrafePlayer(EnderDragon dragon, DragonStats stats) {
-        if (stats.attack.strafeChance == 0f)
+        double chance = stats.attack.strafeChance.getValue(dragon);
+        if (chance == 0f)
             return false;
-
-        double chance = stats.attack.strafeChance;
 
         return dragon.getRandom().nextDouble() < chance;
     }
 
-    private static void fireballPlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
+    private static void strafePlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
         if (!isPlayerInRange(dragon.level(), 64))
             return;
 
@@ -255,7 +254,7 @@ public class DragonAttack {
 
     static ResourceKey<DamageType> DRAGON_FIREBALL_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_fireball"));
 
-    public static boolean onFireballImpact(DragonFireball fireball, @Nullable Entity shooter, HitResult result) {
+    public static boolean onAcidBallImpact(DragonFireball fireball, @Nullable Entity shooter, HitResult result) {
         if (!(shooter instanceof EnderDragon dragon))
             return false;
         Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);

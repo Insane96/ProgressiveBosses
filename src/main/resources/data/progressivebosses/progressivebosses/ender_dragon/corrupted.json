@@ -37,8 +37,14 @@
     "attack": {
         "melee_damage_dealt_multiplier": 2.7,
         "acid_damage_dealt_multiplier": 2.2,
-        "charge_chance": 0.50,
-        "strafe_chance": 0.40,
+        "charge_chance": {
+            "base": 0.4,
+            "with_no_crystals_left": 0.75
+        },
+        "strafe_chance": {
+            "base": 0.4,
+            "with_no_crystals_left": 0.75
+        },
         "acidball_speed_multiplier": 2.5,
         "acidball_impact_damage": 12,
         "min_acidball_shot": 4,
