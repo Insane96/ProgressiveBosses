@@ -12,13 +12,13 @@
         "melee_damage_multiplier_when_not_sitting": 1.3,
         "explosion_damage_multiplier": 0.4,
         "ranged_damage_multiplier": 1,
-        "respawning_crystal_damage_multiplier": 1.4
+        "respawning_crystal_damage_multiplier": 1.5
     },
     "crystal": {
         "cages": 6,
         "bonus_crystals": 3,
         "crystals_respawned": 4,
-        "time_to_respawn": 50
+        "time_to_respawn": 60
     },
     "larva": {
         "health": 6,
@@ -42,8 +42,8 @@
             "with_no_crystals_left": 0.75
         },
         "strafe_chance": {
-            "base": 0.4,
-            "with_no_crystals_left": 0.75
+            "base": 0.35,
+            "with_no_crystals_left": 0.5
         },
         "acidball_speed_multiplier": 2.5,
         "acidball_impact_damage": 12,

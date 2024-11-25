@@ -136,18 +136,14 @@ public class DragonCrystal {
             return false;
 
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
-        byte crystalRespawn = dragonTags.getByte(CRYSTAL_RESPAWN);
+        //byte crystalRespawn = dragonTags.getByte(CRYSTAL_RESPAWN);
 
-        //The first time, the chance is 0% at >=80% health and 100% at <=60% health. The health threshold decreases by 35% every time the ender dragon respawns the crystals
-        //On 0 Respawns: 0% chance at health >=  80% and 100% at health <=  20%
-        //On 1 Respawn : 0% chance at health >=  45% and  75% at health =    0%
-        //On 2 Respawns: 0% chance at health >=  10% and  17% at health =    0%
-        float chance = getChanceAtValue(healthRatio, 0.80f - (crystalRespawn * 0.35f), 0.20f - (crystalRespawn * 0.35f));
+        float chance = getChanceAtValue(healthRatio, 0.75f, 0f, 0, 0.25f);
 
         if (dragon.getRandom().nextFloat() > chance)
             return false;
 
-        dragonTags.putByte(CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
+        //dragonTags.putByte(CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
 
         event.setNewPhase(CrystalRespawnPhase.getPhaseType());
         return true;
@@ -184,7 +180,8 @@ public class DragonCrystal {
     /**
      * Returns a percentage value (0~1) based off a min and max value. when value >= max the chance is 0%, when value <= min the chance is 100%. In-between the threshold, chance scales accordingly
      */
-    private static float getChanceAtValue(float value, float max, float min) {
-        return Mth.clamp((max - min - (value - min)) / (max - min), 0f, 1f);
+    private static float getChanceAtValue(float value, float max, float min, float outputMin, float outputMax) {
+        float clampedValue = Mth.clamp((max - min - (value - min)) / (max - min), 0f, 1f);
+        return outputMin + clampedValue * (outputMax - outputMin);
     }
 }

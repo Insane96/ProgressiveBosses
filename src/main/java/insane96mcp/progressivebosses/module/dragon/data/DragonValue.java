@@ -1,11 +1,13 @@
 package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
+import com.google.gson.annotations.JsonAdapter;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 
 import java.lang.reflect.Type;
 
+@JsonAdapter(DragonValue.Serializer.class)
 public class DragonValue {
     public static final int BASE_CRYSTALS = 10;
 

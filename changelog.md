@@ -4,7 +4,6 @@
 * Dragon breath attack while flying
 * Minions should shoot like blazes
 * Speed up sitting phase
-* Dragon should always respawn crystal with no diminishing return. 0% with health >= 75%, 25% with health <= 0%
 
 ## Upcoming
 * Data packable Ender Dragon

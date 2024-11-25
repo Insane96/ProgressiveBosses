@@ -23,7 +23,9 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonChargePlayerPhase;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonStrafePlayerPhase;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.DragonFireball;
@@ -144,8 +146,8 @@ public class DragonAttack {
                 && !VALID_ATTACK_PHASES.contains(event.getOldPhase()))
             return false;
 
-        boolean chargePlayer = shouldChargePlayer(dragon, stats);
-        boolean strafePlayer = shouldStrafePlayer(dragon, stats);
+        boolean chargePlayer = shouldChargePlayer(event, dragon, stats);
+        boolean strafePlayer = shouldStrafePlayer(event, dragon, stats);
 
         if (chargePlayer && strafePlayer)
             if (dragon.getRandom().nextBoolean())
@@ -161,26 +163,28 @@ public class DragonAttack {
     }
 
     public static void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon, DragonStats stats) {
-        if (event.getPhaseInstance().getPhase() == EnderDragonPhase.CHARGING_PLAYER) {
-            Player player = getRandomPlayerWithCrystalPriority(dragon.level(), dragon.getBoundingBox().inflate(64d));
+        BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+        AABB boundingBox = new AABB(centerPodium).inflate(64d);
+        if (event.getPhaseInstance() instanceof DragonChargePlayerPhase chargePhase) {
+            Player player = getRandomPlayerWithCrystalPriority(dragon.level(), boundingBox);
             if (player == null)
                 return;
-            dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());
+            chargePhase.setTarget(player.position());
         }
-        else if (event.getPhaseInstance().getPhase() == EnderDragonPhase.STRAFE_PLAYER) {
-            Player player = getRandomPlayerWithCrystalPriority(dragon.level(), dragon.getBoundingBox().inflate(64d));
+        else if (event.getPhaseInstance() instanceof DragonStrafePlayerPhase strafePhase) {
+            Player player = getRandomPlayerWithCrystalPriority(dragon.level(), boundingBox);
             if (player == null)
                 return;
-            dragon.getPhaseManager().getPhase(EnderDragonPhase.STRAFE_PLAYER).setTarget(player);
-            //Slightly increase the cooldown between fireballs
-            dragon.getPhaseManager().getPhase(EnderDragonPhase.STRAFE_PLAYER).fireballCharge = -3;
+            strafePhase.setTarget(player);
         }
     }
 
-    private static boolean shouldChargePlayer(EnderDragon dragon, DragonStats stats) {
+    private static boolean shouldChargePlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
         double chance = stats.attack.chargeChance.getValue(dragon);
         if (chance == 0f)
             return false;
+        if (event.getOldPhase() == EnderDragonPhase.CHARGING_PLAYER)
+            chance /= 2;
 
         BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
         AABB boundingBox = new AABB(centerPodium).inflate(64d);
@@ -204,10 +208,12 @@ public class DragonAttack {
         event.setNewPhase(EnderDragonPhase.CHARGING_PLAYER);
     }
 
-    private static boolean shouldStrafePlayer(EnderDragon dragon, DragonStats stats) {
+    private static boolean shouldStrafePlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
         double chance = stats.attack.strafeChance.getValue(dragon);
         if (chance == 0f)
             return false;
+        if (event.getOldPhase() == EnderDragonPhase.STRAFE_PLAYER)
+            chance /= 2;
 
         return dragon.getRandom().nextDouble() < chance;
     }
@@ -217,7 +223,6 @@ public class DragonAttack {
             return;
 
         event.setNewPhase(EnderDragonPhase.STRAFE_PLAYER);
-        //dragon.getPhaseManager().getPhase(EnderDragonPhase.STRAFE_PLAYER).setTarget(player);
     }
 
     public static boolean isPlayerInRange(Level level, int range) {
