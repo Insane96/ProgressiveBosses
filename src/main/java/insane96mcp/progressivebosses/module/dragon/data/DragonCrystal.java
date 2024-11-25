@@ -138,7 +138,7 @@ public class DragonCrystal {
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
         byte crystalRespawn = dragonTags.getByte(CRYSTAL_RESPAWN);
 
-        //The first time, the chance is 0% at >=80% health and 100% at <=60% health. The health threshold decreases by 35% every time the enderdragon respawns the crystals
+        //The first time, the chance is 0% at >=80% health and 100% at <=60% health. The health threshold decreases by 35% every time the ender dragon respawns the crystals
         //On 0 Respawns: 0% chance at health >=  80% and 100% at health <=  20%
         //On 1 Respawn : 0% chance at health >=  45% and  75% at health =    0%
         //On 2 Respawns: 0% chance at health >=  10% and  17% at health =    0%
