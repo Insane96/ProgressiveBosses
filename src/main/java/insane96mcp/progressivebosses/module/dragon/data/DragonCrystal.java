@@ -138,7 +138,8 @@ public class DragonCrystal {
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
         //byte crystalRespawn = dragonTags.getByte(CRYSTAL_RESPAWN);
 
-        float chance = getChanceAtValue(healthRatio, 0.75f, 0f, 0, 0.25f);
+        //0% when health >= 80%, 30% when health <= 0%
+        float chance = getChanceAtValue(healthRatio, 0.80f, 0f, 0, 0.30f);
 
         if (dragon.getRandom().nextFloat() > chance)
             return false;
