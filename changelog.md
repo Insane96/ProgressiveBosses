@@ -21,10 +21,11 @@
       * This makes the ender dragon fly up and down faster, like she used to do back in 1.12
     * Fixed [MC-86836](https://bugs.mojang.com/browse/MC-86836)
       * This makes the ender dragon no longer teleport when inside portal blocks
+    * Fixed [MC-105770](https://bugs.mojang.com/browse/MC-105770)
+      * Fixes entities accumulating knockback when hit by the dragon and then launching like a rocket
     * Fixed Ender Dragon growl sound playing 20 times (making it really loud) when about to respawn and when at the center breathing (it's now 4 times)
     * Fixed Ender Dragon growl sound being played in a too small radius making it inaudible from ground level
     * Fixed head and neck placements and head size
-    * Fixes entities accumulating knockback when hit by the dragon and then launching like a rocket
   * Much much more stuff that I didn't keep track of
 * Rebalancements
   * Wither Charge Attack now ignores armor
