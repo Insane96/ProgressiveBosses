@@ -228,6 +228,10 @@ public class DragonFeature extends Feature {
         return 3.8f;
     }
 
+    public static float tailOffsetY() {
+        return 0f;
+    }
+
     public static float headOffsetXZ() {
         return 6f;
     }

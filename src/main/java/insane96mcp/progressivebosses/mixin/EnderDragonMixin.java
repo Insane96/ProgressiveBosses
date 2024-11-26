@@ -129,12 +129,28 @@ public class EnderDragonMixin extends Mob {
 		return DragonFeature.neckOffsetXZ();
 	}
 
+	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=1.5", ordinal = 3))
+	public float tailOffsetY(float original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return DragonFeature.tailOffsetY();
+	}
+
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=6.5", ordinal = 0))
 	public float headOffsetX(float original) {
 		if (!Feature.isEnabled(DragonFeature.class)
 				|| !DragonFeature.enableFixes)
 			return original;
 		return DragonFeature.headOffsetXZ();
+	}
+
+	@ModifyReturnValue(method = "getHeadYOffset", at = @At(value = "RETURN", ordinal = 1))
+	public float headOffsetY(float original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return DragonFeature.headOffsetY(original);
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=6.5", ordinal = 2))
@@ -151,13 +167,5 @@ public class EnderDragonMixin extends Mob {
 				|| !DragonFeature.enableFixes)
 			return original;
 		return DragonFeature.headOffsetSittingY();
-	}
-
-	@ModifyReturnValue(method = "getHeadYOffset", at = @At(value = "RETURN", ordinal = 1))
-	public float headOffsetY(float original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
-			return original;
-		return DragonFeature.headOffsetY(original);
 	}
 }
