@@ -6,6 +6,7 @@ import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonSittingScanningPhase;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -20,6 +21,8 @@ public abstract class DragonSittingScanningPhaseMixin extends AbstractDragonPhas
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=100"))
 	public int getSittingScanningIdleTime(int original) {
+		if (this.dragon.getPhaseManager().getPhase(EnderDragonPhase.SITTING_FLAMING).flameCount == 0)
+			return original;
 		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
         return stats.map(dragonStats -> dragonStats.sittingScanningIdleTime).orElse(original);
     }

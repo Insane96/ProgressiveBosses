@@ -2,8 +2,8 @@
     "level": 1,
     "max_sitting_damage_received": 0.2,
     "roar_time": 20,
-    "sitting_scanning_idle_time": 50,
-    "sitting_flaming_time": 100,
+    "sitting_scanning_idle_time": 40,
+    "sitting_flaming_time": 60,
     "health": {
         "health": 800.0,
         "regeneration": 0.5,
@@ -22,7 +22,11 @@
         "cages": 6,
         "bonus_crystals": 3,
         "crystals_respawned": 4,
-        "time_to_respawn": 60
+        "time_to_respawn": 60,
+        "respawn_caged_chance": 0.5,
+        "respawn_crystals_below_health": 0.8,
+        "max_respawn_chance": 0.1,
+        "max_respawn_chance_at_health": 0
     },
     "larva": {
         "health": 6,
@@ -43,7 +47,7 @@
         "acid_damage_dealt_multiplier": 2.2,
         "charge_chance": {
             "base": 0.4,
-            "with_no_crystals_left": 0.75
+            "with_no_crystals_left": 0.6
         },
         "strafe_chance": {
             "base": 0.35,
@@ -51,8 +55,8 @@
         },
         "acidball_speed_multiplier": 2.5,
         "acidball_impact_damage": 12,
-        "min_acidball_shot": 4,
-        "max_acidball_shot": 8
+        "min_acidball_shot": 3,
+        "max_acidball_shot": 6
     },
     "xp_dropped": 20000,
     "loot_table": "progressivebosses:entities/ender_dragon/corrupted"

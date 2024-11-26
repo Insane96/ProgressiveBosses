@@ -43,17 +43,25 @@ public class DragonCrystal {
      */
     public static final String CRYSTAL_RESPAWN = ProgressiveBosses.RESOURCE_PREFIX + "crystal_respawn";
     private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER = new ResourceLocation("endergetic:crystal_holder");
-    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF);
+    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF);
     public int cages;
     public int bonusCrystals;
     public int crystalsRespawned;
     public int timeToRespawn;
+    public float respawnCagedChance;
+    public float respawnCrystalsBelowHealth;
+    public float maxRespawnChance;
+    public float maxRespawnChanceAtHealth;
 
-    public DragonCrystal(int cages, int bonusCrystals, int crystalsRespawned, int timeToRespawn) {
+    public DragonCrystal(int cages, int bonusCrystals, int crystalsRespawned, int timeToRespawn, float respawnCagedChance, float respawnCrystalsBelowHealth, float maxRespawnChance, float maxRespawnChanceAtHealth) {
         this.cages = cages;
         this.bonusCrystals = bonusCrystals;
         this.crystalsRespawned = crystalsRespawned;
         this.timeToRespawn = timeToRespawn;
+        this.respawnCagedChance = respawnCagedChance;
+        this.respawnCrystalsBelowHealth = respawnCrystalsBelowHealth;
+        this.maxRespawnChance = maxRespawnChance;
+        this.maxRespawnChanceAtHealth = maxRespawnChanceAtHealth;
     }
 
     public static class Serializer implements JsonSerializer<DragonCrystal>, JsonDeserializer<DragonCrystal> {
@@ -62,7 +70,11 @@ public class DragonCrystal {
             return new DragonCrystal(GsonHelper.getAsInt(json.getAsJsonObject(), "cages"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "bonus_crystals"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "crystals_respawned"),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "time_to_respawn"));
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "time_to_respawn"),
+                    GsonHelper.getAsFloat(json.getAsJsonObject(), "respawn_caged_chance"),
+                    GsonHelper.getAsFloat(json.getAsJsonObject(), "respawn_crystals_below_health"),
+                    GsonHelper.getAsFloat(json.getAsJsonObject(), "max_respawn_chance"),
+                    GsonHelper.getAsFloat(json.getAsJsonObject(), "max_respawn_chance_at_health"));
         }
 
         @Override
@@ -72,6 +84,10 @@ public class DragonCrystal {
             jsonObject.addProperty("bonus_crystals", src.bonusCrystals);
             jsonObject.addProperty("crystals_respawned", src.crystalsRespawned);
             jsonObject.addProperty("time_to_respawn", src.timeToRespawn);
+            jsonObject.addProperty("respawn_caged_chance", src.respawnCagedChance);
+            jsonObject.addProperty("respawn_crystals_below_health", src.respawnCrystalsBelowHealth);
+            jsonObject.addProperty("max_respawn_chance", src.maxRespawnChance);
+            jsonObject.addProperty("max_respawn_chance_at_health", src.maxRespawnChanceAtHealth);
             return jsonObject;
         }
     }
@@ -138,8 +154,8 @@ public class DragonCrystal {
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
         //byte crystalRespawn = dragonTags.getByte(CRYSTAL_RESPAWN);
 
-        //0% when health >= 80%, 30% when health <= 0%
-        float chance = getChanceAtValue(healthRatio, 0.80f, 0f, 0, 0.30f);
+        //0% when health >= 80%, 20% when health <= 0%
+        float chance = getChanceAtValue(healthRatio, stats.crystal.respawnCrystalsBelowHealth, stats.crystal.maxRespawnChanceAtHealth, 0, stats.crystal.maxRespawnChance);
 
         if (dragon.getRandom().nextFloat() > chance)
             return false;

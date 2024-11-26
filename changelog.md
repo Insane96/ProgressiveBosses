@@ -2,7 +2,6 @@
 
 * Dragon breath attack while flying
 * Minions should shoot like blazes
-* Speed up sitting phase
 
 ## Upcoming
 * Data packable Ender Dragon

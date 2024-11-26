@@ -2,8 +2,8 @@
     "level": 0,
     "max_sitting_damage_received": 0.2,
     "roar_time": 20,
-    "sitting_scanning_idle_time": 50,
-    "sitting_flaming_time": 100,
+    "sitting_scanning_idle_time": 40,
+    "sitting_flaming_time": 60,
     "health": {
         "health": 800.0,
         "regeneration": 1,
@@ -22,7 +22,11 @@
         "cages": 3,
         "bonus_crystals": 0,
         "crystals_respawned": 2,
-        "time_to_respawn": 100
+        "time_to_respawn": 100,
+        "respawn_caged_chance": 0.5,
+        "respawn_crystals_below_health": 0.8,
+        "max_respawn_chance": 0.1,
+        "max_respawn_chance_at_health": 0
     },
     "larva": {
         "health": 6,

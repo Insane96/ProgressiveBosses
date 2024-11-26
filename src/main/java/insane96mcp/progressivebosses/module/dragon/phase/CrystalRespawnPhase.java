@@ -59,15 +59,16 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		else {
 			tick++;
 			//dragon.setDeltaMovement(Vec3.ZERO);
-			if (tick <= stats.get().crystal.timeToRespawn - 15 && tick % 5 == 0)
+			if (tick <= stats.get().crystal.timeToRespawn - 10 && tick % 5 == 0)
 				dragon.playSound(SoundEvents.ENDER_DRAGON_GROWL, 4F, 1.0F);
 			if (tick >= stats.get().crystal.timeToRespawn) {
 				SpikeFeature.EndSpike spike = spikesToRespawn.get(0);
+				boolean shouldBeGuarded = this.dragon.getRandom().nextFloat() < stats.get().crystal.respawnCagedChance;
 				boolean wasGuarded = spike.guarded;
-				spike.guarded = true;
+				spike.guarded = shouldBeGuarded;
 				this.dragon.level().explode(null, spike.getCenterX() + 0.5F, spike.getHeight(), spike.getCenterZ() + 0.5F, 5.0F, Level.ExplosionInteraction.BLOCK);
-				RandomSource random = RandomSource.create(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island to generate guarded
-				net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), (ServerLevel) this.dragon.level(), ((ServerLevel) this.dragon.level()).getChunkSource().getGenerator(), random, new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
+				RandomSource yungRandom = RandomSource.create(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island to generate guarded
+				net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), (ServerLevel) this.dragon.level(), ((ServerLevel) this.dragon.level()).getChunkSource().getGenerator(), shouldBeGuarded ? yungRandom : this.dragon.getRandom(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
 				spike.guarded = wasGuarded;
 				this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).forEach(endCrystal -> endCrystal.setInvulnerable(false));
 				spikesToRespawn.remove(0);
