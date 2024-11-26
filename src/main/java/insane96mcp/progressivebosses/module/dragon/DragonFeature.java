@@ -52,7 +52,8 @@ public class DragonFeature extends Feature {
              - When the crystals that respawn the dragon in the center are destroyed, the fire is extinguished
              - Ender Dragon can now rise and fall faster (somewhere around 1.14 the multiplier for the y speed was reduced to 0.01 instead of 0.1 https://bugs.mojang.com/browse/MC-272431)
              - Dragon is moved exactly at the center of the well when landed
-             - Fixes entities accumulating knockback when hit by the dragon and then launching like a rocket""")
+             - Fixes entities accumulating knockback when hit by the dragon and then launching like a rocket
+             - Sets a portal cooldown to 4 years so she no longer goes through end gates""")
     public static Boolean enableFixes = true;
 
     @Config
