@@ -1,7 +1,8 @@
 # Changelog
 
 * Dragon breath attack while flying
-* Minions should shoot like blazes
+* Shulkers should spawn from the Dragon?
+* Larva too?
 
 ## Upcoming
 * Data packable Ender Dragon
@@ -12,7 +13,8 @@
   * Ender Dragon now take 40% more damage from melee attacks when not at the center podium and 50% more damage when respawning crystals
   * Small pillars with cages now have obsidian blocks below the corner to prevent breaking them from below
   * Crystals attached to the dragon when destroyed now deal 20% of current health as damage
-  * Removed blindness shulkers. Any shulker now has a chance to fire a blinding bullet
+  * Removed blindness minions. Any shulker now has a chance to fire a blinding bullet
+  * Minions now shoot 4 bullets before going into cooldown
   * Fixed Crystals destroyed on dragon respawning leaving behind fire
   * Fixed Vanilla bugs
     * Fixed [MC-272431](https://bugs.mojang.com/browse/MC-272431)
