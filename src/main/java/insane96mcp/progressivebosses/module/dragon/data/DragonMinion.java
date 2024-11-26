@@ -14,10 +14,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -28,6 +28,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
+import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
@@ -180,7 +181,7 @@ public class DragonMinion {
                 toRemove.add(goal.getGoal());
         });
         toRemove.forEach(shulker.goalSelector::removeGoal);
-        shulker.goalSelector.addGoal(2, new DragonMinionAttackGoal(shulker, 70));
+        shulker.goalSelector.addGoal(4, new DragonMinionAttackGoal(shulker, 500));
 
         toRemove.clear();
         shulker.targetSelector.availableGoals.forEach(goal -> {
@@ -196,8 +197,15 @@ public class DragonMinion {
     }
 
     public static void onBulletTick(ShulkerBullet shulkerBulletEntity) {
-        if (!shulkerBulletEntity.level().isClientSide && shulkerBulletEntity.getPersistentData().getBoolean(Strings.Tags.BLINDNESS_BULLET)) {
-            ((ServerLevel)shulkerBulletEntity.level()).sendParticles(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getX(), shulkerBulletEntity.getY(), shulkerBulletEntity.getZ(), 1, 0d, 0d, 0d, 0d);
-        }
+        if (!shulkerBulletEntity.level().isClientSide
+                || !shulkerBulletEntity.getPersistentData().contains("CustomPotionEffects"))
+            return;
+
+        List<MobEffectInstance> mobEffectInstances = PotionUtils.getCustomEffects(shulkerBulletEntity.getPersistentData());
+        int color = PotionUtils.getColor(mobEffectInstances);
+        double r = (double)(color >> 16 & 255) / 255.0D;
+        double g = (double)(color >> 8 & 255) / 255.0D;
+        double b = (double)(color >> 0 & 255) / 255.0D;
+        shulkerBulletEntity.level().addParticle(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getX(), shulkerBulletEntity.getY(), shulkerBulletEntity.getZ(), r, g, b);
     }
 }

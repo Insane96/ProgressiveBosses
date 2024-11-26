@@ -12,6 +12,7 @@
   * Ender Dragon now take 40% more damage from melee attacks when not at the center podium and 50% more damage when respawning crystals
   * Small pillars with cages now have obsidian blocks below the corner to prevent breaking them from below
   * Crystals attached to the dragon when destroyed now deal 20% of current health as damage
+  * Removed blindness shulkers. Any shulker now has a chance to fire a blinding bullet
   * Fixed Crystals destroyed on dragon respawning leaving behind fire
   * Fixed Vanilla bugs
     * Fixed [MC-272431](https://bugs.mojang.com/browse/MC-272431)

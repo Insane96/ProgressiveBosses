@@ -220,7 +220,7 @@ public class DragonAttack {
 
         event.setNewPhase(EnderDragonPhase.STRAFE_PLAYER);
         if (event.getOldPhase() == EnderDragonPhase.STRAFE_PLAYER)
-            event.getDragon().getPhaseManager().getPhase(EnderDragonPhase.STRAFE_PLAYER).fireballCharge = -3;
+            event.getDragon().getPhaseManager().getPhase(EnderDragonPhase.STRAFE_PLAYER).fireballCharge = -5;
     }
 
     public static boolean isPlayerInRange(Level level, int range) {

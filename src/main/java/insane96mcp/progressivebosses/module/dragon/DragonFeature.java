@@ -14,11 +14,13 @@ import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -27,6 +29,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -222,6 +225,14 @@ public class DragonFeature extends Feature {
             }
         }
         return 0;
+    }
+
+    @Nullable
+    public static EnderDragon findDragon(ServerLevel level) {
+        EndDragonFight dragonFight = level.getDragonFight();
+        if (dragonFight != null && dragonFight.getDragonUUID() != null)
+            return (EnderDragon) level.getEntity(dragonFight.getDragonUUID());
+        return null;
     }
 
     public static float neckOffsetXZ() {

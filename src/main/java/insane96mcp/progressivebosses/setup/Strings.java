@@ -6,12 +6,9 @@ import java.util.UUID;
 
 public class Strings {
 	public static class Tags {
+		//TODO
 		public static final String DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "difficulty";
 
-		public static final String KILLED_DRAGONS = ProgressiveBosses.RESOURCE_PREFIX + "killed_dragons";
-		public static final String FIRST_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "first_dragon";
-		public static final String CRYSTAL_CAGES = ProgressiveBosses.RESOURCE_PREFIX + "crystal_cages";
-		public static final String MORE_CRYSTALS = ProgressiveBosses.RESOURCE_PREFIX + "more_crystals";
 		public static final String BLINDNESS_BULLET = ProgressiveBosses.RESOURCE_PREFIX + "blindness_bullet";
 
 	}
