@@ -183,8 +183,6 @@ public class DragonAttack {
         double chance = stats.attack.chargeChance.getValue(dragon);
         if (chance == 0f)
             return false;
-        if (event.getOldPhase() == EnderDragonPhase.CHARGING_PLAYER)
-            chance /= 2;
 
         BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
         AABB boundingBox = new AABB(centerPodium).inflate(64d);
@@ -212,8 +210,6 @@ public class DragonAttack {
         double chance = stats.attack.strafeChance.getValue(dragon);
         if (chance == 0f)
             return false;
-        if (event.getOldPhase() == EnderDragonPhase.STRAFE_PLAYER)
-            chance /= 2;
 
         return dragon.getRandom().nextDouble() < chance;
     }
@@ -223,6 +219,8 @@ public class DragonAttack {
             return;
 
         event.setNewPhase(EnderDragonPhase.STRAFE_PLAYER);
+        if (event.getOldPhase() == EnderDragonPhase.STRAFE_PLAYER)
+            event.getDragon().getPhaseManager().getPhase(EnderDragonPhase.STRAFE_PLAYER).fireballCharge = -3;
     }
 
     public static boolean isPlayerInRange(Level level, int range) {
