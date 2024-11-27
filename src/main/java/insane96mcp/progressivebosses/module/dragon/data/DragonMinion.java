@@ -164,7 +164,7 @@ public class DragonMinion {
         boolean isBlindingMinion = world.getRandom().nextDouble() < stats.minion.blindingChance;
 
         shulker.setPos(pos.x, pos.y, pos.z);
-        shulker.setCustomName(Component.translatable(Strings.Translatable.DRAGON_MINION));
+        shulker.setCustomName(Component.translatable(DRAGON_MINION));
         shulker.lootTable = BuiltInLootTables.EMPTY;
         shulker.setPersistenceRequired();
         DragonMinionHelper.setMinionColor(shulker, isBlindingMinion);

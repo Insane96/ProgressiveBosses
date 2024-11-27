@@ -11,10 +11,12 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStats;
 import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStatsReloadListener;
 import insane96mcp.progressivebosses.setup.Strings;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -60,6 +62,7 @@ public class ElderGuardianFeature extends Feature {
 	public static final String ADVENTURE_MESSAGE = ProgressiveBosses.RESOURCE_PREFIX + "adventure_message";
 	public static final String ELDER_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion_cooldown";
 	public static final String ELDER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion";
+	public static final String APPROACHING_ELDER_GUARDIAN = "elder_guardian.approach";
 	@Config
 	@Label(name = "Adventure mode", description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby. This also removes Mining Fatigue.")
 	public static Boolean adventure = true;
@@ -98,7 +101,7 @@ public class ElderGuardianFeature extends Feature {
 			serverPlayer.gameMode.changeGameModeForPlayer(GameType.ADVENTURE);
 			serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.CHANGE_GAME_MODE, (float)GameType.ADVENTURE.getId()));
 			if (!adventureMessage) {
-				serverPlayer.sendSystemMessage(Component.translatable(Strings.Translatable.APPROACHING_ELDER_GUARDIAN));
+				serverPlayer.sendSystemMessage(Component.translatable(APPROACHING_ELDER_GUARDIAN));
 				nbt.putBoolean(ADVENTURE_MESSAGE, true);
 			}
 		}
@@ -272,7 +275,7 @@ public class ElderGuardianFeature extends Feature {
 		minionTags.putBoolean(ElderGuardianFeature.ELDER_MINION, true);
 
 		elderMinion.setPos(pos.x, pos.y, pos.z);
-		elderMinion.setCustomName(Component.translatable(Strings.Translatable.ELDER_MINION));
+		elderMinion.setCustomName(Component.translatable(Util.makeDescriptionId("entity", new ResourceLocation(ELDER_MINION))));
 		elderMinion.lootTable = BuiltInLootTables.EMPTY;
 
 		MCUtils.applyModifier(elderMinion, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);

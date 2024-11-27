@@ -8,9 +8,6 @@ public class Strings {
 	public static class Tags {
 		//TODO
 		public static final String DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "difficulty";
-
-		public static final String BLINDNESS_BULLET = ProgressiveBosses.RESOURCE_PREFIX + "blindness_bullet";
-
 	}
 
 	public static class AttributeModifiers {
@@ -24,24 +21,5 @@ public class Strings {
 		public static final String SWIM_SPEED_BONUS = ProgressiveBosses.RESOURCE_PREFIX + "swim_speed_bonus";
 		public static final UUID ATTACK_DAMAGE_BONUS_UUID = UUID.fromString("6970dece-d8f3-4233-85c5-24de8852f32b");
 		public static final String ATTACK_DAMAGE_BONUS = ProgressiveBosses.RESOURCE_PREFIX + "attack_damage_bonus";
-	}
-
-	public static class Translatable {
-		public static final String PLAYER_SET_BOSS_DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "command.player_set_boss_difficulty";
-		public static final String PLAYER_ADD_BOSS_DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "command.player_add_boss_difficulty";
-		public static final String PLAYER_GET_WITHER_DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "command.player_get_wither_difficulty";
-		public static final String PLAYER_GET_DRAGON_DIFFICULTY = ProgressiveBosses.RESOURCE_PREFIX + "command.player_get_dragon_difficulty";
-
-
-		public static final String DRAGON_MINION = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion";
-		public static final String DRAGON_LARVA = ProgressiveBosses.RESOURCE_PREFIX + "dragon_larva";
-
-		public static final String DRAGON_FIREBALL = ProgressiveBosses.RESOURCE_PREFIX + "dragon_fireball";
-
-		public static final String FIRST_DRAGON_KILL = "dragon.first_killed";
-		public static final String FIRST_WITHER_SUMMON = "wither.first_summon";
-		public static final String APPROACHING_ELDER_GUARDIAN = "elder_guardian.approach";
-
-		public static final String ELDER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion";
 	}
 }
