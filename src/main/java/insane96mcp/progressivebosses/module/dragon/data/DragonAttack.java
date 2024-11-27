@@ -5,9 +5,9 @@ import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
+import insane96mcp.progressivebosses.mixin.ProjectileInvoker;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
-import insane96mcp.progressivebosses.setup.Reflection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -291,13 +291,10 @@ public class DragonAttack {
 
     private static boolean onImpact3DCloud(DragonFireball fireball, @Nullable Entity shooter, HitResult result, DragonStats stats) {
         HitResult.Type hitResult$type = result.getType();
-        //TODO Accessors
-        if (hitResult$type == HitResult.Type.ENTITY) {
-            Reflection.Projectile_onHitEntity(fireball, (EntityHitResult)result);
-        }
-        else if (hitResult$type == HitResult.Type.BLOCK) {
-            Reflection.Projectile_onHitBlock(fireball, (BlockHitResult)result);
-        }
+        if (hitResult$type == HitResult.Type.ENTITY)
+            ((ProjectileInvoker)fireball).invokeOnHitEntity((EntityHitResult) result);
+        else if (hitResult$type == HitResult.Type.BLOCK)
+            ((ProjectileInvoker)fireball).invokeOnHitBlock((BlockHitResult) result);
         //noinspection DataFlowIssue - I check if the HitResult is an entity first so the cast shouldn't fail
         if (shooter != null && (result.getType() != HitResult.Type.ENTITY || !((EntityHitResult)result).getEntity().is(shooter))) {
             if (!fireball.level().isClientSide) {

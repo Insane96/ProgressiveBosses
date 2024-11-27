@@ -50,7 +50,6 @@ public class ProgressiveBosses {
 		PBBlocks.BLOCK_ENTITY_TYPES.register(modEventBus);
 		PBLoot.LOOT_CONDITIONS.register(modEventBus);
 		PBLoot.LOOT_FUNCTION.register(modEventBus);
-		Reflection.init();
 
 		CrystalRespawnPhase.init();
 		PBDragonStrafePlayerPhase.init();
