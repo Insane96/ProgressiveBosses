@@ -77,7 +77,7 @@ public class DragonFeature extends Feature {
             return;
         onDragonJoinLevel(event);
         DragonMinion.onShulkerSpawn(event);
-        DragonAttack.setAcidBallSpeedMultiplier(event.getEntity());
+        //DragonAttack.setAcidBallSpeedMultiplier(event.getEntity());
     }
 
     public void onDragonJoinLevel(EntityJoinLevelEvent event) {

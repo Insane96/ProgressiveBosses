@@ -6,6 +6,7 @@ import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import insane96mcp.progressivebosses.setup.Reflection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -25,14 +26,16 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonChargePlayerPhase;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
-import net.minecraft.world.entity.boss.enderdragon.phases.DragonStrafePlayerPhase;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
-import net.minecraft.world.phys.*;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import javax.annotation.Nullable;
@@ -94,7 +97,8 @@ public class DragonAttack {
         }
     }
 
-    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_ATTACK_PHASES = List.of(EnderDragonPhase.CHARGING_PLAYER, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.STRAFE_PLAYER);
+    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_PHASES_TO_CHARGE = List.of(EnderDragonPhase.CHARGING_PLAYER, EnderDragonPhase.HOLDING_PATTERN);
+    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_PHASES_TO_STRAFE = List.of(EnderDragonPhase.CHARGING_PLAYER, EnderDragonPhase.HOLDING_PATTERN);
 
     public static void onHurtLiving(LivingHurtEvent event) {
         onDirectDamage(event);
@@ -142,8 +146,11 @@ public class DragonAttack {
     }
 
     public static boolean onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
-        if (event.getOldPhase() != null
-                && !VALID_ATTACK_PHASES.contains(event.getOldPhase()))
+        //Replace vanilla Strafe Phase with PB one's
+        if (event.getNewPhase().equals(EnderDragonPhase.STRAFE_PLAYER))
+            event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
+
+        if (event.getOldPhase() == null)
             return false;
 
         boolean chargePlayer = shouldChargePlayer(event, dragon, stats);
@@ -171,7 +178,7 @@ public class DragonAttack {
                 return;
             chargePhase.setTarget(player.position());
         }
-        else if (event.getPhaseInstance() instanceof DragonStrafePlayerPhase strafePhase) {
+        else if (event.getPhaseInstance() instanceof PBDragonStrafePlayerPhase strafePhase) {
             Player player = getRandomPlayerWithCrystalPriority(dragon.level(), boundingBox);
             if (player == null)
                 return;
@@ -180,6 +187,8 @@ public class DragonAttack {
     }
 
     private static boolean shouldChargePlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
+        if (!VALID_PHASES_TO_CHARGE.contains(event.getOldPhase()))
+            return false;
         double chance = stats.attack.chargeChance.getValue(dragon);
         if (chance == 0f)
             return false;
@@ -207,6 +216,8 @@ public class DragonAttack {
     }
 
     private static boolean shouldStrafePlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
+        if (!VALID_PHASES_TO_STRAFE.contains(event.getOldPhase()))
+            return false;
         double chance = stats.attack.strafeChance.getValue(dragon);
         if (chance == 0f)
             return false;
@@ -218,9 +229,7 @@ public class DragonAttack {
         if (!isPlayerInRange(dragon.level(), 64))
             return;
 
-        event.setNewPhase(EnderDragonPhase.STRAFE_PLAYER);
-        if (event.getOldPhase() == EnderDragonPhase.STRAFE_PLAYER)
-            event.getDragon().getPhaseManager().getPhase(EnderDragonPhase.STRAFE_PLAYER).fireballCharge = -5;
+        event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
     }
 
     public static boolean isPlayerInRange(Level level, int range) {
@@ -272,7 +281,7 @@ public class DragonAttack {
         if (stats.attack.acidballImpactDamage == 0f)
             return;
 
-        AABB axisAlignedBB = new AABB(result.getLocation(), result.getLocation()).inflate(4d);
+        AABB axisAlignedBB = new AABB(result.getLocation(), result.getLocation()).inflate(5d);
         List<LivingEntity> livingEntities = fireball.level().getEntitiesOfClass(LivingEntity.class, axisAlignedBB);
         for (LivingEntity livingEntity : livingEntities) {
             if (livingEntity.distanceToSqr(fireball.position()) < 20.25d)
@@ -282,6 +291,7 @@ public class DragonAttack {
 
     private static boolean onImpact3DCloud(DragonFireball fireball, @Nullable Entity shooter, HitResult result, DragonStats stats) {
         HitResult.Type hitResult$type = result.getType();
+        //TODO Accessors
         if (hitResult$type == HitResult.Type.ENTITY) {
             Reflection.Projectile_onHitEntity(fireball, (EntityHitResult)result);
         }
@@ -300,7 +310,7 @@ public class DragonAttack {
                 areaEffectCloud.setParticle(ParticleTypes.DRAGON_BREATH);
                 areaEffectCloud.setRadius(3.0F);
                 areaEffectCloud.setDuration(300);
-                areaEffectCloud.setWaitTime(15);
+                areaEffectCloud.setWaitTime(10);
                 areaEffectCloud.setRadiusPerTick((7.0F - areaEffectCloud.getRadius()) / (float) areaEffectCloud.getDuration());
                 areaEffectCloud.addEffect(new MobEffectInstance(MobEffects.HARM, 1, 1));
                 if (!list.isEmpty()) {
@@ -320,44 +330,5 @@ public class DragonAttack {
         }
 
         return true;
-    }
-
-    public static void fireFireball(EnderDragon dragon, LivingEntity attackTarget) {
-        Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
-        if (stats.isEmpty())
-            return;
-
-        Vec3 vector3d2 = dragon.getViewVector(1.0F);
-        double x = dragon.head.getX() - vector3d2.x;
-        double y = dragon.head.getY(0.5D) + 0.5D;
-        double z = dragon.head.getZ() - vector3d2.z;
-        double xPower = attackTarget.getX() - x;
-        double yPower = attackTarget.getY(0.5D) - y;
-        double zPower = attackTarget.getZ() - z;
-        if (!dragon.isSilent()) {
-            dragon.level().levelEvent(null, 1017, dragon.blockPosition(), 0);
-        }
-
-        DragonFireball dragonfireballentity = new DragonFireball(dragon.level(), dragon, xPower, yPower, zPower);
-        dragonfireballentity.moveTo(x, y, z, 0.0F, 0.0F);
-        dragon.level().addFreshEntity(dragonfireballentity);
-
-        float fireballs = Mth.nextInt(dragon.getRandom(), stats.get().attack.minAcidballShot, stats.get().attack.maxAcidballShot) - 1; //-1 because she already shots one
-
-        for (int i = 0; i < fireballs; i++) {
-            x = dragon.head.getX() - vector3d2.x;
-            y = dragon.head.getY(0.5D) + 0.5D;
-            z = dragon.head.getZ() - vector3d2.z;
-            xPower = attackTarget.getX() + Mth.nextDouble(dragon.getRandom(), -(fireballs), fireballs) - x;
-            yPower = attackTarget.getY(0.5D) + Mth.nextDouble(dragon.getRandom(), -(fireballs), fireballs) - y;
-            zPower = attackTarget.getZ() + Mth.nextDouble(dragon.getRandom(), -(fireballs), fireballs) - z;
-            if (!dragon.isSilent()) {
-                dragon.level().levelEvent(null, 1017, dragon.blockPosition(), 0);
-            }
-
-            dragonfireballentity = new DragonFireball(dragon.level(), dragon, xPower, yPower, zPower);
-            dragonfireballentity.moveTo(x, y, z, 0.0F, 0.0F);
-            dragon.level().addFreshEntity(dragonfireballentity);
-        }
     }
 }

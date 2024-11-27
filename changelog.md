@@ -1,6 +1,5 @@
 # Changelog
 
-* Dragon breath attack while flying
 * Shulkers should spawn from the Dragon?
 * Larva too?
 
@@ -15,6 +14,7 @@
   * Crystals attached to the dragon when destroyed now deal 20% of current health as damage
   * Removed blindness minions. Any shulker now has a chance to fire a blinding bullet
   * Minions now shoot 4 bullets before going into cooldown
+  * Removed ender dragon acid ball shotgun, now shoots them in rapid succession
   * Fixed Crystals destroyed on dragon respawning leaving behind fire
   * Fixed Vanilla bugs
     * Fixed [MC-272431](https://bugs.mojang.com/browse/MC-272431)
