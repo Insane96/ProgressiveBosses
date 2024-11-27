@@ -16,6 +16,7 @@
   * Minions now shoot 4 bullets before going into cooldown
   * Removed ender dragon acid ball shotgun, now shoots them in rapid succession
   * Ender Dragon now stays much less time at the center podium
+  * Added a new item tag `progressivebosses:dragon_invulnerable` making items in this tag invulnerable to dragon damage
   * Fixed Crystals destroyed on dragon respawning leaving behind fire
   * Fixed Vanilla bugs
     * Fixed [MC-272431](https://bugs.mojang.com/browse/MC-272431)
