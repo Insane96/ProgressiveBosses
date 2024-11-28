@@ -267,7 +267,8 @@ public class DragonAttack {
     static ResourceKey<DamageType> DRAGON_FIREBALL_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_fireball"));
 
     public static boolean onAcidBallImpact(DragonFireball fireball, @Nullable Entity shooter, HitResult result) {
-        if (!(shooter instanceof EnderDragon dragon))
+        if (!(shooter instanceof EnderDragon dragon)
+                || dragon.level().isClientSide)
             return false;
         Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
         if (stats.isEmpty())
@@ -284,7 +285,7 @@ public class DragonAttack {
         AABB axisAlignedBB = new AABB(result.getLocation(), result.getLocation()).inflate(5d);
         List<LivingEntity> livingEntities = fireball.level().getEntitiesOfClass(LivingEntity.class, axisAlignedBB);
         for (LivingEntity livingEntity : livingEntities) {
-            if (livingEntity.distanceToSqr(fireball.position()) < 20.25d)
+            if (livingEntity.distanceToSqr(fireball.position()) < 25d)
                 livingEntity.hurt(livingEntity.damageSources().source(DRAGON_FIREBALL_DAMAGE_TYPE, fireball, shooter), stats.attack.acidballImpactDamage);
         }
     }

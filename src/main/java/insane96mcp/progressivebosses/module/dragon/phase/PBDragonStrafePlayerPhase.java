@@ -86,7 +86,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
             double headYOffset = this.dragon.head.getY(0.5D) + 0.5D;
             double headZOffset = this.dragon.head.getZ() - vec32.z;
             double targetXOffset = this.attackTarget.getX() + Mth.randomBetween(this.dragon.getRandom(), -2f, 2f) - headXOffset;
-            double targetYOffset = this.attackTarget.getY(0.5d) - headYOffset;
+            double targetYOffset = this.attackTarget.getY() - headYOffset;
             double targetZOffset = this.attackTarget.getZ() + Mth.randomBetween(this.dragon.getRandom(), -2f, 2f) - headZOffset;
             if (!this.dragon.isSilent())
                 this.dragon.level().levelEvent(null, 1017, this.dragon.blockPosition(), 0);
@@ -95,7 +95,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
             DragonAttack.setAcidBallSpeedMultiplier(dragonfireball);
             dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
             this.dragon.level().addFreshEntity(dragonfireball);
-            this.fireballCharge = 0;
+            this.fireballCharge = 2;
             /*if (this.currentPath != null) {
                 while (!this.currentPath.isDone()) {
                     this.currentPath.advance();

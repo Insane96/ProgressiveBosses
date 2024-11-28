@@ -1,7 +1,9 @@
 # Changelog
 
-* Shulkers should spawn from the Dragon?
+* Shulkers should spawn from the Dragon at the center podium?
 * Larva too?
+* Replace larva with Phantoms?
+* Replace Blinding Shulker Bullets with blinding acid balls
 
 ## Upcoming
 * Data packable Ender Dragon

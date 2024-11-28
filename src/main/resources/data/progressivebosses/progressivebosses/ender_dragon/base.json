@@ -21,11 +21,11 @@
     "crystal": {
         "cages": 3,
         "bonus_crystals": 0,
-        "crystals_respawned": 2,
-        "time_to_respawn": 100,
+        "crystals_respawned": 1,
+        "time_to_respawn": 80,
         "respawn_caged_chance": 0.5,
-        "respawn_crystals_below_health": 0.8,
-        "max_respawn_chance": 0.1,
+        "respawn_crystals_below_health": 0.6,
+        "max_respawn_chance": 0.125,
         "max_respawn_chance_at_health": 0
     },
     "larva": {
