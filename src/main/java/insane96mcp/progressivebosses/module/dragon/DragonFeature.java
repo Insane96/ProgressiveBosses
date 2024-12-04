@@ -204,6 +204,9 @@ public class DragonFeature extends Feature {
         DragonMinion.onMinionHurt(event);
         onDragonHurt(event);
         DragonAttack.onHurtLiving(event);
+        if (event.getEntity().getPersistentData().contains("dragon_immune") && event.getSource().getEntity() instanceof EnderDragon) {
+            event.setCanceled(true);
+        }
     }
 
     public void onDragonHurt(LivingHurtEvent event) {

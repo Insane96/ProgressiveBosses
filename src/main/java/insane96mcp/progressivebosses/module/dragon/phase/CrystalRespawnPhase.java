@@ -74,6 +74,15 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 				spikesToRespawn.remove(0);
 				if (this.spikesToRespawn.isEmpty())
 					LogHelper.info("No more crystals to respawn left");
+				/*for (int i = 0; i < 2; i++) {
+					Phantom phantom = EntityType.PHANTOM.create(this.dragon.level());
+					phantom.setPos(spike.getCenterX() + 0.5F, spike.getHeight() + 10, spike.getCenterZ() + 0.5F);
+					phantom.setPhantomSize(5);
+					if (phantom.getAttribute(Attributes.ATTACK_KNOCKBACK) != null)
+						phantom.getAttribute(Attributes.ATTACK_KNOCKBACK).setBaseValue(10d);
+					phantom.getPersistentData().putBoolean("dragon_immune", true);
+					this.dragon.level().addFreshEntity(phantom);
+				}*/
 				tick = 0;
 				respawning = false;
 				this.targetLocation = null;
