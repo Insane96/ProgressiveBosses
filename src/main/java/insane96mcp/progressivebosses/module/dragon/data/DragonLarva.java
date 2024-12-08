@@ -64,16 +64,21 @@ public class DragonLarva {
     }
 
     public static void setupLarvaCooldown(EnderDragon dragon, DragonStats stats) {
+        if (stats.larva == null)
+            return;
         int cooldown = (int) (Mth.nextInt(dragon.getRandom(), stats.larva.minCooldown, stats.larva.maxCooldown) * 0.5d);
         dragon.getPersistentData().putInt(DRAGON_LARVA_COOLDOWN, cooldown);
     }
 
     public static void tickLarva(EnderDragon dragon) {
         Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
-        if (stats.isEmpty()
-                || stats.get().larva.spawned <= 0)
+        if (stats.isEmpty())
             return;
 
+        DragonLarva larva = stats.get().larva;
+        if (larva == null
+                || larva.spawned <= 0)
+            return;
         CompoundTag dragonTags = dragon.getPersistentData();
         if (dragon.getHealth() <= 0)
             return;
@@ -93,19 +98,19 @@ public class DragonLarva {
         if (players.isEmpty())
             return;
 
-        cooldown = Mth.nextInt(level.random, stats.get().larva.minCooldown, stats.get().larva.maxCooldown);
+        cooldown = Mth.nextInt(level.random, larva.minCooldown, larva.maxCooldown);
         dragonTags.putInt(DRAGON_LARVA_COOLDOWN, cooldown - 1);
 
-        for (int i = 0; i < stats.get().larva.spawned; i++) {
+        for (int i = 0; i < larva.spawned; i++) {
             float angle = level.random.nextFloat() * (float) Math.PI * 2f;
             float x = (float) Math.floor(Math.cos(angle) * 3.33f);
             float z = (float) Math.floor(Math.sin(angle) * 3.33f);
             int y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 255, z)).getY();
-            summonLarva(level, new Vec3(x + 0.5, y, z + 0.5), stats.get());
+            summonLarva(level, new Vec3(x + 0.5, y, z + 0.5), larva);
         }
     }
 
-    public static void summonLarva(Level level, Vec3 pos, DragonStats stats) {
+    public static void summonLarva(Level level, Vec3 pos, DragonLarva larvaStats) {
         Larva larva = new Larva(PBEntities.LARVA.get(), level);
         CompoundTag minionTags = larva.getPersistentData();
 
@@ -116,8 +121,8 @@ public class DragonLarva {
 
         //MCUtils.applyModifier(larva, Attributes.ATTACK_DAMAGE, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS_UUID, Strings.AttributeModifiers.ATTACK_DAMAGE_BONUS, 0.35, AttributeModifier.Operation.ADDITION);
         MCUtils.applyModifier(larva, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2.5d, AttributeModifier.Operation.MULTIPLY_BASE);
-        larva.getAttribute(Attributes.MAX_HEALTH).setBaseValue(stats.larva.health);
-        larva.setHealth(stats.larva.health);
+        larva.getAttribute(Attributes.MAX_HEALTH).setBaseValue(larvaStats.health);
+        larva.setHealth(larvaStats.health);
 
         level.addFreshEntity(larva);
     }

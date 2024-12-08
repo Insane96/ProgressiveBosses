@@ -8,6 +8,7 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -15,7 +16,7 @@ import java.util.ArrayList;
 public class DragonStats {
     private static final ResourceLocation VANILLA_LOOT_TABLE = new ResourceLocation("entities/ender_dragon");
 
-    public int level;
+    public byte level;
     public float maxSittingDamageReceived;
     public int roarTime;
     public int sittingScanningIdleTime;
@@ -23,13 +24,15 @@ public class DragonStats {
     public DragonHealth health;
     public DragonVulnerabilities vulnerabilities;
     public DragonCrystal crystal;
+    @Nullable
     public DragonLarva larva;
+    @Nullable
     public DragonMinion minion;
     public DragonAttack attack;
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonStats(int level, float maxSittingDamageReceived, int roarTime, int sittingScanningIdleTime, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, DragonLarva larva, DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
+    public DragonStats(byte level, float maxSittingDamageReceived, int roarTime, int sittingScanningIdleTime, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonLarva larva, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.maxSittingDamageReceived = maxSittingDamageReceived;
         this.roarTime = roarTime;
@@ -59,9 +62,9 @@ public class DragonStats {
     public static class Serializer implements JsonSerializer<DragonStats>, JsonDeserializer<DragonStats> {
         @Override
         public DragonStats deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            String sLootTable = GsonHelper.getAsString(json.getAsJsonObject(), "loot_table", VANILLA_LOOT_TABLE.getPath());
+            String sLootTable = GsonHelper.getAsString(json.getAsJsonObject(), "loot_table", VANILLA_LOOT_TABLE.toString());
             ResourceLocation lootTable = ResourceLocation.tryParse(sLootTable);
-            return new DragonStats(GsonHelper.getAsInt(json.getAsJsonObject(), "level"),
+            return new DragonStats(GsonHelper.getAsByte(json.getAsJsonObject(), "level"),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "max_sitting_damage_received"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "roar_time"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "sitting_scanning_idle_time", 0),
@@ -69,8 +72,8 @@ public class DragonStats {
                     context.deserialize(json.getAsJsonObject().get("health"), DragonHealth.class),
                     context.deserialize(json.getAsJsonObject().get("vulnerabilities"), DragonVulnerabilities.class),
                     context.deserialize(json.getAsJsonObject().get("crystal"), DragonCrystal.class),
-                    context.deserialize(json.getAsJsonObject().get("larva"), DragonLarva.class),
-                    context.deserialize(json.getAsJsonObject().get("minion"), DragonMinion.class),
+                    json.getAsJsonObject().has("larva") ? context.deserialize(json.getAsJsonObject().get("larva"), DragonLarva.class) : null,
+                    json.getAsJsonObject().has("minion") ? context.deserialize(json.getAsJsonObject().get("minion"), DragonMinion.class) : null,
                     context.deserialize(json.getAsJsonObject().get("attack"), DragonAttack.class),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "xp_dropped"),
                     lootTable);
@@ -87,8 +90,10 @@ public class DragonStats {
             jsonObject.add("health", context.serialize(src.health));
             jsonObject.add("vulnerabilities", context.serialize(src.vulnerabilities));
             jsonObject.add("crystal", context.serialize(src.crystal));
-            jsonObject.add("larva", context.serialize(src.larva));
-            jsonObject.add("minion", context.serialize(src.minion));
+            if (src.larva != null)
+                jsonObject.add("larva", context.serialize(src.larva));
+            if (src.minion != null)
+                jsonObject.add("minion", context.serialize(src.minion));
             jsonObject.add("attack", context.serialize(src.attack));
             jsonObject.addProperty("xp_dropped", src.xpDropped);
             if (!src.lootTable.equals(VANILLA_LOOT_TABLE))

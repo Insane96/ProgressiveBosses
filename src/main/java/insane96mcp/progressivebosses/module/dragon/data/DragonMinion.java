@@ -112,14 +112,20 @@ public class DragonMinion {
     }
 
     public static void setupMinionCooldown(EnderDragon dragon, DragonStats stats) {
+        if (stats.minion == null)
+            return;
         int cooldown = (int) (Mth.nextInt(dragon.getRandom(), stats.minion.minCooldown, stats.minion.maxCooldown) * 0.5d);
         dragon.getPersistentData().putInt(DRAGON_MINION_COOLDOWN, cooldown);
     }
 
     public static void tickMinion(EnderDragon dragon) {
         Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
-        if (stats.isEmpty()
-                || stats.get().minion.spawned <= 0)
+        if (stats.isEmpty())
+            return;
+
+        DragonMinion minionStats = stats.get().minion;
+        if (minionStats == null
+                || minionStats.spawned <= 0)
             return;
 
         Level level = dragon.level();
@@ -139,17 +145,17 @@ public class DragonMinion {
         if (players.isEmpty())
             return;
 
-        cooldown = Mth.nextInt(level.random, stats.get().minion.minCooldown, stats.get().minion.maxCooldown);
+        cooldown = Mth.nextInt(level.random, minionStats.minCooldown, minionStats.maxCooldown);
         dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown - 1);
 
         float angle = level.random.nextFloat() * (float) Math.PI * 2f;
         float x = (float) (Math.cos(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 40f)));
         float z = (float) (Math.sin(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 40f)));
         float y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 255, z)).getY();
-        summonMinion(level, new Vec3(x, y, z), stats.get());
+        summonMinion(level, new Vec3(x, y, z), stats.get().level, stats.get().minion);
     }
 
-    public static void summonMinion(Level world, Vec3 pos, DragonStats stats) {
+    public static void summonMinion(Level world, Vec3 pos, byte lvl, DragonMinion minioStats) {
         Shulker shulker = EntityType.SHULKER.create(world);
         if (shulker == null) {
             LogHelper.warn("Failed to summon Dragon Minion");
@@ -157,11 +163,11 @@ public class DragonMinion {
         }
         CompoundTag minionTags = shulker.getPersistentData();
         minionTags.putBoolean(DRAGON_MINION, true);
-        minionTags.putByte(DragonFeature.LEVEL, (byte) stats.level);
+        minionTags.putByte(DragonFeature.LEVEL, lvl);
 
         minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 
-        boolean isBlindingMinion = world.getRandom().nextDouble() < stats.minion.blindingChance;
+        boolean isBlindingMinion = world.getRandom().nextDouble() < minioStats.blindingChance;
 
         shulker.setPos(pos.x, pos.y, pos.z);
         shulker.setCustomName(Component.translatable(DRAGON_MINION));

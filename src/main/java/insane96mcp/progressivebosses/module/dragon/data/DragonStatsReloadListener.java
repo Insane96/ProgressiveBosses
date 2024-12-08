@@ -17,7 +17,7 @@ public class DragonStatsReloadListener extends SimpleJsonResourceReloadListener 
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
     public static final DragonStatsReloadListener INSTANCE;
 
-    public static final Map<Integer, DragonStats> STATS_MAP = new HashMap<>();
+    public static final Map<Byte, DragonStats> STATS_MAP = new HashMap<>();
 
     static {
         INSTANCE = new DragonStatsReloadListener();

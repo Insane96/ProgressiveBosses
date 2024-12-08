@@ -64,7 +64,7 @@ public class DragonMinionAttackGoal extends Goal {
                 EnderDragon dragon = DragonFeature.findDragon((ServerLevel) shulker.level());
                 if (dragon != null) {
                     Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
-                    if (stats.isPresent() && this.shulker.getRandom().nextFloat() < stats.get().minion.blindingChance) {
+                    if (stats.isPresent() && stats.get().minion != null && this.shulker.getRandom().nextFloat() < stats.get().minion.blindingChance) {
                         ListTag effectListTag = new ListTag();
                         effectListTag.add(new MobEffectInstance(MobEffects.BLINDNESS, 150).save(new CompoundTag()));
                         bullet.getPersistentData().put("CustomPotionEffects", effectListTag);
