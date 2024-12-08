@@ -26,6 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -38,26 +39,29 @@ import java.util.stream.Stream;
 
 @JsonAdapter(DragonCrystal.Serializer.class)
 public class DragonCrystal {
-    /**
-     * How many times has the dragon respawned crystals
-     */
-    public static final String CRYSTAL_RESPAWN = ProgressiveBosses.RESOURCE_PREFIX + "crystal_respawn";
+
+    public static final String DRAGON_PHANTOM = ProgressiveBosses.RESOURCE_PREFIX + "dragon_phantom";
+
     private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER = new ResourceLocation("endergetic:crystal_holder");
     private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF);
     public int cages;
     public int bonusCrystals;
     public int crystalsRespawned;
     public int timeToRespawn;
+    public int phantomCount;
+    public int phantomSize;
     public float respawnCagedChance;
     public float respawnCrystalsBelowHealth;
     public float maxRespawnChance;
     public float maxRespawnChanceAtHealth;
 
-    public DragonCrystal(int cages, int bonusCrystals, int crystalsRespawned, int timeToRespawn, float respawnCagedChance, float respawnCrystalsBelowHealth, float maxRespawnChance, float maxRespawnChanceAtHealth) {
+    public DragonCrystal(int cages, int bonusCrystals, int crystalsRespawned, int timeToRespawn, int phantomCount, int phantomSize, float respawnCagedChance, float respawnCrystalsBelowHealth, float maxRespawnChance, float maxRespawnChanceAtHealth) {
         this.cages = cages;
         this.bonusCrystals = bonusCrystals;
         this.crystalsRespawned = crystalsRespawned;
         this.timeToRespawn = timeToRespawn;
+        this.phantomCount = phantomCount;
+        this.phantomSize = phantomSize;
         this.respawnCagedChance = respawnCagedChance;
         this.respawnCrystalsBelowHealth = respawnCrystalsBelowHealth;
         this.maxRespawnChance = maxRespawnChance;
@@ -71,6 +75,8 @@ public class DragonCrystal {
                     GsonHelper.getAsInt(json.getAsJsonObject(), "bonus_crystals"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "crystals_respawned"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "time_to_respawn"),
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "phantom_count"),
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "phantom_size"),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "respawn_caged_chance"),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "respawn_crystals_below_health"),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "max_respawn_chance"),
@@ -84,6 +90,8 @@ public class DragonCrystal {
             jsonObject.addProperty("bonus_crystals", src.bonusCrystals);
             jsonObject.addProperty("crystals_respawned", src.crystalsRespawned);
             jsonObject.addProperty("time_to_respawn", src.timeToRespawn);
+            jsonObject.addProperty("phantom_count", src.phantomCount);
+            jsonObject.addProperty("phantom_size", src.phantomSize);
             jsonObject.addProperty("respawn_caged_chance", src.respawnCagedChance);
             jsonObject.addProperty("respawn_crystals_below_health", src.respawnCrystalsBelowHealth);
             jsonObject.addProperty("max_respawn_chance", src.maxRespawnChance);
@@ -200,5 +208,13 @@ public class DragonCrystal {
     private static float getChanceAtValue(float value, float max, float min, float outputMin, float outputMax) {
         float clampedValue = Mth.clamp((max - min - (value - min)) / (max - min), 0f, 1f);
         return outputMin + clampedValue * (outputMax - outputMin);
+    }
+
+    public static void onPhantomHurt(LivingHurtEvent event) {
+        if (!event.getEntity().getPersistentData().contains(DRAGON_PHANTOM)
+                || !(event.getSource().getEntity() instanceof EnderDragon))
+            return;
+
+        event.setAmount(event.getAmount() * 0.1f);
     }
 }

@@ -202,11 +202,9 @@ public class DragonFeature extends Feature {
             return;
 
         DragonMinion.onMinionHurt(event);
+        DragonCrystal.onPhantomHurt(event);
         onDragonHurt(event);
         DragonAttack.onHurtLiving(event);
-        if (event.getEntity().getPersistentData().contains("dragon_immune") && event.getSource().getEntity() instanceof EnderDragon) {
-            event.setCanceled(true);
-        }
     }
 
     public void onDragonHurt(LivingHurtEvent event) {
@@ -221,11 +219,11 @@ public class DragonFeature extends Feature {
     }
 
     public static Optional<DragonStats> getDragonStats(EnderDragon dragon) {
-        int lvl = dragon.getPersistentData().getByte(LEVEL);
+        byte lvl = dragon.getPersistentData().getByte(LEVEL);
         return getDragonStats(lvl);
     }
 
-    public static Optional<DragonStats> getDragonStats(int lvl) {
+    public static Optional<DragonStats> getDragonStats(byte lvl) {
         return Optional.ofNullable(DragonStatsReloadListener.STATS_MAP.get(lvl));
     }
 
