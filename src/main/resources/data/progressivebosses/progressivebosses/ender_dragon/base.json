@@ -6,7 +6,7 @@
     "sitting_flaming_time": 60,
     "health": {
         "health": 800.0,
-        "regeneration": 1,
+        "regeneration": 0.5,
         "crystal_regeneration": 2,
         "regen_when_hit_ratio": 0.8,
         "regen_when_hit_duration": 0
@@ -29,12 +29,6 @@
         "respawn_crystals_below_health": 0.6,
         "max_respawn_chance": 0.125,
         "max_respawn_chance_at_health": 0
-    },
-    "larva": {
-        "health": 6,
-        "spawned": 0,
-        "min_cooldown": 800,
-        "max_cooldown": 1400
     },
     "minion": {
         "health": 20,

@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 
@@ -45,6 +46,19 @@ public class DragonHealth {
             heal *= stats.get().health.regenWhenHitRatio;
 
         dragon.heal(heal);
+    }
+
+    public float getHealingFromCrystal(EnderDragon dragon, EndCrystal crystal) {
+        if (this.crystalRegeneration == 0f)
+            return -1f;
+
+        float heal = this.crystalRegeneration;
+        heal /= 2f;
+
+        if (dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= this.regenWhenHitDuration)
+            heal *= this.regenWhenHitRatio;
+
+        return heal;
     }
 
     public static class Serializer implements JsonSerializer<DragonHealth>, JsonDeserializer<DragonHealth> {

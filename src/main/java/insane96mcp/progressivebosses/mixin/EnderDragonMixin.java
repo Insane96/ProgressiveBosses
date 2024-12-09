@@ -27,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,13 +41,8 @@ public class EnderDragonMixin extends Mob {
 
 	@Mutable
 	@Shadow @Final public EnderDragonPart head;
-	@Shadow @Final private EnderDragonPart neck;
-	@Shadow @Final private EnderDragonPart body;
-	@Shadow @Final private EnderDragonPart tail1;
-	@Shadow @Final private EnderDragonPart tail2;
-	@Shadow @Final private EnderDragonPart tail3;
-	@Shadow @Final private EnderDragonPart wing1;
-	@Shadow @Final private EnderDragonPart wing2;
+
+	@Shadow @Nullable public EndCrystal nearestCrystal;
 
 	protected EnderDragonMixin(EntityType<? extends Mob> type, Level worldIn) {
 		super(type, worldIn);
@@ -80,15 +76,15 @@ public class EnderDragonMixin extends Mob {
 	@ModifyExpressionValue(method = "checkCrystals", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
 	public float onCrystalHeal(float original) {
 		Optional<DragonStats> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
-		//Divided by 2 because it's healed twice per second
-		return stats.map(dragonStats -> dragonStats.health.crystalRegeneration / 2f).orElse(original);
-	}
+        return stats.map(dragonStats -> dragonStats.health.getHealingFromCrystal((EnderDragon) (Object) this, this.nearestCrystal))
+				.orElse(original);
+    }
 
 	@ModifyExpressionValue(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "CONSTANT", args = "floatValue=0.25f"))
 	public float maxSittingDamageReceived(float original) {
 		Optional<DragonStats> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
 		//Divided by 2 because it's healed twice per second
-		return stats.map(dragonStats -> dragonStats.health.crystalRegeneration / 2f).orElse(original);
+		return stats.map(dragonStats -> dragonStats.maxSittingDamageReceived).orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "onCrystalDestroyed", at = @At(value = "CONSTANT", args = "floatValue=10.0"))

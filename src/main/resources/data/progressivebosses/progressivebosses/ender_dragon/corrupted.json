@@ -8,7 +8,7 @@
         "health": 800.0,
         "regeneration": 0.5,
         "crystal_regeneration": 2.5,
-        "regen_when_hit_ratio": 0.5,
+        "regen_when_hit_ratio": 0.6,
         "regen_when_hit_duration": 50
     },
     "vulnerabilities": {
@@ -23,18 +23,12 @@
         "bonus_crystals": 3,
         "crystals_respawned": 3,
         "time_to_respawn": 60,
-        "phantom_count": 3,
+        "phantom_count": 2,
         "phantom_size": 5,
         "respawn_caged_chance": 0.5,
         "respawn_crystals_below_health": 0.8,
         "max_respawn_chance": 0.125,
         "max_respawn_chance_at_health": 0
-    },
-    "larva": {
-        "health": 6,
-        "spawned": 8,
-        "min_cooldown": 800,
-        "max_cooldown": 1400
     },
     "minion": {
         "health": 20,
