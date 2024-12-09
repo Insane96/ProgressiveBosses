@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.google.common.collect.ImmutableList;
-import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
@@ -26,7 +25,6 @@ import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.SpikeConfiguration;
 import net.minecraft.world.phys.Vec3;
@@ -111,6 +109,8 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
             //noinspection DataFlowIssue
             phantom.getAttribute(Attributes.ATTACK_KNOCKBACK).setBaseValue(10d);
 		phantom.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(32d);
+		phantom.getAttribute(Attributes.MAX_HEALTH).setBaseValue(phantom.getAttributeBaseValue(Attributes.MAX_HEALTH) * 0.5f);
+		phantom.setHealth((float) phantom.getAttributeValue(Attributes.MAX_HEALTH));
 		List<WrappedGoal> toRemoveList = new ArrayList<>();
 		for (WrappedGoal wrappedGoal : phantom.targetSelector.availableGoals) {
 			if (wrappedGoal.getGoal() instanceof PhantomAttackPlayerTargetGoal) {

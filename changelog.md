@@ -1,9 +1,9 @@
 # Changelog
 
-* Shulkers should spawn from the Dragon at the center podium?
-* Larva too?
-* Replace larva with Phantoms?
+* No shulkers
+* Larva should spawn when the dragon is at the center
 * Replace Blinding Shulker Bullets with blinding acid balls
+* Phantoms should be tied to crystals, so if the crystal is destroyed, the phantom should die after a minute or so
 
 ## Upcoming
 * Data packable Ender Dragon

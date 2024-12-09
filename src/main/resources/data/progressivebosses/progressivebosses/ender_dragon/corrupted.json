@@ -8,7 +8,7 @@
         "health": 800.0,
         "regeneration": 0.5,
         "crystal_regeneration": 2.5,
-        "regen_when_hit_ratio": 0.75,
+        "regen_when_hit_ratio": 0.5,
         "regen_when_hit_duration": 50
     },
     "vulnerabilities": {
