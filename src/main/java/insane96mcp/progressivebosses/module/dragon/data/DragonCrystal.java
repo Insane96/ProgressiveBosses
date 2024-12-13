@@ -16,6 +16,7 @@ import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
@@ -26,6 +27,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -41,6 +43,7 @@ import java.util.stream.Stream;
 public class DragonCrystal {
 
     public static final String DRAGON_PHANTOM = ProgressiveBosses.RESOURCE_PREFIX + "dragon_phantom";
+    public static final String PHANTOM_CRYSTAL = ProgressiveBosses.RESOURCE_PREFIX + "crystal";
 
     private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER = new ResourceLocation("endergetic:crystal_holder");
     private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF);
@@ -203,7 +206,7 @@ public class DragonCrystal {
     }
 
     /**
-     * Returns a percentage value (0~1) based off a min and max value. when value >= max the chance is 0%, when value <= min the chance is 100%. In-between the threshold, chance scales accordingly
+     * Returns a value (outputMin~outputMax) based off a min and max value. when value >= max the chance is outputMin. when value <= min the chance is outputMax. In-between the threshold, chance scales accordingly
      */
     private static float getChanceAtValue(float value, float max, float min, float outputMin, float outputMax) {
         float clampedValue = Mth.clamp((max - min - (value - min)) / (max - min), 0f, 1f);
@@ -216,5 +219,22 @@ public class DragonCrystal {
             return;
 
         event.setAmount(event.getAmount() * 0.1f);
+    }
+
+    public static void tickCrystalPhantom(LivingEvent.LivingTickEvent event) {
+        if (event.getEntity().level().isClientSide
+                || event.getEntity().tickCount % 30 != 0
+                || !event.getEntity().getPersistentData().contains(PHANTOM_CRYSTAL))
+            return;
+
+        Entity crystal = ((ServerLevel)event.getEntity().level()).getEntity(event.getEntity().getPersistentData().getUUID(PHANTOM_CRYSTAL));
+        if (crystal == null || crystal.isRemoved()) {
+            if (!event.getEntity().getPersistentData().contains("crystal_death")) {
+                event.getEntity().getPersistentData().putLong("crystal_death", event.getEntity().level().getGameTime());
+            }
+            else if (event.getEntity().level().getGameTime() - event.getEntity().getPersistentData().getLong("crystal_death") > 20 * 30) {
+                event.getEntity().kill();
+            }
+        }
     }
 }

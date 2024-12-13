@@ -23,7 +23,7 @@
         "bonus_crystals": 3,
         "crystals_respawned": 3,
         "time_to_respawn": 60,
-        "phantom_count": 2,
+        "phantom_count": 3,
         "phantom_size": 5,
         "respawn_caged_chance": 0.5,
         "respawn_crystals_below_health": 0.8,

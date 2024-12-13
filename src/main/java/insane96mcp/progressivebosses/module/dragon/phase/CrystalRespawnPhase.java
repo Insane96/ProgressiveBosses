@@ -27,6 +27,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.SpikeConfiguration;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -82,12 +83,13 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 				RandomSource yungRandom = RandomSource.create(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island spikes to generate guarded
 				net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), (ServerLevel) this.dragon.level(), ((ServerLevel) this.dragon.level()).getChunkSource().getGenerator(), shouldBeGuarded ? yungRandom : this.dragon.getRandom(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
 				spike.guarded = wasGuarded;
-				this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).forEach(endCrystal -> endCrystal.setInvulnerable(false));
+				EndCrystal crystal = this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).get(0);
+				crystal.setInvulnerable(false);
 				spikesToRespawn.remove(0);
 				if (this.spikesToRespawn.isEmpty())
 					LogHelper.info("No more crystals to respawn left");
 				for (int i = 0; i < stats.get().crystal.phantomCount; i++) {
-					summonPhantom(spike, stats.get().crystal);
+					summonPhantom(spike, crystal, stats.get().crystal);
 				}
 				tick = 0;
 				respawning = false;
@@ -96,7 +98,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		}
 	}
 
-	private void summonPhantom(SpikeFeature.EndSpike spike, DragonCrystal crystal) {
+	private void summonPhantom(SpikeFeature.EndSpike spike, EndCrystal crystal, DragonCrystal crystalStats) {
 		Phantom phantom = EntityType.PHANTOM.create(this.dragon.level());
 		if (phantom == null)
 			return;
@@ -104,13 +106,15 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		float x = (float) (spike.getCenterX() + Math.floor(Math.cos(angle) * 6f)) + 0.5f;
 		float z = (float) (spike.getCenterZ() + Math.floor(Math.sin(angle) * 6f)) + 0.5f;
 		phantom.setPos(x, spike.getHeight() + 10, z);
-		phantom.setPhantomSize(crystal.phantomSize);
+		phantom.setPhantomSize(crystalStats.phantomSize);
 		if (phantom.getAttribute(Attributes.ATTACK_KNOCKBACK) != null)
             //noinspection DataFlowIssue
             phantom.getAttribute(Attributes.ATTACK_KNOCKBACK).setBaseValue(10d);
 		phantom.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(32d);
 		phantom.getAttribute(Attributes.MAX_HEALTH).setBaseValue(phantom.getAttributeBaseValue(Attributes.MAX_HEALTH) * 0.5f);
 		phantom.setHealth((float) phantom.getAttributeValue(Attributes.MAX_HEALTH));
+		phantom.getPersistentData().putUUID(DragonCrystal.PHANTOM_CRYSTAL, crystal.getUUID());
+		phantom.lootTable = BuiltInLootTables.EMPTY;
 		List<WrappedGoal> toRemoveList = new ArrayList<>();
 		for (WrappedGoal wrappedGoal : phantom.targetSelector.availableGoals) {
 			if (wrappedGoal.getGoal() instanceof PhantomAttackPlayerTargetGoal) {
@@ -206,7 +210,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 				--this.nextScanTick;
 				return false;
 			} else {
-				this.nextScanTick = reducedTickDelay(60);
+				this.nextScanTick = reducedTickDelay(30);
 				List<Player> list = this.phantom.level().getNearbyPlayers(this.attackTargeting, this.phantom, this.phantom.getBoundingBox().inflate(this.phantom.getAttributeValue(Attributes.FOLLOW_RANGE), this.phantom.getAttributeValue(Attributes.FOLLOW_RANGE) * 2, this.phantom.getAttributeValue(Attributes.FOLLOW_RANGE)));
 				if (!list.isEmpty()) {
 					list.sort(Comparator.<Entity, Double>comparing(Entity::getY).reversed());

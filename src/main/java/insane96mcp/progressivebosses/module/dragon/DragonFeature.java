@@ -127,6 +127,7 @@ public class DragonFeature extends Feature {
 
     @SubscribeEvent
     public void onUpdate(LivingEvent.LivingTickEvent event) {
+        DragonCrystal.tickCrystalPhantom(event);
         if (!this.isEnabled()
                 || !(event.getEntity() instanceof EnderDragon dragon))
             return;

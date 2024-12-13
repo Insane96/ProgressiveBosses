@@ -1,7 +1,6 @@
 # Changelog
 
 * Replace Blinding Shulker Bullets with blinding acid balls
-* Phantoms should be tied to crystals, so if the crystal is destroyed, the phantom should die after a minute or so
 
 ## Upcoming
 * Data packable Ender Dragon
@@ -25,7 +24,7 @@
     * Fixed [MC-86836](https://bugs.mojang.com/browse/MC-86836)
       * This makes the ender dragon no longer teleport when inside portal blocks
     * Fixed [MC-105770](https://bugs.mojang.com/browse/MC-105770)
-      * Fixes entities accumulating knockback when hit by the dragon and then launching like a rocket
+      * Fixes players accumulating knockback when hit by the dragon and then launching like a rocket
     * Fixed Ender Dragon growl sound playing 20 times (making it really loud) when about to respawn and when at the center breathing (it's now 4 times)
     * Fixed Ender Dragon growl sound being played in a too small radius making it inaudible from ground level
     * Fixed head and neck placements and head size
