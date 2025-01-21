@@ -24,6 +24,11 @@ public abstract class DragonSittingScanningPhaseMixin extends AbstractDragonPhas
 		if (this.dragon.getPhaseManager().getPhase(EnderDragonPhase.SITTING_FLAMING).flameCount == 0)
 			return original;
 		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
-        return stats.map(dragonStats -> dragonStats.sittingScanningIdleTime).orElse(original);
-    }
+		return stats.map(dragonStats -> dragonStats.sittingScanningIdleTime).orElse(original);
+	}
+
+	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "floatValue=0.7"))
+	public float getMaxRotation(float original) {
+		return 2.8f;
+	}
 }
