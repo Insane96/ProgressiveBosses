@@ -9,7 +9,6 @@ import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
@@ -156,17 +155,16 @@ public class DragonCrystal {
      * Returns true if the phase has been changed
      */
     public static boolean onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
-        CompoundTag dragonTags = dragon.getPersistentData();
-
         if (event.getOldPhase() != null
                 && !VALID_CRYSTAL_RESPAWN_PHASES.contains(event.getOldPhase()))
             return false;
 
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
-        //byte crystalRespawn = dragonTags.getByte(CRYSTAL_RESPAWN);
 
         //0% when health >= 80%, 20% when health <= 0%
         float chance = getChanceAtValue(healthRatio, stats.crystal.respawnCrystalsBelowHealth, stats.crystal.maxRespawnChanceAtHealth, 0, stats.crystal.maxRespawnChance);
+        if (event.getOldPhase() == EnderDragonPhase.SITTING_FLAMING)
+            chance *= 2;
 
         if (dragon.getRandom().nextFloat() > chance)
             return false;
