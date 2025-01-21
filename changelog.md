@@ -1,10 +1,12 @@
 # Changelog
 
-* Replace Blinding Shulker Bullets with blinding acid balls
+* Remove Blinding Shulker Bullets
+* Add AoE effects (blindness? levitation?) on caged towers
 
 ## Upcoming
 * Data packable Ender Dragon
   * Ender Dragon now takes more damage on wings and neck
+  * Ender Dragon no longer drops an egg per player, instead every ender dragon now drops an egg
   * Cages around crystals now generate during the respawn animation instead of the end
   * Crystals are now respawned from the shortest one
   * Arrows shot to the dragon when at the center will now get sent back (without fire)

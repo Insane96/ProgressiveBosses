@@ -1,5 +1,7 @@
 package insane96mcp.progressivebosses.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.utils.LogHelper;
@@ -69,5 +71,13 @@ public class EndDragonFightMixin {
 				break;
 			spikes.get(i).guarded = true;
 		}
+	}
+
+	@ModifyExpressionValue(method = "setDragonKilled", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;previouslyKilled:Z", ordinal = 0))
+	public boolean progressivebosses$onTryPlaceEgg(boolean previouslyKilled) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.dragonEggPerDragon)
+			return previouslyKilled;
+		return false;
 	}
 }

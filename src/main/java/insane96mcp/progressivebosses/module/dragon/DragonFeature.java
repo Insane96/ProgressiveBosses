@@ -67,7 +67,11 @@ public class DragonFeature extends Feature {
 
     @Config
     @Label(name = "Dragon Egg per Player", description = "If true, whenever a player that has never killed the dragon, kills the dragon, a Dragon Egg will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
-    public static Boolean dragonEggPerPlayer = true;
+    public static Boolean dragonEggPerPlayer = false;
+
+    @Config
+    @Label(name = "Dragon Egg per Dragon", description = "If true, all the dragons killed will drop an egg")
+    public static Boolean dragonEggPerDragon = true;
 
     public static byte dragonLvl = 0;
 
@@ -136,10 +140,10 @@ public class DragonFeature extends Feature {
         DragonHealth.tryHeal(dragon);
         DragonLarva.tickLarva(dragon);
         DragonMinion.tickMinion(dragon);
-        tryDropEgg(dragon);
+        tryDropEggPerPlayer(dragon);
     }
 
-    private static void tryDropEgg(EnderDragon dragon) {
+    private static void tryDropEggPerPlayer(EnderDragon dragon) {
         if (!dragonEggPerPlayer
                 || dragon.dragonDeathTime != 100)
             return;
