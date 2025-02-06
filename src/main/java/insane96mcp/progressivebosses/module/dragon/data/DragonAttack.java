@@ -194,7 +194,6 @@ public class DragonAttack {
         dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());
     }
 
-    static boolean playerCloseToCrystal = false;
     private static boolean shouldStrafe(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
         if (!VALID_PHASES_TO_STRAFE_PLAYER.contains(event.getOldPhase()))
             return false;

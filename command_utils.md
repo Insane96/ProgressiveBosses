@@ -3,7 +3,7 @@
 /data modify entity @e[type=minecraft:wither,limit=1] ForgeData.progressivebosses:charge_attack set value 90
 /data modify entity @e[type=wither,limit=1] ForgeData.progressivebosses:barrage_attack set value 100
 
-/summon minecraft:ender_dragon ~ ~ ~ {ForgeData:{"progressivebosses:level":0}}
+/summon minecraft:ender_dragon ~ ~64 ~ {ForgeData:{"progressivebosses:level":1},DragonPhase:1}
 
 /data merge entity @e[type=ender_dragon,limit=1] {DragonPhase:3b}
 /data modify entity @e[type=minecraft:ender_dragon,limit=1] ForgeData.progressivebosses:crystal_respawn set value 0

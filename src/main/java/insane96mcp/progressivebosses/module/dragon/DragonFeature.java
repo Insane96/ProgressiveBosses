@@ -10,6 +10,7 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonFakeDeathPhase;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -22,6 +23,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
@@ -180,6 +182,11 @@ public class DragonFeature extends Feature {
         Optional<DragonStats> stats = getDragonStats(event.getDragon());
         if (stats.isEmpty())
             return;
+
+         if (event.getNewPhase() == EnderDragonPhase.DYING) {
+            event.setNewPhase(DragonFakeDeathPhase.getPhaseType());
+            return;
+        }
 
         if (DragonCrystal.onPhaseChange(event, event.getDragon(), stats.get()))
             return;
