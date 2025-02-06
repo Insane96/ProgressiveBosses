@@ -156,7 +156,8 @@ public class DragonCrystal {
      */
     public static boolean onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
         if (event.getOldPhase() != null
-                && !VALID_CRYSTAL_RESPAWN_PHASES.contains(event.getOldPhase()))
+                && !VALID_CRYSTAL_RESPAWN_PHASES.contains(event.getOldPhase())
+                && !dragon.isDeadOrDying())
             return false;
 
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();

@@ -1,7 +1,7 @@
 # Changelog
 
 * Remove Blinding Shulker Bullets
-* change on break crystal to strafe pillar
+* Ultimate attack when about to die, respawns crystals, covers field with acid balls and gets back some health
 
 ## Upcoming
 * Data packable Ender Dragon

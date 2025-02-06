@@ -151,7 +151,7 @@ public class DragonMinion {
             float angle = level.random.nextFloat() * (float) Math.PI * 2f;
             float x = (float) (Math.cos(angle) * (Mth.nextFloat(dragon.getRandom(), 36f, 39f)));
             float z = (float) (Math.sin(angle) * (Mth.nextFloat(dragon.getRandom(), 36f, 39f)));
-            float y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 255, z)).getY() + 16;
+            float y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(0, 255, 0)).getY() + 16;
             summonMinion(level, new Vec3(x, y, z), stats.get().level, stats.get().minion);
         }
     }
@@ -176,7 +176,7 @@ public class DragonMinion {
         shulker.setPersistenceRequired();
         DragonMinionHelper.setMinionColor(shulker, isBlindingMinion);
 
-        MCUtils.applyModifier(shulker, Attributes.FOLLOW_RANGE, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 64, AttributeModifier.Operation.ADDITION);
+        MCUtils.applyModifier(shulker, Attributes.FOLLOW_RANGE, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 96, AttributeModifier.Operation.ADDITION);
 
         world.addFreshEntity(shulker);
     }
