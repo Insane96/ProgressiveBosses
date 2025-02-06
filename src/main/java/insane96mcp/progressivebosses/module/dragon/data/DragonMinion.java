@@ -147,12 +147,13 @@ public class DragonMinion {
 
         cooldown = Mth.nextInt(level.random, minionStats.minCooldown, minionStats.maxCooldown);
         dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown - 1);
-
-        float angle = level.random.nextFloat() * (float) Math.PI * 2f;
-        float x = (float) (Math.cos(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 40f)));
-        float z = (float) (Math.sin(angle) * (Mth.nextFloat(dragon.getRandom(), 16f, 40f)));
-        float y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 255, z)).getY();
-        summonMinion(level, new Vec3(x, y, z), stats.get().level, stats.get().minion);
+        for (int i = 0; i < minionStats.spawned; i++) {
+            float angle = level.random.nextFloat() * (float) Math.PI * 2f;
+            float x = (float) (Math.cos(angle) * (Mth.nextFloat(dragon.getRandom(), 36f, 39f)));
+            float z = (float) (Math.sin(angle) * (Mth.nextFloat(dragon.getRandom(), 36f, 39f)));
+            float y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 255, z)).getY() + 16;
+            summonMinion(level, new Vec3(x, y, z), stats.get().level, stats.get().minion);
+        }
     }
 
     public static void summonMinion(Level world, Vec3 pos, byte lvl, DragonMinion minioStats) {

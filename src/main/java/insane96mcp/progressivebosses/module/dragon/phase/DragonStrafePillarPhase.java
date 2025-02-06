@@ -7,10 +7,12 @@ import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
@@ -21,21 +23,19 @@ import org.slf4j.Logger;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
-    private static EnderDragonPhase<PBDragonStrafePlayerPhase> STRAFE_PLAYER;
+public class DragonStrafePillarPhase extends AbstractDragonPhaseInstance {
+    private static EnderDragonPhase<DragonStrafePillarPhase> STRAFE_PILLAR;
 
     public static final Logger LOGGER = LogUtils.getLogger();
-    public int fireballsToShoot = 0;
-    public int fireballCharge;
     @Nullable
     public Path currentPath;
     @Nullable
     public Vec3 targetLocation;
     @Nullable
-    public LivingEntity attackTarget;
+    public Entity pillarTarget;
     private boolean holdingPatternClockwise;
 
-    public PBDragonStrafePlayerPhase(EnderDragon pDragon) {
+    public DragonStrafePillarPhase(EnderDragon pDragon) {
         super(pDragon);
     }
 
@@ -44,67 +44,50 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
      * Called by dragon's onLivingUpdate. Only used when !worldObj.isRemote.
      */
     public void doServerTick() {
-        if (this.attackTarget == null) {
-            LOGGER.warn("Skipping player strafe phase because no player was found");
+        if (this.pillarTarget == null || !this.pillarTarget.isAlive()) {
+            LOGGER.warn("Skipping pillar strafe phase because no crystal was found or was dead");
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
             return;
         }
         if (this.currentPath != null && this.currentPath.isDone()) {
-            double x = this.attackTarget.getX();
-            double z = this.attackTarget.getZ();
-            double dX = x - this.dragon.getX();
-            double dZ = z - this.dragon.getZ();
-            double dSqrt = Math.sqrt(dX * dX + dZ * dZ);
-            //double yOffset = Math.min(0.4f + dSqrt / 80.0d - 1.0d, 15d);
-            this.targetLocation = new Vec3(x, this.attackTarget.getY() + 15, z);
+            this.targetLocation = new Vec3(this.pillarTarget.getX(), this.pillarTarget.getY() + 15, this.pillarTarget.getZ());
         }
 
-        double d12 = this.targetLocation == null ? 0.0D : this.targetLocation.distanceToSqr(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
-        if (d12 < 15 * 15 || d12 > 150 * 150)
+        double distanceToTarget = this.targetLocation == null ? 0.0D : this.targetLocation.distanceToSqr(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+        if (distanceToTarget > 80 * 80)
             this.findNewTarget();
 
-        if (this.attackTarget.distanceToSqr(this.dragon) >= 64 * 64
-                || !this.dragon.hasLineOfSight(this.attackTarget)) {
-            if (this.fireballCharge > 0)
-                --this.fireballCharge;
-            return;
-        }
-        ++this.fireballCharge;
-        Vec3 targetDirection = (new Vec3(this.attackTarget.getX() - this.dragon.getX(), 0.0D, this.attackTarget.getZ() - this.dragon.getZ())).normalize();
+        Vec3 targetDirection = (new Vec3(this.pillarTarget.getX() - this.dragon.getX(), 0.0D, this.pillarTarget.getZ() - this.dragon.getZ())).normalize();
         Vec3 dragonViewDirection = (new Vec3(Mth.sin(this.dragon.getYRot() * ((float)Math.PI / 180F)), 0.0D, (-Mth.cos(this.dragon.getYRot() * ((float)Math.PI / 180F))))).normalize();
-        float dot = (float) dragonViewDirection.dot(targetDirection);
+        float dot = (float)dragonViewDirection.dot(targetDirection);
         float angleToTarget = (float)(Math.acos(dot) * (double)(180F / (float)Math.PI));
         angleToTarget += 0.5F;
-        double distanceFromTarget = this.attackTarget.distanceToSqr(this.dragon.head);
-        double dX = this.attackTarget.getX() - this.dragon.getX();
-        double dZ = this.attackTarget.getZ() - this.dragon.getZ();
+        double dX = this.pillarTarget.getX() - this.dragon.getX();
+        double dZ = this.pillarTarget.getZ() - this.dragon.getZ();
         double distanceXZ = Math.sqrt(dX * dX + dZ * dZ);
-        double distanceY = Math.abs(this.attackTarget.getY() - this.dragon.getY());
-        if (this.fireballCharge >= 5 && angleToTarget >= 0.0F && angleToTarget < 10.0F && distanceXZ > 15 & distanceY > 5) {
+        double distanceY = Math.abs(this.pillarTarget.getY() - this.dragon.getY());
+        if (angleToTarget >= 0.0F && angleToTarget < 10.0F && distanceXZ > 15 & distanceY > 5) {
             Vec3 vec32 = this.dragon.getViewVector(1.0F);
             double headXOffset = this.dragon.head.getX() - vec32.x;
             double headYOffset = this.dragon.head.getY(0.5D) + 0.5D;
             double headZOffset = this.dragon.head.getZ() - vec32.z;
-            double targetXOffset = this.attackTarget.getX() + Mth.randomBetween(this.dragon.getRandom(), -2f, 2f) - headXOffset;
-            double targetYOffset = this.attackTarget.getY() - headYOffset;
-            double targetZOffset = this.attackTarget.getZ() + Mth.randomBetween(this.dragon.getRandom(), -2f, 2f) - headZOffset;
             if (!this.dragon.isSilent())
                 this.dragon.level().levelEvent(null, 1017, this.dragon.blockPosition(), 0);
 
-            DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, targetXOffset, targetYOffset, targetZOffset);
-            DragonAttack.setAcidBallSpeedMultiplier(dragonfireball);
-            dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
-            this.dragon.level().addFreshEntity(dragonfireball);
-            this.fireballCharge = 3;
-            /*if (this.currentPath != null) {
-                while (!this.currentPath.isDone()) {
-                    this.currentPath.advance();
-                }
-            }*/
+            for (int i = 0; i < 2; i++) {
+                double targetXOffset = this.pillarTarget.getX() + Mth.randomBetween(this.dragon.getRandom(), -4f, 4f) - headXOffset;
+                double targetYOffset = this.pillarTarget.getY() - headYOffset;
+                double targetZOffset = this.pillarTarget.getZ() + Mth.randomBetween(this.dragon.getRandom(), -4f, 4f) - headZOffset;
+                DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, targetXOffset, targetYOffset, targetZOffset);
+                DragonAttack.setAcidBallSpeedMultiplier(dragonfireball);
+                dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
+                this.dragon.level().addFreshEntity(dragonfireball);
+            }
 
-            if (--this.fireballsToShoot <= 0)
-                this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
+            this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
         }
+        else
+            this.findNewTarget();
     }
 
     public void findNewTarget() {
@@ -164,34 +147,48 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
      * Called when this phase is set to active
      */
     public void begin() {
-        this.fireballCharge = 0;
         this.targetLocation = null;
         this.currentPath = null;
-        this.attackTarget = null;
+        this.pillarTarget = null;
 
         Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
         if (stats.isEmpty())
             return;
-        this.fireballsToShoot = Mth.nextInt(dragon.getRandom(), stats.get().attack.minAcidballShot, stats.get().attack.maxAcidballShot);
+        //TODO
     }
 
-    public void setTarget(@NotNull LivingEntity pAttackTarget) {
-        this.attackTarget = pAttackTarget;
+    public void setTargetFromPlayer(@NotNull Player player) {
+        this.pillarTarget = getNearestCrystal(player);
+        if (this.pillarTarget == null)
+            return;
         int closestNode = this.dragon.findClosestNode();
-        int closestTargetNode = this.dragon.findClosestNode(this.attackTarget.getX(), this.attackTarget.getY(), this.attackTarget.getZ());
-        int x = this.attackTarget.getBlockX();
-        int z = this.attackTarget.getBlockZ();
+        int closestTargetNode = this.dragon.findClosestNode(this.pillarTarget.getX(), this.pillarTarget.getY(), this.pillarTarget.getZ());
+        int x = this.pillarTarget.getBlockX();
+        int z = this.pillarTarget.getBlockZ();
         double dX = (double)x - this.dragon.getX();
         double dZ = (double)z - this.dragon.getZ();
         double dSqr = Math.sqrt(dX * dX + dZ * dZ);
         double offsetY = Math.min(0.4f + dSqr / 80.0d - 1.0d, 10.5d);
-        int y = Mth.floor(this.attackTarget.getY() + offsetY);
+        int y = Mth.floor(this.pillarTarget.getY() + offsetY);
         Node node = new Node(x, y, z);
         this.currentPath = this.dragon.findPath(closestNode, closestTargetNode, node);
         if (this.currentPath != null) {
             this.currentPath.advance();
             this.navigateToNextPathNode();
         }
+    }
+
+    public EndCrystal getNearestCrystal(Entity entity) {
+        double distance = Double.MAX_VALUE;
+        EndCrystal nearestCrystal = null;
+        for (EndCrystal crystal : entity.level().getEntitiesOfClass(EndCrystal.class, entity.getBoundingBox().inflate(64), EndCrystal::showsBottom)) {
+            double newDistance = entity.distanceTo(crystal);
+            if (newDistance < distance) {
+                nearestCrystal = crystal;
+                distance = newDistance;
+            }
+        }
+        return nearestCrystal;
     }
 
     /**
@@ -202,16 +199,16 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         return this.targetLocation;
     }
 
-    public EnderDragonPhase<PBDragonStrafePlayerPhase> getPhase() {
-        return STRAFE_PLAYER;
+    public EnderDragonPhase<DragonStrafePillarPhase> getPhase() {
+        return STRAFE_PILLAR;
     }
 
-    public static EnderDragonPhase<PBDragonStrafePlayerPhase> getPhaseType() {
-        return STRAFE_PLAYER;
+    public static EnderDragonPhase<DragonStrafePillarPhase> getPhaseType() {
+        return STRAFE_PILLAR;
     }
 
     public static void init() {
-        STRAFE_PLAYER = EnderDragonPhase.create(PBDragonStrafePlayerPhase.class, "PBStrafePlayer");
+        STRAFE_PILLAR = EnderDragonPhase.create(DragonStrafePillarPhase.class, "PBStrafePillar");
     }
 
     public static void convertToPBStrafe(DragonPhaseEvent event) {

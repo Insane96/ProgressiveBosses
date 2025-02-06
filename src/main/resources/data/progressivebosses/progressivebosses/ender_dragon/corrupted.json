@@ -43,11 +43,11 @@
         "acid_damage_dealt_multiplier": 2.2,
         "charge_chance": {
             "base": 0.4,
-            "with_no_crystals_left": 0.6
+            "with_no_crystals_left": 0.8
         },
         "strafe_chance": {
-            "base": 0.35,
-            "with_no_crystals_left": 0.5
+            "base": 0.8,
+            "with_no_crystals_left": 0.4
         },
         "acidball_speed_multiplier": 2.5,
         "acidball_impact_damage": 12,

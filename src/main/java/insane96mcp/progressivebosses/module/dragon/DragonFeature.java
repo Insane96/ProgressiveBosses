@@ -198,7 +198,6 @@ public class DragonFeature extends Feature {
             return;
 
         DragonCrystal.onPhaseBegin(event, event.getDragon(), stats.get());
-        DragonAttack.onPhaseBegin(event, event.getDragon(), stats.get());
     }
 
     @SubscribeEvent
