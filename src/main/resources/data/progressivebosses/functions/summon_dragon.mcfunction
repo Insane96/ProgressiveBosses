@@ -1,1 +1,1 @@
-data merge entity @e[type=ender_dragon,limit=1] {DragonPhase:2}
+data merge entity @e[type=ender_dragon,limit=1] {DragonPhase:3}

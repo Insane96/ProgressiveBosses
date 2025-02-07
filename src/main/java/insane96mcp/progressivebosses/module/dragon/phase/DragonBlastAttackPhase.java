@@ -31,15 +31,15 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         double x = this.dragon.getX();
         double y = this.dragon.getY() + 2;
         double z = this.dragon.getZ();
-        if (--this.prepareBlowUpTime > 6) {
-            for (int i = 0; i < 10 + (100 - this.prepareBlowUpTime) * 0.1; i++) {
-                double r = 8;
+        if (--this.prepareBlowUpTime > 30) {
+            for (int i = 0; i < 20 + (100 - this.prepareBlowUpTime) * 0.1; i++) {
+                double r = 24;
                 double v = r / 2f;
                 double x1 = x + random.nextFloat() * r - v;
                 double y1 = y + random.nextFloat() * r - v;
                 double z1 = z + random.nextFloat() * r - v;
-                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-0.003f * ((100 - this.prepareBlowUpTime)));
-                this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, x1, y1, z1, dir.x, dir.y, dir.z);
+                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-0.008f * ((100 - this.prepareBlowUpTime)));
+                this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, x1, y1, z1, dir.x, dir.y, dir.z);
             }
             /*for (double theta = 0.0; theta < (Math.PI * 2d); theta += 0.0314159265d) {
                 for (double phi = 0.0d; phi < Math.PI; phi += 0.031415927d) {
@@ -55,13 +55,27 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
                 }
                 //this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, this.dragon.getX() + Math.cos(angle) * 5.0D, this.dragon.getY() + this.dragon.getRandom().nextFloat() * 10 - 5, this.dragon.getZ() + Math.sin(angle) * 5.0D, Math.cos(angle) * 0.02f, 0d, Math.sin(angle) * 0.02f);
             }*/
-            this.dragon.flapTime = 0.8f - (100 - this.prepareBlowUpTime) * 0.005f;
         }
-        else if (this.prepareBlowUpTime != 1) {
-            this.dragon.flapTime = 0.333f - (6 - this.prepareBlowUpTime) * 0.08f;
+        if (this.prepareBlowUpTime > 9)
+            this.dragon.flapTime = 0.8f - (100 - this.prepareBlowUpTime + 3) * 0.005f;
+        else if (this.prepareBlowUpTime >= 4) {
+            this.dragon.flapTime = 0.333f - (8 - this.prepareBlowUpTime + 1) * 0.08f;
         }
-        else if (this.prepareBlowUpTime == 1) {
-            for (double theta = 0.0d; theta < (Math.PI * 2d); theta += 0.031415927d * 2) {
+        else if (this.prepareBlowUpTime < 4) {
+            this.dragon.flapTime = 0.8f - (4 - this.prepareBlowUpTime) * 0.05f;
+        }
+        if (this.prepareBlowUpTime == 4) {
+            for (int i = 0; i < 4000; i++) {
+                double r = 8;
+                double v = r / 2f;
+                double x1 = x + this.dragon.level().random.nextFloat() * r - v;
+                double y1 = y + this.dragon.level().random.nextFloat() * r - v;
+                double z1 = z + this.dragon.level().random.nextFloat() * r - v;
+                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(5f);
+                this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, x1, y1, z1, dir.x, dir.y, dir.z);
+            }
+
+            /*for (double theta = 0.0d; theta < (Math.PI * 2d); theta += 0.031415927d * 2) {
                 for (double phi = 0.0d; phi < Math.PI; phi += 0.031415927d * 2) {
                     double r = 5.0D; // radius of the sphere
                     double px = x + r * Math.sin(phi) * Math.cos(theta);
@@ -73,10 +87,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
 
                     this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, px, py, pz, vx, vy, vz);
                 }
-            }
-        }
-        if (this.prepareBlowUpTime % 2 == 0) {
-            //this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f);
+            }*/
         }
     }
 
@@ -90,15 +101,17 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
                 double distanceY = entity.getY() - this.dragon.getY();
                 double distanceZ = entity.getZ() - this.dragon.getZ();
                 double distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ);
-                double multiplier = entity instanceof Player ? 32d : 8d;
+                double multiplier = entity instanceof Player ? 16d : 8d;
                 entity.push((distanceX / distance) * multiplier, Math.max(1f, distanceY / distance * multiplier * 0.5d), (distanceZ / distance) * multiplier);
                 if (entity instanceof LivingEntity living)
                     living.hurtMarked = true;
                 entity.hurt(this.dragon.damageSources().explosion(this.dragon, this.dragon), 12f);
             }
             //((ServerLevel) this.dragon.level()).sendParticles(ParticleTypes.DRAGON_BREATH, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(), 4000, 12, 12, 12, 1.0D);
-            for (int i = 0; i < 5; i++)
-                this.dragon.playSound(SoundEvents.GENERIC_EXPLODE, 4f, 1f);
+            for (int i = 0; i < 8; i++) {
+                this.dragon.level().playSound(null, this.dragon.getX() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getY() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getZ() + this.dragon.getRandom().nextFloat() * 48f - 24f, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 4f, 0.7f);
+                //this.dragon.playSound(SoundEvents.GENERIC_EXPLODE, 4f, 0.7f);
+            }
         }
         else if (this.prepareBlowUpTime <= -10)
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
