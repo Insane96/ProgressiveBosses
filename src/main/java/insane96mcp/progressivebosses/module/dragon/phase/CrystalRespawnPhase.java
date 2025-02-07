@@ -57,7 +57,9 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 
 		if (this.targetLocation == null) {
 			if (this.spikesToRespawn.isEmpty()) {
-				dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
+				//dragon.getPhaseManager().setPhase(DragonBlastAttackPhase.getPhaseType());
+				dragon.getPhaseManager().setPhase(EnderDragonPhase.LANDING);
+				dragon.sittingDamageReceived = 0f;
 				return;
 			}
 			this.targetLocation = new Vec3(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 5.5, spikesToRespawn.get(0).getCenterZ() + 0.5);

@@ -1,7 +1,8 @@
 # Changelog
 
 * Remove Blinding Shulker Bullets
-* Ultimate attack when about to die, respawns crystals, covers field with acid balls and gets back some health
+* Minions on top of towers
+  * Respawn crystals in place of minions
 
 ## Upcoming
 * Data packable Ender Dragon
@@ -12,10 +13,10 @@
   * Arrows shot to the dragon when at the center will now get sent back (without fire)
   * Ender Dragon now take 40% more damage from melee attacks when not at the center podium and 50% more damage when respawning crystals
   * Small pillars with cages now have obsidian blocks below the corner to prevent breaking them from below
-  * Crystals attached to the dragon when destroyed now deal 20% of current health as damage
+  * Crystals attached to the dragon when destroyed now deal 20% of current health as damage (min 5%)
   * Removed blindness minions. Any shulker now has a chance to fire a blinding bullet
   * Minions now shoot 4 bullets before going into cooldown
-  * Minions now spawn on towers
+  * Minions now spawn on towers in place of crystals
   * Removed ender dragon acid ball shotgun, now shoots them in rapid succession
   * Ender Dragon now stays much less time at the center podium
   * Respawning crystals now also summons some phantoms

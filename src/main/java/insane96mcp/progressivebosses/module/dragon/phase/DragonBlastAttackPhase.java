@@ -4,7 +4,6 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,27 +40,13 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
                 Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-0.008f * ((100 - this.prepareBlowUpTime)));
                 this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, x1, y1, z1, dir.x, dir.y, dir.z);
             }
-            /*for (double theta = 0.0; theta < (Math.PI * 2d); theta += 0.0314159265d) {
-                for (double phi = 0.0d; phi < Math.PI; phi += 0.031415927d) {
-                    double r = 5.0D; // radius of the sphere
-                    double px = x + r * Math.sin(phi) * Math.cos(theta);
-                    double py = y + r * Math.cos(phi);
-                    double pz = z + r * Math.sin(phi) * Math.sin(theta);
-                    double vx = Math.sin(phi) * Math.cos(theta) * -0.2;
-                    double vy = Math.cos(phi) * -0.2;
-                    double vz = Math.sin(phi) * Math.sin(theta) * -0.2;
-
-                    this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, px, py, pz, vx, vy, vz);
-                }
-                //this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, this.dragon.getX() + Math.cos(angle) * 5.0D, this.dragon.getY() + this.dragon.getRandom().nextFloat() * 10 - 5, this.dragon.getZ() + Math.sin(angle) * 5.0D, Math.cos(angle) * 0.02f, 0d, Math.sin(angle) * 0.02f);
-            }*/
         }
         if (this.prepareBlowUpTime > 9)
             this.dragon.flapTime = 0.8f - (100 - this.prepareBlowUpTime + 3) * 0.005f;
         else if (this.prepareBlowUpTime >= 4) {
             this.dragon.flapTime = 0.333f - (8 - this.prepareBlowUpTime + 1) * 0.08f;
         }
-        else if (this.prepareBlowUpTime < 4) {
+        else {
             this.dragon.flapTime = 0.8f - (4 - this.prepareBlowUpTime) * 0.05f;
         }
         if (this.prepareBlowUpTime == 4) {
@@ -74,20 +59,6 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
                 Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(5f);
                 this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, x1, y1, z1, dir.x, dir.y, dir.z);
             }
-
-            /*for (double theta = 0.0d; theta < (Math.PI * 2d); theta += 0.031415927d * 2) {
-                for (double phi = 0.0d; phi < Math.PI; phi += 0.031415927d * 2) {
-                    double r = 5.0D; // radius of the sphere
-                    double px = x + r * Math.sin(phi) * Math.cos(theta);
-                    double py = y + r * Math.cos(phi);
-                    double pz = z + r * Math.sin(phi) * Math.sin(theta);
-                    double vx = Math.sin(phi) * Math.cos(theta) * 6f;
-                    double vy = Math.cos(phi) * 6f;
-                    double vz = Math.sin(phi) * Math.sin(theta) * 6f;
-
-                    this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, px, py, pz, vx, vy, vz);
-                }
-            }*/
         }
     }
 
@@ -128,11 +99,6 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
      */
     public void begin() {
         this.prepareBlowUpTime = 100;
-    }
-
-    @Override
-    public float onHurt(DamageSource p_31199_, float p_31200_) {
-        return 0f;
     }
 
     public @NotNull EnderDragonPhase<DragonBlastAttackPhase> getPhase() {

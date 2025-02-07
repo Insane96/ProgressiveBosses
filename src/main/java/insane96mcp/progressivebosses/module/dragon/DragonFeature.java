@@ -183,7 +183,7 @@ public class DragonFeature extends Feature {
         if (stats.isEmpty())
             return;
 
-        if (event.getNewPhase() == EnderDragonPhase.SITTING_SCANNING && event.getOldPhase() == EnderDragonPhase.LANDING) {
+        if (event.getNewPhase() == EnderDragonPhase.TAKEOFF && event.getDragon().sittingDamageReceived == 0) {
             event.setNewPhase(DragonBlastAttackPhase.getPhaseType());
             return;
         }

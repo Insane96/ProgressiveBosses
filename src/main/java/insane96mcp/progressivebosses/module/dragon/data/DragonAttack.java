@@ -145,7 +145,7 @@ public class DragonAttack {
     }
 
     public static boolean onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
-        if (!dragon.isDeadOrDying())
+        if (dragon.isDeadOrDying())
             return false;
 
         //Replace vanilla Strafe Phase with PB one's

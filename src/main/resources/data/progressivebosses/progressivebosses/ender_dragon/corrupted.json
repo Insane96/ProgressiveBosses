@@ -1,6 +1,6 @@
 {
     "level": 1,
-    "max_sitting_damage_received": 0.2,
+    "max_sitting_damage_received": 0.10,
     "roar_time": 20,
     "sitting_scanning_idle_time": 40,
     "sitting_flaming_time": 60,
@@ -32,7 +32,7 @@
     },
     "minion": {
         "health": 20,
-        "spawned": 2,
+        "spawned": 1,
         "min_cooldown": 1200,
         "max_cooldown": 1600,
         "blinding_chance": 0.4,
@@ -42,12 +42,12 @@
         "melee_damage_dealt_multiplier": 2.7,
         "acid_damage_dealt_multiplier": 2.2,
         "charge_chance": {
-            "base": 0.4,
-            "with_no_crystals_left": 0.8
+            "base": 0.25,
+            "with_no_crystals_left": 0.5
         },
         "strafe_chance": {
-            "base": 0.8,
-            "with_no_crystals_left": 0.4
+            "base": 0.5,
+            "with_no_crystals_left": 0.25
         },
         "acidball_speed_multiplier": 2.5,
         "acidball_impact_damage": 12,

@@ -97,7 +97,7 @@ public abstract class EnderDragonMixin extends Mob {
 	public float onAttachedCrystalDamage(float original, EndCrystal pCrystal, BlockPos pPos, DamageSource pDamageSource) {
 		if (!pCrystal.showsBottom())
 			return original;
-		return Math.max(10f, this.getHealth() * 0.2f);
+		return Math.max(this.getHealth() * 0.05f, this.getHealth() * 0.2f);
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "doubleValue=0.01"))

@@ -85,9 +85,9 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
             double headXOffset = this.dragon.head.getX() - vec32.x;
             double headYOffset = this.dragon.head.getY(0.5D) + 0.5D;
             double headZOffset = this.dragon.head.getZ() - vec32.z;
-            double targetXOffset = this.attackTarget.getX() + Mth.randomBetween(this.dragon.getRandom(), -2f, 2f) - headXOffset;
+            double targetXOffset = this.attackTarget.getX() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headXOffset;
             double targetYOffset = this.attackTarget.getY() - headYOffset;
-            double targetZOffset = this.attackTarget.getZ() + Mth.randomBetween(this.dragon.getRandom(), -2f, 2f) - headZOffset;
+            double targetZOffset = this.attackTarget.getZ() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headZOffset;
             if (!this.dragon.isSilent())
                 this.dragon.level().levelEvent(null, 1017, this.dragon.blockPosition(), 0);
 
