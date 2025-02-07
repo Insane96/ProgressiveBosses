@@ -14,6 +14,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
@@ -24,6 +25,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
@@ -32,6 +34,7 @@ import net.minecraft.world.item.alchemy.PotionUtils;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
+import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -40,6 +43,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -147,12 +151,19 @@ public class DragonMinion {
 
         cooldown = Mth.nextInt(level.random, minionStats.minCooldown, minionStats.maxCooldown);
         dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown - 1);
+        List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level()));
+        spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius).reversed());
         for (int i = 0; i < minionStats.spawned; i++) {
-            float angle = level.random.nextFloat() * (float) Math.PI * 2f;
-            float x = (float) (Math.cos(angle) * (Mth.nextFloat(dragon.getRandom(), 36f, 39f)));
-            float z = (float) (Math.sin(angle) * (Mth.nextFloat(dragon.getRandom(), 36f, 39f)));
-            float y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(0, 255, 0)).getY() + 16;
-            summonMinion(level, new Vec3(x, y, z), stats.get().level, stats.get().minion);
+            for (SpikeFeature.EndSpike spike : spikes) {
+                if (!level.getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).isEmpty()
+                    || !level.getEntitiesOfClass(Shulker.class, spike.getTopBoundingBox()).isEmpty())
+                    continue;
+                float x = spike.getCenterX() + 0.5f;
+                float z = spike.getCenterZ() + 0.5f;
+                float y = spike.getHeight() + 1;
+                summonMinion(level, new Vec3(x, y, z), stats.get().level, stats.get().minion);
+                break;
+            }
         }
     }
 
