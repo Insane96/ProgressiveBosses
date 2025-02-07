@@ -7,6 +7,7 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -16,6 +17,7 @@ import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhaseManager;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,7 +34,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Mixin(EnderDragon.class)
-public class EnderDragonMixin extends Mob {
+public abstract class EnderDragonMixin extends Mob {
 
 	@Shadow public float oFlapTime;
 
@@ -43,6 +45,10 @@ public class EnderDragonMixin extends Mob {
 	@Shadow @Final public EnderDragonPart head;
 
 	@Shadow @Nullable public EndCrystal nearestCrystal;
+
+	@Shadow public float flapTime;
+
+	@Shadow public abstract EnderDragonPhaseManager getPhaseManager();
 
 	protected EnderDragonMixin(EntityType<? extends Mob> type, Level worldIn) {
 		super(type, worldIn);
@@ -91,7 +97,7 @@ public class EnderDragonMixin extends Mob {
 	public float onAttachedCrystalDamage(float original, EndCrystal pCrystal, BlockPos pPos, DamageSource pDamageSource) {
 		if (!pCrystal.showsBottom())
 			return original;
-		return this.getHealth() * 0.2f;
+		return Math.max(10f, this.getHealth() * 0.2f);
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "doubleValue=0.01"))
@@ -163,5 +169,20 @@ public class EnderDragonMixin extends Mob {
 				|| !DragonFeature.enableFixes)
 			return original;
 		return DragonFeature.headOffsetSittingY();
+	}
+
+	@ModifyExpressionValue(method = "getHeadYOffset", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;isSitting()Z"))
+	public boolean progressivebosses$headYOffsetExplosion(boolean original) {
+		return original && this.getPhaseManager().getCurrentPhase().getPhase() != DragonBlastAttackPhase.getPhaseType();
+	}
+
+	@ModifyExpressionValue(method = "getHeadLookVector", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;isSitting()Z"))
+	public boolean progressivebosses$headLookVectorExplosion(boolean original) {
+		return original && this.getPhaseManager().getCurrentPhase().getPhase() != DragonBlastAttackPhase.getPhaseType();
+	}
+
+	@ModifyExpressionValue(method = "getHeadPartYOffset", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;isSitting()Z"))
+	public boolean progressivebosses$headPartYOffsetExplosion(boolean original) {
+		return original && this.getPhaseManager().getCurrentPhase().getPhase() != DragonBlastAttackPhase.getPhaseType();
 	}
 }

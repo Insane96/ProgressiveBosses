@@ -10,7 +10,7 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonFakeDeathPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -183,8 +183,8 @@ public class DragonFeature extends Feature {
         if (stats.isEmpty())
             return;
 
-         if (event.getNewPhase() == EnderDragonPhase.DYING) {
-            event.setNewPhase(DragonFakeDeathPhase.getPhaseType());
+        if (event.getNewPhase() == EnderDragonPhase.SITTING_SCANNING && event.getOldPhase() == EnderDragonPhase.LANDING) {
+            event.setNewPhase(DragonBlastAttackPhase.getPhaseType());
             return;
         }
 

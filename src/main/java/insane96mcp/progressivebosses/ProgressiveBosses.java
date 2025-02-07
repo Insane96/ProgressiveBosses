@@ -4,8 +4,7 @@ import insane96mcp.progressivebosses.commands.PBCommand;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStatsReloadListener;
 import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonFakeDeathPhase;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonSecondPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
@@ -55,8 +54,7 @@ public class ProgressiveBosses {
 
 		CrystalRespawnPhase.init();
 		PBDragonStrafePlayerPhase.init();
-		DragonFakeDeathPhase.init();
-		DragonSecondPhase.init();
+		DragonBlastAttackPhase.init();
 
 		DispenserBlock.registerBehavior(Items.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());
 	}
