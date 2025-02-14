@@ -1,8 +1,6 @@
 # Changelog
 
 * Remove Blinding Shulker Bullets
-* Minions on top of towers
-  * Respawn crystals in place of minions
 
 ## Upcoming
 * Data packable Ender Dragon

@@ -8,9 +8,7 @@ import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.DamageTypeTags;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -22,7 +20,7 @@ import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonSittingPhase;
+import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.monster.Phantom;
 import net.minecraft.world.entity.monster.Shulker;
@@ -39,11 +37,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-public class CrystalRespawnPhase extends AbstractDragonSittingPhase {
+public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	private static EnderDragonPhase<CrystalRespawnPhase> CRYSTAL_RESPAWN;
 
 	public Vec3 targetLocation;
-	private int tick = 0;
 	private final ArrayList<SpikeFeature.EndSpike> spikesToRespawn = new ArrayList<>();
 
 	public CrystalRespawnPhase(EnderDragon dragonIn) {
@@ -51,27 +48,25 @@ public class CrystalRespawnPhase extends AbstractDragonSittingPhase {
 	}
 
 	public void doServerTick() {
-		if (this.spikesToRespawn.isEmpty()) {
-			dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
-			return;
-		}
-
 		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
 		if (stats.isEmpty()) {
 			dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
 			return;
 		}
 
-		tick++;
-		SpikeFeature.EndSpike spike = spikesToRespawn.get(0);
-		if (tick <= stats.get().crystal.timeToRespawn - 10 && tick % 5 == 0) {
-			dragon.playSound(SoundEvents.ENDER_DRAGON_GROWL, 4F, 1.0F);
-			double deltaX = spike.getCenterX() - this.dragon.getX();
-			double deltaZ = spike.getCenterZ() - this.dragon.getZ();
-			double angle = Mth.atan2(deltaZ, deltaX) * (180F / Math.PI);
-			this.dragon.setYRot((float) angle);
+		if (this.targetLocation == null) {
+			if (this.spikesToRespawn.isEmpty()) {
+				//dragon.getPhaseManager().setPhase(DragonBlastAttackPhase.getPhaseType());
+				dragon.getPhaseManager().setPhase(EnderDragonPhase.LANDING);
+				dragon.sittingDamageReceived = 0f;
+				return;
+			}
+			this.targetLocation = new Vec3(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight(), spikesToRespawn.get(0).getCenterZ() + 0.5);
 		}
-		if (tick >= stats.get().crystal.timeToRespawn) {
+
+		double distanceToTarget = this.targetLocation.distanceToSqr(dragon.getX(), dragon.getY(), dragon.getZ());
+		if (distanceToTarget < 9d) { //sqrt = 3
+			SpikeFeature.EndSpike spike = spikesToRespawn.get(0);
 			boolean shouldBeGuarded = this.dragon.getRandom().nextFloat() < stats.get().crystal.respawnCagedChance;
 			boolean wasGuarded = spike.guarded;
 			spike.guarded = shouldBeGuarded;
@@ -81,13 +76,13 @@ public class CrystalRespawnPhase extends AbstractDragonSittingPhase {
 			spike.guarded = wasGuarded;
 			EndCrystal crystal = this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).get(0);
 			crystal.setInvulnerable(false);
+			this.dragon.level().getEntitiesOfClass(Shulker.class, spike.getTopBoundingBox()).forEach(shulker -> shulker.die(this.dragon.damageSources().mobAttack(this.dragon)));
 			spikesToRespawn.remove(0);
 			if (this.spikesToRespawn.isEmpty())
 				LogHelper.info("No more crystals to respawn left");
 			for (int i = 0; i < stats.get().crystal.phantomCount; i++) {
 				summonPhantom(spike, crystal, stats.get().crystal);
 			}
-			tick = 0;
 			this.targetLocation = null;
 		}
 	}
@@ -128,7 +123,6 @@ public class CrystalRespawnPhase extends AbstractDragonSittingPhase {
 	 */
 	public void begin() {
 		this.targetLocation = null;
-		this.tick = 0;
 		this.spikesToRespawn.clear();
 		if (dragon.level().isClientSide)
 			return;
@@ -144,7 +138,7 @@ public class CrystalRespawnPhase extends AbstractDragonSittingPhase {
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 		int spawned = 0;
 		for (SpikeFeature.EndSpike spike : spikes) {
-			if (!dragon.level().getEntitiesOfClass(Shulker.class, spike.getTopBoundingBox()).isEmpty())
+			if (dragon.level().getEntitiesOfClass(Shulker.class, spike.getTopBoundingBox()).isEmpty())
 				continue;
 			this.addCrystalRespawn(spike);
 			if (++spawned >= crystalsToRespawn)

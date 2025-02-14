@@ -84,7 +84,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
             }
         }
         else if (this.prepareBlowUpTime <= -10) {
-            this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
+            this.dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
             this.dragon.getPersistentData().putInt(DragonAttack.FORCE_CHARGE_TAG, 5);
         }
         else {

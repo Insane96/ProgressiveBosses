@@ -199,10 +199,10 @@ public class DragonFeature extends Feature {
             return;
         }
 
-        if (DragonAttack.onPhaseChange(event, event.getDragon(), stats.get()))
+        if (DragonCrystal.onPhaseChange(event, event.getDragon(), stats.get()))
             return;
 
-        if (DragonCrystal.onPhaseChange(event, event.getDragon(), stats.get()))
+        if (DragonAttack.onPhaseChange(event, event.getDragon(), stats.get()))
             return;
     }
 
