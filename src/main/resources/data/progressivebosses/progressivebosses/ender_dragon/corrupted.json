@@ -33,8 +33,8 @@
     "minion": {
         "health": 20,
         "spawned": 1,
-        "min_cooldown": 1200,
-        "max_cooldown": 1600,
+        "min_cooldown": 1000,
+        "max_cooldown": 1400,
         "blinding_chance": 0.4,
         "blinding_duration": 150
     },
