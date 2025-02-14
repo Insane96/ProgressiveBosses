@@ -3,11 +3,11 @@ package insane96mcp.progressivebosses.module.dragon.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -33,7 +33,6 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -45,7 +44,7 @@ public class DragonCrystal {
     public static final String PHANTOM_CRYSTAL = ProgressiveBosses.RESOURCE_PREFIX + "crystal";
 
     private static final ResourceLocation ENDERGETIC_CRYSTAL_HOLDER = new ResourceLocation("endergetic:crystal_holder");
-    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = Arrays.asList(EnderDragonPhase.SITTING_FLAMING, EnderDragonPhase.HOLDING_PATTERN, EnderDragonPhase.TAKEOFF);
+    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = List.of(DragonBlastAttackPhase.getPhaseType());
     public int cages;
     public int bonusCrystals;
     public int crystalsRespawned;
@@ -163,38 +162,13 @@ public class DragonCrystal {
 
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
 
-        //0% when health >= 80%, 20% when health <= 0%
         float chance = getChanceAtValue(healthRatio, stats.crystal.respawnCrystalsBelowHealth, stats.crystal.maxRespawnChanceAtHealth, 0, stats.crystal.maxRespawnChance);
-        if (event.getOldPhase() == EnderDragonPhase.SITTING_FLAMING)
-            chance *= 2;
 
         if (dragon.getRandom().nextFloat() > chance)
             return false;
 
-        //dragonTags.putByte(CRYSTAL_RESPAWN, (byte) (crystalRespawn + 1));
-
         event.setNewPhase(CrystalRespawnPhase.getPhaseType());
         return true;
-    }
-
-    public static void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon, DragonStats stats) {
-        double crystalsToRespawn = stats.crystal.crystalsRespawned;
-        crystalsToRespawn = MathHelper.getAmountWithDecimalChance(dragon.getRandom(), crystalsToRespawn);
-        if (crystalsToRespawn == 0d)
-            return;
-
-        if (!(event.getPhaseInstance() instanceof CrystalRespawnPhase phase))
-            return;
-        List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level()));
-        spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
-        int spawned = 0;
-        for (SpikeFeature.EndSpike spike : spikes) {
-            if (!dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox(), EndCrystal::showsBottom).isEmpty())
-                continue;
-            phase.addCrystalRespawn(spike);
-            if (++spawned >= crystalsToRespawn)
-                break;
-        }
     }
 
     public static boolean onCrystalDamagedByExplosion(DamageSource source) {

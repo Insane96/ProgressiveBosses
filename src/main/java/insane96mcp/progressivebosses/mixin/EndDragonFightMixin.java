@@ -7,6 +7,7 @@ import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -79,5 +80,10 @@ public class EndDragonFightMixin {
 				|| !DragonFeature.dragonEggPerDragon)
 			return previouslyKilled;
 		return false;
+	}
+
+	@Inject(method = "onCrystalDestroyed", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;updateCrystalCount()V", shift = At.Shift.AFTER))
+	public void progressivebosses$onTryPlaceEgg(EndCrystal pCrystal, DamageSource pDmgSrc, CallbackInfo ci) {
+		DragonFeature.onCrystalDestroyed((EndDragonFight) (Object) this, pCrystal, pDmgSrc);
 	}
 }

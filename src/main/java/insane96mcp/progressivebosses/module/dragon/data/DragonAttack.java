@@ -99,6 +99,10 @@ public class DragonAttack {
     private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_PHASES_TO_CHARGE = List.of(EnderDragonPhase.CHARGING_PLAYER, PBDragonStrafePlayerPhase.getPhaseType(), EnderDragonPhase.HOLDING_PATTERN);
     private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_PHASES_TO_STRAFE_PLAYER = List.of(EnderDragonPhase.CHARGING_PLAYER, PBDragonStrafePlayerPhase.getPhaseType(), EnderDragonPhase.HOLDING_PATTERN);
 
+    public static final String FORCE_CHARGE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_charge";
+    public static final String FORCE_STRAFE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_strafe";
+    public static final String FORCE_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_blast";
+
     public static void onHurtLiving(LivingHurtEvent event) {
         onDirectDamage(event);
         onAcidDamage(event);
@@ -172,6 +176,11 @@ public class DragonAttack {
     }
 
     private static boolean shouldChargePlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
+        int forceCharge = dragon.getPersistentData().getInt(FORCE_CHARGE_TAG);
+        if (forceCharge > 0 && event.getNewPhase() != EnderDragonPhase.DYING) {
+            dragon.getPersistentData().putInt(FORCE_CHARGE_TAG, forceCharge - 1);
+            return true;
+        }
         if (!VALID_PHASES_TO_CHARGE.contains(event.getOldPhase()))
             return false;
         double chance = stats.attack.chargeChance.getValue(dragon);
@@ -195,6 +204,11 @@ public class DragonAttack {
     }
 
     private static boolean shouldStrafe(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
+        int forceStrafe = dragon.getPersistentData().getInt(FORCE_STRAFE_TAG);
+        if (forceStrafe > 0 && event.getNewPhase() != EnderDragonPhase.DYING) {
+            dragon.getPersistentData().putInt(FORCE_STRAFE_TAG, forceStrafe - 1);
+            return true;
+        }
         if (!VALID_PHASES_TO_STRAFE_PLAYER.contains(event.getOldPhase()))
             return false;
         double chance = stats.attack.strafeChance.getValue(dragon);

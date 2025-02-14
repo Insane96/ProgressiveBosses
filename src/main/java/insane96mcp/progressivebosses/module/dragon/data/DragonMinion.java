@@ -39,7 +39,9 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -113,6 +115,27 @@ public class DragonMinion {
 
         if (event.getSource().getEntity() instanceof EnderDragon)
             event.setAmount(event.getAmount() * 0.1f);
+    }
+
+    @SubscribeEvent
+    public void onMinionDeath(LivingDeathEvent event) {
+        if (!(event.getEntity() instanceof Shulker shulker)
+                || shulker.level().isClientSide)
+            return;
+
+        CompoundTag compoundNBT = shulker.getPersistentData();
+        if (!compoundNBT.contains(DRAGON_MINION))
+            return;
+
+        List<? extends EnderDragon> dragons = ((ServerLevel) shulker.level()).getDragons();
+        if (dragons.isEmpty())
+            return;
+        EnderDragon dragon = dragons.get(0);
+        DragonStats stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        if (stats == null)
+            return;
+
+        dragon.getPersistentData().putInt(DragonAttack.FORCE_STRAFE_TAG, dragon.getPersistentData().getInt(DragonAttack.FORCE_STRAFE_TAG + 1));
     }
 
     public static void setupMinionCooldown(EnderDragon dragon, DragonStats stats) {
@@ -199,7 +222,7 @@ public class DragonMinion {
                 toRemove.add(goal.getGoal());
         });
         toRemove.forEach(shulker.goalSelector::removeGoal);
-        shulker.goalSelector.addGoal(4, new DragonMinionAttackGoal(shulker, 500));
+        shulker.goalSelector.addGoal(4, new DragonMinionAttackGoal(shulker, 600));
 
         toRemove.clear();
         shulker.targetSelector.availableGoals.forEach(goal -> {

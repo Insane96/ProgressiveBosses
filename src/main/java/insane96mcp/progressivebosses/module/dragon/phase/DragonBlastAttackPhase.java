@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
+import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -78,14 +79,14 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
                     living.hurtMarked = true;
                 entity.hurt(this.dragon.damageSources().explosion(this.dragon, this.dragon), 12f);
             }
-            //((ServerLevel) this.dragon.level()).sendParticles(ParticleTypes.DRAGON_BREATH, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(), 4000, 12, 12, 12, 1.0D);
             for (int i = 0; i < 8; i++) {
                 this.dragon.level().playSound(null, this.dragon.getX() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getY() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getZ() + this.dragon.getRandom().nextFloat() * 48f - 24f, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 4f, 0.7f);
-                //this.dragon.playSound(SoundEvents.GENERIC_EXPLODE, 4f, 0.7f);
             }
         }
-        else if (this.prepareBlowUpTime <= -10)
+        else if (this.prepareBlowUpTime <= -10) {
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
+            this.dragon.getPersistentData().putInt(DragonAttack.FORCE_CHARGE_TAG, 5);
+        }
         else {
             if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 20) {
                 this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f + (100 - this.prepareBlowUpTime) * 0.01f);

@@ -1,6 +1,6 @@
 {
     "level": 1,
-    "max_sitting_damage_received": 0.10,
+    "max_sitting_damage_received": 0.15,
     "roar_time": 20,
     "sitting_scanning_idle_time": 40,
     "sitting_flaming_time": 60,
@@ -21,13 +21,13 @@
     "crystal": {
         "cages": 6,
         "bonus_crystals": 3,
-        "crystals_respawned": 3,
-        "time_to_respawn": 60,
+        "crystals_respawned": 6,
+        "time_to_respawn": 50,
         "phantom_count": 3,
         "phantom_size": 5,
         "respawn_caged_chance": 0.5,
         "respawn_crystals_below_health": 0.8,
-        "max_respawn_chance": 0.15,
+        "max_respawn_chance": 0.50,
         "max_respawn_chance_at_health": 0
     },
     "minion": {
@@ -35,19 +35,19 @@
         "spawned": 1,
         "min_cooldown": 1000,
         "max_cooldown": 1400,
-        "blinding_chance": 0.4,
+        "blinding_chance": 0,
         "blinding_duration": 150
     },
     "attack": {
         "melee_damage_dealt_multiplier": 2.7,
         "acid_damage_dealt_multiplier": 2.2,
         "charge_chance": {
-            "base": 0.25,
+            "base": 0.5,
             "with_no_crystals_left": 0.5
         },
         "strafe_chance": {
-            "base": 0.5,
-            "with_no_crystals_left": 0.25
+            "base": 0.25,
+            "with_no_crystals_left": 0.5
         },
         "acidball_speed_multiplier": 2.5,
         "acidball_impact_damage": 12,
