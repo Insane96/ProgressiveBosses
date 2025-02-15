@@ -5,8 +5,6 @@ import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraftforge.event.entity.living.LivingEvent;
 
-import javax.annotation.Nullable;
-
 public abstract class DragonPhaseEvent extends LivingEvent {
     EnderDragon dragon;
 
@@ -23,11 +21,10 @@ public abstract class DragonPhaseEvent extends LivingEvent {
      * Triggered when a dragon is about to change phase. Called server side only. Can be used to change which new phase will begin
      */
     public static class Change extends DragonPhaseEvent {
-        @Nullable
         EnderDragonPhase<?> oldPhase;
         EnderDragonPhase<?> newPhase;
 
-        public Change(EnderDragon dragon, @Nullable EnderDragonPhase<?> oldPhase, EnderDragonPhase<?> newPhase) {
+        public Change(EnderDragon dragon, EnderDragonPhase<?> oldPhase, EnderDragonPhase<?> newPhase) {
             super(dragon);
             this.oldPhase = oldPhase;
             this.newPhase = newPhase;

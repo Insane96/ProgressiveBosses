@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.mojang.logging.LogUtils;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import net.minecraft.core.Vec3i;
@@ -77,24 +78,29 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         double distanceFromTarget = this.attackTarget.distanceToSqr(this.dragon.head);
         double dX = this.attackTarget.getX() - this.dragon.getX();
         double dZ = this.attackTarget.getZ() - this.dragon.getZ();
-        double distanceXZ = Math.sqrt(dX * dX + dZ * dZ);
-        double distanceY = Math.abs(this.attackTarget.getY() - this.dragon.getY());
         if (this.fireballCharge >= 5 && angleToTarget >= 0.0F && angleToTarget < 10.0F) {
-            Vec3 vec32 = this.dragon.getViewVector(1.0F);
-            double headXOffset = this.dragon.head.getX() - vec32.x;
-            double headYOffset = this.dragon.head.getY(0.5D) + 0.5D;
-            double headZOffset = this.dragon.head.getZ() - vec32.z;
-            double targetXOffset = this.attackTarget.getX() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headXOffset;
-            double targetYOffset = this.attackTarget.getY() - headYOffset;
-            double targetZOffset = this.attackTarget.getZ() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headZOffset;
-            if (!this.dragon.isSilent())
-                this.dragon.level().levelEvent(null, 1017, this.dragon.blockPosition(), 0);
+            int spawned = 1;
+            if (DragonAnger.isAngered(this.dragon))
+                spawned = 3;
+            for (int i = 0; i < spawned; i++) {
+                Vec3 vec32 = this.dragon.getViewVector(1.0F);
+                double headXOffset = this.dragon.head.getX() - vec32.x;
+                double headYOffset = this.dragon.head.getY(0.5D) + 0.5D;
+                double headZOffset = this.dragon.head.getZ() - vec32.z;
+                double targetXOffset = this.attackTarget.getX() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headXOffset;
+                double targetYOffset = this.attackTarget.getY() - headYOffset;
+                double targetZOffset = this.attackTarget.getZ() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headZOffset;
+                if (!this.dragon.isSilent())
+                    this.dragon.level().levelEvent(null, 1017, this.dragon.blockPosition(), 0);
 
-            DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, targetXOffset, targetYOffset, targetZOffset);
-            DragonAttack.setAcidBallSpeedMultiplier(dragonfireball);
-            dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
-            this.dragon.level().addFreshEntity(dragonfireball);
+                DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, targetXOffset, targetYOffset, targetZOffset);
+                DragonAttack.setAcidBallSpeedMultiplier(dragonfireball);
+                dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
+                this.dragon.level().addFreshEntity(dragonfireball);
+            }
             this.fireballCharge = 3;
+            if (DragonAnger.isAngered(this.dragon))
+                this.fireballCharge = -5;
 
             if (--this.fireballsToShoot <= 0)
                 this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);

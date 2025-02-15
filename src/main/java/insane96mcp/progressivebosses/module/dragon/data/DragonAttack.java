@@ -25,7 +25,6 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.DragonFireball;
@@ -96,9 +95,6 @@ public class DragonAttack {
             return jsonObject;
         }
     }
-
-    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_PHASES_TO_CHARGE = List.of(EnderDragonPhase.CHARGING_PLAYER, PBDragonStrafePlayerPhase.getPhaseType(), EnderDragonPhase.HOLDING_PATTERN);
-    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_PHASES_TO_STRAFE_PLAYER = List.of(EnderDragonPhase.CHARGING_PLAYER, PBDragonStrafePlayerPhase.getPhaseType(), EnderDragonPhase.HOLDING_PATTERN);
 
     private static final String FORCE_CHARGE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_charge";
     private static final String FORCE_STRAFE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_strafe";
@@ -189,6 +185,8 @@ public class DragonAttack {
         double chance = stats.attack.chargeChance.getValue(dragon);
         if (chance == 0f)
             return false;
+        if (DragonAnger.isAngered(dragon))
+            chance *= 2f;
 
         return dragon.getRandom().nextDouble() < chance;
     }
@@ -223,6 +221,10 @@ public class DragonAttack {
             return true;
 
         double chance = stats.attack.strafeChance.getValue(dragon);
+        if (chance == 0f)
+            return false;
+        if (DragonAnger.isAngered(dragon))
+            chance *= 2f;
         return dragon.getRandom().nextDouble() < chance;
     }
 
@@ -249,7 +251,8 @@ public class DragonAttack {
     }
 
     public static void blast(DragonPhaseEvent.Change event, EnderDragon dragon) {
-        if (dragon.getPhaseManager().getPhase(event.getNewPhase()).isSitting() && event.getOldPhase() != EnderDragonPhase.HOVERING) {
+        if (event.getOldPhase() != EnderDragonPhase.HOVERING &&
+                (dragon.getPhaseManager().getPhase(event.getOldPhase()).isSitting() || dragon.getPhaseManager().getPhase(event.getNewPhase()).isSitting())) {
             event.setNewPhase(DragonBlastAttackPhase.getPhaseType());
             setForcedToBlast(dragon, false);
         }

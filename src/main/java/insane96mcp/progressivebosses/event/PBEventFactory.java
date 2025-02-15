@@ -5,10 +5,8 @@ import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraftforge.common.MinecraftForge;
 
-import javax.annotation.Nullable;
-
 public class PBEventFactory {
-    public static EnderDragonPhase<?> onDragonChangePhase(EnderDragon dragon, @Nullable EnderDragonPhase<?> currentPhase, EnderDragonPhase<?> newPhase) {
+    public static EnderDragonPhase<?> onDragonChangePhase(EnderDragon dragon,EnderDragonPhase<?> currentPhase, EnderDragonPhase<?> newPhase) {
         DragonPhaseEvent.Change event = new DragonPhaseEvent.Change(dragon, currentPhase, newPhase);
         MinecraftForge.EVENT_BUS.post(event);
         return event.getNewPhase();

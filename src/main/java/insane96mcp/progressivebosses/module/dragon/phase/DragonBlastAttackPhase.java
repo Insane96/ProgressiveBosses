@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
-import insane96mcp.progressivebosses.module.dragon.data.DragonCrystal;
+import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -86,8 +86,8 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
             }
         }
         else if (this.prepareBlowUpTime <= -10) {
-            if (!DragonCrystal.tryRespawnCrystals(this.dragon))
-                this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
+            DragonAnger.setAngered(this.dragon, true);
+            this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
         }
         else {
             if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 20) {

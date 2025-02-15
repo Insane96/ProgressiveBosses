@@ -29,7 +29,7 @@ public class DragonValue {
             return this.withNoCrystalsLeft;
         else if (crystalsLeft >= BASE_CRYSTALS)
             return this.base;
-        return (this.withNoCrystalsLeft - this.base) * ((float) crystalsLeft / BASE_CRYSTALS) + this.base;
+        return this.base - (this.withNoCrystalsLeft - this.base) * ((float) crystalsLeft / BASE_CRYSTALS) + this.base;
     }
 
     public int getIntValue(EnderDragon dragon) {

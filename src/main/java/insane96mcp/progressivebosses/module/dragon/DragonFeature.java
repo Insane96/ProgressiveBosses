@@ -104,12 +104,12 @@ public class DragonFeature extends Feature {
         if (!dragon.getPersistentData().contains(LEVEL))
             dragon.getPersistentData().putByte(LEVEL, dragonLvl);
 
-        Optional<DragonStats> stats = getDragonStats(dragon);
-        if (stats.isEmpty()) {
+        DragonStats stats = getDragonStats(dragon).orElse(null);
+        if (stats == null) {
             LogHelper.warn("Failed to get Dragon Stats for level %s", dragon.getPersistentData().getByte(LEVEL));
             return;
         }
-        DragonStats.apply(dragon, stats.get());
+        DragonStats.apply(dragon, stats);
         dragon.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(dragon.getType())) + "." + dragon.getPersistentData().getByte(LEVEL)));
         dragon.getPersistentData().putBoolean(ProgressiveBosses.RESOURCE_PREFIX + "processed", true);
     }
@@ -145,6 +145,9 @@ public class DragonFeature extends Feature {
         DragonLarva.tickLarva(dragon);
         DragonMinion.tickMinion(dragon);
         tryDropEggPerPlayer(dragon);
+
+        if (dragon.tickCount % 20 == 0)
+            DragonAnger.tickAnger(dragon);
     }
 
     private static void tryDropEggPerPlayer(EnderDragon dragon) {
@@ -202,10 +205,6 @@ public class DragonFeature extends Feature {
             return;*/
     }
 
-    public static float flySpeedMultiplier() {
-        return 1.5f;
-    }
-
     public static void onCrystalDestroyed(EndDragonFight fight, EndCrystal crystal, DamageSource damageSource) {
         if (!(crystal.level() instanceof ServerLevel serverLevel)
                 || fight.getDragonUUID() == null)
@@ -214,8 +213,11 @@ public class DragonFeature extends Feature {
         EnderDragon dragon = (EnderDragon) serverLevel.getEntity(fight.getDragonUUID());
         if (dragon == null)
             return;
+        DragonStats stats = getDragonStats(dragon).orElse(null);
+        if (stats == null)
+            return;
         if (fight.getCrystalsAlive() > 0)
-            DragonAttack.setForcedToStrafe(dragon, DragonAttack.getForcedToStrafe(dragon) + 1);
+            DragonAnger.onCrystalDestroyed(dragon, stats);
         else
             DragonAttack.setForcedToBlast(dragon, true);
     }
@@ -237,19 +239,20 @@ public class DragonFeature extends Feature {
 
         DragonMinion.onMinionHurt(event);
         DragonCrystal.onPhantomHurt(event);
-        onDragonHurt(event);
         DragonAttack.onHurtLiving(event);
+        onDragonHurt(event);
     }
 
     public void onDragonHurt(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon))
             return;
 
-        Optional<DragonStats> stats = getDragonStats(dragon);
-        if (stats.isEmpty())
+        DragonStats stats = getDragonStats(dragon).orElse(null);
+        if (stats == null)
             return;
 
-        DragonVulnerabilities.damageMultipliers(event, dragon, stats.get());
+        DragonVulnerabilities.damageMultipliers(event, dragon, stats);
+        DragonAnger.onHurt(event, dragon, stats);
     }
 
     public static Optional<DragonStats> getDragonStats(EnderDragon dragon) {

@@ -187,7 +187,6 @@ public class DragonMinion {
                 break;
             }
         }
-        DragonAttack.setForcedToBlast(dragon, true);
     }
 
     public static void summonMinion(Level world, Vec3 pos, byte lvl, DragonMinion minioStats) {
