@@ -53,13 +53,6 @@ public class CorruptedEndCrystal extends EndCrystal {
 
     public void tick() {
         ++this.time;
-        /*if (this.level() instanceof ServerLevel) {
-            BlockPos blockpos = this.blockPosition();
-            if (((ServerLevel)this.level()).getDragonFight() != null && this.level().getBlockState(blockpos).isAir()) {
-                this.level().setBlockAndUpdate(blockpos, BaseFireBlock.getState(this.level(), blockpos));
-            }
-        }*/
-
     }
 
     public ItemStack getPickResult() {

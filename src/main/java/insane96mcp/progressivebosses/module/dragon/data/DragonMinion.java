@@ -135,7 +135,7 @@ public class DragonMinion {
         if (stats == null)
             return;
 
-        dragon.getPersistentData().putInt(DragonAttack.FORCE_STRAFE_TAG, dragon.getPersistentData().getInt(DragonAttack.FORCE_STRAFE_TAG + 1));
+        DragonAttack.setForcedToStrafe(dragon, DragonAttack.getForcedToStrafe(dragon) + 1);
     }
 
     public static void setupMinionCooldown(EnderDragon dragon, DragonStats stats) {

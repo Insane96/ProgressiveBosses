@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.mojang.logging.LogUtils;
-import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
@@ -22,7 +21,7 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 
 public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
-    private static EnderDragonPhase<PBDragonStrafePlayerPhase> STRAFE_PLAYER;
+    private static EnderDragonPhase<PBDragonStrafePlayerPhase> PHASE;
 
     public static final Logger LOGGER = LogUtils.getLogger();
     public int fireballsToShoot = 0;
@@ -80,7 +79,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         double dZ = this.attackTarget.getZ() - this.dragon.getZ();
         double distanceXZ = Math.sqrt(dX * dX + dZ * dZ);
         double distanceY = Math.abs(this.attackTarget.getY() - this.dragon.getY());
-        if (this.fireballCharge >= 5 && angleToTarget >= 0.0F && angleToTarget < 10.0F && distanceXZ > 15 & distanceY > 5) {
+        if (this.fireballCharge >= 5 && angleToTarget >= 0.0F && angleToTarget < 10.0F) {
             Vec3 vec32 = this.dragon.getViewVector(1.0F);
             double headXOffset = this.dragon.head.getX() - vec32.x;
             double headYOffset = this.dragon.head.getY(0.5D) + 0.5D;
@@ -96,11 +95,6 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
             dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
             this.dragon.level().addFreshEntity(dragonfireball);
             this.fireballCharge = 3;
-            /*if (this.currentPath != null) {
-                while (!this.currentPath.isDone()) {
-                    this.currentPath.advance();
-                }
-            }*/
 
             if (--this.fireballsToShoot <= 0)
                 this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
@@ -134,7 +128,8 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
                 newNode += 12;
             }
 
-            this.currentPath = this.dragon.findPath(closestNode, newNode, null);
+            Node andThen = this.attackTarget != null ? new Node(this.attackTarget.getBlockX(), this.attackTarget.getBlockY(), this.attackTarget.getBlockZ()) : null;
+            this.currentPath = this.dragon.findPath(closestNode, newNode, andThen);
             if (this.currentPath != null) {
                 this.currentPath.advance();
             }
@@ -203,18 +198,14 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
     }
 
     public EnderDragonPhase<PBDragonStrafePlayerPhase> getPhase() {
-        return STRAFE_PLAYER;
+        return PHASE;
     }
 
     public static EnderDragonPhase<PBDragonStrafePlayerPhase> getPhaseType() {
-        return STRAFE_PLAYER;
+        return PHASE;
     }
 
     public static void init() {
-        STRAFE_PLAYER = EnderDragonPhase.create(PBDragonStrafePlayerPhase.class, "PBStrafePlayer");
-    }
-
-    public static void convertToPBStrafe(DragonPhaseEvent event) {
-
+        PHASE = EnderDragonPhase.create(PBDragonStrafePlayerPhase.class, "PBStrafePlayer");
     }
 }

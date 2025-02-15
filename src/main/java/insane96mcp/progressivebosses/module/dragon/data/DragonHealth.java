@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -54,6 +55,9 @@ public class DragonHealth {
 
         float heal = this.crystalRegeneration;
         heal /= 2f;
+
+        if (crystal instanceof CorruptedEndCrystal)
+            heal *= 2f;
 
         if (dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= this.regenWhenHitDuration)
             heal *= this.regenWhenHitRatio;

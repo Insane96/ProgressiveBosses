@@ -7,6 +7,7 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.mixin.ProjectileInvoker;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -99,9 +100,9 @@ public class DragonAttack {
     private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_PHASES_TO_CHARGE = List.of(EnderDragonPhase.CHARGING_PLAYER, PBDragonStrafePlayerPhase.getPhaseType(), EnderDragonPhase.HOLDING_PATTERN);
     private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_PHASES_TO_STRAFE_PLAYER = List.of(EnderDragonPhase.CHARGING_PLAYER, PBDragonStrafePlayerPhase.getPhaseType(), EnderDragonPhase.HOLDING_PATTERN);
 
-    public static final String FORCE_CHARGE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_charge";
-    public static final String FORCE_STRAFE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_strafe";
-    public static final String FORCE_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_blast";
+    private static final String FORCE_CHARGE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_charge";
+    private static final String FORCE_STRAFE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_strafe";
+    private static final String FORCE_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_blast";
 
     public static void onHurtLiving(LivingHurtEvent event) {
         onDirectDamage(event);
@@ -148,41 +149,44 @@ public class DragonAttack {
         acidball.zPower *= stats.get().attack.acidballSpeedMultiplier;
     }
 
-    public static boolean onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
-        if (dragon.isDeadOrDying())
-            return false;
-
-        //Replace vanilla Strafe Phase with PB one's
-        if (event.getNewPhase().equals(EnderDragonPhase.STRAFE_PLAYER))
-            event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
-
-        if (event.getOldPhase() == null)
-            return false;
-
-        boolean chargePlayer = shouldChargePlayer(event, dragon, stats);
-        boolean strafe = shouldStrafe(event, dragon, stats);
+    /**
+     * Returns true if the dragon has either strafed or charged the player
+     */
+    public static boolean onHoldingPatternEnd(EnderDragon dragon, DragonStats stats) {
+        boolean chargePlayer = shouldChargePlayer(dragon, stats);
+        boolean strafe = shouldStrafe(dragon, stats);
 
         if (chargePlayer && strafe)
             if (dragon.getRandom().nextBoolean())
-                chargePlayer(event, dragon, stats);
+                chargePlayer(dragon);
             else
-                strafePlayer(event, dragon, stats);
+                strafePlayer(dragon);
         else if (chargePlayer)
-            chargePlayer(event, dragon, stats);
+            chargePlayer(dragon);
         else if (strafe)
-            strafePlayer(event, dragon, stats);
+            strafePlayer(dragon);
 
         return chargePlayer || strafe;
     }
 
-    private static boolean shouldChargePlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
-        int forceCharge = dragon.getPersistentData().getInt(FORCE_CHARGE_TAG);
-        if (forceCharge > 0 && event.getNewPhase() != EnderDragonPhase.DYING) {
-            dragon.getPersistentData().putInt(FORCE_CHARGE_TAG, forceCharge - 1);
+    public static boolean isForcedToCharge(EnderDragon dragon) {
+        return getForcedToCharge(dragon) > 0;
+    }
+
+    public static int getForcedToCharge(EnderDragon dragon) {
+        return dragon.getPersistentData().getInt(FORCE_CHARGE_TAG);
+    }
+
+    public static void setForcedToCharge(EnderDragon dragon, int forcedToCharge) {
+        dragon.getPersistentData().putInt(FORCE_CHARGE_TAG, forcedToCharge);
+    }
+
+    public static boolean shouldChargePlayer(EnderDragon dragon, DragonStats stats) {
+        if (isForcedToCharge(dragon)) {
+            setForcedToCharge(dragon, getForcedToCharge(dragon) - 1);
             return true;
         }
-        if (!VALID_PHASES_TO_CHARGE.contains(event.getOldPhase()))
-            return false;
+
         double chance = stats.attack.chargeChance.getValue(dragon);
         if (chance == 0f)
             return false;
@@ -190,43 +194,66 @@ public class DragonAttack {
         return dragon.getRandom().nextDouble() < chance;
     }
 
-    private static void chargePlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
+    public static void chargePlayer(EnderDragon dragon) {
         if (!isPlayerInRange(dragon.level(), 64))
             return;
 
-        event.setNewPhase(EnderDragonPhase.CHARGING_PLAYER);
+        dragon.getPhaseManager().setPhase(EnderDragonPhase.CHARGING_PLAYER);
         Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 64);
         if (player == null)
             return;
-        if (event.getOldPhase() == event.getNewPhase())
-            dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).begin();
         dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());
     }
 
-    private static boolean shouldStrafe(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
-        int forceStrafe = dragon.getPersistentData().getInt(FORCE_STRAFE_TAG);
-        if (forceStrafe > 0 && event.getNewPhase() != EnderDragonPhase.DYING) {
-            dragon.getPersistentData().putInt(FORCE_STRAFE_TAG, forceStrafe - 1);
+    public static boolean isForcedToStrafe(EnderDragon dragon) {
+        return getForcedToStrafe(dragon) > 0;
+    }
+
+    public static int getForcedToStrafe(EnderDragon dragon) {
+        return dragon.getPersistentData().getInt(FORCE_STRAFE_TAG);
+    }
+
+    public static void setForcedToStrafe(EnderDragon dragon, int forcedToStrafe) {
+        dragon.getPersistentData().putInt(FORCE_STRAFE_TAG, forcedToStrafe);
+    }
+
+    public static boolean shouldStrafe(EnderDragon dragon, DragonStats stats) {
+        if (isForcedToStrafe(dragon)) {
+            setForcedToStrafe(dragon, getForcedToStrafe(dragon) - 1);
             return true;
         }
-        if (!VALID_PHASES_TO_STRAFE_PLAYER.contains(event.getOldPhase()))
-            return false;
-        double chance = stats.attack.strafeChance.getValue(dragon);
 
+        double chance = stats.attack.strafeChance.getValue(dragon);
         return dragon.getRandom().nextDouble() < chance;
     }
 
-    private static void strafePlayer(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
+    public static void strafePlayer(EnderDragon dragon) {
         if (!isPlayerInRange(dragon.level(), 64))
             return;
 
-        event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
+        dragon.getPhaseManager().setPhase(PBDragonStrafePlayerPhase.getPhaseType());
         Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 64);
         if (player == null)
             return;
-        if (event.getOldPhase() == event.getNewPhase())
-            dragon.getPhaseManager().getPhase(PBDragonStrafePlayerPhase.getPhaseType()).begin();
+
         dragon.getPhaseManager().getPhase(PBDragonStrafePlayerPhase.getPhaseType()).setTarget(player);
+    }
+
+    public static boolean isForcedToBlast(EnderDragon dragon) {
+        return dragon.getPersistentData().getBoolean(FORCE_BLAST_TAG);
+    }
+
+    public static void setForcedToBlast(EnderDragon dragon, boolean forcedToBlast) {
+        dragon.getPersistentData().putBoolean(FORCE_BLAST_TAG, forcedToBlast);
+    }
+
+    public static void blast(DragonPhaseEvent.Change event, EnderDragon dragon) {
+        if (dragon.getPhaseManager().getPhase(event.getNewPhase()).isSitting() && event.getOldPhase() != EnderDragonPhase.HOVERING) {
+            event.setNewPhase(DragonBlastAttackPhase.getPhaseType());
+            setForcedToBlast(dragon, false);
+        }
+        else if (event.getNewPhase() != EnderDragonPhase.LANDING)
+            event.setNewPhase(EnderDragonPhase.LANDING_APPROACH);
     }
 
     public static boolean isPlayerInRange(Level level, int range) {

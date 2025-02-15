@@ -6,8 +6,8 @@
     "sitting_flaming_time": 60,
     "health": {
         "health": 800.0,
-        "regeneration": 0.5,
-        "crystal_regeneration": 2.5,
+        "regeneration": 0,
+        "crystal_regeneration": 3,
         "regen_when_hit_ratio": 0.6,
         "regen_when_hit_duration": 50
     },

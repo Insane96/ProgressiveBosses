@@ -35,6 +35,11 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 		return stats.map(dragonStats -> dragonStats.sittingFlamingTime).orElse(original);
 	}
 
+	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=10", ordinal = 0))
+	public int progressivebosses$timeBeforeSummonCloud(int original) {
+		return 0;
+	}
+
 	@ModifyArg(method = "doServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/AreaEffectCloud;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;)V"))
 	public MobEffectInstance cloudBreathEffect(MobEffectInstance pEffectInstance) {
 		if (!Feature.isEnabled(DragonFeature.class)

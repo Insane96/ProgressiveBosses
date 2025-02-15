@@ -4,7 +4,6 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
@@ -150,16 +149,10 @@ public class DragonCrystal {
         level.addFreshEntity(crystal);
     }
 
-    /**
-     * Returns true if the phase has been changed
-     */
-    public static boolean onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
-        if (dragon.isDeadOrDying())
+    public static boolean tryRespawnCrystals(EnderDragon dragon) {
+        DragonStats stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        if (stats == null)
             return false;
-        if (event.getOldPhase() != null
-                && !VALID_CRYSTAL_RESPAWN_PHASES.contains(event.getOldPhase()))
-            return false;
-
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
 
         float chance = getChanceAtValue(healthRatio, stats.crystal.respawnCrystalsBelowHealth, stats.crystal.maxRespawnChanceAtHealth, 0, stats.crystal.maxRespawnChance);
@@ -167,7 +160,7 @@ public class DragonCrystal {
         if (dragon.getRandom().nextFloat() > chance)
             return false;
 
-        event.setNewPhase(CrystalRespawnPhase.getPhaseType());
+        dragon.getPhaseManager().setPhase(CrystalRespawnPhase.getPhaseType());
         return true;
     }
 

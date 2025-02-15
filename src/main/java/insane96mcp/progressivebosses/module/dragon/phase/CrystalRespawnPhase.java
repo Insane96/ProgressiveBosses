@@ -3,8 +3,10 @@ package insane96mcp.progressivebosses.module.dragon.phase;
 import com.google.common.collect.ImmutableList;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
+import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -61,7 +63,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 				dragon.sittingDamageReceived = 0f;
 				return;
 			}
-			this.targetLocation = new Vec3(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight(), spikesToRespawn.get(0).getCenterZ() + 0.5);
+			this.targetLocation = new Vec3(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 1, spikesToRespawn.get(0).getCenterZ() + 0.5);
 		}
 
 		double distanceToTarget = this.targetLocation.distanceToSqr(dragon.getX(), dragon.getY(), dragon.getZ());
@@ -75,8 +77,12 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), (ServerLevel) this.dragon.level(), ((ServerLevel) this.dragon.level()).getChunkSource().getGenerator(), shouldBeGuarded ? yungRandom : this.dragon.getRandom(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
 			spike.guarded = wasGuarded;
 			EndCrystal crystal = this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).get(0);
-			crystal.setInvulnerable(false);
-			this.dragon.level().getEntitiesOfClass(Shulker.class, spike.getTopBoundingBox()).forEach(shulker -> shulker.die(this.dragon.damageSources().mobAttack(this.dragon)));
+			CorruptedEndCrystal corruptedEndCrystal = PBEntities.CORRUPTED_END_CRYSTAL.get().create(this.dragon.level());
+			corruptedEndCrystal.setPos(crystal.getX(), crystal.getY(), crystal.getZ());
+			corruptedEndCrystal.setShowBottom(true);
+			crystal.discard();
+			this.dragon.level().addFreshEntity(corruptedEndCrystal);
+			this.dragon.level().getEntitiesOfClass(Shulker.class, spike.getTopBoundingBox()).forEach(Entity::discard);
 			spikesToRespawn.remove(0);
 			if (this.spikesToRespawn.isEmpty())
 				LogHelper.info("No more crystals to respawn left");

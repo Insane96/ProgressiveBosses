@@ -29,7 +29,7 @@ public class DragonMinionAttackGoal extends Goal {
     public DragonMinionAttackGoal(Shulker shulker, int cooldown) {
         this.shulker = shulker;
         this.cooldown = cooldown;
-        this.toShoot = 4;
+        this.toShoot = 2;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 

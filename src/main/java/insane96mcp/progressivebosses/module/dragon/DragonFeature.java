@@ -10,7 +10,8 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.PBDragonHoldingPatternPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -47,7 +48,6 @@ public class DragonFeature extends Feature {
     public static final String LEVEL = ProgressiveBosses.RESOURCE_PREFIX + "level";
 
     public static final String HAS_KILLED_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "has_killed_dragon";
-    public static final String FORCE_LAND_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_land";
 
     @Config
     @Label(name = "Explosion Immune Crystals", description = "Crystals can no longer be destroyed by other explosions.")
@@ -181,29 +181,25 @@ public class DragonFeature extends Feature {
         if (!this.isEnabled())
             return;
 
-        Optional<DragonStats> stats = getDragonStats(event.getDragon());
-        if (stats.isEmpty())
+        DragonStats stats = getDragonStats(event.getDragon()).orElse(null);
+        if (stats == null)
             return;
 
-        if (event.getDragon().getPersistentData().contains(FORCE_LAND_TAG)) {
-            event.getDragon().getPersistentData().remove(FORCE_LAND_TAG);
-            event.setNewPhase(EnderDragonPhase.LANDING_APPROACH);
-            return;
-        }
+        //Replace vanilla Holding Pattern Phase with PB one's
+        if (event.getNewPhase() == EnderDragonPhase.HOLDING_PATTERN)
+            event.setNewPhase(PBDragonHoldingPatternPhase.getPhaseType());
+        //Replace vanilla Strafe Phase with PB one's
+        if (event.getNewPhase().equals(EnderDragonPhase.STRAFE_PLAYER))
+            event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
 
-        if ((event.getNewPhase() == EnderDragonPhase.TAKEOFF && event.getDragon().sittingDamageReceived == 0)
-                || (event.getOldPhase() != null && (event.getDragon().getPhaseManager().getPhase(event.getOldPhase()).isSitting() || event.getOldPhase() == EnderDragonPhase.LANDING) && event.getDragon().getPersistentData().contains(DragonAttack.FORCE_BLAST_TAG))) {
-            event.setNewPhase(DragonBlastAttackPhase.getPhaseType());
-            if (event.getDragon().getPersistentData().contains(DragonAttack.FORCE_BLAST_TAG))
-                event.getDragon().getPersistentData().remove(DragonAttack.FORCE_BLAST_TAG);
-            return;
-        }
+        if (event.getNewPhase() == EnderDragonPhase.TAKEOFF && event.getDragon().sittingDamageReceived == 0)
+            DragonAttack.setForcedToBlast(event.getDragon(), true);
 
-        if (DragonCrystal.onPhaseChange(event, event.getDragon(), stats.get()))
-            return;
+        if (DragonAttack.isForcedToBlast(event.getDragon()))
+            DragonAttack.blast(event, event.getDragon());
 
-        if (DragonAttack.onPhaseChange(event, event.getDragon(), stats.get()))
-            return;
+        /*if (DragonAttack.onPhaseChange(event, event.getDragon(), stats.get()))
+            return;*/
     }
 
     public static void onCrystalDestroyed(EndDragonFight fight, EndCrystal crystal, DamageSource damageSource) {
@@ -214,13 +210,10 @@ public class DragonFeature extends Feature {
         EnderDragon dragon = (EnderDragon) serverLevel.getEntity(fight.getDragonUUID());
         if (dragon == null)
             return;
-        if (fight.getCrystalsAlive() > 0) {
-            dragon.getPersistentData().putInt(DragonAttack.FORCE_STRAFE_TAG, dragon.getPersistentData().getInt(DragonAttack.FORCE_STRAFE_TAG + 1));
-        }
-        else {
-            dragon.getPersistentData().putBoolean(FORCE_LAND_TAG, true);
-            dragon.getPersistentData().putBoolean(DragonAttack.FORCE_BLAST_TAG, true);
-        }
+        if (fight.getCrystalsAlive() > 0)
+            DragonAttack.setForcedToCharge(dragon, DragonAttack.getForcedToCharge(dragon) + 1);
+        else
+            DragonAttack.setForcedToBlast(dragon, true);
     }
 
     @SubscribeEvent
