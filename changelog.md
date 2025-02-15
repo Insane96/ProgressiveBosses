@@ -1,23 +1,8 @@
 # Changelog
 
-* Remove Blinding Shulker Bullets
-
 ## Upcoming
 * Data packable Ender Dragon
-  * Ender Dragon now takes more damage on wings and neck
-  * Ender Dragon no longer drops an egg per player, instead every ender dragon now drops an egg
-  * Cages around crystals now generate during the respawn animation instead of the end
-  * Crystals are now respawned from the shortest one
-  * Arrows shot to the dragon when at the center will now get sent back (without fire)
-  * Ender Dragon now take 40% more damage from melee attacks when not at the center podium and 50% more damage when respawning crystals
-  * Small pillars with cages now have obsidian blocks below the corner to prevent breaking them from below
-  * Crystals attached to the dragon when destroyed now deal 20% of current health as damage (min 5%)
-  * Removed blindness minions. Any shulker now has a chance to fire a blinding bullet
-  * Minions now shoot 4 bullets before going into cooldown
-  * Minions now spawn on towers in place of crystals
-  * Removed ender dragon acid ball shotgun, now shoots them in rapid succession
-  * Ender Dragon now stays much less time at the center podium
-  * Respawning crystals now also summons some phantoms
+  * Reworked the whole fight
   * Added a new item tag `progressivebosses:dragon_invulnerable` making items in this tag invulnerable to dragon damage
   * Fixed Crystals destroyed on dragon respawning leaving behind fire
   * Fixed Vanilla bugs
@@ -30,12 +15,12 @@
     * Fixed Ender Dragon growl sound playing 20 times (making it really loud) when about to respawn and when at the center breathing (it's now 4 times)
     * Fixed Ender Dragon growl sound being played in a too small radius making it inaudible from ground level
     * Fixed head and neck placements and head size
-  * Much much more stuff that I didn't keep track of
 * Rebalancements
   * Wither Charge Attack now ignores armor
   * Ultimate wither charge attack damage slightly increased (12 -> 13)
   * Other wither's charge damage has been reduced (8 -> 6.5)
 * Enhanced a bit the wither's death explosion
+* Fixed wither not dropping items from default loot table
 
 ## Beta 4.2.1
 * Requires InsaneLib 1.15.0
