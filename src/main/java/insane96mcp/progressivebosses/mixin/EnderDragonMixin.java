@@ -18,11 +18,9 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhaseManager;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
@@ -49,6 +47,8 @@ public abstract class EnderDragonMixin extends Mob {
 	@Shadow public float flapTime;
 
 	@Shadow public abstract EnderDragonPhaseManager getPhaseManager();
+
+	@Shadow private @org.jetbrains.annotations.Nullable Player unlimitedLastHurtByPlayer;
 
 	protected EnderDragonMixin(EntityType<? extends Mob> type, Level worldIn) {
 		super(type, worldIn);
@@ -105,12 +105,41 @@ public abstract class EnderDragonMixin extends Mob {
 		if (!Feature.isEnabled(DragonFeature.class)
 				|| !DragonFeature.enableFixes)
 			return original;
-		return 0.1d;
+		return 0.08d;
+	}
+
+	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=0.06"))
+	public float progressivebosses$movementSpeedMultiplier(float original) {
+		return original * DragonFeature.flySpeedMultiplier();
+	}
+
+	@Unique
+	private DamageSource progressiveBosses$killerDamageSource;
+
+	@Inject(method = "tickDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V", shift = At.Shift.AFTER, ordinal = 1))
+	public void progressivebosses$dropDeathLoot(CallbackInfo ci) {
+		this.dropFromLootTable(progressiveBosses$killerDamageSource, false);
+		/*ResourceLocation resourcelocation = this.getLootTable();
+        //noinspection DataFlowIssue - Calling this inside !isClientSide check
+        LootTable loottable = this.level().getServer().getLootData().getLootTable(resourcelocation);
+		LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel)this.level())).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, progressiveBosses$killerDamageSource).withOptionalParameter(LootContextParams.KILLER_ENTITY, progressiveBosses$killerDamageSource.getEntity()).withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, progressiveBosses$killerDamageSource.getDirectEntity());
+		if (this.unlimitedLastHurtByPlayer != null)
+			lootparams$builder = lootparams$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.unlimitedLastHurtByPlayer).withLuck(this.unlimitedLastHurtByPlayer.getLuck());
+
+		LootParams lootparams = lootparams$builder.create(LootContextParamSets.ENTITY);
+		loottable.getRandomItems(lootparams, this.getLootTableSeed(), stack -> {
+
+		});*/
+	}
+
+	@Inject(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;setPhase(Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhase;)V", shift = At.Shift.AFTER, ordinal = 0))
+	public void progressivebosses$storeKillerDamageSource(EnderDragonPart pPart, DamageSource pSource, float pDamage, CallbackInfoReturnable<Boolean> cir) {
+		this.progressiveBosses$killerDamageSource = pSource;
 	}
 
 	@ModifyVariable(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "STORE", ordinal = 0), argsOnly = true)
 	public float onDamageAmount(float original, EnderDragonPart part, DamageSource source, float amount) {
-		if (!part.name.equals("wing") && !part.name.equals("neck"))
+		if (!part.name.equals("wing") && !part.name.equals("neck") && !part.name.equals("tail"))
 			return original;
 		return original * 1.5f;
 	}

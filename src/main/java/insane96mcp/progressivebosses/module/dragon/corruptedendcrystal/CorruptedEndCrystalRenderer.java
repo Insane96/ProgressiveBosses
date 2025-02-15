@@ -31,7 +31,7 @@ public class CorruptedEndCrystalRenderer extends EntityRenderer<CorruptedEndCrys
     private static final ResourceLocation END_CRYSTAL_LOCATION = new ResourceLocation(ProgressiveBosses.MOD_ID, "textures/entity/corrupted_end_crystal/corrupted_end_crystal.png");
     private static final RenderType RENDER_TYPE = RenderType.entityCutoutNoCull(END_CRYSTAL_LOCATION);
     public static final ResourceLocation CRYSTAL_BEAM_LOCATION = new ResourceLocation(ProgressiveBosses.MOD_ID, "textures/entity/corrupted_end_crystal/corrupted_end_crystal_beam.png");
-    private static final RenderType BEAM = RenderType.entitySmoothCutout(CRYSTAL_BEAM_LOCATION);
+    public static final RenderType BEAM = RenderType.entitySmoothCutout(CRYSTAL_BEAM_LOCATION);
     private static final float SIN_45 = (float)Math.sin((Math.PI / 4D));
     private static final String GLASS = "glass";
     private static final String BASE = "base";

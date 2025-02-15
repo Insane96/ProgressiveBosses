@@ -1,5 +1,12 @@
 # Changelog
 
+* Kill minions on dragon death
+* Angered
+  * Increase anger when hit (based off damage) and when crystals and minions are destroyed
+  * Heavily increased by destroying the last crystal
+  * Go to center and blow up when angered, when angered, there's an higher chance to charge and barrage and she flies faster?
+* Chance to blast
+
 ## Upcoming
 * Data packable Ender Dragon
   * Reworked the whole fight

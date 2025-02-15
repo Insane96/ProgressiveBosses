@@ -18,8 +18,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
-    private static EnderDragonPhase<DragonBlastAttackPhase> BLAST_ATTACK;
+    private static EnderDragonPhase<DragonBlastAttackPhase> PHASE;
     private int prepareBlowUpTime;
+
+    private static final int BLAST_TIME = 60;
 
     public DragonBlastAttackPhase(EnderDragon pDragon) {
         super(pDragon);
@@ -32,18 +34,18 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         double y = this.dragon.getY() + 2;
         double z = this.dragon.getZ();
         if (--this.prepareBlowUpTime > 30) {
-            for (int i = 0; i < 20 + (100 - this.prepareBlowUpTime) * 0.1; i++) {
+            for (int i = 0; i < 20 + (BLAST_TIME - this.prepareBlowUpTime) * 0.1; i++) {
                 double r = 24;
                 double v = r / 2f;
                 double x1 = x + random.nextFloat() * r - v;
                 double y1 = y + random.nextFloat() * r - v;
                 double z1 = z + random.nextFloat() * r - v;
-                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-0.008f * ((100 - this.prepareBlowUpTime)));
+                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-0.008f * ((BLAST_TIME - this.prepareBlowUpTime)));
                 this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, x1, y1, z1, dir.x, dir.y, dir.z);
             }
         }
         if (this.prepareBlowUpTime > 9)
-            this.dragon.flapTime = 0.8f - (100 - this.prepareBlowUpTime + 3) * 0.005f;
+            this.dragon.flapTime = 0.8f - (BLAST_TIME - this.prepareBlowUpTime + 3) * 0.005f;
         else if (this.prepareBlowUpTime >= 4) {
             this.dragon.flapTime = 0.333f - (8 - this.prepareBlowUpTime + 1) * 0.08f;
         }
@@ -77,7 +79,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
                 entity.push((distanceX / distance) * multiplier, Math.max(1f, distanceY / distance * multiplier * 0.5d), (distanceZ / distance) * multiplier);
                 if (entity instanceof LivingEntity living)
                     living.hurtMarked = true;
-                entity.hurt(this.dragon.damageSources().explosion(this.dragon, this.dragon), 12f);
+                entity.hurt(this.dragon.damageSources().explosion(this.dragon, this.dragon), 10f);
             }
             for (int i = 0; i < 8; i++) {
                 this.dragon.level().playSound(null, this.dragon.getX() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getY() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getZ() + this.dragon.getRandom().nextFloat() * 48f - 24f, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 4f, 0.7f);
@@ -89,9 +91,9 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         }
         else {
             if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 20) {
-                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f + (100 - this.prepareBlowUpTime) * 0.01f);
+                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f + (BLAST_TIME - this.prepareBlowUpTime) * 0.01f);
             }
-            this.dragon.flapTime = 1f - (100 - this.prepareBlowUpTime) / 100f;
+            this.dragon.flapTime = 1f - (BLAST_TIME - this.prepareBlowUpTime) / 100f;
         }
     }
 
@@ -99,18 +101,18 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
      * Called when this phase is set to active
      */
     public void begin() {
-        this.prepareBlowUpTime = 100;
+        this.prepareBlowUpTime = BLAST_TIME;
     }
 
     public @NotNull EnderDragonPhase<DragonBlastAttackPhase> getPhase() {
-        return BLAST_ATTACK;
+        return PHASE;
     }
 
     public static EnderDragonPhase<DragonBlastAttackPhase> getPhaseType() {
-        return BLAST_ATTACK;
+        return PHASE;
     }
 
     public static void init() {
-        BLAST_ATTACK = EnderDragonPhase.create(DragonBlastAttackPhase.class, "BlastAttack");
+        PHASE = EnderDragonPhase.create(DragonBlastAttackPhase.class, "BlastAttack");
     }
 }

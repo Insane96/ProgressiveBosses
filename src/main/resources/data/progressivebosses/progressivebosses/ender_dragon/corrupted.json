@@ -27,19 +27,19 @@
         "phantom_size": 5,
         "respawn_caged_chance": 0.5,
         "respawn_crystals_below_health": 0.8,
-        "max_respawn_chance": 0.50,
+        "max_respawn_chance": 0.75,
         "max_respawn_chance_at_health": 0
     },
     "minion": {
         "health": 20,
         "spawned": 1,
-        "min_cooldown": 1000,
-        "max_cooldown": 1400,
+        "average_cooldown": 1200,
+        "delta_cooldown": 300,
         "blinding_chance": 0,
         "blinding_duration": 150
     },
     "attack": {
-        "melee_damage_dealt_multiplier": 2.7,
+        "melee_damage_dealt_multiplier": 4,
         "acid_damage_dealt_multiplier": 2.2,
         "charge_chance": {
             "base": 0.5,

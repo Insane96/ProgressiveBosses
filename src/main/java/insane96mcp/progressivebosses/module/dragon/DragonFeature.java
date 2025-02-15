@@ -192,14 +192,18 @@ public class DragonFeature extends Feature {
         if (event.getNewPhase().equals(EnderDragonPhase.STRAFE_PLAYER))
             event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
 
-        if (event.getNewPhase() == EnderDragonPhase.TAKEOFF && event.getDragon().sittingDamageReceived == 0)
-            DragonAttack.setForcedToBlast(event.getDragon(), true);
+        /*if (event.getNewPhase() == EnderDragonPhase.TAKEOFF && event.getDragon().sittingDamageReceived == 0)
+            DragonAttack.setForcedToBlast(event.getDragon(), true);*/
 
         if (DragonAttack.isForcedToBlast(event.getDragon()))
             DragonAttack.blast(event, event.getDragon());
 
         /*if (DragonAttack.onPhaseChange(event, event.getDragon(), stats.get()))
             return;*/
+    }
+
+    public static float flySpeedMultiplier() {
+        return 1.5f;
     }
 
     public static void onCrystalDestroyed(EndDragonFight fight, EndCrystal crystal, DamageSource damageSource) {
@@ -211,7 +215,7 @@ public class DragonFeature extends Feature {
         if (dragon == null)
             return;
         if (fight.getCrystalsAlive() > 0)
-            DragonAttack.setForcedToCharge(dragon, DragonAttack.getForcedToCharge(dragon) + 1);
+            DragonAttack.setForcedToStrafe(dragon, DragonAttack.getForcedToStrafe(dragon) + 1);
         else
             DragonAttack.setForcedToBlast(dragon, true);
     }

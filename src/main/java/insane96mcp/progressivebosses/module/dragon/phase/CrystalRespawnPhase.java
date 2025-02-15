@@ -163,7 +163,7 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	public float getTurnSpeed() {
 		float f = (float)this.dragon.getDeltaMovement().horizontalDistance() + 1.0F;
 		float f1 = Math.min(f, 40.0F);
-		return 0.875f / f1 / f;
+		return f1 / f;
 	}
 
 	/**

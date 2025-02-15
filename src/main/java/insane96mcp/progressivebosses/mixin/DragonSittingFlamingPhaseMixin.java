@@ -37,7 +37,7 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=10", ordinal = 0))
 	public int progressivebosses$timeBeforeSummonCloud(int original) {
-		return 0;
+		return 1;
 	}
 
 	@ModifyArg(method = "doServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/AreaEffectCloud;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;)V"))

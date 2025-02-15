@@ -156,11 +156,12 @@ public class DragonAttack {
         boolean chargePlayer = shouldChargePlayer(dragon, stats);
         boolean strafe = shouldStrafe(dragon, stats);
 
-        if (chargePlayer && strafe)
+        if (chargePlayer && strafe) {
             if (dragon.getRandom().nextBoolean())
                 chargePlayer(dragon);
             else
                 strafePlayer(dragon);
+        }
         else if (chargePlayer)
             chargePlayer(dragon);
         else if (strafe)
@@ -182,10 +183,8 @@ public class DragonAttack {
     }
 
     public static boolean shouldChargePlayer(EnderDragon dragon, DragonStats stats) {
-        if (isForcedToCharge(dragon)) {
-            setForcedToCharge(dragon, getForcedToCharge(dragon) - 1);
+        if (isForcedToCharge(dragon))
             return true;
-        }
 
         double chance = stats.attack.chargeChance.getValue(dragon);
         if (chance == 0f)
@@ -202,6 +201,8 @@ public class DragonAttack {
         Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 64);
         if (player == null)
             return;
+        if (isForcedToCharge(dragon))
+            setForcedToCharge(dragon, getForcedToCharge(dragon) - 1);
         dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());
     }
 
@@ -218,10 +219,8 @@ public class DragonAttack {
     }
 
     public static boolean shouldStrafe(EnderDragon dragon, DragonStats stats) {
-        if (isForcedToStrafe(dragon)) {
-            setForcedToStrafe(dragon, getForcedToStrafe(dragon) - 1);
+        if (isForcedToStrafe(dragon))
             return true;
-        }
 
         double chance = stats.attack.strafeChance.getValue(dragon);
         return dragon.getRandom().nextDouble() < chance;
@@ -236,6 +235,8 @@ public class DragonAttack {
         if (player == null)
             return;
 
+        if (isForcedToStrafe(dragon))
+            setForcedToStrafe(dragon, getForcedToStrafe(dragon) - 1);
         dragon.getPhaseManager().getPhase(PBDragonStrafePlayerPhase.getPhaseType()).setTarget(player);
     }
 

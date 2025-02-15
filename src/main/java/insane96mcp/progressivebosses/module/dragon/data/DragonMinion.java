@@ -17,7 +17,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -56,16 +55,16 @@ public class DragonMinion {
 
     public float health;
     public int spawned;
-    public int minCooldown;
-    public int maxCooldown;
+    public int averageCooldown;
+    public int deltaCooldown;
     public float blindingChance;
     public int blindingDuration;
 
-    public DragonMinion(float health, int spawned, int minCooldown, int maxCooldown, float blindingChance, int blindingDuration) {
+    public DragonMinion(float health, int spawned, int averageCooldown, int deltaCooldown, float blindingChance, int blindingDuration) {
         this.health = health;
         this.spawned = spawned;
-        this.minCooldown = minCooldown;
-        this.maxCooldown = maxCooldown;
+        this.averageCooldown = averageCooldown;
+        this.deltaCooldown = deltaCooldown;
         this.blindingChance = blindingChance;
         this.blindingDuration = blindingDuration;
     }
@@ -75,8 +74,8 @@ public class DragonMinion {
         public DragonMinion deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             return new DragonMinion(GsonHelper.getAsFloat(json.getAsJsonObject(), "health"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "spawned"),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "min_cooldown"),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "max_cooldown"),
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "average_cooldown"),
+                    GsonHelper.getAsInt(json.getAsJsonObject(), "delta_cooldown"),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "blinding_chance"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "blinding_duration"));
         }
@@ -86,8 +85,8 @@ public class DragonMinion {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("health", src.health);
             jsonObject.addProperty("spawned", src.spawned);
-            jsonObject.addProperty("min_cooldown", src.minCooldown);
-            jsonObject.addProperty("max_cooldown", src.maxCooldown);
+            jsonObject.addProperty("average_cooldown", src.averageCooldown);
+            jsonObject.addProperty("delta_cooldown", src.deltaCooldown);
             jsonObject.addProperty("blinding_chance", src.blindingChance);
             jsonObject.addProperty("blinding_duration", src.blindingDuration);
             return jsonObject;
@@ -141,7 +140,7 @@ public class DragonMinion {
     public static void setupMinionCooldown(EnderDragon dragon, DragonStats stats) {
         if (stats.minion == null)
             return;
-        int cooldown = (int) (Mth.nextInt(dragon.getRandom(), stats.minion.minCooldown, stats.minion.maxCooldown) * 0.5d);
+        int cooldown = (int) dragon.getRandom().triangle(stats.minion.averageCooldown, stats.minion.deltaCooldown);
         dragon.getPersistentData().putInt(DRAGON_MINION_COOLDOWN, cooldown);
     }
 
@@ -159,8 +158,8 @@ public class DragonMinion {
 
         CompoundTag dragonTags = dragon.getPersistentData();
         int cooldown = dragonTags.getInt(DRAGON_MINION_COOLDOWN);
-        if (cooldown > 0) {
-            dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown - 1);
+        if (--cooldown > 0) {
+            dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown);
             return;
         }
 
@@ -172,8 +171,8 @@ public class DragonMinion {
         if (players.isEmpty())
             return;
 
-        cooldown = Mth.nextInt(level.random, minionStats.minCooldown, minionStats.maxCooldown);
-        dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown - 1);
+        cooldown = (int) level.random.triangle(minionStats.averageCooldown, minionStats.deltaCooldown);
+        dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown);
         List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level()));
         spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius).reversed());
         for (int i = 0; i < minionStats.spawned; i++) {
@@ -188,6 +187,7 @@ public class DragonMinion {
                 break;
             }
         }
+        DragonAttack.setForcedToBlast(dragon, true);
     }
 
     public static void summonMinion(Level world, Vec3 pos, byte lvl, DragonMinion minioStats) {
