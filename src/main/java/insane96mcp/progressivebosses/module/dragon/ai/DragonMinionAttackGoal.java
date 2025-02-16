@@ -1,22 +1,13 @@
 package insane96mcp.progressivebosses.module.dragon.ai;
 
-import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 
 import java.util.EnumSet;
-import java.util.Optional;
 
 public class DragonMinionAttackGoal extends Goal {
 
@@ -26,10 +17,12 @@ public class DragonMinionAttackGoal extends Goal {
 
     private final int cooldown;
 
+    private final int TO_SHOOT = 3;
+
     public DragonMinionAttackGoal(Shulker shulker, int cooldown) {
         this.shulker = shulker;
         this.cooldown = cooldown;
-        this.toShoot = 2;
+        this.toShoot = TO_SHOOT;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
@@ -60,21 +53,11 @@ public class DragonMinionAttackGoal extends Goal {
             if (this.attackTime <= 0) {
                 this.attackTime = 5;
                 ShulkerBullet bullet = new ShulkerBullet(shulker.level(), shulker, livingentity, shulker.getAttachFace().getAxis());
-
-                EnderDragon dragon = DragonFeature.findDragon((ServerLevel) shulker.level());
-                if (dragon != null) {
-                    Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
-                    if (stats.isPresent() && stats.get().minion != null && this.shulker.getRandom().nextFloat() < stats.get().minion.blindingChance) {
-                        ListTag effectListTag = new ListTag();
-                        effectListTag.add(new MobEffectInstance(MobEffects.BLINDNESS, 150).save(new CompoundTag()));
-                        bullet.getPersistentData().put("CustomPotionEffects", effectListTag);
-                    }
-                }
                 shulker.level().addFreshEntity(bullet);
                 shulker.playSound(SoundEvents.SHULKER_SHOOT, 2.0F, (shulker.level().random.nextFloat() - shulker.level().random.nextFloat()) * 0.2F + 1.0F);
                 if (--this.toShoot == 0) {
                     this.attackTime = this.cooldown;
-                    this.toShoot = 4;
+                    this.toShoot = TO_SHOOT;
                 }
             }
         } else {

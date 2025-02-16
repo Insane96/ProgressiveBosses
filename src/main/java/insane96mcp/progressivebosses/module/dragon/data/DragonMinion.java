@@ -8,32 +8,27 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.setup.Strings;
-import insane96mcp.progressivebosses.utils.DragonMinionHelper;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ShulkerBullet;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
-import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -44,7 +39,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -113,7 +107,7 @@ public class DragonMinion {
             return;
 
         if (event.getSource().getEntity() instanceof EnderDragon)
-            event.setAmount(event.getAmount() * 0.1f);
+            event.setCanceled(true);
     }
 
     @SubscribeEvent
@@ -173,19 +167,12 @@ public class DragonMinion {
 
         cooldown = (int) level.random.triangle(minionStats.averageCooldown, minionStats.deltaCooldown);
         dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown);
-        List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level()));
-        spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius).reversed());
         for (int i = 0; i < minionStats.spawned; i++) {
-            for (SpikeFeature.EndSpike spike : spikes) {
-                if (!level.getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).isEmpty()
-                    || !level.getEntitiesOfClass(Shulker.class, spike.getTopBoundingBox()).isEmpty())
-                    continue;
-                float x = spike.getCenterX() + 0.5f;
-                float z = spike.getCenterZ() + 0.5f;
-                float y = spike.getHeight() + 1;
-                summonMinion(level, new Vec3(x, y, z), stats.get().level, stats.get().minion);
-                break;
-            }
+            float angle = level.random.nextFloat() * (float) Math.PI * 2f;
+            float x = (float) (Math.cos(angle) * (Mth.nextFloat(dragon.getRandom(), 1f, 4f)));
+            float z = (float) (Math.sin(angle) * (Mth.nextFloat(dragon.getRandom(), 1f, 4f)));
+            float y = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING, BlockPos.containing(x, 255, z)).getY();
+            summonMinion(level, new Vec3(x, y, z), stats.get().level, stats.get().minion);
         }
     }
 
@@ -201,13 +188,11 @@ public class DragonMinion {
 
         minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 
-        boolean isBlindingMinion = world.getRandom().nextDouble() < minioStats.blindingChance;
-
         shulker.setPos(pos.x, pos.y, pos.z);
         shulker.setCustomName(Component.translatable(DRAGON_MINION));
         shulker.lootTable = BuiltInLootTables.EMPTY;
         shulker.setPersistenceRequired();
-        DragonMinionHelper.setMinionColor(shulker, isBlindingMinion);
+        shulker.setVariant(Optional.of(DyeColor.PURPLE));
 
         MCUtils.applyModifier(shulker, Attributes.FOLLOW_RANGE, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 96, AttributeModifier.Operation.ADDITION);
 
@@ -221,7 +206,7 @@ public class DragonMinion {
                 toRemove.add(goal.getGoal());
         });
         toRemove.forEach(shulker.goalSelector::removeGoal);
-        shulker.goalSelector.addGoal(4, new DragonMinionAttackGoal(shulker, 600));
+        shulker.goalSelector.addGoal(4, new DragonMinionAttackGoal(shulker, 200));
 
         toRemove.clear();
         shulker.targetSelector.availableGoals.forEach(goal -> {
@@ -234,18 +219,5 @@ public class DragonMinion {
 
         shulker.targetSelector.addGoal(2, new ILNearestAttackableTargetGoal<>(shulker, Player.class, false).setIgnoreLineOfSight());
         shulker.targetSelector.addGoal(1, new HurtByTargetGoal(shulker, Shulker.class, EnderDragon.class));
-    }
-
-    public static void onBulletTick(ShulkerBullet shulkerBulletEntity) {
-        if (!shulkerBulletEntity.level().isClientSide
-                || !shulkerBulletEntity.getPersistentData().contains("CustomPotionEffects"))
-            return;
-
-        List<MobEffectInstance> mobEffectInstances = PotionUtils.getCustomEffects(shulkerBulletEntity.getPersistentData());
-        int color = PotionUtils.getColor(mobEffectInstances);
-        double r = (double)(color >> 16 & 255) / 255.0D;
-        double g = (double)(color >> 8 & 255) / 255.0D;
-        double b = (double)(color >> 0 & 255) / 255.0D;
-        shulkerBulletEntity.level().addParticle(ParticleTypes.ENTITY_EFFECT, shulkerBulletEntity.getX(), shulkerBulletEntity.getY(), shulkerBulletEntity.getZ(), r, g, b);
     }
 }
