@@ -5,6 +5,7 @@ import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
+import insane96mcp.progressivebosses.event.PBEventFactory;
 import insane96mcp.progressivebosses.mixin.ProjectileInvoker;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
@@ -25,6 +26,7 @@ import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.DragonFireball;
@@ -49,16 +51,18 @@ public class DragonAttack {
     public float acidDamageDealtMultiplier;
     public DragonValue chargeChance;
     public DragonValue strafeChance;
+    public DragonValue blastChance;
     public float acidballSpeedMultiplier;
     public float acidballImpactDamage;
     public int minAcidballShot;
     public int maxAcidballShot;
 
-    public DragonAttack(float meleeDamageDealtMultiplier, float acidDamageDealtMultiplier, DragonValue chargeChance, DragonValue strafeChance, float acidballSpeedMultiplier, float acidballImpactDamage, int minAcidballShot, int maxAcidballShot) {
+    public DragonAttack(float meleeDamageDealtMultiplier, float acidDamageDealtMultiplier, DragonValue chargeChance, DragonValue strafeChance, DragonValue blastChance, float acidballSpeedMultiplier, float acidballImpactDamage, int minAcidballShot, int maxAcidballShot) {
         this.meleeDamageDealtMultiplier = meleeDamageDealtMultiplier;
         this.acidDamageDealtMultiplier = acidDamageDealtMultiplier;
         this.chargeChance = chargeChance;
         this.strafeChance = strafeChance;
+        this.blastChance = blastChance;
         this.acidballSpeedMultiplier = acidballSpeedMultiplier;
         this.acidballImpactDamage = acidballImpactDamage;
         this.minAcidballShot = minAcidballShot;
@@ -74,6 +78,7 @@ public class DragonAttack {
                     GsonHelper.getAsFloat(jObject, "acid_damage_dealt_multiplier"),
                     context.deserialize(jObject.get("charge_chance"), DragonValue.class),
                     context.deserialize(jObject.get("strafe_chance"), DragonValue.class),
+                    context.deserialize(jObject.get("blast_chance"), DragonValue.class),
                     GsonHelper.getAsFloat(jObject, "acidball_speed_multiplier"),
                     GsonHelper.getAsFloat(jObject, "acidball_impact_damage"),
                     GsonHelper.getAsInt(jObject, "min_acidball_shot"),
@@ -88,6 +93,7 @@ public class DragonAttack {
             jsonObject.addProperty("acid_damage_dealt_multiplier", src.acidDamageDealtMultiplier);
             jsonObject.add("charge_chance", context.serialize(src.chargeChance));
             jsonObject.add("strafe_chance", context.serialize(src.strafeChance));
+            jsonObject.add("blast_chance", context.serialize(src.blastChance));
             jsonObject.addProperty("acidball_speed_multiplier", src.acidballSpeedMultiplier);
             jsonObject.addProperty("acidball_impact_damage", src.acidballImpactDamage);
             jsonObject.addProperty("min_acidball_shot", src.minAcidballShot);
@@ -145,27 +151,6 @@ public class DragonAttack {
         acidball.zPower *= stats.get().attack.acidballSpeedMultiplier;
     }
 
-    /**
-     * Returns true if the dragon has either strafed or charged the player
-     */
-    public static boolean onHoldingPatternEnd(EnderDragon dragon, DragonStats stats) {
-        boolean chargePlayer = shouldChargePlayer(dragon, stats);
-        boolean strafe = shouldStrafe(dragon, stats);
-
-        if (chargePlayer && strafe) {
-            if (dragon.getRandom().nextBoolean())
-                chargePlayer(dragon);
-            else
-                strafePlayer(dragon);
-        }
-        else if (chargePlayer)
-            chargePlayer(dragon);
-        else if (strafe)
-            strafePlayer(dragon);
-
-        return chargePlayer || strafe;
-    }
-
     public static boolean isForcedToCharge(EnderDragon dragon) {
         return getForcedToCharge(dragon) > 0;
     }
@@ -178,29 +163,36 @@ public class DragonAttack {
         dragon.getPersistentData().putInt(FORCE_CHARGE_TAG, forcedToCharge);
     }
 
-    public static boolean shouldChargePlayer(EnderDragon dragon, DragonStats stats) {
+    public static boolean shouldCharge(EnderDragon dragon, DragonStats stats) {
         if (isForcedToCharge(dragon))
             return true;
 
         double chance = stats.attack.chargeChance.getValue(dragon);
         if (chance == 0f)
             return false;
-        if (DragonAnger.isAngered(dragon))
-            chance *= 2f;
 
         return dragon.getRandom().nextDouble() < chance;
     }
 
-    public static void chargePlayer(EnderDragon dragon) {
+    public static void charge(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
+        event.setNewPhase(EnderDragonPhase.CHARGING_PLAYER);
+        if (isForcedToCharge(dragon))
+            setForcedToCharge(dragon, getForcedToCharge(dragon) - 1);
+        if (forceBegin) {
+            DragonPhaseInstance phase = dragon.getPhaseManager().getPhase(event.getNewPhase());
+            phase.begin();
+            PBEventFactory.onDragonPhaseBegin(dragon, phase);
+        }
+    }
+
+    public static void onChargeBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {
+        if (event.getPhaseInstance().getPhase() != EnderDragonPhase.CHARGING_PLAYER)
+            return;
         if (!isPlayerInRange(dragon.level(), 64))
             return;
-
-        dragon.getPhaseManager().setPhase(EnderDragonPhase.CHARGING_PLAYER);
         Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 64);
         if (player == null)
             return;
-        if (isForcedToCharge(dragon))
-            setForcedToCharge(dragon, getForcedToCharge(dragon) - 1);
         dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());
     }
 
@@ -223,22 +215,28 @@ public class DragonAttack {
         double chance = stats.attack.strafeChance.getValue(dragon);
         if (chance == 0f)
             return false;
-        if (DragonAnger.isAngered(dragon))
-            chance *= 2f;
         return dragon.getRandom().nextDouble() < chance;
     }
 
-    public static void strafePlayer(EnderDragon dragon) {
+    public static void strafe(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
+        event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
+        if (isForcedToStrafe(dragon))
+            setForcedToStrafe(dragon, getForcedToStrafe(dragon) - 1);
+        if (forceBegin) {
+            DragonPhaseInstance phase = dragon.getPhaseManager().getPhase(event.getNewPhase());
+            phase.begin();
+            PBEventFactory.onDragonPhaseBegin(dragon, phase);
+        }
+    }
+
+    public static void onStrafeBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {
+        if (event.getPhaseInstance().getPhase() != PBDragonStrafePlayerPhase.getPhaseType())
+            return;
         if (!isPlayerInRange(dragon.level(), 64))
             return;
-
-        dragon.getPhaseManager().setPhase(PBDragonStrafePlayerPhase.getPhaseType());
         Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 64);
         if (player == null)
             return;
-
-        if (isForcedToStrafe(dragon))
-            setForcedToStrafe(dragon, getForcedToStrafe(dragon) - 1);
         dragon.getPhaseManager().getPhase(PBDragonStrafePlayerPhase.getPhaseType()).setTarget(player);
     }
 
@@ -250,14 +248,29 @@ public class DragonAttack {
         dragon.getPersistentData().putBoolean(FORCE_BLAST_TAG, forcedToBlast);
     }
 
-    public static void blast(DragonPhaseEvent.Change event, EnderDragon dragon) {
+    public static boolean shouldBlast(EnderDragon dragon, DragonStats stats) {
+        if (isForcedToBlast(dragon))
+            return true;
+
+        double chance = stats.attack.blastChance.getValue(dragon);
+        if (chance == 0f)
+            return false;
+        return dragon.getRandom().nextDouble() < chance;
+    }
+
+    public static void blast(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
         if (event.getOldPhase() != EnderDragonPhase.HOVERING &&
                 (dragon.getPhaseManager().getPhase(event.getOldPhase()).isSitting() || dragon.getPhaseManager().getPhase(event.getNewPhase()).isSitting())) {
             event.setNewPhase(DragonBlastAttackPhase.getPhaseType());
+            if (forceBegin) {
+                DragonPhaseInstance phase = dragon.getPhaseManager().getPhase(event.getNewPhase());
+                phase.begin();
+                PBEventFactory.onDragonPhaseBegin(dragon, phase);
+            }
             setForcedToBlast(dragon, false);
         }
-        else if (event.getNewPhase() != EnderDragonPhase.LANDING)
-            event.setNewPhase(EnderDragonPhase.LANDING_APPROACH);
+        else
+            event.setNewPhase(EnderDragonPhase.LANDING);
     }
 
     public static boolean isPlayerInRange(Level level, int range) {

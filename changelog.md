@@ -1,12 +1,5 @@
 # Changelog
 
-* Angered
-  * Go to center and blow up when angered, when angered, there's an high chance to concat charge, barrage and blast and she flies faster.
-* Chance to blast
-* Keep Minions?
-  * Maybe 4x levitation duration
-  * Only one projectile but much faster to shoot
-  * Summon them at the center in the fountain?
 * Blinding acidballs
 
 ## Upcoming

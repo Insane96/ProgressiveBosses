@@ -6,6 +6,7 @@
 /summon minecraft:ender_dragon ~ ~64 ~ {ForgeData:{"progressivebosses:level":1},DragonPhase:1}
 
 /data merge entity @e[type=ender_dragon,limit=1] {DragonPhase:3b}
+/data merge entity @e[type=ender_dragon,limit=1] {ForgeData:{"progressivebosses:force_blast":1b}}
 /data modify entity @e[type=minecraft:ender_dragon,limit=1] ForgeData.progressivebosses:crystal_respawn set value 0
 
 /summon minecraft:shulker ~ ~ ~ {ForgeData:{"progressivebosses:dragon_minion":1b}}

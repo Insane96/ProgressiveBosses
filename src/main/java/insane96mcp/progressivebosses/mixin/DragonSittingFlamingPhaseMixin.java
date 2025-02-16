@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -30,18 +31,23 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 	}
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=200", ordinal = 0))
-	public int getRoarDuration(int original) {
+	public int progressivebosses$sittingFlamingTime(int original) {
 		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
-		return stats.map(dragonStats -> dragonStats.sittingFlamingTime).orElse(original);
+		return stats.map(dragonStats -> {
+			int sittingFlamingTime = dragonStats.sittingFlamingTime;
+			if (DragonAnger.isAngered(this.dragon))
+				sittingFlamingTime /= 2;
+			return sittingFlamingTime;
+		}).orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=10", ordinal = 0))
 	public int progressivebosses$timeBeforeSummonCloud(int original) {
-		return 1;
+		return 5;
 	}
 
 	@ModifyArg(method = "doServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/AreaEffectCloud;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;)V"))
-	public MobEffectInstance cloudBreathEffect(MobEffectInstance pEffectInstance) {
+	public MobEffectInstance progressivebosses$strongerFlamingCloud(MobEffectInstance pEffectInstance) {
 		if (!Feature.isEnabled(DragonFeature.class)
 				|| !DragonFeature.strongerFlamingCloud)
 			return pEffectInstance;
@@ -49,7 +55,7 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 	}
 
 	@Inject(method = "doServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/AreaEffectCloud;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;)V", shift = At.Shift.AFTER))
-	public void onCloudSpawn(CallbackInfo ci) {
+	public void progressivebosses$instantDamageCloud(CallbackInfo ci) {
 		if (this.flame != null)
 			this.flame.setWaitTime(0);
 	}

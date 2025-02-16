@@ -9,27 +9,18 @@ import java.lang.reflect.Type;
 
 @JsonAdapter(DragonValue.Serializer.class)
 public class DragonValue {
-    public static final int BASE_CRYSTALS = 10;
-
     public float base;
-    public float withNoCrystalsLeft;
+    public float angered;
 
-    public DragonValue(float base, float withNoCrystalsLeft) {
+    public DragonValue(float base, float angered) {
         this.base = base;
-        this.withNoCrystalsLeft = withNoCrystalsLeft;
+        this.angered = angered;
     }
 
     public float getValue(EnderDragon dragon) {
-        if (this.base == this.withNoCrystalsLeft)
+        if (this.base == this.angered)
             return this.base;
-        if (dragon.getDragonFight() == null)
-            return this.withNoCrystalsLeft;
-        int crystalsLeft = dragon.getDragonFight().getCrystalsAlive();
-        if (crystalsLeft <= 0)
-            return this.withNoCrystalsLeft;
-        else if (crystalsLeft >= BASE_CRYSTALS)
-            return this.base;
-        return this.base - (this.withNoCrystalsLeft - this.base) * ((float) crystalsLeft / BASE_CRYSTALS) + this.base;
+        return DragonAnger.isAngered(dragon) ? this.angered : this.base;
     }
 
     public int getIntValue(EnderDragon dragon) {
@@ -43,17 +34,17 @@ public class DragonValue {
                 return new DragonValue(json.getAsFloat(), json.getAsFloat());
             JsonObject jsonObject = json.getAsJsonObject();
             float base = GsonHelper.getAsFloat(jsonObject, "base");
-            float withNoCrystalsLeft = GsonHelper.getAsFloat(jsonObject, "with_no_crystals_left");
+            float withNoCrystalsLeft = GsonHelper.getAsFloat(jsonObject, "angered");
             return new DragonValue(base, withNoCrystalsLeft);
         }
 
         @Override
         public JsonElement serialize(DragonValue src, Type typeOfSrc, JsonSerializationContext context) {
-            if (src.base == src.withNoCrystalsLeft)
+            if (src.base == src.angered)
                 return new JsonPrimitive(src.base);
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("base", src.base);
-            jsonObject.addProperty("with_no_crystals_left", src.withNoCrystalsLeft);
+            jsonObject.addProperty("angered", src.angered);
             return jsonObject;
         }
     }

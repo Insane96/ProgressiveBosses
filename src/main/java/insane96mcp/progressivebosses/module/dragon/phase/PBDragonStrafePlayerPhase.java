@@ -174,6 +174,8 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         if (stats.isEmpty())
             return;
         this.fireballsToShoot = Mth.nextInt(dragon.getRandom(), stats.get().attack.minAcidballShot, stats.get().attack.maxAcidballShot);
+        if (DragonAnger.isAngered(this.dragon))
+            this.fireballsToShoot /= 2;
     }
 
     public void setTarget(@NotNull LivingEntity pAttackTarget) {

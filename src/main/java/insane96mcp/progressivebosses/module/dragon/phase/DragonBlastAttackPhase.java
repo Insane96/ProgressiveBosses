@@ -21,7 +21,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
     private static EnderDragonPhase<DragonBlastAttackPhase> PHASE;
     private int prepareBlowUpTime;
 
-    private static final int BLAST_TIME = 60;
+    private static final int BLAST_TIME = 80;
 
     public DragonBlastAttackPhase(EnderDragon pDragon) {
         super(pDragon);
@@ -67,9 +67,9 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
 
     public void doServerTick() {
         if (--this.prepareBlowUpTime == 0) {
-            List<Entity> entities = this.dragon.level().getEntities((Entity) null, this.dragon.getBoundingBox().inflate(48d), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
+            List<Entity> entities = this.dragon.level().getEntities((Entity) null, this.dragon.getBoundingBox().inflate(56d), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
             for (Entity entity : entities) {
-                if (entity == this.dragon || this.dragon.distanceToSqr(entity) > 2304)
+                if (entity == this.dragon || this.dragon.distanceToSqr(entity) > 3136)
                     continue;
                 double distanceX = entity.getX() - this.dragon.getX();
                 double distanceY = entity.getY() - this.dragon.getY();
@@ -91,9 +91,9 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         }
         else {
             if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 20) {
-                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f + (BLAST_TIME - this.prepareBlowUpTime) * 0.01f);
+                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f + (BLAST_TIME - this.prepareBlowUpTime) * 0.025f);
             }
-            this.dragon.flapTime = 1f - (BLAST_TIME - this.prepareBlowUpTime) / 100f;
+            this.dragon.flapTime = 1f - (BLAST_TIME - this.prepareBlowUpTime) / (float) BLAST_TIME;
         }
     }
 
@@ -102,6 +102,8 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
      */
     public void begin() {
         this.prepareBlowUpTime = BLAST_TIME;
+        if (DragonAnger.isAngered(this.dragon))
+            this.prepareBlowUpTime -= 30;
     }
 
     public @NotNull EnderDragonPhase<DragonBlastAttackPhase> getPhase() {

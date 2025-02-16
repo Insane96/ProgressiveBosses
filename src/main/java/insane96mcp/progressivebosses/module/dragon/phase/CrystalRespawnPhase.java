@@ -25,7 +25,6 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.monster.Phantom;
-import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
@@ -76,13 +75,13 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			RandomSource yungRandom = RandomSource.create(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island spikes to generate guarded
 			net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), (ServerLevel) this.dragon.level(), ((ServerLevel) this.dragon.level()).getChunkSource().getGenerator(), shouldBeGuarded ? yungRandom : this.dragon.getRandom(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
 			spike.guarded = wasGuarded;
+			//TODO Configurable
 			EndCrystal crystal = this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).get(0);
 			CorruptedEndCrystal corruptedEndCrystal = PBEntities.CORRUPTED_END_CRYSTAL.get().create(this.dragon.level());
 			corruptedEndCrystal.setPos(crystal.getX(), crystal.getY(), crystal.getZ());
 			corruptedEndCrystal.setShowBottom(true);
 			crystal.discard();
 			this.dragon.level().addFreshEntity(corruptedEndCrystal);
-			this.dragon.level().getEntitiesOfClass(Shulker.class, spike.getTopBoundingBox()).forEach(Entity::discard);
 			spikesToRespawn.remove(0);
 			if (this.spikesToRespawn.isEmpty())
 				LogHelper.info("No more crystals to respawn left");
@@ -144,8 +143,6 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 		int spawned = 0;
 		for (SpikeFeature.EndSpike spike : spikes) {
-			if (dragon.level().getEntitiesOfClass(Shulker.class, spike.getTopBoundingBox()).isEmpty())
-				continue;
 			this.addCrystalRespawn(spike);
 			if (++spawned >= crystalsToRespawn)
 				break;
