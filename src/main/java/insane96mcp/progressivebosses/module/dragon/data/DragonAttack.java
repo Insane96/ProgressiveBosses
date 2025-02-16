@@ -20,7 +20,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
@@ -37,7 +36,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -47,24 +45,28 @@ import java.util.Optional;
 
 @JsonAdapter(DragonAttack.Serializer.class)
 public class DragonAttack {
-    public float meleeDamageDealtMultiplier;
-    public float acidDamageDealtMultiplier;
+    public float meleeDamage;
+    public float meleeHeadDamage;
+    public int acidAmplifier;
     public DragonValue chargeChance;
     public DragonValue strafeChance;
     public DragonValue blastChance;
     public float acidballSpeedMultiplier;
     public float acidballImpactDamage;
+    public float blastDamage;
     public int minAcidballShot;
     public int maxAcidballShot;
 
-    public DragonAttack(float meleeDamageDealtMultiplier, float acidDamageDealtMultiplier, DragonValue chargeChance, DragonValue strafeChance, DragonValue blastChance, float acidballSpeedMultiplier, float acidballImpactDamage, int minAcidballShot, int maxAcidballShot) {
-        this.meleeDamageDealtMultiplier = meleeDamageDealtMultiplier;
-        this.acidDamageDealtMultiplier = acidDamageDealtMultiplier;
+    public DragonAttack(float meleeDamage, float meleeHeadDamage, int acidAmplifier, DragonValue chargeChance, DragonValue strafeChance, DragonValue blastChance, float acidballSpeedMultiplier, float acidballImpactDamage, float blastDamage, int minAcidballShot, int maxAcidballShot) {
+        this.meleeDamage = meleeDamage;
+        this.meleeHeadDamage = meleeHeadDamage;
+        this.acidAmplifier = acidAmplifier;
         this.chargeChance = chargeChance;
         this.strafeChance = strafeChance;
         this.blastChance = blastChance;
         this.acidballSpeedMultiplier = acidballSpeedMultiplier;
         this.acidballImpactDamage = acidballImpactDamage;
+        this.blastDamage = blastDamage;
         this.minAcidballShot = minAcidballShot;
         this.maxAcidballShot = maxAcidballShot;
     }
@@ -74,13 +76,15 @@ public class DragonAttack {
         public DragonAttack deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jObject = json.getAsJsonObject();
             return new DragonAttack(
-                    GsonHelper.getAsFloat(jObject, "melee_damage_dealt_multiplier"),
-                    GsonHelper.getAsFloat(jObject, "acid_damage_dealt_multiplier"),
+                    GsonHelper.getAsFloat(jObject, "melee_damage"),
+                    GsonHelper.getAsFloat(jObject, "melee_head_damage"),
+                    GsonHelper.getAsInt(jObject, "acid_amplifier"),
                     context.deserialize(jObject.get("charge_chance"), DragonValue.class),
                     context.deserialize(jObject.get("strafe_chance"), DragonValue.class),
                     context.deserialize(jObject.get("blast_chance"), DragonValue.class),
                     GsonHelper.getAsFloat(jObject, "acidball_speed_multiplier"),
                     GsonHelper.getAsFloat(jObject, "acidball_impact_damage"),
+                    GsonHelper.getAsFloat(jObject, "blast_damage"),
                     GsonHelper.getAsInt(jObject, "min_acidball_shot"),
                     GsonHelper.getAsInt(jObject, "max_acidball_shot")
             );
@@ -89,13 +93,15 @@ public class DragonAttack {
         @Override
         public JsonElement serialize(DragonAttack src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("melee_damage_dealt_multiplier", src.meleeDamageDealtMultiplier);
-            jsonObject.addProperty("acid_damage_dealt_multiplier", src.acidDamageDealtMultiplier);
+            jsonObject.addProperty("melee_damage", src.meleeDamage);
+            jsonObject.addProperty("melee_head_damage", src.meleeHeadDamage);
+            jsonObject.addProperty("acid_amplifier", src.acidAmplifier);
             jsonObject.add("charge_chance", context.serialize(src.chargeChance));
             jsonObject.add("strafe_chance", context.serialize(src.strafeChance));
             jsonObject.add("blast_chance", context.serialize(src.blastChance));
             jsonObject.addProperty("acidball_speed_multiplier", src.acidballSpeedMultiplier);
             jsonObject.addProperty("acidball_impact_damage", src.acidballImpactDamage);
+            jsonObject.addProperty("blast_damage", src.blastDamage);
             jsonObject.addProperty("min_acidball_shot", src.minAcidballShot);
             jsonObject.addProperty("max_acidball_shot", src.maxAcidballShot);
             return jsonObject;
@@ -105,32 +111,22 @@ public class DragonAttack {
     private static final String FORCE_CHARGE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_charge";
     private static final String FORCE_STRAFE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_strafe";
     private static final String FORCE_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_blast";
+    public static final String LAST_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "last_blast";
 
-    public static void onHurtLiving(LivingHurtEvent event) {
-        onDirectDamage(event);
-        onAcidDamage(event);
+    public static float meleeDamage(EnderDragon dragon, float originalDamage) {
+        DragonStats stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        if (stats == null)
+            return originalDamage;
+
+        return stats.attack.meleeDamage;
     }
 
-    private static void onDirectDamage(LivingHurtEvent event) {
-        if (!(event.getSource().getDirectEntity() instanceof EnderDragon dragon)
-                || event.getEntity() instanceof EnderDragon)
-            return;
-        Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
-        if (stats.isEmpty())
-            return;
+    public static float meleeHeadDamage(EnderDragon dragon, float originalDamage) {
+        DragonStats stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        if (stats == null)
+            return originalDamage;
 
-        event.setAmount(event.getAmount() * stats.get().attack.meleeDamageDealtMultiplier);
-    }
-
-    private static void onAcidDamage(LivingHurtEvent event) {
-        if (!(event.getSource().getEntity() instanceof EnderDragon dragon)
-                || !(event.getSource().getDirectEntity() instanceof AreaEffectCloud))
-            return;
-        Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
-        if (stats.isEmpty())
-            return;
-
-        event.setAmount(event.getAmount() * stats.get().attack.acidDamageDealtMultiplier);
+        return stats.attack.meleeHeadDamage;
     }
 
     public static void setAcidBallSpeedMultiplier(Entity entity) {
@@ -188,9 +184,7 @@ public class DragonAttack {
     public static void onChargeBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {
         if (event.getPhaseInstance().getPhase() != EnderDragonPhase.CHARGING_PLAYER)
             return;
-        if (!isPlayerInRange(dragon.level(), 64))
-            return;
-        Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 64);
+        Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 96);
         if (player == null)
             return;
         dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());
@@ -232,9 +226,7 @@ public class DragonAttack {
     public static void onStrafeBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {
         if (event.getPhaseInstance().getPhase() != PBDragonStrafePlayerPhase.getPhaseType())
             return;
-        if (!isPlayerInRange(dragon.level(), 64))
-            return;
-        Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 64);
+        Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 96);
         if (player == null)
             return;
         dragon.getPhaseManager().getPhase(PBDragonStrafePlayerPhase.getPhaseType()).setTarget(player);
@@ -251,6 +243,8 @@ public class DragonAttack {
     public static boolean shouldBlast(EnderDragon dragon, DragonStats stats) {
         if (isForcedToBlast(dragon))
             return true;
+        if (DragonBlastAttackPhase.isInCooldown(dragon, dragon.level()))
+            return false;
 
         double chance = stats.attack.blastChance.getValue(dragon);
         if (chance == 0f)
@@ -313,12 +307,12 @@ public class DragonAttack {
         if (!(shooter instanceof EnderDragon dragon)
                 || dragon.level().isClientSide)
             return false;
-        Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
-        if (stats.isEmpty())
+        DragonStats stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        if (stats == null)
             return false;
 
-        onImpactExplosion(fireball, shooter, result, stats.get());
-        return onImpact3DCloud(fireball, shooter, result, stats.get());
+        onImpactExplosion(fireball, shooter, result, stats);
+        return onImpact3DCloud(fireball, shooter, result, stats);
     }
 
     private static void onImpactExplosion(DragonFireball fireball, @Nullable Entity shooter, HitResult result, DragonStats stats) {
@@ -353,7 +347,7 @@ public class DragonAttack {
                 areaEffectCloud.setDuration(300);
                 areaEffectCloud.setWaitTime(10);
                 areaEffectCloud.setRadiusPerTick((7.0F - areaEffectCloud.getRadius()) / (float) areaEffectCloud.getDuration());
-                areaEffectCloud.addEffect(new MobEffectInstance(MobEffects.HARM, 1, 1));
+                areaEffectCloud.addEffect(new MobEffectInstance(MobEffects.HARM, 1, stats.attack.acidAmplifier));
                 if (!list.isEmpty()) {
                     for(LivingEntity livingentity : list) {
                         double d0 = fireball.distanceToSqr(livingentity);

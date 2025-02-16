@@ -51,7 +51,7 @@ public class DragonStats {
     public static void apply(EnderDragon dragon, DragonStats stats) {
         dragon.getAttribute(Attributes.MAX_HEALTH).setBaseValue(stats.health.health);
         dragon.setHealth(stats.health.health);
-        dragon.lootTable = stats.lootTable;
+        dragon.lootTable = null;
         DragonCrystal.moreCrystals(dragon, stats);
         DragonLarva.setupLarvaCooldown(dragon, stats);
         DragonMinion.setupMinionCooldown(dragon, stats);

@@ -17,7 +17,6 @@
         "EnderDragonMixin",
         "EnderDragonPhaseManagerMixin",
         "ItemEntityMixin",
-        "MobMixin",
         "ProjectileInvoker",
         "ShulkerBulletMixin",
         "ShulkerMixin",

@@ -6,6 +6,9 @@ import insane96mcp.progressivebosses.setup.PBItems;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
@@ -53,6 +56,19 @@ public class CorruptedEndCrystal extends EndCrystal {
 
     public void tick() {
         ++this.time;
+        if (this.tickCount % 100 == 1 && this.level() instanceof ServerLevel level) {
+            AreaEffectCloud cloud = EntityType.AREA_EFFECT_CLOUD.create(level);
+            if (cloud == null)
+                return;
+            cloud.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 160));
+            cloud.setDuration(101);
+            cloud.setDurationOnUse(0);
+            cloud.setRadius(4f);
+            cloud.setRadiusPerTick(0f);
+            cloud.setWaitTime(0);
+            cloud.setPos(this.position());
+            level.addFreshEntity(cloud);
+        }
     }
 
     public ItemStack getPickResult() {

@@ -5,7 +5,9 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
+import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
 import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
@@ -98,7 +100,9 @@ public abstract class EnderDragonMixin extends Mob {
 	public float onAttachedCrystalDamage(float original, EndCrystal pCrystal, BlockPos pPos, DamageSource pDamageSource) {
 		if (!pCrystal.showsBottom())
 			return original;
-		return Math.max(this.getHealth() * 0.05f, this.getHealth() * 0.2f);
+		float min = pCrystal instanceof CorruptedEndCrystal ? 0.10f : 0.05f;
+		float max = pCrystal instanceof CorruptedEndCrystal ? 0.30f : 0.15f;
+		return Math.max(this.getHealth() * min, this.getHealth() * max);
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "doubleValue=0.01"))
@@ -119,18 +123,13 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@Inject(method = "tickDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V", shift = At.Shift.AFTER, ordinal = 1))
 	public void progressivebosses$dropDeathLoot(CallbackInfo ci) {
+		if (progressiveBosses$killerDamageSource == null)
+			return;
+		DragonStats stats = DragonFeature.getDragonStats((EnderDragon) (Object) this).orElse(null);
+		if (stats == null)
+			return;
+		this.lootTable = stats.lootTable;
 		this.dropFromLootTable(progressiveBosses$killerDamageSource, false);
-		/*ResourceLocation resourcelocation = this.getLootTable();
-        //noinspection DataFlowIssue - Calling this inside !isClientSide check
-        LootTable loottable = this.level().getServer().getLootData().getLootTable(resourcelocation);
-		LootParams.Builder lootparams$builder = (new LootParams.Builder((ServerLevel)this.level())).withParameter(LootContextParams.THIS_ENTITY, this).withParameter(LootContextParams.ORIGIN, this.position()).withParameter(LootContextParams.DAMAGE_SOURCE, progressiveBosses$killerDamageSource).withOptionalParameter(LootContextParams.KILLER_ENTITY, progressiveBosses$killerDamageSource.getEntity()).withOptionalParameter(LootContextParams.DIRECT_KILLER_ENTITY, progressiveBosses$killerDamageSource.getDirectEntity());
-		if (this.unlimitedLastHurtByPlayer != null)
-			lootparams$builder = lootparams$builder.withParameter(LootContextParams.LAST_DAMAGE_PLAYER, this.unlimitedLastHurtByPlayer).withLuck(this.unlimitedLastHurtByPlayer.getLuck());
-
-		LootParams lootparams = lootparams$builder.create(LootContextParamSets.ENTITY);
-		loottable.getRandomItems(lootparams, this.getLootTableSeed(), stack -> {
-
-		});*/
 	}
 
 	@Inject(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;setPhase(Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhase;)V", shift = At.Shift.AFTER, ordinal = 0))
@@ -143,6 +142,20 @@ public abstract class EnderDragonMixin extends Mob {
 		if (!part.name.equals("wing") && !part.name.equals("neck") && !part.name.equals("tail"))
 			return original;
 		return original * 1.5f;
+	}
+
+	@ModifyExpressionValue(method = "hurt(Ljava/util/List;)V", at = @At(value = "CONSTANT", args = "floatValue=10.0"))
+	public float progressiveBosses$headDamage(float original) {
+		if (!Feature.isEnabled(DragonFeature.class))
+			return original;
+		return DragonAttack.meleeHeadDamage((EnderDragon) (Object) this, original);
+	}
+
+	@ModifyExpressionValue(method = "knockBack(Ljava/util/List;)V", at = @At(value = "CONSTANT", args = "floatValue=5.0"))
+	public float progressiveBosses$bodyDamage(float original) {
+		if (!Feature.isEnabled(DragonFeature.class))
+			return original;
+		return DragonAttack.meleeDamage((EnderDragon) (Object) this, original);
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=5.5", ordinal = 0))

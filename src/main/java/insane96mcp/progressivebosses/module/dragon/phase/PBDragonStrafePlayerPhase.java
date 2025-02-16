@@ -63,7 +63,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         if (d12 < 15 * 15 || d12 > 150 * 150)
             this.findNewTarget();
 
-        if (this.attackTarget.distanceToSqr(this.dragon) >= 64 * 64
+        if (this.attackTarget.distanceToSqr(this.dragon) >= 9216
                 || !this.dragon.hasLineOfSight(this.attackTarget)) {
             if (this.fireballCharge > 0)
                 --this.fireballCharge;
@@ -75,10 +75,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         float dot = (float) dragonViewDirection.dot(targetDirection);
         float angleToTarget = (float)(Math.acos(dot) * (double)(180F / (float)Math.PI));
         angleToTarget += 0.5F;
-        double distanceFromTarget = this.attackTarget.distanceToSqr(this.dragon.head);
-        double dX = this.attackTarget.getX() - this.dragon.getX();
-        double dZ = this.attackTarget.getZ() - this.dragon.getZ();
-        if (this.fireballCharge >= 5 && angleToTarget >= 0.0F && angleToTarget < 10.0F) {
+        if (this.fireballCharge >= 5 && angleToTarget >= 0.0F && angleToTarget < 12.5F) {
             int spawned = 1;
             if (DragonAnger.isAngered(this.dragon))
                 spawned = 3;

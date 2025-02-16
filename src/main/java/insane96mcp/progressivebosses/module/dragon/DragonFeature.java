@@ -216,6 +216,10 @@ public class DragonFeature extends Feature {
             return;
 
         EnderDragon dragon = event.getDragon();
+        if (event.getNewPhase() == EnderDragonPhase.DYING) {
+            DragonAnger.setAngered(dragon, false);
+            return;
+        }
         DragonStats stats = getDragonStats(dragon).orElse(null);
         if (stats == null)
             return;
@@ -280,7 +284,6 @@ public class DragonFeature extends Feature {
 
         DragonMinion.onMinionHurt(event);
         DragonCrystal.onPhantomHurt(event);
-        DragonAttack.onHurtLiving(event);
         onDragonHurt(event);
     }
 
@@ -346,7 +349,7 @@ public class DragonFeature extends Feature {
         CHARGE(EnderDragonPhase.CHARGING_PLAYER, DragonAttack::shouldCharge, DragonAttack::charge),
         STRAFE(PBDragonStrafePlayerPhase.getPhaseType(), DragonAttack::shouldStrafe, DragonAttack::strafe),
         LAND(EnderDragonPhase.LANDING_APPROACH, (dragon, stats) -> dragon.getRandom().nextInt(3) == 0 && !DragonAnger.isAngered(dragon), DragonFeature::land),
-        BLAST(DragonBlastAttackPhase.getPhaseType(), DragonAttack::shouldBlast, DragonAttack::blast),
+        BLAST(DragonBlastAttackPhase.getPhaseType(), DragonAttack::shouldBlast, (event, dragon, forceBegin) -> DragonAttack.setForcedToBlast(dragon, true)),
         RESPAWN(CrystalRespawnPhase.getPhaseType(), DragonCrystal::shouldRespawnCrystals, DragonCrystal::respawnCrystals);
 
         private static final List<Phases> PHASES = List.of(Phases.values());

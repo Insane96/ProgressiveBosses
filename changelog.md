@@ -1,6 +1,7 @@
 # Changelog
 
-* Blinding acidballs
+* Kill shulkers
+* should not knockback when charging blast
 
 ## Upcoming
 * Data packable Ender Dragon
@@ -16,7 +17,7 @@
       * Fixes players accumulating knockback when hit by the dragon and then launching like a rocket
     * Fixed Ender Dragon growl sound playing 20 times (making it really loud) when about to respawn and when at the center breathing (it's now 4 times)
     * Fixed Ender Dragon growl sound being played in a too small radius making it inaudible from ground level
-    * Fixed head and neck placements and head size
+    * Fixed head and neck place+ments and head size
 * Rebalancements
   * Wither Charge Attack now ignores armor
   * Ultimate wither charge attack damage slightly increased (12 -> 13)
