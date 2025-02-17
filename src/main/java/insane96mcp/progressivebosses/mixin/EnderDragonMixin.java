@@ -1,5 +1,7 @@
 package insane96mcp.progressivebosses.mixin;
 
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -17,6 +19,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
@@ -33,6 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +58,8 @@ public abstract class EnderDragonMixin extends Mob {
 	@Shadow public abstract EnderDragonPhaseManager getPhaseManager();
 
 	@Shadow private @org.jetbrains.annotations.Nullable Player unlimitedLastHurtByPlayer;
+
+	@Shadow @Final private EnderDragonPart tail1;
 
 	protected EnderDragonMixin(EntityType<? extends Mob> type, Level worldIn) {
 		super(type, worldIn);
@@ -90,6 +96,56 @@ public abstract class EnderDragonMixin extends Mob {
 			return;
 		original.call(instance, entities);
 	}
+
+	@Unique
+	HashMap<LivingEntity, Integer> progressiveBosses$hurtEntitiesTimestamp = new HashMap<>();
+
+	@Definition(id = "entity", local = @Local(type = Entity.class))
+	@Definition(id = "LivingEntity", type = LivingEntity.class)
+	@Expression("entity instanceof LivingEntity")
+	@WrapOperation(method = "hurt(Ljava/util/List;)V", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
+	public boolean progressivebosses$headOnTryHurtEntity(Object object, Operation<Boolean> original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original.call(object);
+		boolean isLiving = original.call(object);
+		if (!isLiving)
+			return false;
+		LivingEntity living = (LivingEntity) object;
+		int lastHurtTimestamp = progressiveBosses$hurtEntitiesTimestamp.getOrDefault(living, 0);
+		if (this.tickCount - lastHurtTimestamp <= 10)
+			return false;
+		progressiveBosses$hurtEntitiesTimestamp.put(living, this.tickCount);
+		return true;
+	}
+
+	@ModifyExpressionValue(method = "knockBack", at = @At(value = "CONSTANT", args = "intValue=2"))
+	public int progressivebosses$lastHurtTick(int original) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original;
+		return 10;
+	}
+
+	/*@Definition(id = "phaseManager", field = "Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;phaseManager:Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;")
+	@Definition(id = "getCurrentPhase", method = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;getCurrentPhase()Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;")
+	@Definition(id = "isSitting", method = "Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;isSitting()Z")
+	@Expression("this.phaseManager.getCurrentPhase().isSitting()")
+	@WrapOperation(method = "knockBack", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
+	public boolean progressivebosses$wingsOnTryHurtEntity(DragonPhaseInstance instance, Operation<Boolean> original, @Local Entity entity) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original.call(instance);
+		boolean isSitting = original.call(instance);
+		if (isSitting)
+			return true;
+		LivingEntity living = (LivingEntity) entity;
+		int lastHurtTimestamp = progressiveBosses$hurtEntitiesTimestamp.getOrDefault(living, 0);
+		if (this.tickCount - lastHurtTimestamp <= 10)
+			return true;
+		progressiveBosses$hurtEntitiesTimestamp.put(living, this.tickCount);
+		return false;
+	}*/
 
 	@ModifyExpressionValue(method = "checkCrystals", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
 	public float onCrystalHeal(float original) {
