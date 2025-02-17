@@ -2,6 +2,8 @@ package insane96mcp.progressivebosses.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
@@ -82,12 +84,19 @@ public abstract class EnderDragonMixin extends Mob {
 		entity.hurtMarked = true;
 	}
 
+	@WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;knockBack(Ljava/util/List;)V"))
+	public void onCrystalHeal(EnderDragon instance, List<Entity> entities, Operation<Void> original) {
+		if (this.getPhaseManager().getCurrentPhase().getPhase() == DragonBlastAttackPhase.getPhaseType())
+			return;
+		original.call(instance, entities);
+	}
+
 	@ModifyExpressionValue(method = "checkCrystals", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
 	public float onCrystalHeal(float original) {
 		Optional<DragonStats> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
-        return stats.map(dragonStats -> dragonStats.health.getHealingFromCrystal((EnderDragon) (Object) this, this.nearestCrystal))
+		return stats.map(dragonStats -> dragonStats.health.getHealingFromCrystal((EnderDragon) (Object) this, this.nearestCrystal))
 				.orElse(original);
-    }
+	}
 
 	@ModifyExpressionValue(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "CONSTANT", args = "floatValue=0.25f"))
 	public float maxSittingDamageReceived(float original) {
@@ -121,6 +130,11 @@ public abstract class EnderDragonMixin extends Mob {
 	@Unique
 	private DamageSource progressiveBosses$killerDamageSource;
 
+	@Inject(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;setPhase(Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhase;)V", shift = At.Shift.AFTER, ordinal = 0))
+	public void progressivebosses$storeKillerDamageSource(EnderDragonPart pPart, DamageSource pSource, float pDamage, CallbackInfoReturnable<Boolean> cir) {
+		this.progressiveBosses$killerDamageSource = pSource;
+	}
+
 	@Inject(method = "tickDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V", shift = At.Shift.AFTER, ordinal = 1))
 	public void progressivebosses$dropDeathLoot(CallbackInfo ci) {
 		if (progressiveBosses$killerDamageSource == null)
@@ -130,11 +144,6 @@ public abstract class EnderDragonMixin extends Mob {
 			return;
 		this.lootTable = stats.lootTable;
 		this.dropFromLootTable(progressiveBosses$killerDamageSource, false);
-	}
-
-	@Inject(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;setPhase(Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhase;)V", shift = At.Shift.AFTER, ordinal = 0))
-	public void progressivebosses$storeKillerDamageSource(EnderDragonPart pPart, DamageSource pSource, float pDamage, CallbackInfoReturnable<Boolean> cir) {
-		this.progressiveBosses$killerDamageSource = pSource;
 	}
 
 	@ModifyVariable(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "STORE", ordinal = 0), argsOnly = true)

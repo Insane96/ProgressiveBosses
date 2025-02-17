@@ -97,7 +97,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
             }
             this.fireballCharge = 3;
             if (DragonAnger.isAngered(this.dragon))
-                this.fireballCharge = -5;
+                this.fireballCharge = -10;
 
             if (--this.fireballsToShoot <= 0)
                 this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);

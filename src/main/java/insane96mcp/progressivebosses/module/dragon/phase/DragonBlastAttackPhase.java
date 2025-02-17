@@ -102,7 +102,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
         }
         else {
-            if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 20) {
+            if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 10) {
                 this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f + (blastTime - this.prepareBlowUpTime) * 0.025f);
             }
             this.dragon.flapTime = 1f - (blastTime - this.prepareBlowUpTime) / (float) blastTime;

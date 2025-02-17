@@ -1,7 +1,6 @@
 # Changelog
 
-* Kill shulkers
-* should not knockback when charging blast
+* fix shield
 
 ## Upcoming
 * Data packable Ender Dragon

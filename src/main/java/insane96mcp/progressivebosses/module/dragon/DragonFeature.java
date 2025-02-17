@@ -25,14 +25,18 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -162,6 +166,18 @@ public class DragonFeature extends Feature {
         else if (event.getDroppedExperience() == Mth.floor(12000 * 0.2F)
                 || event.getDroppedExperience() == Mth.floor(500 * 0.2F))
             event.setDroppedExperience(Mth.floor(stats.get().xpDropped * 0.2f));
+    }
+
+    @SubscribeEvent
+    public void onExpDrop(EntityLeaveLevelEvent event) {
+        if (!this.isEnabled()
+                || !(event.getEntity() instanceof EnderDragon dragon))
+            return;
+
+        List<ShulkerBullet> bullets = dragon.level().getEntitiesOfClass(ShulkerBullet.class, dragon.getBoundingBox().inflate(128));
+        bullets.forEach(Entity::discard);
+        List<Shulker> minions = dragon.level().getEntitiesOfClass(Shulker.class, dragon.getBoundingBox().inflate(128), shulker -> shulker.getPersistentData().contains(DragonMinion.DRAGON_MINION));
+        minions.forEach(Entity::discard);
     }
 
     @SubscribeEvent
