@@ -96,6 +96,21 @@ public abstract class EnderDragonMixin extends Mob {
 		original.call(instance, entities);
 	}
 
+	@Definition(id = "entity", local = @Local(type = Entity.class))
+	@Definition(id = "LivingEntity", type = LivingEntity.class)
+	@Expression("entity instanceof LivingEntity")
+	@WrapOperation(method = "hurt(Ljava/util/List;)V", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
+	public boolean progressivebosses$headOnTryHurtEntity(Object object, Operation<Boolean> original, @Local Entity entity) {
+		if (!Feature.isEnabled(DragonFeature.class)
+				|| !DragonFeature.enableFixes)
+			return original.call(object);
+		boolean isLiving = original.call(object);
+		if (!isLiving)
+			return false;
+		LivingEntity livingEntity = (LivingEntity) entity;
+		return livingEntity.getLastHurtByMobTimestamp() < livingEntity.tickCount - 10 || livingEntity.getLastHurtByMob() != this;
+	}
+
 	@Definition(id = "LivingEntity", type = LivingEntity.class)
 	@Definition(id = "entity", local = @Local(type = Entity.class))
 	@Definition(id = "getLastHurtByMobTimestamp", method = "Lnet/minecraft/world/entity/LivingEntity;getLastHurtByMobTimestamp()I")
@@ -107,7 +122,7 @@ public abstract class EnderDragonMixin extends Mob {
 				|| !DragonFeature.enableFixes)
 			return original;
 
-        return ((LivingEntity)entity).getLastHurtByMobTimestamp() < entity.tickCount - 10 && ((LivingEntity) entity).getLastHurtByMob() != this;
+        return ((LivingEntity)entity).getLastHurtByMobTimestamp() < entity.tickCount - 10 || ((LivingEntity) entity).getLastHurtByMob() != this;
 	}
 
 	@ModifyExpressionValue(method = "checkCrystals", at = @At(value = "CONSTANT", args = "floatValue=1.0"))

@@ -49,6 +49,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 @Label(name = "Ender Dragon Feature")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon", canBeDisabled = false)
@@ -102,6 +103,12 @@ public class DragonFeature extends Feature {
 
         if (phases.isEmpty())
             return null;
+
+        int maxPriority = phases.stream().mapToInt(Phases::getPriority).max().getAsInt();
+        phases = phases.stream()
+                .filter(phase -> phase.getPriority() == maxPriority)
+                .collect(Collectors.toList());
+
         return phases.get(dragon.getRandom().nextInt(phases.size()));
     }
 
@@ -362,22 +369,28 @@ public class DragonFeature extends Feature {
     }
 
     public enum Phases {
-        CHARGE(EnderDragonPhase.CHARGING_PLAYER, DragonAttack::shouldCharge, DragonAttack::charge),
-        STRAFE(PBDragonStrafePlayerPhase.getPhaseType(), DragonAttack::shouldStrafe, DragonAttack::strafe),
-        LAND(EnderDragonPhase.LANDING_APPROACH, (dragon, stats) -> dragon.getRandom().nextInt(3) == 0 && !DragonAnger.isAngered(dragon), DragonFeature::land),
-        BLAST(DragonBlastAttackPhase.getPhaseType(), DragonAttack::shouldBlast, (event, dragon, forceBegin) -> DragonAttack.setForcedToBlast(dragon, true)),
-        RESPAWN(DragonCrystalRespawnPhase.getPhaseType(), DragonCrystal::shouldRespawnCrystals, DragonCrystal::respawnCrystals);
+        CHARGE(0, EnderDragonPhase.CHARGING_PLAYER, DragonAttack::shouldCharge, DragonAttack::charge),
+        STRAFE(0, PBDragonStrafePlayerPhase.getPhaseType(), DragonAttack::shouldStrafe, DragonAttack::strafe),
+        LAND(0, EnderDragonPhase.LANDING_APPROACH, (dragon, stats) -> dragon.getRandom().nextInt(3) == 0 && !DragonAnger.isAngered(dragon), DragonFeature::land),
+        BLAST(0, DragonBlastAttackPhase.getPhaseType(), DragonAttack::shouldBlast, (event, dragon, forceBegin) -> DragonAttack.setForcedToBlast(dragon, true)),
+        RESPAWN(1, DragonCrystalRespawnPhase.getPhaseType(), DragonCrystal::shouldRespawnCrystals, DragonCrystal::respawnCrystals);
 
         private static final List<Phases> PHASES = List.of(Phases.values());
 
+        public final int priority;
         public final EnderDragonPhase<?> phase;
         public final BiPredicate<EnderDragon, DragonStats> shouldExecute;
         public final TriConsumer<DragonPhaseEvent.Change, EnderDragon, Boolean> applyPhase;
 
-        Phases(EnderDragonPhase<?> phase, BiPredicate<EnderDragon, DragonStats> shouldExecute, TriConsumer<DragonPhaseEvent.Change, EnderDragon, Boolean> applyPhase) {
+        Phases(int priority, EnderDragonPhase<?> phase, BiPredicate<EnderDragon, DragonStats> shouldExecute, TriConsumer<DragonPhaseEvent.Change, EnderDragon, Boolean> applyPhase) {
+            this.priority = priority;
             this.phase = phase;
             this.shouldExecute = shouldExecute;
             this.applyPhase = applyPhase;
+        }
+
+        public int getPriority() {
+            return this.priority;
         }
     }
 }

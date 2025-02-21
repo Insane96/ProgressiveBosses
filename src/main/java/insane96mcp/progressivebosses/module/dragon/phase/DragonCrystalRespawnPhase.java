@@ -145,7 +145,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 		int spawned = 0;
 		for (SpikeFeature.EndSpike spike : spikes) {
-			if (dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).isEmpty())
+			if (!dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).isEmpty())
 				continue;
 			this.addCrystalRespawn(spike);
 			if (++spawned >= crystalsToRespawn)
