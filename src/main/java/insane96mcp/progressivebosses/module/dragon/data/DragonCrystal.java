@@ -6,8 +6,8 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -42,6 +42,8 @@ public class DragonCrystal {
 
     public static final String DRAGON_PHANTOM = ProgressiveBosses.RESOURCE_PREFIX + "dragon_phantom";
     public static final String PHANTOM_CRYSTAL = ProgressiveBosses.RESOURCE_PREFIX + "crystal";
+
+    public static final String LAST_RESPAWN_TAG = ProgressiveBosses.RESOURCE_PREFIX + "last_respawn";
 
     private static final ResourceLocation ENDERGETIC_CRYSTAL_LOCATION = new ResourceLocation("endergetic:crystal_holder");
     private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = List.of(DragonBlastAttackPhase.getPhaseType());
@@ -151,6 +153,8 @@ public class DragonCrystal {
     }
 
     public static boolean shouldRespawnCrystals(EnderDragon dragon, DragonStats stats) {
+        if (DragonCrystalRespawnPhase.isInCooldown(dragon, dragon.level()))
+            return false;
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
 
         float chance = getChanceAtValue(healthRatio, stats.crystal.respawnCrystalsBelowHealth, stats.crystal.maxRespawnChanceAtHealth, 0, stats.crystal.maxRespawnChance);
@@ -159,9 +163,9 @@ public class DragonCrystal {
     }
 
     public static void respawnCrystals(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
-        event.setNewPhase(CrystalRespawnPhase.getPhaseType());
+        event.setNewPhase(DragonCrystalRespawnPhase.getPhaseType());
         if (forceBegin)
-            dragon.getPhaseManager().getPhase(CrystalRespawnPhase.getPhaseType()).begin();
+            dragon.getPhaseManager().getPhase(DragonCrystalRespawnPhase.getPhaseType()).begin();
     }
 
     public static boolean onCrystalDamagedByExplosion(DamageSource source) {

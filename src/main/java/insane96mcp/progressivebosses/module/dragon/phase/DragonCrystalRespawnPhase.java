@@ -38,13 +38,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
-	private static EnderDragonPhase<CrystalRespawnPhase> CRYSTAL_RESPAWN;
+public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
+	private static EnderDragonPhase<DragonCrystalRespawnPhase> CRYSTAL_RESPAWN;
 
 	public Vec3 targetLocation;
 	private final ArrayList<SpikeFeature.EndSpike> spikesToRespawn = new ArrayList<>();
 
-	public CrystalRespawnPhase(EnderDragon dragonIn) {
+	public DragonCrystalRespawnPhase(EnderDragon dragonIn) {
 		super(dragonIn);
 	}
 
@@ -83,8 +83,10 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			crystal.discard();
 			this.dragon.level().addFreshEntity(corruptedEndCrystal);
 			spikesToRespawn.remove(0);
-			if (this.spikesToRespawn.isEmpty())
+			if (this.spikesToRespawn.isEmpty()) {
 				LogHelper.info("No more crystals to respawn left");
+				this.dragon.getPersistentData().putLong(DragonCrystal.LAST_RESPAWN_TAG, this.dragon.level().getGameTime());
+			}
 			for (int i = 0; i < stats.get().crystal.phantomCount; i++) {
 				summonPhantom(spike, crystal, stats.get().crystal);
 			}
@@ -189,16 +191,20 @@ public class CrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		return amount * stats.get().vulnerabilities.respawningCrystalDamageMultiplier;
 	}
 
-	public EnderDragonPhase<CrystalRespawnPhase> getPhase() {
+	public static boolean isInCooldown(EnderDragon dragon, Level level) {
+		return level.getGameTime() - dragon.getPersistentData().getLong(DragonCrystal.LAST_RESPAWN_TAG) < 6000; //5 minutes
+	}
+
+	public EnderDragonPhase<DragonCrystalRespawnPhase> getPhase() {
 		return CRYSTAL_RESPAWN;
 	}
 
-	public static EnderDragonPhase<CrystalRespawnPhase> getPhaseType() {
+	public static EnderDragonPhase<DragonCrystalRespawnPhase> getPhaseType() {
 		return CRYSTAL_RESPAWN;
 	}
 
 	public static void init() {
-		CRYSTAL_RESPAWN = EnderDragonPhase.create(CrystalRespawnPhase.class, "CrystalRespawn");
+		CRYSTAL_RESPAWN = EnderDragonPhase.create(DragonCrystalRespawnPhase.class, "CrystalRespawn");
 	}
 
 	static class PhantomAttackPlayerTargetGoal extends Goal {

@@ -27,7 +27,7 @@
         "phantom_size": 5,
         "respawn_caged_chance": 1,
         "respawn_crystals_below_health": 0.6,
-        "max_respawn_chance": 0.6,
+        "max_respawn_chance": 0.80,
         "max_respawn_chance_at_health": 0
     },
     "minion": {

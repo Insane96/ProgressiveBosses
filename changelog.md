@@ -1,5 +1,7 @@
 # Changelog
 
+* Priorities for phases so the respawn phase happens
+
 ## Upcoming
 * Data packable Ender Dragon
   * Reworked the whole fight
@@ -22,6 +24,7 @@
   * Ultimate wither charge attack damage slightly increased (12 -> 13)
   * Other wither's charge damage has been reduced (8 -> 6.5)
 * Enhanced a bit the wither's death explosion
+* You can now disable one of the default levels by setting the corresponding JSON to `{}`
 * Fixed wither not dropping items from default loot table
 
 ## Beta 4.2.1

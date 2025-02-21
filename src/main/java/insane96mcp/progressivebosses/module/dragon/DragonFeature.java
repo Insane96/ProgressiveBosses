@@ -10,8 +10,8 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
-import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonHoldingPatternPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import insane96mcp.progressivebosses.utils.LogHelper;
@@ -366,7 +366,7 @@ public class DragonFeature extends Feature {
         STRAFE(PBDragonStrafePlayerPhase.getPhaseType(), DragonAttack::shouldStrafe, DragonAttack::strafe),
         LAND(EnderDragonPhase.LANDING_APPROACH, (dragon, stats) -> dragon.getRandom().nextInt(3) == 0 && !DragonAnger.isAngered(dragon), DragonFeature::land),
         BLAST(DragonBlastAttackPhase.getPhaseType(), DragonAttack::shouldBlast, (event, dragon, forceBegin) -> DragonAttack.setForcedToBlast(dragon, true)),
-        RESPAWN(CrystalRespawnPhase.getPhaseType(), DragonCrystal::shouldRespawnCrystals, DragonCrystal::respawnCrystals);
+        RESPAWN(DragonCrystalRespawnPhase.getPhaseType(), DragonCrystal::shouldRespawnCrystals, DragonCrystal::respawnCrystals);
 
         private static final List<Phases> PHASES = List.of(Phases.values());
 

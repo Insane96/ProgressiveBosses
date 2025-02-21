@@ -37,6 +37,8 @@ public class DragonStatsReloadListener extends SimpleJsonResourceReloadListener 
                 if (split[split.length - 1].startsWith("_"))
                     continue;
 
+                if (entry.getValue().isJsonObject() && entry.getValue().getAsJsonObject().entrySet().isEmpty())
+                    continue;
                 DragonStats dragonStats = GSON.fromJson(entry.getValue(), DragonStats.class);
                 if (STATS_MAP.containsKey(dragonStats.level))
                     LogHelper.warn("Duplicate Dragon Stats level: " + dragonStats.level);

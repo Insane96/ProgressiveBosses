@@ -3,8 +3,8 @@ package insane96mcp.progressivebosses;
 import insane96mcp.progressivebosses.commands.PBCommand;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStatsReloadListener;
 import insane96mcp.progressivebosses.module.dragon.entity.Larva;
-import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonHoldingPatternPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStatsReloadListener;
@@ -53,7 +53,7 @@ public class ProgressiveBosses {
 		PBLoot.LOOT_CONDITIONS.register(modEventBus);
 		PBLoot.LOOT_FUNCTION.register(modEventBus);
 
-		CrystalRespawnPhase.init();
+		DragonCrystalRespawnPhase.init();
 		PBDragonStrafePlayerPhase.init();
 		PBDragonHoldingPatternPhase.init();
 		DragonBlastAttackPhase.init();

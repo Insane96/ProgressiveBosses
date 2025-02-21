@@ -13,8 +13,8 @@ import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.Corrupted
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
-import insane96mcp.progressivebosses.module.dragon.phase.CrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -36,7 +36,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,14 +75,14 @@ public abstract class EnderDragonMixin extends Mob {
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;reallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", shift = At.Shift.AFTER), method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z")
 	private void onReallyHurt(EnderDragonPart part, DamageSource damageSource, float amount, CallbackInfoReturnable<Boolean> callbackInfo) {
 		EnderDragon $this = (EnderDragon) (Object) this;
-		if (this.isDeadOrDying() && $this.getPhaseManager().getCurrentPhase().getPhase().equals(CrystalRespawnPhase.getPhaseType())) {
+		if (this.isDeadOrDying() && $this.getPhaseManager().getCurrentPhase().getPhase().equals(DragonCrystalRespawnPhase.getPhaseType())) {
 			$this.setHealth(1.0F);
 			$this.getPhaseManager().setPhase(EnderDragonPhase.DYING);
 		}
 	}
 
 	@Inject(method = "knockBack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;push(DDD)V", shift = At.Shift.AFTER))
-	private void hurtMarkKnockbackedEntities(List<Entity> pEntities, CallbackInfo ci, @Local Entity entity) {
+	private void progressivebosses$hurtMarkKnockbackedEntities(List<Entity> pEntities, CallbackInfo ci, @Local Entity entity) {
 		if (!Feature.isEnabled(DragonFeature.class)
 				|| !DragonFeature.enableFixes)
 			return;
@@ -91,61 +90,25 @@ public abstract class EnderDragonMixin extends Mob {
 	}
 
 	@WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;knockBack(Ljava/util/List;)V"))
-	public void onCrystalHeal(EnderDragon instance, List<Entity> entities, Operation<Void> original) {
+	public void progressivebosses$preventKnockbackWhenBlasting(EnderDragon instance, List<Entity> entities, Operation<Void> original) {
 		if (this.getPhaseManager().getCurrentPhase().getPhase() == DragonBlastAttackPhase.getPhaseType())
 			return;
 		original.call(instance, entities);
 	}
 
-	@Unique
-	HashMap<LivingEntity, Integer> progressiveBosses$hurtEntitiesTimestamp = new HashMap<>();
-
-	@Definition(id = "entity", local = @Local(type = Entity.class))
 	@Definition(id = "LivingEntity", type = LivingEntity.class)
-	@Expression("entity instanceof LivingEntity")
-	@WrapOperation(method = "hurt(Ljava/util/List;)V", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
-	public boolean progressivebosses$headOnTryHurtEntity(Object object, Operation<Boolean> original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
-			return original.call(object);
-		boolean isLiving = original.call(object);
-		if (!isLiving)
-			return false;
-		LivingEntity living = (LivingEntity) object;
-		int lastHurtTimestamp = progressiveBosses$hurtEntitiesTimestamp.getOrDefault(living, 0);
-		if (this.tickCount - lastHurtTimestamp <= 10)
-			return false;
-		progressiveBosses$hurtEntitiesTimestamp.put(living, this.tickCount);
-		return true;
-	}
-
-	@ModifyExpressionValue(method = "knockBack", at = @At(value = "CONSTANT", args = "intValue=2"))
-	public int progressivebosses$lastHurtTick(int original) {
+	@Definition(id = "entity", local = @Local(type = Entity.class))
+	@Definition(id = "getLastHurtByMobTimestamp", method = "Lnet/minecraft/world/entity/LivingEntity;getLastHurtByMobTimestamp()I")
+	@Definition(id = "tickCount", field = "Lnet/minecraft/world/entity/Entity;tickCount:I")
+	@Expression("((LivingEntity)entity).getLastHurtByMobTimestamp() < entity.tickCount - 2")
+	@ModifyExpressionValue(method = "knockBack", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
+	public boolean progressivebosses$changeHurtCooldown(boolean original, @Local Entity entity) {
 		if (!Feature.isEnabled(DragonFeature.class)
 				|| !DragonFeature.enableFixes)
 			return original;
-		return 10;
-	}
 
-	/*@Definition(id = "phaseManager", field = "Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;phaseManager:Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;")
-	@Definition(id = "getCurrentPhase", method = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;getCurrentPhase()Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;")
-	@Definition(id = "isSitting", method = "Lnet/minecraft/world/entity/boss/enderdragon/phases/DragonPhaseInstance;isSitting()Z")
-	@Expression("this.phaseManager.getCurrentPhase().isSitting()")
-	@WrapOperation(method = "knockBack", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
-	public boolean progressivebosses$wingsOnTryHurtEntity(DragonPhaseInstance instance, Operation<Boolean> original, @Local Entity entity) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
-			return original.call(instance);
-		boolean isSitting = original.call(instance);
-		if (isSitting)
-			return true;
-		LivingEntity living = (LivingEntity) entity;
-		int lastHurtTimestamp = progressiveBosses$hurtEntitiesTimestamp.getOrDefault(living, 0);
-		if (this.tickCount - lastHurtTimestamp <= 10)
-			return true;
-		progressiveBosses$hurtEntitiesTimestamp.put(living, this.tickCount);
-		return false;
-	}*/
+        return ((LivingEntity)entity).getLastHurtByMobTimestamp() < entity.tickCount - 10 && ((LivingEntity) entity).getLastHurtByMob() != this;
+	}
 
 	@ModifyExpressionValue(method = "checkCrystals", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
 	public float onCrystalHeal(float original) {

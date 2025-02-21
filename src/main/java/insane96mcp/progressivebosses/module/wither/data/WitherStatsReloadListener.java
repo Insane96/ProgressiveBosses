@@ -37,6 +37,8 @@ public class WitherStatsReloadListener extends SimpleJsonResourceReloadListener 
                 if (split[split.length - 1].startsWith("_"))
                     continue;
 
+                if (entry.getValue().isJsonObject() && entry.getValue().getAsJsonObject().entrySet().isEmpty())
+                    continue;
                 WitherStats witherStats = GSON.fromJson(entry.getValue(), WitherStats.class);
                 if (STATS_MAP.containsKey(witherStats.level))
                     LogHelper.warn("Duplicate Wither Stats level: " + witherStats.level);

@@ -37,6 +37,8 @@ public class ElderGuardianStatsReloadListener extends SimpleJsonResourceReloadLi
                 if (split[split.length - 1].startsWith("_"))
                     continue;
 
+                if (entry.getValue().isJsonObject() && entry.getValue().getAsJsonObject().entrySet().isEmpty())
+                    continue;
                 ElderGuardianStats elderGuardianStats = GSON.fromJson(entry.getValue(), ElderGuardianStats.class);
                 if (elderGuardianStats.level > 2)
                     throw new IndexOutOfBoundsException("Level out of bounds, must be between 0 and 2: " + elderGuardianStats.level);
