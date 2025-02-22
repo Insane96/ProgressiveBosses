@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Fixed Blast attack damaging the ender dragon
+
 ## Alpha 4.3.0
 Please note that this is an alpha because customization of the dragon is not yet final, many fields will be changed and some will be removed and many added.  
 Also the dragon difficulty must be fine-tuned.

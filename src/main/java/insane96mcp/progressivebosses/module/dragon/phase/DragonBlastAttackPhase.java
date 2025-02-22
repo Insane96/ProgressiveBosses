@@ -12,6 +12,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.boss.EnderDragonPart;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonSittingPhase;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
@@ -79,7 +80,9 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
             if (stats != null)
                 damage = stats.attack.blastDamage;
             for (Entity entity : entities) {
-                if (entity == this.dragon || this.dragon.distanceToSqr(entity) > 3136)
+                if (entity == this.dragon
+                        || entity instanceof EnderDragonPart
+                        || this.dragon.distanceToSqr(entity) > 3136)
                     continue;
                 double distanceX = entity.getX() - this.dragon.getX();
                 double distanceY = entity.getY() - this.dragon.getY();
@@ -96,14 +99,14 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
                 this.dragon.level().playSound(null, this.dragon.getX() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getY() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getZ() + this.dragon.getRandom().nextFloat() * 48f - 24f, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 4f, 0.7f);
             }
             DragonAnger.setAngered(this.dragon, true);
-        }
-        else if (this.prepareBlowUpTime <= -10) {
             this.dragon.getPersistentData().putLong(DragonAttack.LAST_BLAST_TAG, this.dragon.level().getGameTime());
+        }
+        else if (this.prepareBlowUpTime <= -20) {
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
         }
         else {
             if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 10) {
-                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f + (this.blastTime - this.prepareBlowUpTime) * 0.025f);
+                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.5f + (1f - (float) this.blastTime / this.prepareBlowUpTime) * 1.5f);
             }
             this.dragon.flapTime = 1f - (this.blastTime - this.prepareBlowUpTime) / (float) this.blastTime;
         }
