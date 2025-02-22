@@ -50,12 +50,12 @@
         "strafe_chance": 0.5,
         "blast_chance": {
             "base": 0.2,
-            "angered": 0.5
+            "angered": 0.4
         },
         "acidball_speed_multiplier": 3,
         "acidball_impact_damage": 12,
-        "min_acidball_shot": 3,
-        "max_acidball_shot": 6
+        "min_acidball_shot": 2,
+        "max_acidball_shot": 3
     },
     "xp_dropped": 20000,
     "loot_table": "progressivebosses:entities/ender_dragon/corrupted"

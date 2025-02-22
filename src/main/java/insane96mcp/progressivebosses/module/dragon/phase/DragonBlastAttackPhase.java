@@ -102,11 +102,11 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
             this.dragon.getPersistentData().putLong(DragonAttack.LAST_BLAST_TAG, this.dragon.level().getGameTime());
         }
         else if (this.prepareBlowUpTime <= -10) {
-            this.dragon.getPhaseManager().setPhase(EnderDragonPhase.SITTING_SCANNING);
+            this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
         }
         else {
             if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 10) {
-                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.5f + (1f - this.prepareBlowUpTime / (float) this.blastTime) * 1.5f);
+                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.5f + (1f - this.prepareBlowUpTime / (float) this.blastTime) * 1.2f);
             }
             this.dragon.flapTime = 1f - (this.blastTime - this.prepareBlowUpTime) / (float) this.blastTime;
         }

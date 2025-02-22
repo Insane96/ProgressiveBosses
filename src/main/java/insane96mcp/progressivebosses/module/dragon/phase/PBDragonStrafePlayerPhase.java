@@ -95,7 +95,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
                 dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
                 this.dragon.level().addFreshEntity(dragonfireball);
             }
-            this.fireballCharge = 3;
+            this.fireballCharge = 2;
             if (DragonAnger.isAngered(this.dragon))
                 this.fireballCharge = -10;
 
@@ -172,7 +172,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
             return;
         this.fireballsToShoot = Mth.nextInt(dragon.getRandom(), stats.get().attack.minAcidballShot, stats.get().attack.maxAcidballShot);
         if (DragonAnger.isAngered(this.dragon))
-            this.fireballsToShoot /= 2;
+            this.fireballsToShoot = Math.max(1, this.fireballsToShoot / 2);
     }
 
     public void setTarget(@NotNull LivingEntity pAttackTarget) {

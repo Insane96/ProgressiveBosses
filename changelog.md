@@ -3,6 +3,8 @@
 * Sync dragon anger with players joining
 
 ## Upcoming
+* Reduced acid balls shot and slowed down the series of shots
+* Dragon now takes off after blasting
 * Fixed Blast attack damaging the ender dragon
 
 ## Alpha 4.3.0
