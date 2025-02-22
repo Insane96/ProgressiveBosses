@@ -74,7 +74,7 @@ public class DragonAnger {
 
     public static void tick(EnderDragon dragon) {
         if (dragon.level().isClientSide && isAngered(dragon) && !dragon.getPhaseManager().getCurrentPhase().isSitting()) {
-            dragon.growlTime--;
+            dragon.growlTime -= 3;
             Vec3 vec3 = dragon.getHeadLookVector(1.0F).normalize();
             vec3.yRot((-(float) Math.PI / 4F));
             double d0 = dragon.head.getX();
