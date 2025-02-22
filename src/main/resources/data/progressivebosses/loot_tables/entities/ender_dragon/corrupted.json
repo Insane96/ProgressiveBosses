@@ -15,7 +15,13 @@
             "entries": [
                 {
                     "type": "minecraft:item",
-                    "name": "minecraft:enchanted_golden_apple"
+                    "name": "minecraft:enchanted_golden_apple",
+                    "functions": [
+                        {
+                            "function": "minecraft:set_count",
+                            "count": 4
+                        }
+                    ]
                 }
             ]
         }

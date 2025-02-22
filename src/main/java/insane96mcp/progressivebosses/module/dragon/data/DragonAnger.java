@@ -2,8 +2,11 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.network.SyncDragonAnger;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 public class DragonAnger {
@@ -67,5 +70,28 @@ public class DragonAnger {
 
     public static float flySpeedMultiplier(EnderDragon dragon) {
         return isAngered(dragon) ? 1.3f : 1f;
+    }
+
+    public static void tick(EnderDragon dragon) {
+        if (dragon.level().isClientSide && isAngered(dragon) && !dragon.getPhaseManager().getCurrentPhase().isSitting()) {
+            dragon.growlTime--;
+            Vec3 vec3 = dragon.getHeadLookVector(1.0F).normalize();
+            vec3.yRot((-(float) Math.PI / 4F));
+            double d0 = dragon.head.getX();
+            double d1 = dragon.head.getY(0.5D);
+            double d2 = dragon.head.getZ();
+
+            for (int i = 0; i < 4; ++i) {
+                RandomSource randomsource = dragon.getRandom();
+                double d3 = d0 + randomsource.nextGaussian() / 2.0D;
+                double d4 = d1 + randomsource.nextGaussian() / 2.0D;
+                double d5 = d2 + randomsource.nextGaussian() / 2.0D;
+                Vec3 vec31 = dragon.getDeltaMovement();
+                dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, d3, d4, d5, -vec3.x * (double) 0.01F + vec31.x, -vec3.y * (double) 0.04F + vec31.y, -vec3.z * (double) 0.01F + vec31.z);
+                vec3.yRot(0.19634955F);
+            }
+        }
+        if (dragon.tickCount % 20 == 0)
+            DragonAnger.tickAnger(dragon);
     }
 }

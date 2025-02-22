@@ -14,6 +14,7 @@ import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonHoldingPatternPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
+import insane96mcp.progressivebosses.network.SyncDragonAnger;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -132,7 +133,8 @@ public class DragonFeature extends Feature {
             return;
         onDragonJoinLevel(event);
         DragonMinion.onShulkerSpawn(event);
-        //DragonAttack.setAcidBallSpeedMultiplier(event.getEntity());
+        if (event.getEntity() instanceof EnderDragon dragon)
+            ((ServerLevel) dragon.level()).players().forEach(player -> SyncDragonAnger.sync(player, dragon, DragonAnger.isAngered(dragon)));
     }
 
     public void onDragonJoinLevel(EntityJoinLevelEvent event) {
@@ -196,12 +198,11 @@ public class DragonFeature extends Feature {
 
         //dragon.level().players().forEach(player -> player.displayClientMessage(Component.literal("x: %.1f, y: %.1f, z: %.1f".formatted(dragon.position().x, dragon.position().y, dragon.position().z)), true));
         DragonHealth.tryHeal(dragon);
-        DragonLarva.tickLarva(dragon);
-        DragonMinion.tickMinion(dragon);
+        DragonLarva.tick(dragon);
+        DragonMinion.tick(dragon);
         tryDropEggPerPlayer(dragon);
 
-        if (dragon.tickCount % 20 == 0)
-            DragonAnger.tickAnger(dragon);
+        DragonAnger.tick(dragon);
     }
 
     private static void tryDropEggPerPlayer(EnderDragon dragon) {

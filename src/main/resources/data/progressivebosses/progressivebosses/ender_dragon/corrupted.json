@@ -47,13 +47,10 @@
             "base": 0.5,
             "angered": 1.0
         },
-        "strafe_chance": {
-            "base": 0.5,
-            "angered": 1.0
-        },
+        "strafe_chance": 0.5,
         "blast_chance": {
-            "base": 0.25,
-            "angered": 0.6
+            "base": 0.2,
+            "angered": 0.5
         },
         "acidball_speed_multiplier": 3,
         "acidball_impact_damage": 12,

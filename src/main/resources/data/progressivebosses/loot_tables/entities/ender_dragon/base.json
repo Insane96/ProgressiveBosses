@@ -10,6 +10,15 @@
                     "name": "minecraft:entities/ender_dragon"
                 }
             ]
+        },
+        {
+            "rolls": 1,
+            "entries": [
+                {
+                    "type": "minecraft:item",
+                    "name": "minecraft:enchanted_golden_apple"
+                }
+            ]
         }
     ]
 }

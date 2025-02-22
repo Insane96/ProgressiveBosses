@@ -1,13 +1,13 @@
 {
     "level": 0,
-    "max_sitting_damage_received": 0.2,
-    "roar_time": 20,
-    "sitting_scanning_idle_time": 40,
-    "sitting_flaming_time": 60,
+    "max_sitting_damage_received": 0.20,
+    "roar_time": 30,
+    "sitting_scanning_idle_time": 50,
+    "sitting_flaming_time": 70,
     "health": {
-        "health": 800.0,
-        "regeneration": 0.5,
-        "crystal_regeneration": 2,
+        "health": 400.0,
+        "regeneration": 0,
+        "crystal_regeneration": 1.5,
         "regen_when_hit_ratio": 0.6,
         "regen_when_hit_duration": 50
     },
@@ -19,41 +19,47 @@
         "respawning_crystal_damage_multiplier": 1.5
     },
     "crystal": {
-        "cages": 4,
-        "bonus_crystals": 0,
+        "cages": 3,
+        "bonus_crystals": 1,
         "crystals_respawned": 2,
-        "time_to_respawn": 90,
+        "time_to_respawn": 50,
         "phantom_count": 2,
-        "phantom_size": 5,
-        "respawn_caged_chance": 0.35,
-        "respawn_crystals_below_health": 0.8,
-        "max_respawn_chance": 0.10,
+        "phantom_size": 3,
+        "respawn_caged_chance": 1,
+        "respawn_crystals_below_health": 0.6,
+        "max_respawn_chance": 0.80,
         "max_respawn_chance_at_health": 0
     },
     "minion": {
         "health": 20,
-        "spawned": 0,
-        "min_cooldown": 1200,
-        "max_cooldown": 1600,
-        "blinding_chance": 0.4,
+        "spawned": 1,
+        "average_cooldown": 1200,
+        "delta_cooldown": 300,
+        "blinding_chance": 0,
         "blinding_duration": 150
     },
     "attack": {
-        "melee_damage_dealt_multiplier": 1.8,
-        "acid_damage_dealt_multiplier": 1.5,
+        "melee_damage": 12.5,
+        "melee_head_damage": 20,
+        "acid_amplifier": 1,
+        "blast_damage": 25,
         "charge_chance": {
-            "base": 0.25,
-            "with_no_crystals_left": 0.4
+            "base": 0.5,
+            "angered": 1.0
         },
         "strafe_chance": {
+            "base": 0.5,
+            "angered": 0.75
+        },
+        "blast_chance": {
             "base": 0.25,
-            "with_no_crystals_left": 0.35
+            "angered": 0.6
         },
         "acidball_speed_multiplier": 2.5,
-        "acidball_impact_damage": 9,
-        "min_acidball_shot": 2,
-        "max_acidball_shot": 4
+        "acidball_impact_damage": 8,
+        "min_acidball_shot": 3,
+        "max_acidball_shot": 6
     },
-    "xp_dropped": 12000,
+    "xp_dropped": 5000,
     "loot_table": "progressivebosses:entities/ender_dragon/base"
 }

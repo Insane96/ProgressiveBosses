@@ -138,7 +138,7 @@ public class DragonMinion {
         dragon.getPersistentData().putInt(DRAGON_MINION_COOLDOWN, cooldown);
     }
 
-    public static void tickMinion(EnderDragon dragon) {
+    public static void tick(EnderDragon dragon) {
         Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
         if (stats.isEmpty())
             return;

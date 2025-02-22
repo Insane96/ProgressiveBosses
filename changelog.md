@@ -1,8 +1,16 @@
 # Changelog
 
 ## Alpha 4.3.0
+Please note that this is an alpha because customization of the dragon is not yet final, many fields will be changed and some will be removed and many added.  
+Also the dragon difficulty must be fine-tuned.
+
 * Data packable Ender Dragon
   * Reworked the whole fight
+    * Dragon now has two levels: base and corrupted
+      * The base ender dragon is much stronger, requiring full diamond/netherite armor. Drops an enchanted golden apple
+      * Corrupted instead requires full netherite armor + beacon (and shield/totem of undying). Drops 4 enchanted golden apple
+      * Corrupted can be summoned with 4 corrupted end crystals, crafted with an end crystal and a dragon egg
+    * Dragon now always drops an egg
   * Added a new item tag `progressivebosses:dragon_invulnerable` making items in this tag invulnerable to dragon damage
   * Fixed Crystals destroyed on dragon respawning leaving behind fire
   * Fixed Vanilla bugs
@@ -17,10 +25,10 @@
     * Fixed Ender Dragon growl sound playing 20 times / sec (making it really loud) when about to respawn and when at the center breathing (it's now 4 times / sec)
     * Fixed Ender Dragon growl sound being played in a too small radius making it inaudible from ground level
     * Fixed head and neck placements and head size
-* Rebalancements
-  * Wither Charge Attack now ignores armor
+* Wither
+  * Charge Attack now ignores armor
   * Ultimate wither charge attack damage slightly increased (12 -> 13)
-  * Other wither's charge damage has been reduced (8 -> 6.5)
+  * Non-Ultimate wither's charge damage has been reduced (8 -> 6.5)
 * Enhanced a bit the wither's death explosion
 * You can now disable one of the default levels by setting the corresponding JSON to `{}`
 * Fixed wither not dropping items from default loot table

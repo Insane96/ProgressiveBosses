@@ -10,7 +10,6 @@ import insane96mcp.progressivebosses.mixin.ProjectileInvoker;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
@@ -21,17 +20,13 @@ import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySelector;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -39,7 +34,6 @@ import net.minecraft.world.phys.HitResult;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -184,7 +178,7 @@ public class DragonAttack {
     public static void onChargeBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {
         if (event.getPhaseInstance().getPhase() != EnderDragonPhase.CHARGING_PLAYER)
             return;
-        Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 96);
+        Player player = getRandomPlayer(dragon, dragon.level(), 96);
         if (player == null)
             return;
         dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());
@@ -226,7 +220,7 @@ public class DragonAttack {
     public static void onStrafeBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {
         if (event.getPhaseInstance().getPhase() != PBDragonStrafePlayerPhase.getPhaseType())
             return;
-        Player player = getRandomPlayerWithCrystalPriority(dragon.level(), 96);
+        Player player = getRandomPlayer(dragon, dragon.level(), 96);
         if (player == null)
             return;
         dragon.getPhaseManager().getPhase(PBDragonStrafePlayerPhase.getPhaseType()).setTarget(player);
@@ -267,38 +261,13 @@ public class DragonAttack {
             event.setNewPhase(EnderDragonPhase.LANDING);
     }
 
-    public static boolean isPlayerInRange(Level level, int range) {
-        BlockPos centerPodium = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-        AABB bb = new AABB(centerPodium).inflate(range);
-        List<Player> players = level.getEntitiesOfClass(Player.class, bb, EntitySelector.NO_CREATIVE_OR_SPECTATOR);
-        return !players.isEmpty();
-    }
-
-    //Returns a random player that is at least 12 blocks near a Crystal or a random player if no players are near crystals
     @Nullable
-    public static Player getRandomPlayerWithCrystalPriority(Level level, int range) {
-        BlockPos centerPodium = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-        AABB boundingBox = new AABB(centerPodium).inflate(range);
-        List<Player> players = level.getEntitiesOfClass(Player.class, boundingBox);
+    public static Player getRandomPlayer(EnderDragon dragon, Level level, int range) {
+        List<Player> players = level.getEntitiesOfClass(Player.class, dragon.getBoundingBox().inflate(range));
         if (players.isEmpty())
             return null;
 
-        List<Player> playersNearCrystals = new ArrayList<>();
-
-        for (Player player : players) {
-            List<EndCrystal> endCrystals = player.level().getEntitiesOfClass(EndCrystal.class, player.getBoundingBox().inflate(12d), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
-            if (!endCrystals.isEmpty())
-                playersNearCrystals.add(player);
-        }
-
-        int p;
-        if (playersNearCrystals.isEmpty()) {
-            p = Mth.nextInt(level.random, 0, players.size() - 1);
-            return players.get(p);
-        }
-
-        p = Mth.nextInt(level.random, 0, playersNearCrystals.size() - 1);
-        return playersNearCrystals.get(p);
+        return players.get(Mth.nextInt(level.random, 0, players.size() - 1));
     }
 
     static ResourceKey<DamageType> DRAGON_FIREBALL_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_fireball"));

@@ -70,7 +70,7 @@ public class DragonLarva {
         dragon.getPersistentData().putInt(DRAGON_LARVA_COOLDOWN, cooldown);
     }
 
-    public static void tickLarva(EnderDragon dragon) {
+    public static void tick(EnderDragon dragon) {
         Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
         if (stats.isEmpty())
             return;
