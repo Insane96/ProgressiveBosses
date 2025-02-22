@@ -1,5 +1,7 @@
 # Changelog
 
+* Sync dragon anger with players joining
+
 ## Upcoming
 * Fixed Blast attack damaging the ender dragon
 
