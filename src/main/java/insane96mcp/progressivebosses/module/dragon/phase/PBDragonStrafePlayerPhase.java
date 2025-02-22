@@ -76,10 +76,10 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         float angleToTarget = (float)(Math.acos(dot) * (double)(180F / (float)Math.PI));
         angleToTarget += 0.5F;
         if (this.fireballCharge >= 5 && angleToTarget >= 0.0F && angleToTarget < 12.5F) {
-            int spawned = 1;
+            int fired = 1;
             if (DragonAnger.isAngered(this.dragon))
-                spawned = 3;
-            for (int i = 0; i < spawned; i++) {
+                fired = 4;
+            for (int i = 0; i < fired; i++) {
                 Vec3 vec32 = this.dragon.getViewVector(1.0F);
                 double headXOffset = this.dragon.head.getX() - vec32.x;
                 double headYOffset = this.dragon.head.getY(0.5D) + 0.5D;

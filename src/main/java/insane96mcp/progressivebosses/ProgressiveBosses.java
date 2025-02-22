@@ -12,6 +12,7 @@ import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListene
 import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
+import insane96mcp.progressivebosses.network.NetworkHandler;
 import insane96mcp.progressivebosses.setup.*;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -25,6 +26,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,16 +37,15 @@ public class ProgressiveBosses {
 	public static final String MOD_ID = "progressivebosses";
 	public static final String RESOURCE_PREFIX = MOD_ID + ":";
 
-	public static final String CONFIG_FOLDER = "config/" + MOD_ID;
-
 	public static final Logger LOGGER = LogManager.getLogger();
 
 	public ProgressiveBosses() {
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC, MOD_ID + "/common.toml");
+		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
 		MinecraftForge.EVENT_BUS.register(this);
 		final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 		modEventBus.addListener(ClientSetup::registerEntityRenderers);
 		modEventBus.addListener(ClientSetup::creativeTabsBuildContents);
+		modEventBus.addListener(this::commonSetup);
 		modEventBus.addListener(this::registerAttributes);
 		PBItems.REGISTRY.register(modEventBus);
 		PBEntities.REGISTRY.register(modEventBus);
@@ -66,6 +67,10 @@ public class ProgressiveBosses {
 		event.addListener(DragonStatsReloadListener.INSTANCE);
 		event.addListener(WitherStatsReloadListener.INSTANCE);
 		event.addListener(ElderGuardianStatsReloadListener.INSTANCE);
+	}
+
+	private void commonSetup(final FMLCommonSetupEvent event) {
+		NetworkHandler.init();
 	}
 
 	@SubscribeEvent

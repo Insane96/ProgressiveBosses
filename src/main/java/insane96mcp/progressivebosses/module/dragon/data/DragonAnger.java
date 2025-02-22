@@ -1,6 +1,8 @@
 package insane96mcp.progressivebosses.module.dragon.data;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.network.SyncDragonAnger;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
@@ -50,6 +52,9 @@ public class DragonAnger {
 
     public static void setAngered(EnderDragon dragon, boolean angered) {
         dragon.getPersistentData().putBoolean(ANGERED_TAG, angered);
+        if (!dragon.level().isClientSide)
+            ((ServerLevel) dragon.level()).players()
+                    .forEach(player -> SyncDragonAnger.sync(player, dragon, angered));
     }
 
     public static void onHurt(LivingHurtEvent event, EnderDragon dragon, DragonStats stats) {

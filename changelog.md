@@ -1,8 +1,6 @@
 # Changelog
 
-* Priorities for phases so the respawn phase happens
-
-## Upcoming
+## Alpha 4.3.0
 * Data packable Ender Dragon
   * Reworked the whole fight
   * Added a new item tag `progressivebosses:dragon_invulnerable` making items in this tag invulnerable to dragon damage
@@ -14,11 +12,11 @@
       * This makes the ender dragon no longer teleport when inside portal blocks
     * Fixed [MC-105770](https://bugs.mojang.com/browse/MC-105770)
       * Fixes players accumulating knockback when hit by the dragon and then launching like a rocket
-    * Fixed [MC-](https://bugs.mojang.com/browse/MC-)
-      * Dragon now "attacks" every 10 ticks
-    * Fixed Ender Dragon growl sound playing 20 times (making it really loud) when about to respawn and when at the center breathing (it's now 4 times)
+    * Fixed [MC-169167](https://bugs.mojang.com/browse/MC-169167)
+      * Dragon attack on an entity has a 10 ticks cooldown
+    * Fixed Ender Dragon growl sound playing 20 times / sec (making it really loud) when about to respawn and when at the center breathing (it's now 4 times / sec)
     * Fixed Ender Dragon growl sound being played in a too small radius making it inaudible from ground level
-    * Fixed head and neck place+ments and head size
+    * Fixed head and neck placements and head size
 * Rebalancements
   * Wither Charge Attack now ignores armor
   * Ultimate wither charge attack damage slightly increased (12 -> 13)

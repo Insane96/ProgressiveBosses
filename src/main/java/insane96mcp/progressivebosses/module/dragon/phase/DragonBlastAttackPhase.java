@@ -40,18 +40,18 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         double y = this.dragon.getY() + 2;
         double z = this.dragon.getZ();
         if (--this.prepareBlowUpTime > 30) {
-            for (int i = 0; i < 20 + (blastTime - this.prepareBlowUpTime) * 0.1; i++) {
+            for (int i = 0; i < 20 + (this.blastTime - this.prepareBlowUpTime) * 0.1; i++) {
                 double r = 24;
                 double v = r / 2f;
                 double x1 = x + random.nextFloat() * r - v;
                 double y1 = y + random.nextFloat() * r - v;
                 double z1 = z + random.nextFloat() * r - v;
-                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-0.008f * ((blastTime - this.prepareBlowUpTime)));
+                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-0.008f * ((this.blastTime - this.prepareBlowUpTime)));
                 this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, x1, y1, z1, dir.x, dir.y, dir.z);
             }
         }
         if (this.prepareBlowUpTime > 9)
-            this.dragon.flapTime = 0.8f - (blastTime - this.prepareBlowUpTime + 3) * 0.005f;
+            this.dragon.flapTime = 0.8f - (this.blastTime - this.prepareBlowUpTime + 3) * 0.005f;
         else if (this.prepareBlowUpTime >= 4) {
             this.dragon.flapTime = 0.333f - (8 - this.prepareBlowUpTime + 1) * 0.08f;
         }
@@ -103,9 +103,9 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         }
         else {
             if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 10) {
-                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f + (blastTime - this.prepareBlowUpTime) * 0.025f);
+                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.8f + (this.blastTime - this.prepareBlowUpTime) * 0.025f);
             }
-            this.dragon.flapTime = 1f - (blastTime - this.prepareBlowUpTime) / (float) blastTime;
+            this.dragon.flapTime = 1f - (this.blastTime - this.prepareBlowUpTime) / (float) this.blastTime;
         }
     }
 
@@ -115,7 +115,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
     public void begin() {
         this.prepareBlowUpTime = BLAST_TIME;
         if (DragonAnger.isAngered(this.dragon))
-            this.prepareBlowUpTime -= 15;
+            this.prepareBlowUpTime -= 20;
         this.blastTime = this.prepareBlowUpTime;
     }
 
