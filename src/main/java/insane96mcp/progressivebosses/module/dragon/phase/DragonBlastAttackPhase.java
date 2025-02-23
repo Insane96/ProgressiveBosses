@@ -41,20 +41,20 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         double y = this.dragon.getY() + 2;
         double z = this.dragon.getZ();
         if (--this.prepareBlowUpTime > 30) {
-            for (int i = 0; i < 20 + (this.blastTime - this.prepareBlowUpTime) * 0.1; i++) {
-                double r = 24;
+            for (int i = 0; i < 200; i++) {
+                double r = 96;
                 double v = r / 2f;
                 double x1 = x + random.nextFloat() * r - v;
                 double y1 = y + random.nextFloat() * r - v;
                 double z1 = z + random.nextFloat() * r - v;
-                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-0.008f * ((this.blastTime - this.prepareBlowUpTime)));
+                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-4f * (1f - ((double) this.prepareBlowUpTime / this.blastTime)));
                 this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, x1, y1, z1, dir.x, dir.y, dir.z);
             }
         }
         if (this.prepareBlowUpTime > 9)
-            this.dragon.flapTime = 0.8f - (this.blastTime - this.prepareBlowUpTime + 3) * 0.005f;
+            this.dragon.flapTime = 0.25f + ((float) this.prepareBlowUpTime / this.blastTime * 0.6f);
         else if (this.prepareBlowUpTime >= 4) {
-            this.dragon.flapTime = 0.333f - (8 - this.prepareBlowUpTime + 1) * 0.08f;
+            this.dragon.flapTime = 0.35f - (8 - this.prepareBlowUpTime + 1) * 0.08f;
         }
         else {
             this.dragon.flapTime = 0.8f - (4 - this.prepareBlowUpTime) * 0.05f;
@@ -77,7 +77,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
             List<Entity> entities = this.dragon.level().getEntities((Entity) null, this.dragon.getBoundingBox().inflate(56d), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
             float damage = 20f;
             DragonDefinition stats = DragonFeature.getDragonStats(this.dragon).orElse(null);
-            if (stats != null)
+            if (stats != null && stats.attack != null)
                 damage = stats.attack.blastDamage;
             for (Entity entity : entities) {
                 if (entity == this.dragon
