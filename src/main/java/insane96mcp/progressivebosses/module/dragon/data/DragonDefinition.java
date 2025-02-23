@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-@JsonAdapter(DragonStats.Serializer.class)
-public class DragonStats {
+@JsonAdapter(DragonDefinition.Serializer.class)
+public class DragonDefinition {
     private static final ResourceLocation VANILLA_LOOT_TABLE = new ResourceLocation("entities/ender_dragon");
 
     public byte level;
@@ -32,7 +32,7 @@ public class DragonStats {
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonStats(byte level, float maxSittingDamageReceived, int roarTime, int sittingScanningIdleTime, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonLarva larva, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
+    public DragonDefinition(byte level, float maxSittingDamageReceived, int roarTime, int sittingScanningIdleTime, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonLarva larva, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.maxSittingDamageReceived = maxSittingDamageReceived;
         this.roarTime = roarTime;
@@ -48,7 +48,7 @@ public class DragonStats {
         this.lootTable = lootTable;
     }
 
-    public static void apply(EnderDragon dragon, DragonStats stats) {
+    public static void apply(EnderDragon dragon, DragonDefinition stats) {
         dragon.getAttribute(Attributes.MAX_HEALTH).setBaseValue(stats.health.health);
         dragon.setHealth(stats.health.health);
         dragon.lootTable = null;
@@ -57,14 +57,14 @@ public class DragonStats {
         DragonMinion.setupMinionCooldown(dragon, stats);
     }
 
-    public static final Type LIST_TYPE = new TypeToken<ArrayList<DragonStats>>(){}.getType();
+    public static final Type LIST_TYPE = new TypeToken<ArrayList<DragonDefinition>>(){}.getType();
 
-    public static class Serializer implements JsonSerializer<DragonStats>, JsonDeserializer<DragonStats> {
+    public static class Serializer implements JsonSerializer<DragonDefinition>, JsonDeserializer<DragonDefinition> {
         @Override
-        public DragonStats deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+        public DragonDefinition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             String sLootTable = GsonHelper.getAsString(json.getAsJsonObject(), "loot_table", VANILLA_LOOT_TABLE.toString());
             ResourceLocation lootTable = ResourceLocation.tryParse(sLootTable);
-            return new DragonStats(GsonHelper.getAsByte(json.getAsJsonObject(), "level"),
+            return new DragonDefinition(GsonHelper.getAsByte(json.getAsJsonObject(), "level"),
                     GsonHelper.getAsFloat(json.getAsJsonObject(), "max_sitting_damage_received"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "roar_time"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "sitting_scanning_idle_time", 0),
@@ -80,7 +80,7 @@ public class DragonStats {
         }
 
         @Override
-        public JsonElement serialize(DragonStats src, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(DragonDefinition src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("level", src.level);
             jsonObject.addProperty("max_sitting_damage_received", src.maxSittingDamageReceived);

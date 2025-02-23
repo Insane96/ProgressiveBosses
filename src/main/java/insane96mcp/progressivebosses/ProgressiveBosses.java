@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses;
 
 import insane96mcp.progressivebosses.commands.PBCommand;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStatsReloadListener;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinitionReloadListener;
 import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
@@ -64,7 +64,7 @@ public class ProgressiveBosses {
 
 	@SubscribeEvent(priority = EventPriority.LOW)
 	public void onAddReloadListener(AddReloadListenerEvent event) {
-		event.addListener(DragonStatsReloadListener.INSTANCE);
+		event.addListener(DragonDefinitionReloadListener.INSTANCE);
 		event.addListener(WitherStatsReloadListener.INSTANCE);
 		event.addListener(ElderGuardianStatsReloadListener.INSTANCE);
 	}

@@ -68,11 +68,11 @@ public class DragonAnger {
                     .forEach(player -> SyncDragonAnger.sync(player, dragon, angered));
     }
 
-    public static void onHurt(LivingHurtEvent event, EnderDragon dragon, DragonStats stats) {
+    public static void onHurt(LivingHurtEvent event, EnderDragon dragon, DragonDefinition stats) {
         DragonAnger.addAnger(dragon, event.getAmount() * DAMAGE_TO_ANGER_MODIFIER);
     }
 
-    public static void onCrystalDestroyed(EnderDragon dragon, DragonStats stats) {
+    public static void onCrystalDestroyed(EnderDragon dragon, DragonDefinition stats) {
         DragonAnger.addAnger(dragon, CRYSTAL_DESTROYED_ANGER);
     }
 

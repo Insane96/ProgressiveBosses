@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.phase;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -76,7 +76,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         if (--this.prepareBlowUpTime == 0) {
             List<Entity> entities = this.dragon.level().getEntities((Entity) null, this.dragon.getBoundingBox().inflate(56d), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
             float damage = 20f;
-            DragonStats stats = DragonFeature.getDragonStats(this.dragon).orElse(null);
+            DragonDefinition stats = DragonFeature.getDragonStats(this.dragon).orElse(null);
             if (stats != null)
                 damage = stats.attack.blastDamage;
             for (Entity entity : entities) {

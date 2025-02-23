@@ -108,7 +108,7 @@ public class DragonAttack {
     public static final String LAST_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "last_blast";
 
     public static float meleeDamage(EnderDragon dragon, float originalDamage) {
-        DragonStats stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
         if (stats == null)
             return originalDamage;
 
@@ -116,7 +116,7 @@ public class DragonAttack {
     }
 
     public static float meleeHeadDamage(EnderDragon dragon, float originalDamage) {
-        DragonStats stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
         if (stats == null)
             return originalDamage;
 
@@ -127,7 +127,7 @@ public class DragonAttack {
         if (!(entity instanceof DragonFireball acidball)
                 || !(acidball.getOwner() instanceof EnderDragon dragon))
             return;
-        Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
+        Optional<DragonDefinition> stats = DragonFeature.getDragonStats(dragon);
         if (stats.isEmpty())
             return;
 
@@ -153,7 +153,7 @@ public class DragonAttack {
         dragon.getPersistentData().putInt(FORCE_CHARGE_TAG, forcedToCharge);
     }
 
-    public static boolean shouldCharge(EnderDragon dragon, DragonStats stats) {
+    public static boolean shouldCharge(EnderDragon dragon, DragonDefinition stats) {
         if (isForcedToCharge(dragon))
             return true;
 
@@ -196,7 +196,7 @@ public class DragonAttack {
         dragon.getPersistentData().putInt(FORCE_STRAFE_TAG, forcedToStrafe);
     }
 
-    public static boolean shouldStrafe(EnderDragon dragon, DragonStats stats) {
+    public static boolean shouldStrafe(EnderDragon dragon, DragonDefinition stats) {
         if (isForcedToStrafe(dragon))
             return true;
 
@@ -234,7 +234,7 @@ public class DragonAttack {
         dragon.getPersistentData().putBoolean(FORCE_BLAST_TAG, forcedToBlast);
     }
 
-    public static boolean shouldBlast(EnderDragon dragon, DragonStats stats) {
+    public static boolean shouldBlast(EnderDragon dragon, DragonDefinition stats) {
         if (isForcedToBlast(dragon))
             return true;
         if (DragonBlastAttackPhase.isInCooldown(dragon, dragon.level()))
@@ -276,7 +276,7 @@ public class DragonAttack {
         if (!(shooter instanceof EnderDragon dragon)
                 || dragon.level().isClientSide)
             return false;
-        DragonStats stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
         if (stats == null)
             return false;
 
@@ -284,7 +284,7 @@ public class DragonAttack {
         return onImpact3DCloud(fireball, shooter, result, stats);
     }
 
-    private static void onImpactExplosion(DragonFireball fireball, @Nullable Entity shooter, HitResult result, DragonStats stats) {
+    private static void onImpactExplosion(DragonFireball fireball, @Nullable Entity shooter, HitResult result, DragonDefinition stats) {
         if (stats.attack.acidballImpactDamage == 0f)
             return;
 
@@ -296,7 +296,7 @@ public class DragonAttack {
         }
     }
 
-    private static boolean onImpact3DCloud(DragonFireball fireball, @Nullable Entity shooter, HitResult result, DragonStats stats) {
+    private static boolean onImpact3DCloud(DragonFireball fireball, @Nullable Entity shooter, HitResult result, DragonDefinition stats) {
         HitResult.Type hitResult$type = result.getType();
         if (hitResult$type == HitResult.Type.ENTITY)
             ((ProjectileInvoker)fireball).invokeOnHitEntity((EntityHitResult) result);

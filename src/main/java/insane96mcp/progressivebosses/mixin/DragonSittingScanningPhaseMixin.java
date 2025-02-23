@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonSittingScanningPhase;
@@ -24,7 +24,7 @@ public abstract class DragonSittingScanningPhaseMixin extends AbstractDragonPhas
 	public int getSittingScanningIdleTime(int original) {
 		if (this.dragon.getPhaseManager().getPhase(EnderDragonPhase.SITTING_FLAMING).flameCount == 0)
 			return original;
-		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
+		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
 		return stats.map(dragonStats -> {
 			int sittingScanningIdleTime = dragonStats.sittingScanningIdleTime;
 			if (DragonAnger.isAngered(this.dragon))

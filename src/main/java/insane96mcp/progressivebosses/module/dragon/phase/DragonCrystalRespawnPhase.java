@@ -5,7 +5,7 @@ import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonCrystal;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
@@ -49,7 +49,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	}
 
 	public void doServerTick() {
-		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
+		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
 		if (stats.isEmpty()) {
 			dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
 			return;
@@ -133,7 +133,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		this.spikesToRespawn.clear();
 		if (dragon.level().isClientSide)
 			return;
-		DragonStats stats = DragonFeature.getDragonStats(this.dragon).orElse(null);
+		DragonDefinition stats = DragonFeature.getDragonStats(this.dragon).orElse(null);
 		if (stats == null)
 			return;
 		double crystalsToRespawn = stats.crystal.crystalsRespawned;
@@ -182,7 +182,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 
 	@Override
 	public float onHurt(DamageSource source, float amount) {
-		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
+		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
 		if (stats.isEmpty())
 			return amount;
 		if (source.is(DamageTypeTags.IS_EXPLOSION) && !source.getMsgId().equals("fireworks"))

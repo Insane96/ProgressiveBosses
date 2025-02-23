@@ -57,13 +57,13 @@ public class DragonVulnerabilities {
         }
     }
 
-    public static void damageMultipliers(LivingHurtEvent event, EnderDragon dragon, DragonStats stats) {
+    public static void damageMultipliers(LivingHurtEvent event, EnderDragon dragon, DragonDefinition stats) {
         meleeDamageMultiplier(event, dragon, stats);
         rangedDamageMultiplier(event, dragon, stats);
         explosionDamageMultiplier(event, dragon, stats);
     }
 
-    private static void meleeDamageMultiplier(LivingHurtEvent event, EnderDragon dragon, DragonStats stats) {
+    private static void meleeDamageMultiplier(LivingHurtEvent event, EnderDragon dragon, DragonDefinition stats) {
         if (!(event.getSource().getDirectEntity() instanceof LivingEntity))
             return;
         if (CENTER_PODIUM_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getPhase()))
@@ -72,13 +72,13 @@ public class DragonVulnerabilities {
             event.setAmount(event.getAmount() * stats.vulnerabilities.meleeDamageMultiplierWhenNotSitting);
     }
 
-    private static void rangedDamageMultiplier(LivingHurtEvent event, EnderDragon dragon, DragonStats stats) {
+    private static void rangedDamageMultiplier(LivingHurtEvent event, EnderDragon dragon, DragonDefinition stats) {
         if (!(event.getSource().getDirectEntity() instanceof Projectile))
             return;
         event.setAmount(event.getAmount() * stats.vulnerabilities.rangedDamageMultiplier);
     }
 
-    private static void explosionDamageMultiplier(LivingHurtEvent event, EnderDragon dragon, DragonStats stats) {
+    private static void explosionDamageMultiplier(LivingHurtEvent event, EnderDragon dragon, DragonDefinition stats) {
         if (!(event.getSource().is(DamageTypeTags.IS_EXPLOSION) && !event.getSource().is(DamageTypes.FIREWORKS)))
             return;
         event.setAmount(event.getAmount() * stats.vulnerabilities.explosionDamageMultiplier);

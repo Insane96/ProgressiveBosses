@@ -95,7 +95,7 @@ public class DragonFeature extends Feature {
     }
 
     @Nullable
-    public static Phases getPhase(EnderDragon dragon, DragonStats stats) {
+    public static Phases getPhase(EnderDragon dragon, DragonDefinition stats) {
         List<Phases> phases = new ArrayList<>();
         for (Phases phase : Phases.PHASES) {
             if (phase.shouldExecute.test(dragon, stats))
@@ -113,7 +113,7 @@ public class DragonFeature extends Feature {
         return phases.get(dragon.getRandom().nextInt(phases.size()));
     }
 
-    public static void onHoldingPatternEnd(DragonPhaseEvent.Change event, EnderDragon dragon, DragonStats stats) {
+    public static void onHoldingPatternEnd(DragonPhaseEvent.Change event, EnderDragon dragon, DragonDefinition stats) {
         Phases phases = getPhase(dragon, stats);
         if (phases == null) {
             event.setNewPhase(EnderDragonPhase.HOLDING_PATTERN);
@@ -150,12 +150,12 @@ public class DragonFeature extends Feature {
         if (!dragon.getPersistentData().contains(LEVEL))
             dragon.getPersistentData().putByte(LEVEL, dragonLvl);
 
-        DragonStats stats = getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = getDragonStats(dragon).orElse(null);
         if (stats == null) {
             LogHelper.warn("Failed to get Dragon Stats for level %s", dragon.getPersistentData().getByte(LEVEL));
             return;
         }
-        DragonStats.apply(dragon, stats);
+        DragonDefinition.apply(dragon, stats);
         dragon.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(dragon.getType())) + "." + dragon.getPersistentData().getByte(LEVEL)));
         dragon.getPersistentData().putBoolean(ProgressiveBosses.RESOURCE_PREFIX + "processed", true);
     }
@@ -167,7 +167,7 @@ public class DragonFeature extends Feature {
                 || event.getDroppedExperience() == 0)
             return;
 
-        Optional<DragonStats> stats = getDragonStats(dragon);
+        Optional<DragonDefinition> stats = getDragonStats(dragon);
         if (stats.isEmpty())
             return;
         //This will 100% break if any other mod changes experience dropped
@@ -246,7 +246,7 @@ public class DragonFeature extends Feature {
             DragonAnger.setAngered(dragon, false);
             return;
         }
-        DragonStats stats = getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = getDragonStats(dragon).orElse(null);
         if (stats == null)
             return;
 
@@ -278,7 +278,7 @@ public class DragonFeature extends Feature {
         if (!this.isEnabled())
             return;
 
-        DragonStats stats = getDragonStats(event.getDragon()).orElse(null);
+        DragonDefinition stats = getDragonStats(event.getDragon()).orElse(null);
         if (stats == null)
             return;
 
@@ -294,7 +294,7 @@ public class DragonFeature extends Feature {
         EnderDragon dragon = (EnderDragon) serverLevel.getEntity(fight.getDragonUUID());
         if (dragon == null)
             return;
-        DragonStats stats = getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = getDragonStats(dragon).orElse(null);
         if (stats == null)
             return;
         if (fight.getCrystalsAlive() > 0)
@@ -317,7 +317,7 @@ public class DragonFeature extends Feature {
         if (!(event.getEntity() instanceof EnderDragon dragon))
             return;
 
-        DragonStats stats = getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = getDragonStats(dragon).orElse(null);
         if (stats == null)
             return;
 
@@ -325,13 +325,13 @@ public class DragonFeature extends Feature {
         DragonAnger.onHurt(event, dragon, stats);
     }
 
-    public static Optional<DragonStats> getDragonStats(EnderDragon dragon) {
+    public static Optional<DragonDefinition> getDragonStats(EnderDragon dragon) {
         byte lvl = dragon.getPersistentData().getByte(LEVEL);
         return getDragonStats(lvl);
     }
 
-    public static Optional<DragonStats> getDragonStats(byte lvl) {
-        return Optional.ofNullable(DragonStatsReloadListener.STATS_MAP.get(lvl));
+    public static Optional<DragonDefinition> getDragonStats(byte lvl) {
+        return Optional.ofNullable(DragonDefinitionReloadListener.STATS_MAP.get(lvl));
     }
 
     public static byte getDragonLvl(List<EndCrystal> respawningCrystals) {
@@ -382,10 +382,10 @@ public class DragonFeature extends Feature {
 
         public final int priority;
         public final EnderDragonPhase<?> phase;
-        public final BiPredicate<EnderDragon, DragonStats> shouldExecute;
+        public final BiPredicate<EnderDragon, DragonDefinition> shouldExecute;
         public final TriConsumer<DragonPhaseEvent.Change, EnderDragon, Boolean> applyPhase;
 
-        Phases(int priority, EnderDragonPhase<?> phase, BiPredicate<EnderDragon, DragonStats> shouldExecute, TriConsumer<DragonPhaseEvent.Change, EnderDragon, Boolean> applyPhase) {
+        Phases(int priority, EnderDragonPhase<?> phase, BiPredicate<EnderDragon, DragonDefinition> shouldExecute, TriConsumer<DragonPhaseEvent.Change, EnderDragon, Boolean> applyPhase) {
             this.priority = priority;
             this.phase = phase;
             this.shouldExecute = shouldExecute;

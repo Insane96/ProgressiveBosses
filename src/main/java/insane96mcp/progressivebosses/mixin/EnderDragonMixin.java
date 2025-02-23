@@ -12,7 +12,7 @@ import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import net.minecraft.core.BlockPos;
@@ -127,14 +127,14 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@ModifyExpressionValue(method = "checkCrystals", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
 	public float onCrystalHeal(float original) {
-		Optional<DragonStats> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
+		Optional<DragonDefinition> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
 		return stats.map(dragonStats -> dragonStats.health.getHealingFromCrystal((EnderDragon) (Object) this, this.nearestCrystal))
 				.orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "CONSTANT", args = "floatValue=0.25f"))
 	public float maxSittingDamageReceived(float original) {
-		Optional<DragonStats> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
+		Optional<DragonDefinition> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
 		//Divided by 2 because it's healed twice per second
 		return stats.map(dragonStats -> dragonStats.maxSittingDamageReceived).orElse(original);
 	}
@@ -173,7 +173,7 @@ public abstract class EnderDragonMixin extends Mob {
 	public void progressivebosses$dropDeathLoot(CallbackInfo ci) {
 		if (progressiveBosses$killerDamageSource == null)
 			return;
-		DragonStats stats = DragonFeature.getDragonStats((EnderDragon) (Object) this).orElse(null);
+		DragonDefinition stats = DragonFeature.getDragonStats((EnderDragon) (Object) this).orElse(null);
 		if (stats == null)
 			return;
 		this.lootTable = stats.lootTable;

@@ -3,7 +3,7 @@ package insane96mcp.progressivebosses.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -54,7 +54,7 @@ public class EndDragonFightMixin {
 		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel(this.level));
 		//Order from smaller towers to bigger ones
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
-		Optional<DragonStats> stats = DragonFeature.getDragonStats(lvl);
+		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(lvl);
 		if (stats.isEmpty()) {
 			LogHelper.warn("Failed to get Dragon Stats for level %s", lvl);
 			return;

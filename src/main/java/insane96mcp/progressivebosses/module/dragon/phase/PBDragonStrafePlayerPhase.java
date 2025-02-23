@@ -4,7 +4,7 @@ import com.mojang.logging.LogUtils;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -167,7 +167,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         this.currentPath = null;
         this.attackTarget = null;
 
-        Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
+        Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
         if (stats.isEmpty())
             return;
         this.fireballsToShoot = Mth.nextInt(dragon.getRandom(), stats.get().attack.minAcidballShot, stats.get().attack.maxAcidballShot);

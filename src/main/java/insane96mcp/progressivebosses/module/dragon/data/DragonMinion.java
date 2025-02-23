@@ -124,14 +124,14 @@ public class DragonMinion {
         if (dragons.isEmpty())
             return;
         EnderDragon dragon = dragons.get(0);
-        DragonStats stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
         if (stats == null)
             return;
 
         DragonAttack.setForcedToStrafe(dragon, DragonAttack.getForcedToStrafe(dragon) + 1);
     }
 
-    public static void setupMinionCooldown(EnderDragon dragon, DragonStats stats) {
+    public static void setupMinionCooldown(EnderDragon dragon, DragonDefinition stats) {
         if (stats.minion == null)
             return;
         int cooldown = (int) dragon.getRandom().triangle(stats.minion.averageCooldown, stats.minion.deltaCooldown);
@@ -139,7 +139,7 @@ public class DragonMinion {
     }
 
     public static void tick(EnderDragon dragon) {
-        Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
+        Optional<DragonDefinition> stats = DragonFeature.getDragonStats(dragon);
         if (stats.isEmpty())
             return;
 

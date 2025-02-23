@@ -63,7 +63,7 @@ public class DragonLarva {
         }
     }
 
-    public static void setupLarvaCooldown(EnderDragon dragon, DragonStats stats) {
+    public static void setupLarvaCooldown(EnderDragon dragon, DragonDefinition stats) {
         if (stats.larva == null)
             return;
         int cooldown = (int) (Mth.nextInt(dragon.getRandom(), stats.larva.minCooldown, stats.larva.maxCooldown) * 0.5d);
@@ -71,7 +71,7 @@ public class DragonLarva {
     }
 
     public static void tick(EnderDragon dragon) {
-        Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
+        Optional<DragonDefinition> stats = DragonFeature.getDragonStats(dragon);
         if (stats.isEmpty())
             return;
 

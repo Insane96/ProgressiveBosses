@@ -13,17 +13,17 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DragonStatsReloadListener extends SimpleJsonResourceReloadListener {
+public class DragonDefinitionReloadListener extends SimpleJsonResourceReloadListener {
     private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
-    public static final DragonStatsReloadListener INSTANCE;
+    public static final DragonDefinitionReloadListener INSTANCE;
 
-    public static final Map<Byte, DragonStats> STATS_MAP = new HashMap<>();
+    public static final Map<Byte, DragonDefinition> STATS_MAP = new HashMap<>();
 
     static {
-        INSTANCE = new DragonStatsReloadListener();
+        INSTANCE = new DragonDefinitionReloadListener();
     }
 
-    public DragonStatsReloadListener() {
+    public DragonDefinitionReloadListener() {
         super(GSON, "progressivebosses/ender_dragon");
     }
 
@@ -39,19 +39,19 @@ public class DragonStatsReloadListener extends SimpleJsonResourceReloadListener 
 
                 if (entry.getValue().isJsonObject() && entry.getValue().getAsJsonObject().entrySet().isEmpty())
                     continue;
-                DragonStats dragonStats = GSON.fromJson(entry.getValue(), DragonStats.class);
-                if (STATS_MAP.containsKey(dragonStats.level))
-                    LogHelper.warn("Duplicate Dragon Stats level: " + dragonStats.level);
-                STATS_MAP.put(dragonStats.level, dragonStats);
+                DragonDefinition dragonDefinition = GSON.fromJson(entry.getValue(), DragonDefinition.class);
+                if (STATS_MAP.containsKey(dragonDefinition.level))
+                    LogHelper.warn("Duplicate Dragon Definition level: " + dragonDefinition.level);
+                STATS_MAP.put(dragonDefinition.level, dragonDefinition);
             }
             catch (JsonSyntaxException e) {
-                LogHelper.error("Parsing error loading Dragon Stats %s: %s", entry.getKey(), e.getMessage());
+                LogHelper.error("Parsing error loading Dragon Definition %s: %s", entry.getKey(), e.getMessage());
             }
             catch (Exception e) {
-                LogHelper.error("Failed loading Dragon Stats %s: %s", entry.getKey(), e.getMessage());
+                LogHelper.error("Failed loading Dragon Definition %s: %s", entry.getKey(), e.getMessage());
             }
         }
 
-        LogHelper.info("Loaded %s Dragon Stats", STATS_MAP.size());
+        LogHelper.info("Loaded %s Dragon Definition", STATS_MAP.size());
     }
 }

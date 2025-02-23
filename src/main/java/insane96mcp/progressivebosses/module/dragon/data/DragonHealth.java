@@ -33,7 +33,7 @@ public class DragonHealth {
                 || dragon.getPhaseManager().getCurrentPhase().getPhase() == EnderDragonPhase.DYING
                 || dragon.tickCount % 10 != 5)
             return;
-        Optional<DragonStats> stats = DragonFeature.getDragonStats(dragon);
+        Optional<DragonDefinition> stats = DragonFeature.getDragonStats(dragon);
         if (stats.isEmpty())
             return;
 

@@ -4,7 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
-import insane96mcp.progressivebosses.module.dragon.data.DragonStats;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -32,7 +32,7 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=200", ordinal = 0))
 	public int progressivebosses$sittingFlamingTime(int original) {
-		Optional<DragonStats> stats = DragonFeature.getDragonStats(this.dragon);
+		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
 		return stats.map(dragonStats -> {
 			int sittingFlamingTime = dragonStats.sittingFlamingTime;
 			if (DragonAnger.isAngered(this.dragon))
