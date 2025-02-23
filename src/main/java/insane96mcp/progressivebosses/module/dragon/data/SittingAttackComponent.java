@@ -11,8 +11,11 @@ import java.lang.reflect.Type;
 public class SittingAttackComponent implements BossComponent {
     @Nullable
     public DragonValue damageBeforeTakeOff;
+    @Nullable
     public DragonValue roarTime;
+    @Nullable
     public DragonValue scanningIdleTime;
+    @Nullable
     public DragonValue flamingTime;
 
     public static class Serializer implements JsonDeserializer<SittingAttackComponent> {

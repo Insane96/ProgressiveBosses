@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.data;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.dragon.data.DragonHealthComponent;
 import insane96mcp.progressivebosses.module.dragon.data.SittingAttackComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
@@ -14,6 +15,7 @@ public class ComponentRegistry {
 
     public static void init() {
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "sitting_attack"), SittingAttackComponent.class);
+        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "health"), DragonHealthComponent.class);
     }
 
     public static void registerComponent(ResourceLocation id, Type type) {

@@ -183,7 +183,8 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	@Override
 	public float onHurt(DamageSource source, float amount) {
 		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
-		if (stats.isEmpty())
+		if (stats.isEmpty()
+				|| stats.get().vulnerabilities == null)
 			return amount;
 		if (source.is(DamageTypeTags.IS_EXPLOSION) && !source.getMsgId().equals("fireworks"))
 			return amount;
@@ -192,6 +193,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	}
 
 	public static boolean isInCooldown(EnderDragon dragon, Level level) {
+		//TODO Configurable
 		return level.getGameTime() - dragon.getPersistentData().getLong(DragonCrystal.LAST_RESPAWN_TAG) < 6000; //5 minutes
 	}
 

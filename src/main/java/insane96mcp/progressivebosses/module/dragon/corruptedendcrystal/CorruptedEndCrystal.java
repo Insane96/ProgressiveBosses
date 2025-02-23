@@ -66,6 +66,7 @@ public class CorruptedEndCrystal extends EndCrystal {
             cloud.setRadius(4f);
             cloud.setRadiusPerTick(0f);
             cloud.setWaitTime(0);
+            cloud.reapplicationDelay = 10;
             cloud.setPos(this.position());
             level.addFreshEntity(cloud);
         }

@@ -52,6 +52,7 @@ public class CorruptedSoulSand extends BaseEntityBlock {
         super.playerWillDestroy(level, pos, state, player);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public RenderShape getRenderShape(BlockState p_49232_) {
         return RenderShape.MODEL;

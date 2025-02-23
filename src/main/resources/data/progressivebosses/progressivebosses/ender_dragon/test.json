@@ -1,8 +1,8 @@
 {
-    "level": 0,
+    "level": 1,
     "components": [
         {
-            "id": "progressivebosses:sitting_phase",
+            "id": "progressivebosses:sitting_attack",
             "damage_before_take_off": {
                 "base": 0.15,
                 "angered": 0.10
@@ -22,9 +22,9 @@
         },
         {
             "id": "progressivebosses:health",
-            "health": 400.0,
+            "health": 500.0,
             "regeneration": 0,
-            "crystal_regeneration": 1.5,
+            "crystal_regeneration": 3,
             "regen_when_hit_ratio": 0.6,
             "regen_when_hit_duration": 50
         }

@@ -55,7 +55,7 @@ public class EndDragonFightMixin {
 		//Order from smaller towers to bigger ones
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
 		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(lvl);
-		if (stats.isEmpty()) {
+		if (stats.isEmpty() || stats.get().crystal == null) {
 			LogHelper.warn("Failed to get Dragon Stats for level %s", lvl);
 			return;
 		}

@@ -109,7 +109,7 @@ public class DragonAttack {
 
     public static float meleeDamage(EnderDragon dragon, float originalDamage) {
         DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
-        if (stats == null)
+        if (stats == null || stats.attack == null)
             return originalDamage;
 
         return stats.attack.meleeDamage;
@@ -117,7 +117,7 @@ public class DragonAttack {
 
     public static float meleeHeadDamage(EnderDragon dragon, float originalDamage) {
         DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
-        if (stats == null)
+        if (stats == null || stats.attack == null)
             return originalDamage;
 
         return stats.attack.meleeHeadDamage;
@@ -128,7 +128,8 @@ public class DragonAttack {
                 || !(acidball.getOwner() instanceof EnderDragon dragon))
             return;
         Optional<DragonDefinition> stats = DragonFeature.getDragonStats(dragon);
-        if (stats.isEmpty())
+        if (stats.isEmpty()
+                || stats.get().attack == null)
             return;
 
         if (Math.abs(acidball.xPower) > 10 || Math.abs(acidball.yPower) > 10 || Math.abs(acidball.zPower) > 10) {
@@ -157,7 +158,7 @@ public class DragonAttack {
         if (isForcedToCharge(dragon))
             return true;
 
-        double chance = stats.attack.chargeChance.getValue(dragon);
+        double chance = stats.attack == null ? 0f : stats.attack.chargeChance.getValue(dragon);
         if (chance == 0f)
             return false;
 
@@ -200,7 +201,7 @@ public class DragonAttack {
         if (isForcedToStrafe(dragon))
             return true;
 
-        double chance = stats.attack.strafeChance.getValue(dragon);
+        double chance = stats.attack == null ? 0f : stats.attack.strafeChance.getValue(dragon);
         if (chance == 0f)
             return false;
         return dragon.getRandom().nextDouble() < chance;
@@ -237,7 +238,7 @@ public class DragonAttack {
     public static boolean shouldBlast(EnderDragon dragon, DragonDefinition stats) {
         if (isForcedToBlast(dragon))
             return true;
-        if (DragonBlastAttackPhase.isInCooldown(dragon, dragon.level()))
+        if (DragonBlastAttackPhase.isInCooldown(dragon, dragon.level()) || stats.attack == null)
             return false;
 
         double chance = stats.attack.blastChance.getValue(dragon);
@@ -285,7 +286,7 @@ public class DragonAttack {
     }
 
     private static void onImpactExplosion(DragonFireball fireball, @Nullable Entity shooter, HitResult result, DragonDefinition stats) {
-        if (stats.attack.acidballImpactDamage == 0f)
+        if (stats.attack == null || stats.attack.acidballImpactDamage == 0f)
             return;
 
         AABB axisAlignedBB = new AABB(result.getLocation(), result.getLocation()).inflate(5d);
@@ -316,7 +317,7 @@ public class DragonAttack {
                 areaEffectCloud.setDuration(300);
                 areaEffectCloud.setWaitTime(10);
                 areaEffectCloud.setRadiusPerTick((7.0F - areaEffectCloud.getRadius()) / (float) areaEffectCloud.getDuration());
-                areaEffectCloud.addEffect(new MobEffectInstance(MobEffects.HARM, 1, stats.attack.acidAmplifier));
+                areaEffectCloud.addEffect(new MobEffectInstance(MobEffects.HARM, 1, stats.attack == null ? 1 : stats.attack.acidAmplifier));
                 if (!list.isEmpty()) {
                     for(LivingEntity livingentity : list) {
                         double d0 = fireball.distanceToSqr(livingentity);

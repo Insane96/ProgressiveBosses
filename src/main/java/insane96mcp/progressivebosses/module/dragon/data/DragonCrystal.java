@@ -104,7 +104,7 @@ public class DragonCrystal {
     }
 
     public static void moreCrystals(EnderDragon dragon, DragonDefinition stats) {
-        if (stats.crystal.bonusCrystals <= 0)
+        if (stats.crystal == null || stats.crystal.bonusCrystals <= 0)
             return;
         List<EndCrystal> crystals = new ArrayList<>();
 
@@ -153,7 +153,8 @@ public class DragonCrystal {
     }
 
     public static boolean shouldRespawnCrystals(EnderDragon dragon, DragonDefinition stats) {
-        if (DragonCrystalRespawnPhase.isInCooldown(dragon, dragon.level()))
+        if (DragonCrystalRespawnPhase.isInCooldown(dragon, dragon.level())
+                || stats.crystal == null)
             return false;
         float healthRatio = dragon.getHealth() / dragon.getMaxHealth();
 

@@ -57,20 +57,19 @@ public class DragonDefinition {
         components.forEach(component -> component.onLivingDeath(event));
     }
 
-    public int sittingFlamingTime;
-    public DragonHealth health;
+    @Nullable
     public DragonVulnerabilities vulnerabilities;
+    @Nullable
     public DragonCrystal crystal;
     @Nullable
     public DragonMinion minion;
+    @Nullable
     public DragonAttack attack;
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonDefinition(byte level, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
+    public DragonDefinition(byte level, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
-        this.sittingFlamingTime = sittingFlamingTime;
-        this.health = health;
         this.vulnerabilities = vulnerabilities;
         this.crystal = crystal;
         this.minion = minion;
@@ -80,8 +79,6 @@ public class DragonDefinition {
     }
 
     /*public static void apply(EnderDragon dragon, DragonDefinition stats) {
-        dragon.getAttribute(Attributes.MAX_HEALTH).setBaseValue(stats.health.health);
-        dragon.setHealth(stats.health.health);
         dragon.lootTable = null;
         DragonCrystal.moreCrystals(dragon, stats);
         DragonMinion.setupMinionCooldown(dragon, stats);

@@ -198,8 +198,10 @@ public class DragonFeature extends Feature {
                 || !(event.getEntity() instanceof EnderDragon dragon))
             return;
 
-        //dragon.level().players().forEach(player -> player.displayClientMessage(Component.literal("x: %.1f, y: %.1f, z: %.1f".formatted(dragon.position().x, dragon.position().y, dragon.position().z)), true));
-        DragonHealth.tryHeal(dragon);
+        DragonDefinition stats = getDragonStats(dragon).orElse(null);
+        if (stats == null)
+            return;
+        stats.getComponent(DragonHealthComponent.class).ifPresent(health -> health.tick(dragon));
         DragonMinion.tick(dragon);
         tryDropEggPerPlayer(dragon);
 

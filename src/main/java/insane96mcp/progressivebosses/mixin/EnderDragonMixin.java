@@ -10,10 +10,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
-import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
-import insane96mcp.progressivebosses.module.dragon.data.SittingAttackComponent;
+import insane96mcp.progressivebosses.module.dragon.data.*;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import net.minecraft.core.BlockPos;
@@ -57,7 +54,7 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@Shadow public abstract EnderDragonPhaseManager getPhaseManager();
 
-	@Shadow private @org.jetbrains.annotations.Nullable Player unlimitedLastHurtByPlayer;
+	@Shadow(remap = false) private @org.jetbrains.annotations.Nullable Player unlimitedLastHurtByPlayer;
 
 	@Shadow @Final private EnderDragonPart tail1;
 
@@ -128,8 +125,9 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@ModifyExpressionValue(method = "checkCrystals", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
 	public float onCrystalHeal(float original) {
-		Optional<DragonDefinition> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
-		return stats.map(dragonStats -> dragonStats.health.getHealingFromCrystal((EnderDragon) (Object) this, this.nearestCrystal))
+		return DragonFeature.getDragonStats((EnderDragon) (Object) this)
+				.flatMap(stats -> stats.getComponent(DragonHealthComponent.class))
+				.map(dragonHealthComponent -> dragonHealthComponent.getHealingFromCrystal((EnderDragon) (Object) this, this.nearestCrystal, original))
 				.orElse(original);
 	}
 

@@ -1,5 +1,4 @@
 {
-    "level": 1,
     "max_sitting_damage_received": 0.15,
     "roar_time": 20,
     "sitting_scanning_idle_time": 40,
