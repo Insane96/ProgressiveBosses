@@ -1,6 +1,9 @@
 # Changelog
 
-* Sync dragon anger with players joining
+## Upcoming
+* Fixed client-server desync with dragon anger
+* Fixed dragon being able to be stuck in angered mode forever
+* Lowered chance to strafe when angered and to blast when not
 
 ## Alpha 4.3.1
 * Reduced acid balls shot and slowed down the series of shots

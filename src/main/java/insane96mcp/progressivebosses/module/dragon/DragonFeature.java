@@ -135,6 +135,8 @@ public class DragonFeature extends Feature {
         DragonMinion.onShulkerSpawn(event);
         if (event.getEntity() instanceof EnderDragon dragon)
             ((ServerLevel) dragon.level()).players().forEach(player -> SyncDragonAnger.sync(player, dragon, DragonAnger.isAngered(dragon)));
+        else if (event.getEntity() instanceof ServerPlayer player)
+            ((ServerLevel) player.level()).getDragons().forEach(dragon -> SyncDragonAnger.sync(player, dragon, DragonAnger.isAngered(dragon)));
     }
 
     public void onDragonJoinLevel(EntityJoinLevelEvent event) {

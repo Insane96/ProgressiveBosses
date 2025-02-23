@@ -39,11 +39,19 @@ public class DragonAnger {
     }
 
     public static void tickAnger(EnderDragon dragon) {
+        if (dragon.tickCount % 20 != 0)
+            return;
         float anger = getAnger(dragon);
-        if (anger <= 0f || (anger >= MAX_ANGER && !isAngered(dragon)))
+        boolean angered = isAngered(dragon);
+        if (anger <= 0f) {
+            if (angered)
+                setAngered(dragon, false);
+            return;
+        }
+        else if (anger >= MAX_ANGER && !angered)
             return;
         float tickDown = TICK_DOWN;
-        if (isAngered(dragon))
+        if (angered)
             tickDown = TICK_DOWN_ANGERED;
         anger -= tickDown;
         dragon.getPersistentData().putFloat(ANGER_TAG, anger);
@@ -73,7 +81,10 @@ public class DragonAnger {
     }
 
     public static void tick(EnderDragon dragon) {
-        if (dragon.level().isClientSide && isAngered(dragon) && !dragon.getPhaseManager().getCurrentPhase().isSitting()) {
+        if (!dragon.level().isClientSide)
+            DragonAnger.tickAnger(dragon);
+
+        else if (isAngered(dragon) && !dragon.getPhaseManager().getCurrentPhase().isSitting()) {
             dragon.growlTime -= 3;
             Vec3 vec3 = dragon.getHeadLookVector(1.0F).normalize();
             vec3.yRot((-(float) Math.PI / 4F));
@@ -91,7 +102,5 @@ public class DragonAnger {
                 vec3.yRot(0.19634955F);
             }
         }
-        if (dragon.tickCount % 20 == 0)
-            DragonAnger.tickAnger(dragon);
     }
 }
