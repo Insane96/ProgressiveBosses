@@ -19,9 +19,9 @@ import java.util.List;
 public interface BossComponent {
     default void tick(EnderDragon dragon) {}
     default void apply(EnderDragon dragon) {}
-    default void onEntityJoinLevel(EntityJoinLevelEvent event) {}
-    default void onLivingHurt(LivingHurtEvent event) {}
-    default void onLivingDeath(LivingDeathEvent event) {}
+    default void onEntityJoinLevel(EntityJoinLevelEvent event, EnderDragon dragon) {}
+    default void onLivingHurt(LivingHurtEvent event, EnderDragon dragon) {}
+    default void onLivingDeath(LivingDeathEvent event, EnderDragon dragon) {}
 
     static List<BossComponent> deserializeList(JsonObject jObject, String memberName, JsonDeserializationContext context) {
         List<BossComponent> components = new ArrayList<>();

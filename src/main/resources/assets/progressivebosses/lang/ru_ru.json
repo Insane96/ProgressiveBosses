@@ -3,7 +3,7 @@
   "item.progressivebosses.elder_guardian_spike": "Шип древнего стража",
 
   "entity.progressivebosses.wither_minion": "Визер-прислужник",
-  "death.attack.progressivebosses:wither_charge_attack": "%1$s был атакован %2$s.",
+  "death.attack.progressivebosses:wither_charge": "%1$s был атакован %2$s.",
 
   "progressivebosses:dragon_minion": "Прислужник дракона",
   "death.attack.progressivebosses:dragon_fireball": "%1$s был уничтожен взрывом %2$s.",

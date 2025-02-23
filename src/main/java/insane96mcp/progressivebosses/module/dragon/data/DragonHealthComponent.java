@@ -32,7 +32,7 @@ public class DragonHealthComponent implements BossComponent {
     public float reducedRegen(float regen, EnderDragon dragon) {
         return this.regenWhenHitDuration != null
                 && this.regenWhenHitRatio != null
-                && dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= this.regenWhenHitDuration.getValue(dragon) ? regen * this.regenWhenHitRatio.getValue(dragon) : regen;
+                && dragon.getLastHurtByMobTimestamp() < dragon.tickCount && dragon.tickCount - dragon.getLastHurtByMobTimestamp() <= this.regenWhenHitDuration.getValue(dragon) ? regen * this.regenWhenHitRatio.getValue(dragon) : regen;
     }
 
     @Override

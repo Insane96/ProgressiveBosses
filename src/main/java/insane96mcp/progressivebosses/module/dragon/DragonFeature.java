@@ -317,12 +317,11 @@ public class DragonFeature extends Feature {
     public void onDragonHurt(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon))
             return;
-
         DragonDefinition stats = getDragonStats(dragon).orElse(null);
         if (stats == null)
             return;
+        stats.onLivingHurt(event, dragon);
 
-        DragonVulnerabilities.damageMultipliers(event, dragon, stats);
         DragonAnger.onHurt(event, dragon, stats);
     }
 

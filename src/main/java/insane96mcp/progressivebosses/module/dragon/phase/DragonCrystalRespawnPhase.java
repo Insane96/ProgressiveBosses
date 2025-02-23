@@ -6,6 +6,7 @@ import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.DragonVulnerabilitiesComponent;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
@@ -182,14 +183,14 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 
 	@Override
 	public float onHurt(DamageSource source, float amount) {
-		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
-		if (stats.isEmpty()
-				|| stats.get().vulnerabilities == null)
-			return amount;
 		if (source.is(DamageTypeTags.IS_EXPLOSION) && !source.getMsgId().equals("fireworks"))
 			return amount;
 
-		return amount * stats.get().vulnerabilities.respawningCrystalDamageMultiplier;
+		return amount * DragonFeature.getDragonStats(this.dragon)
+				.flatMap(stats -> stats.getComponent(DragonVulnerabilitiesComponent.class))
+				.flatMap(component -> Optional.ofNullable(component.respawningCrystalDamageMultiplier))
+				.map(respawningCrystalDamageMultiplier -> respawningCrystalDamageMultiplier.getValue(this.dragon))
+				.orElse(1f);
 	}
 
 	public static boolean isInCooldown(EnderDragon dragon, Level level) {

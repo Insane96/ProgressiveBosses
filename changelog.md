@@ -2,9 +2,9 @@
 
 ## Upcoming
 * Removed Dragon Larva
-  * And anything related to it: config, textures, entities, etc
+  * No longer exists in any form
 * Enhanced Blast attack animation and particles
-* Fixed client-server desync with dragon anger
+* Fixed client-server de-sync with dragon anger
 * Fixed dragon being able to be stuck in angered mode forever
 * Lowered chance to strafe when angered and to blast when not
 

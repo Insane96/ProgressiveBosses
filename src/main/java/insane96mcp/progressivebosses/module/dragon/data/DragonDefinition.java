@@ -45,20 +45,18 @@ public class DragonDefinition {
         components.forEach(component -> component.tick(dragon));
     }
 
-    public void onEntityJoinLevel(EntityJoinLevelEvent event) {
-        components.forEach(component -> component.onEntityJoinLevel(event));
+    public void onEntityJoinLevel(EntityJoinLevelEvent event, EnderDragon dragon) {
+        components.forEach(component -> component.onEntityJoinLevel(event, dragon));
     }
 
-    public void onLivingHurt(LivingHurtEvent event) {
-        components.forEach(component -> component.onLivingHurt(event));
+    public void onLivingHurt(LivingHurtEvent event, EnderDragon dragon) {
+        components.forEach(component -> component.onLivingHurt(event, dragon));
     }
 
-    public void onLivingDeath(LivingDeathEvent event) {
-        components.forEach(component -> component.onLivingDeath(event));
+    public void onLivingDeath(LivingDeathEvent event, EnderDragon dragon) {
+        components.forEach(component -> component.onLivingDeath(event, dragon));
     }
 
-    @Nullable
-    public DragonVulnerabilities vulnerabilities;
     @Nullable
     public DragonCrystal crystal;
     @Nullable
@@ -68,9 +66,8 @@ public class DragonDefinition {
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonDefinition(byte level, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
+    public DragonDefinition(byte level, DragonCrystal crystal, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
-        this.vulnerabilities = vulnerabilities;
         this.crystal = crystal;
         this.minion = minion;
         this.attack = attack;
