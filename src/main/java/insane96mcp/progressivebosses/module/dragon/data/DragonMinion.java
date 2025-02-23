@@ -124,7 +124,7 @@ public class DragonMinion {
         if (dragons.isEmpty())
             return;
         EnderDragon dragon = dragons.get(0);
-        DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = DragonFeature.getDragonDefinition(dragon).orElse(null);
         if (stats == null)
             return;
 
@@ -139,7 +139,7 @@ public class DragonMinion {
     }
 
     public static void tick(EnderDragon dragon) {
-        Optional<DragonDefinition> stats = DragonFeature.getDragonStats(dragon);
+        Optional<DragonDefinition> stats = DragonFeature.getDragonDefinition(dragon);
         if (stats.isEmpty())
             return;
 

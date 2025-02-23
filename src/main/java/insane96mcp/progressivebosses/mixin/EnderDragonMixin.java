@@ -125,15 +125,15 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@ModifyExpressionValue(method = "checkCrystals", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
 	public float onCrystalHeal(float original) {
-		return DragonFeature.getDragonStats((EnderDragon) (Object) this)
-				.flatMap(stats -> stats.getComponent(DragonHealthComponent.class))
-				.map(dragonHealthComponent -> dragonHealthComponent.getHealingFromCrystal((EnderDragon) (Object) this, this.nearestCrystal, original))
+		return DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
+				.flatMap(stats -> stats.getComponent(HealthComponent.class))
+				.map(healthComponent -> healthComponent.getHealingFromCrystal((EnderDragon) (Object) this, this.nearestCrystal, original))
 				.orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "CONSTANT", args = "floatValue=0.25f"))
 	public float progressivebosses$maxSittingDamageReceived(float original) {
-		return DragonFeature.getDragonStats((EnderDragon) (Object) this)
+		return DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
 				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
 				.flatMap(component -> Optional.ofNullable(component.damageBeforeTakeOff))
 				.map(damageBeforeTakeOff -> damageBeforeTakeOff.getValue((EnderDragon) (Object) this))
@@ -174,7 +174,7 @@ public abstract class EnderDragonMixin extends Mob {
 	public void progressivebosses$dropDeathLoot(CallbackInfo ci) {
 		if (progressiveBosses$killerDamageSource == null)
 			return;
-		DragonDefinition stats = DragonFeature.getDragonStats((EnderDragon) (Object) this).orElse(null);
+		DragonDefinition stats = DragonFeature.getDragonDefinition((EnderDragon) (Object) this).orElse(null);
 		if (stats == null)
 			return;
 		this.lootTable = stats.lootTable;

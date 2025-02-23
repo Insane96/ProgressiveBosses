@@ -18,5 +18,6 @@ public class NetworkHandler {
 
 	public static void init() {
 		CHANNEL.registerMessage(++index, SyncDragonAnger.class, SyncDragonAnger::encode, SyncDragonAnger::decode, SyncDragonAnger::handle);
+		CHANNEL.registerMessage(++index, BeginBlastAttackPhase.class, BeginBlastAttackPhase::encode, BeginBlastAttackPhase::decode, BeginBlastAttackPhase::handle);
 	}
 }

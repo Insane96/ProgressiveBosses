@@ -31,7 +31,7 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=200", ordinal = 0))
 	public int progressivebosses$sittingFlamingTime(int original) {
-		return DragonFeature.getDragonStats(this.dragon)
+		return DragonFeature.getDragonDefinition(this.dragon)
 				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
 				.flatMap(component -> Optional.ofNullable(component.flamingTime))
 				.map(flamingTime -> flamingTime.getIntValue(this.dragon))
@@ -40,7 +40,7 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=4", ordinal = 0))
 	public int progressivebosses$sittingFlamesBeforeTakeoff(int original) {
-		return DragonFeature.getDragonStats(this.dragon)
+		return DragonFeature.getDragonDefinition(this.dragon)
 				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
 				.flatMap(component -> Optional.ofNullable(component.flamesBeforeTakeOff))
 				.map(flamesBeforeTakeOff -> flamesBeforeTakeOff.getIntValue(this.dragon))

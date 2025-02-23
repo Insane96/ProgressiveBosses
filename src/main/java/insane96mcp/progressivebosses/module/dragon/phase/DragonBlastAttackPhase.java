@@ -1,10 +1,13 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.BlastAttackComponent;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.network.BeginBlastAttackPhase;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
@@ -25,10 +28,9 @@ import java.util.List;
 
 public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
     private static EnderDragonPhase<DragonBlastAttackPhase> PHASE;
-    private int prepareBlowUpTime;
 
-    private static final int BLAST_TIME = 80;
-    private int blastTime;
+    private int blowUpTick;
+    private int timeToBlowUp;
 
     public DragonBlastAttackPhase(EnderDragon pDragon) {
         super(pDragon);
@@ -40,26 +42,26 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         double x = this.dragon.getX();
         double y = this.dragon.getY() + 2;
         double z = this.dragon.getZ();
-        if (--this.prepareBlowUpTime > 30) {
+        if (--this.blowUpTick > 30) {
             for (int i = 0; i < 200; i++) {
                 double r = 96;
                 double v = r / 2f;
                 double x1 = x + random.nextFloat() * r - v;
                 double y1 = y + random.nextFloat() * r - v;
                 double z1 = z + random.nextFloat() * r - v;
-                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-4f * (1f - ((double) this.prepareBlowUpTime / this.blastTime)));
+                Vec3 dir = new Vec3(x1 - x, y1 - y, z1 - z).normalize().scale(-4f * (1f - ((double) this.blowUpTick / this.timeToBlowUp)));
                 this.dragon.level().addParticle(ParticleTypes.DRAGON_BREATH, true, x1, y1, z1, dir.x, dir.y, dir.z);
             }
         }
-        if (this.prepareBlowUpTime > 9)
-            this.dragon.flapTime = 0.25f + ((float) this.prepareBlowUpTime / this.blastTime * 0.6f);
-        else if (this.prepareBlowUpTime >= 4) {
-            this.dragon.flapTime = 0.35f - (8 - this.prepareBlowUpTime + 1) * 0.08f;
+        if (this.blowUpTick > 9)
+            this.dragon.flapTime = 0.25f + ((float) this.blowUpTick / this.timeToBlowUp * 0.6f);
+        else if (this.blowUpTick >= 4) {
+            this.dragon.flapTime = 0.35f - (8 - this.blowUpTick + 1) * 0.08f;
         }
         else {
-            this.dragon.flapTime = 0.8f - (4 - this.prepareBlowUpTime) * 0.05f;
+            this.dragon.flapTime = 0.8f - (4 - this.blowUpTick) * 0.05f;
         }
-        if (this.prepareBlowUpTime == 4) {
+        if (this.blowUpTick == 4) {
             for (int i = 0; i < 4000; i++) {
                 double r = 8;
                 double v = r / 2f;
@@ -73,26 +75,35 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
     }
 
     public void doServerTick() {
-        if (--this.prepareBlowUpTime == 0) {
-            List<Entity> entities = this.dragon.level().getEntities((Entity) null, this.dragon.getBoundingBox().inflate(56d), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
-            float damage = 20f;
-            DragonDefinition stats = DragonFeature.getDragonStats(this.dragon).orElse(null);
-            if (stats != null && stats.attack != null)
-                damage = stats.attack.blastDamage;
+        DragonDefinition definition = DragonFeature.getDragonDefinition(this.dragon).orElse(null);
+        if (definition == null)
+            return;
+        BlastAttackComponent component = definition.getComponent(BlastAttackComponent.class).orElse(null);
+        if (component == null)
+            return;
+        if (--this.blowUpTick == 0) {
+            int radius = component.range.getIntValue(this.dragon);
+            int sqrRadius = radius * radius;
+            List<Entity> entities = this.dragon.level().getEntities((Entity) null, this.dragon.getBoundingBox().inflate(radius), EntitySelector.NO_CREATIVE_OR_SPECTATOR);
+            float damage = component.damage.getValue(this.dragon);
             for (Entity entity : entities) {
                 if (entity == this.dragon
                         || entity instanceof EnderDragonPart
-                        || this.dragon.distanceToSqr(entity) > 3136)
+                        || this.dragon.distanceToSqr(entity) > sqrRadius)
                     continue;
                 double distanceX = entity.getX() - this.dragon.getX();
                 double distanceY = entity.getY() - this.dragon.getY();
                 double distanceZ = entity.getZ() - this.dragon.getZ();
                 double distance = Math.sqrt(distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ);
-                double multiplier = entity instanceof Player ? 16d : 8d;
-                double knockbackReduction = entity instanceof LivingEntity living ? 1.0D - living.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) : 1d;
-                entity.push((distanceX / distance) * multiplier * knockbackReduction, Math.max(1f, distanceY / distance * multiplier * 0.5d * knockbackReduction), (distanceZ / distance) * multiplier * knockbackReduction);
-                if (entity instanceof LivingEntity living)
-                    living.hurtMarked = true;
+                double multiplier = component.knockback == null ? 0f : component.knockback.getValue(this.dragon);
+                if (multiplier > 0) {
+                    if (!(entity instanceof Player))
+                        multiplier *= 2d;
+                    double knockbackReduction = entity instanceof LivingEntity living ? 1.0D - living.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) : 1d;
+                    entity.push((distanceX / distance) * multiplier * knockbackReduction, Math.max(1f, distanceY / distance * multiplier * 0.5d * knockbackReduction), (distanceZ / distance) * multiplier * knockbackReduction);
+                    if (entity instanceof LivingEntity living)
+                        living.hurtMarked = true;
+                }
                 entity.hurt(this.dragon.damageSources().explosion(this.dragon, this.dragon), damage);
             }
             for (int i = 0; i < 8; i++) {
@@ -101,14 +112,14 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
             DragonAnger.setAngered(this.dragon, true);
             this.dragon.getPersistentData().putLong(DragonAttack.LAST_BLAST_TAG, this.dragon.level().getGameTime());
         }
-        else if (this.prepareBlowUpTime <= -10) {
+        else if (this.blowUpTick <= -10) {
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
         }
         else {
-            if (this.prepareBlowUpTime % 5 == 0 && this.prepareBlowUpTime > 10) {
-                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.5f + (1f - this.prepareBlowUpTime / (float) this.blastTime) * 1.2f);
+            if (this.blowUpTick % 5 == 0 && this.blowUpTick > 10) {
+                this.dragon.level().playSound(null, this.dragon, SoundEvents.ENDER_DRAGON_GROWL, SoundSource.HOSTILE, 4f, 0.5f + (1f - this.blowUpTick / (float) this.timeToBlowUp) * 1.2f);
             }
-            this.dragon.flapTime = 1f - (this.blastTime - this.prepareBlowUpTime) / (float) this.blastTime;
+            this.dragon.flapTime = 1f - (this.timeToBlowUp - this.blowUpTick) / (float) this.timeToBlowUp;
         }
     }
 
@@ -116,10 +127,20 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
      * Called when this phase is set to active
      */
     public void begin() {
-        this.prepareBlowUpTime = BLAST_TIME;
-        if (DragonAnger.isAngered(this.dragon))
-            this.prepareBlowUpTime -= 30;
-        this.blastTime = this.prepareBlowUpTime;
+        DragonDefinition definition = DragonFeature.getDragonDefinition(this.dragon).orElse(null);
+        if (definition == null)
+            return;
+        BlastAttackComponent component = definition.getComponent(BlastAttackComponent.class).orElse(null);
+        if (component == null)
+            return;
+        this.initBlowUpTick(component.chargeUpTime.getIntValue(this.dragon));
+        if (!this.dragon.level().isClientSide)
+            ((ServerLevel) this.dragon.level()).players().forEach(player -> BeginBlastAttackPhase.sync(player, this.dragon, this.timeToBlowUp));
+    }
+
+    public void initBlowUpTick(int ticks) {
+        this.blowUpTick = Math.max(10, ticks);
+        this.timeToBlowUp = this.blowUpTick;
     }
 
     public static boolean isInCooldown(EnderDragon dragon, Level level) {

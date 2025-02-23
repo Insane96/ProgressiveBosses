@@ -6,7 +6,7 @@ import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
-import insane96mcp.progressivebosses.module.dragon.data.DragonVulnerabilitiesComponent;
+import insane96mcp.progressivebosses.module.dragon.data.VulnerabilitiesComponent;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
@@ -50,7 +50,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	}
 
 	public void doServerTick() {
-		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
+		Optional<DragonDefinition> stats = DragonFeature.getDragonDefinition(this.dragon);
 		if (stats.isEmpty()) {
 			dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
 			return;
@@ -77,12 +77,14 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), (ServerLevel) this.dragon.level(), ((ServerLevel) this.dragon.level()).getChunkSource().getGenerator(), shouldBeGuarded ? yungRandom : this.dragon.getRandom(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
 			spike.guarded = wasGuarded;
 			//TODO Configurable
-			EndCrystal crystal = this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).get(0);
-			CorruptedEndCrystal corruptedEndCrystal = PBEntities.CORRUPTED_END_CRYSTAL.get().create(this.dragon.level());
-			corruptedEndCrystal.setPos(crystal.getX(), crystal.getY(), crystal.getZ());
-			corruptedEndCrystal.setShowBottom(true);
-			crystal.discard();
-			this.dragon.level().addFreshEntity(corruptedEndCrystal);
+			EndCrystal crystal = this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).stream().filter(c -> !(c instanceof CorruptedEndCrystal)).findFirst().orElse(null);
+			if (crystal != null) {
+				CorruptedEndCrystal corruptedEndCrystal = PBEntities.CORRUPTED_END_CRYSTAL.get().create(this.dragon.level());
+				corruptedEndCrystal.setPos(crystal.getX(), crystal.getY(), crystal.getZ());
+				corruptedEndCrystal.setShowBottom(true);
+				crystal.discard();
+				this.dragon.level().addFreshEntity(corruptedEndCrystal);
+			}
 			spikesToRespawn.remove(0);
 			if (this.spikesToRespawn.isEmpty()) {
 				LogHelper.info("No more crystals to respawn left");
@@ -134,7 +136,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		this.spikesToRespawn.clear();
 		if (dragon.level().isClientSide)
 			return;
-		DragonDefinition stats = DragonFeature.getDragonStats(this.dragon).orElse(null);
+		DragonDefinition stats = DragonFeature.getDragonDefinition(this.dragon).orElse(null);
 		if (stats == null)
 			return;
 		double crystalsToRespawn = stats.crystal.crystalsRespawned;
@@ -186,8 +188,8 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		if (source.is(DamageTypeTags.IS_EXPLOSION) && !source.getMsgId().equals("fireworks"))
 			return amount;
 
-		return amount * DragonFeature.getDragonStats(this.dragon)
-				.flatMap(stats -> stats.getComponent(DragonVulnerabilitiesComponent.class))
+		return amount * DragonFeature.getDragonDefinition(this.dragon)
+				.flatMap(stats -> stats.getComponent(VulnerabilitiesComponent.class))
 				.flatMap(component -> Optional.ofNullable(component.respawningCrystalDamageMultiplier))
 				.map(respawningCrystalDamageMultiplier -> respawningCrystalDamageMultiplier.getValue(this.dragon))
 				.orElse(1f);

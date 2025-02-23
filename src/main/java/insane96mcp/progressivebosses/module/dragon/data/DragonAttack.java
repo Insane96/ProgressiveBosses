@@ -108,7 +108,7 @@ public class DragonAttack {
     public static final String LAST_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "last_blast";
 
     public static float meleeDamage(EnderDragon dragon, float originalDamage) {
-        DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = DragonFeature.getDragonDefinition(dragon).orElse(null);
         if (stats == null || stats.attack == null)
             return originalDamage;
 
@@ -116,7 +116,7 @@ public class DragonAttack {
     }
 
     public static float meleeHeadDamage(EnderDragon dragon, float originalDamage) {
-        DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = DragonFeature.getDragonDefinition(dragon).orElse(null);
         if (stats == null || stats.attack == null)
             return originalDamage;
 
@@ -127,7 +127,7 @@ public class DragonAttack {
         if (!(entity instanceof DragonFireball acidball)
                 || !(acidball.getOwner() instanceof EnderDragon dragon))
             return;
-        Optional<DragonDefinition> stats = DragonFeature.getDragonStats(dragon);
+        Optional<DragonDefinition> stats = DragonFeature.getDragonDefinition(dragon);
         if (stats.isEmpty()
                 || stats.get().attack == null)
             return;
@@ -277,7 +277,7 @@ public class DragonAttack {
         if (!(shooter instanceof EnderDragon dragon)
                 || dragon.level().isClientSide)
             return false;
-        DragonDefinition stats = DragonFeature.getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = DragonFeature.getDragonDefinition(dragon).orElse(null);
         if (stats == null)
             return false;
 

@@ -17,8 +17,8 @@ import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
-@JsonAdapter(DragonVulnerabilitiesComponent.Serializer.class)
-public class DragonVulnerabilitiesComponent implements BossComponent {
+@JsonAdapter(VulnerabilitiesComponent.Serializer.class)
+public class VulnerabilitiesComponent implements BossComponent {
     @Nullable
     public DragonValue meleeDamageMultiplierWhenSitting;
     @Nullable
@@ -63,10 +63,10 @@ public class DragonVulnerabilitiesComponent implements BossComponent {
         event.setAmount(event.getAmount() * this.explosionDamageMultiplier.getValue(dragon));
     }
 
-    public static class Serializer implements JsonDeserializer<DragonVulnerabilitiesComponent> {
+    public static class Serializer implements JsonDeserializer<VulnerabilitiesComponent> {
         @Override
-        public DragonVulnerabilitiesComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            DragonVulnerabilitiesComponent sittingComponent = new DragonVulnerabilitiesComponent();
+        public VulnerabilitiesComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            VulnerabilitiesComponent sittingComponent = new VulnerabilitiesComponent();
             JsonObject jObject = json.getAsJsonObject();
             sittingComponent.meleeDamageMultiplierWhenSitting = context.deserialize(jObject.get("melee_damage_multiplier_when_sitting"), DragonValue.class);
             sittingComponent.meleeDamageMultiplierWhenFlying = context.deserialize(jObject.get("melee_damage_multiplier_when_flying"), DragonValue.class);

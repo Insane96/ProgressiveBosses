@@ -12,6 +12,11 @@ public class DragonValue {
     public float base;
     public float angered;
 
+    public DragonValue(float value) {
+        this.base = value;
+        this.angered = value;
+    }
+
     public DragonValue(float base, float angered) {
         this.base = base;
         this.angered = angered;

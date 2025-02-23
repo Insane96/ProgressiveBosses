@@ -13,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 
-@JsonAdapter(DragonHealthComponent.Serializer.class)
-public class DragonHealthComponent implements BossComponent {
+@JsonAdapter(HealthComponent.Serializer.class)
+public class HealthComponent implements BossComponent {
     @Nullable
     public Integer health;
     @Nullable
@@ -79,10 +79,10 @@ public class DragonHealthComponent implements BossComponent {
         return heal;
     }
 
-    public static class Serializer implements JsonDeserializer<DragonHealthComponent> {
+    public static class Serializer implements JsonDeserializer<HealthComponent> {
         @Override
-        public DragonHealthComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            DragonHealthComponent sittingComponent = new DragonHealthComponent();
+        public HealthComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            HealthComponent sittingComponent = new HealthComponent();
             JsonObject jObject = json.getAsJsonObject();
             sittingComponent.health = GsonHelper.getAsInt(jObject, "health");
             sittingComponent.passiveRegeneration = context.deserialize(jObject.get("passive_regeneration"), DragonValue.class);

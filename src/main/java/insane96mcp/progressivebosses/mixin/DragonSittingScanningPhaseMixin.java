@@ -23,7 +23,7 @@ public abstract class DragonSittingScanningPhaseMixin extends AbstractDragonPhas
 	public int progressivebosses$scanningIdleTime(int original) {
 		if (this.dragon.getPhaseManager().getPhase(EnderDragonPhase.SITTING_FLAMING).flameCount == 0)
 			return original;
-		return DragonFeature.getDragonStats(this.dragon)
+		return DragonFeature.getDragonDefinition(this.dragon)
 				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
 				.flatMap(component -> Optional.ofNullable(component.scanningIdleTime))
 				.map(scanningIdleTime -> scanningIdleTime.getIntValue(this.dragon))

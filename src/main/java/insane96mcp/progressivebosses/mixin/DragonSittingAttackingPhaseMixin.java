@@ -35,7 +35,7 @@ public abstract class DragonSittingAttackingPhaseMixin extends AbstractDragonPha
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=40"))
 	public int progressivebosses$roarTime(int original) {
-		return DragonFeature.getDragonStats(this.dragon)
+		return DragonFeature.getDragonDefinition(this.dragon)
 				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
 				.flatMap(component -> Optional.ofNullable(component.roarTime))
 				.map(roarTime -> roarTime.getIntValue(this.dragon))

@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.network;
 
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.TickTask;
 import net.minecraft.util.thread.BlockableEventLoop;
@@ -19,6 +20,18 @@ public class ClientNetworkHandler {
             Entity entity = Minecraft.getInstance().level.getEntity(entityId);
             if (entity instanceof EnderDragon dragon)
                 DragonAnger.setAngered(dragon, isAngry);
+        }));
+    }
+
+    public static void beginBlastAttack(int entityId, int timeToBlowUp) {
+        BlockableEventLoop<? super TickTask> executor = LogicalSidedProvider.WORKQUEUE.get(LogicalSide.CLIENT);
+        executor.tell(new TickTask(0, () -> {
+            if (Minecraft.getInstance().level == null)
+                return;
+
+            Entity entity = Minecraft.getInstance().level.getEntity(entityId);
+            if (entity instanceof EnderDragon dragon)
+                dragon.getPhaseManager().getPhase(DragonBlastAttackPhase.getPhaseType()).initBlowUpTick(timeToBlowUp);
         }));
     }
 }

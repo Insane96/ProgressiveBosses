@@ -42,7 +42,7 @@ public class PBDragonHoldingPatternPhase extends AbstractDragonPhaseInstance {
 
     private void findNewTarget() {
         if (this.currentPath != null && this.currentPath.isDone()) {
-            DragonDefinition stats = DragonFeature.getDragonStats(this.dragon).orElse(null);
+            DragonDefinition stats = DragonFeature.getDragonDefinition(this.dragon).orElse(null);
             if (stats == null)
                 return;
 

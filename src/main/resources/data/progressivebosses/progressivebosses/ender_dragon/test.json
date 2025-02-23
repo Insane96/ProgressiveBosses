@@ -35,11 +35,21 @@
         },
         {
             "id": "progressivebosses:vulnerabilities",
-            "melee_damage_multiplier_when_sitting": 0.1,
-            "melee_damage_multiplier_when_flying": 2,
-            "explosion_damage_multiplier": 10,
-            "ranged_damage_multiplier": 0.5,
+            "melee_damage_multiplier_when_sitting": 1,
+            "melee_damage_multiplier_when_flying": 1.5,
+            "explosion_damage_multiplier": 0.4,
+            "ranged_damage_multiplier": 1,
             "respawning_crystal_damage_multiplier": 1.5
+        },
+        {
+            "id": "progressivebosses:blast_attack",
+            "range": 56,
+            "knockback": 16,
+            "charge_up_time": {
+                "base": 80,
+                "angered": 45
+            },
+            "damage": 40
         }
     ]
 }

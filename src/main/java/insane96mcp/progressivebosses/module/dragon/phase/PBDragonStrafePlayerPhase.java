@@ -167,7 +167,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         this.currentPath = null;
         this.attackTarget = null;
 
-        Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
+        Optional<DragonDefinition> stats = DragonFeature.getDragonDefinition(this.dragon);
         if (stats.isEmpty()
                 || stats.get().attack == null)
             return;

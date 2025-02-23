@@ -150,7 +150,7 @@ public class DragonFeature extends Feature {
         if (!dragon.getPersistentData().contains(LEVEL))
             dragon.getPersistentData().putByte(LEVEL, dragonLvl);
 
-        DragonDefinition stats = getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = getDragonDefinition(dragon).orElse(null);
         if (stats == null) {
             LogHelper.warn("Failed to get Dragon Stats for level %s", dragon.getPersistentData().getByte(LEVEL));
             return;
@@ -167,7 +167,7 @@ public class DragonFeature extends Feature {
                 || event.getDroppedExperience() == 0)
             return;
 
-        Optional<DragonDefinition> stats = getDragonStats(dragon);
+        Optional<DragonDefinition> stats = getDragonDefinition(dragon);
         if (stats.isEmpty())
             return;
         //This will 100% break if any other mod changes experience dropped
@@ -198,10 +198,10 @@ public class DragonFeature extends Feature {
                 || !(event.getEntity() instanceof EnderDragon dragon))
             return;
 
-        DragonDefinition stats = getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = getDragonDefinition(dragon).orElse(null);
         if (stats == null)
             return;
-        stats.getComponent(DragonHealthComponent.class).ifPresent(health -> health.tick(dragon));
+        stats.getComponent(HealthComponent.class).ifPresent(health -> health.tick(dragon));
         DragonMinion.tick(dragon);
         tryDropEggPerPlayer(dragon);
 
@@ -247,7 +247,7 @@ public class DragonFeature extends Feature {
             DragonAnger.setAngered(dragon, false);
             return;
         }
-        DragonDefinition stats = getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = getDragonDefinition(dragon).orElse(null);
         if (stats == null)
             return;
 
@@ -279,7 +279,7 @@ public class DragonFeature extends Feature {
         if (!this.isEnabled())
             return;
 
-        DragonDefinition stats = getDragonStats(event.getDragon()).orElse(null);
+        DragonDefinition stats = getDragonDefinition(event.getDragon()).orElse(null);
         if (stats == null)
             return;
 
@@ -295,7 +295,7 @@ public class DragonFeature extends Feature {
         EnderDragon dragon = (EnderDragon) serverLevel.getEntity(fight.getDragonUUID());
         if (dragon == null)
             return;
-        DragonDefinition stats = getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = getDragonDefinition(dragon).orElse(null);
         if (stats == null)
             return;
         if (fight.getCrystalsAlive() > 0)
@@ -317,7 +317,7 @@ public class DragonFeature extends Feature {
     public void onDragonHurt(LivingHurtEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon))
             return;
-        DragonDefinition stats = getDragonStats(dragon).orElse(null);
+        DragonDefinition stats = getDragonDefinition(dragon).orElse(null);
         if (stats == null)
             return;
         stats.onLivingHurt(event, dragon);
@@ -325,12 +325,12 @@ public class DragonFeature extends Feature {
         DragonAnger.onHurt(event, dragon, stats);
     }
 
-    public static Optional<DragonDefinition> getDragonStats(EnderDragon dragon) {
+    public static Optional<DragonDefinition> getDragonDefinition(EnderDragon dragon) {
         byte lvl = dragon.getPersistentData().getByte(LEVEL);
-        return getDragonStats(lvl);
+        return getDragonDefinition(lvl);
     }
 
-    public static Optional<DragonDefinition> getDragonStats(byte lvl) {
+    public static Optional<DragonDefinition> getDragonDefinition(byte lvl) {
         return Optional.ofNullable(DragonDefinitionReloadListener.STATS_MAP.get(lvl));
     }
 
