@@ -12,6 +12,8 @@ public class SittingAttackComponent implements BossComponent {
     @Nullable
     public DragonValue damageBeforeTakeOff;
     @Nullable
+    public DragonValue flamesBeforeTakeOff;
+    @Nullable
     public DragonValue roarTime;
     @Nullable
     public DragonValue scanningIdleTime;
@@ -24,6 +26,7 @@ public class SittingAttackComponent implements BossComponent {
             SittingAttackComponent sittingComponent = new SittingAttackComponent();
             JsonObject jObject = json.getAsJsonObject();
             sittingComponent.damageBeforeTakeOff = context.deserialize(jObject.get("damage_before_take_off"), DragonValue.class);
+            sittingComponent.flamesBeforeTakeOff = context.deserialize(jObject.get("flames_before_take_off"), DragonValue.class);
             sittingComponent.roarTime = context.deserialize(jObject.get("roar_time"), DragonValue.class);
             sittingComponent.scanningIdleTime = context.deserialize(jObject.get("scanning_idle_time"), DragonValue.class);
             sittingComponent.flamingTime = context.deserialize(jObject.get("flaming_time"), DragonValue.class);

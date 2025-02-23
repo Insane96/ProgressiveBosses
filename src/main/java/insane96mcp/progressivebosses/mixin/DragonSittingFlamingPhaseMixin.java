@@ -38,6 +38,15 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 				.orElse(original);
 	}
 
+	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=4", ordinal = 0))
+	public int progressivebosses$sittingFlamesBeforeTakeoff(int original) {
+		return DragonFeature.getDragonStats(this.dragon)
+				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
+				.flatMap(component -> Optional.ofNullable(component.flamesBeforeTakeOff))
+				.map(flamesBeforeTakeOff -> flamesBeforeTakeOff.getIntValue(this.dragon))
+				.orElse(original);
+	}
+
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=10", ordinal = 0))
 	public int progressivebosses$timeBeforeSummonCloud(int original) {
 		return 5;
