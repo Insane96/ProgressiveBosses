@@ -1,25 +1,62 @@
 package insane96mcp.progressivebosses.module.dragon.data;
 
-import com.google.gson.*;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
 import com.google.gson.annotations.JsonAdapter;
-import com.google.gson.reflect.TypeToken;
+import insane96mcp.progressivebosses.data.BossComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @JsonAdapter(DragonDefinition.Serializer.class)
 public class DragonDefinition {
     private static final ResourceLocation VANILLA_LOOT_TABLE = new ResourceLocation("entities/ender_dragon");
 
     public byte level;
-    public float maxSittingDamageReceived;
-    public int roarTime;
-    public int sittingScanningIdleTime;
+    public List<BossComponent> components = new ArrayList<>();
+
+    DragonDefinition(byte level, List<BossComponent> components) {
+        this.level = level;
+        this.components = components;
+    }
+
+    public <T extends BossComponent> Optional<T> getComponent(Class<T> componentClass) {
+        return components.stream()
+                .filter(component -> component.getClass() == componentClass).findFirst()
+                .map(componentClass::cast);
+    }
+
+    public void apply(EnderDragon dragon) {
+        components.forEach(component -> component.apply(dragon));
+    }
+
+    public void tick(EnderDragon dragon) {
+        components.forEach(component -> component.tick(dragon));
+    }
+
+    public void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        components.forEach(component -> component.onEntityJoinLevel(event));
+    }
+
+    public void onLivingHurt(LivingHurtEvent event) {
+        components.forEach(component -> component.onLivingHurt(event));
+    }
+
+    public void onLivingDeath(LivingDeathEvent event) {
+        components.forEach(component -> component.onLivingDeath(event));
+    }
+
     public int sittingFlamingTime;
     public DragonHealth health;
     public DragonVulnerabilities vulnerabilities;
@@ -32,11 +69,8 @@ public class DragonDefinition {
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonDefinition(byte level, float maxSittingDamageReceived, int roarTime, int sittingScanningIdleTime, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonLarva larva, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
+    public DragonDefinition(byte level, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonLarva larva, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
-        this.maxSittingDamageReceived = maxSittingDamageReceived;
-        this.roarTime = roarTime;
-        this.sittingScanningIdleTime = sittingScanningIdleTime;
         this.sittingFlamingTime = sittingFlamingTime;
         this.health = health;
         this.vulnerabilities = vulnerabilities;
@@ -48,57 +82,21 @@ public class DragonDefinition {
         this.lootTable = lootTable;
     }
 
-    public static void apply(EnderDragon dragon, DragonDefinition stats) {
+    /*public static void apply(EnderDragon dragon, DragonDefinition stats) {
         dragon.getAttribute(Attributes.MAX_HEALTH).setBaseValue(stats.health.health);
         dragon.setHealth(stats.health.health);
         dragon.lootTable = null;
         DragonCrystal.moreCrystals(dragon, stats);
         DragonLarva.setupLarvaCooldown(dragon, stats);
         DragonMinion.setupMinionCooldown(dragon, stats);
-    }
+    }*/
 
-    public static final Type LIST_TYPE = new TypeToken<ArrayList<DragonDefinition>>(){}.getType();
-
-    public static class Serializer implements JsonSerializer<DragonDefinition>, JsonDeserializer<DragonDefinition> {
+    public static class Serializer implements JsonDeserializer<DragonDefinition> {
         @Override
         public DragonDefinition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            String sLootTable = GsonHelper.getAsString(json.getAsJsonObject(), "loot_table", VANILLA_LOOT_TABLE.toString());
-            ResourceLocation lootTable = ResourceLocation.tryParse(sLootTable);
-            return new DragonDefinition(GsonHelper.getAsByte(json.getAsJsonObject(), "level"),
-                    GsonHelper.getAsFloat(json.getAsJsonObject(), "max_sitting_damage_received"),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "roar_time"),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "sitting_scanning_idle_time", 0),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "sitting_flaming_time", 0),
-                    context.deserialize(json.getAsJsonObject().get("health"), DragonHealth.class),
-                    context.deserialize(json.getAsJsonObject().get("vulnerabilities"), DragonVulnerabilities.class),
-                    context.deserialize(json.getAsJsonObject().get("crystal"), DragonCrystal.class),
-                    json.getAsJsonObject().has("larva") ? context.deserialize(json.getAsJsonObject().get("larva"), DragonLarva.class) : null,
-                    json.getAsJsonObject().has("minion") ? context.deserialize(json.getAsJsonObject().get("minion"), DragonMinion.class) : null,
-                    context.deserialize(json.getAsJsonObject().get("attack"), DragonAttack.class),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "xp_dropped"),
-                    lootTable);
-        }
-
-        @Override
-        public JsonElement serialize(DragonDefinition src, Type typeOfSrc, JsonSerializationContext context) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("level", src.level);
-            jsonObject.addProperty("max_sitting_damage_received", src.maxSittingDamageReceived);
-            jsonObject.addProperty("roar_time", src.roarTime);
-            jsonObject.addProperty("sitting_scanning_idle_time", src.sittingScanningIdleTime);
-            jsonObject.addProperty("sitting_flaming_time", src.sittingFlamingTime);
-            jsonObject.add("health", context.serialize(src.health));
-            jsonObject.add("vulnerabilities", context.serialize(src.vulnerabilities));
-            jsonObject.add("crystal", context.serialize(src.crystal));
-            if (src.larva != null)
-                jsonObject.add("larva", context.serialize(src.larva));
-            if (src.minion != null)
-                jsonObject.add("minion", context.serialize(src.minion));
-            jsonObject.add("attack", context.serialize(src.attack));
-            jsonObject.addProperty("xp_dropped", src.xpDropped);
-            if (!src.lootTable.equals(VANILLA_LOOT_TABLE))
-                jsonObject.addProperty("loot_table", src.lootTable.toString());
-            return jsonObject;
+            byte level = GsonHelper.getAsByte(json.getAsJsonObject(), "level");
+            List<BossComponent> components = BossComponent.deserializeList(json.getAsJsonObject(), "components", context);
+            return new DragonDefinition(level, components);
         }
     }
 }

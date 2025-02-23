@@ -1,0 +1,32 @@
+{
+    "level": 0,
+    "components": [
+        {
+            "id": "progressivebosses:sitting_phase",
+            "damage_before_take_off": {
+                "base": 0.15,
+                "angered": 0.10
+            },
+            "roar_time": {
+                "base": 20,
+                "angered": 10
+            },
+            "scanning_idle_time": {
+                "base": 40,
+                "angered": 20
+            },
+            "flaming_time": {
+                "base": 60,
+                "angered": 30
+            }
+        },
+        {
+            "id": "progressivebosses:health",
+            "health": 400.0,
+            "regeneration": 0,
+            "crystal_regeneration": 1.5,
+            "regen_when_hit_ratio": 0.6,
+            "regen_when_hit_duration": 50
+        }
+    ]
+}

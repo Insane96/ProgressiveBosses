@@ -13,6 +13,7 @@ import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.Corrupted
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.SittingAttackComponent;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import net.minecraft.core.BlockPos;
@@ -133,10 +134,12 @@ public abstract class EnderDragonMixin extends Mob {
 	}
 
 	@ModifyExpressionValue(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "CONSTANT", args = "floatValue=0.25f"))
-	public float maxSittingDamageReceived(float original) {
-		Optional<DragonDefinition> stats = DragonFeature.getDragonStats((EnderDragon) (Object) this);
-		//Divided by 2 because it's healed twice per second
-		return stats.map(dragonStats -> dragonStats.maxSittingDamageReceived).orElse(original);
+	public float progressivebosses$maxSittingDamageReceived(float original) {
+		return DragonFeature.getDragonStats((EnderDragon) (Object) this)
+				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
+				.flatMap(component -> Optional.ofNullable(component.damageBeforeTakeOff))
+				.map(damageBeforeTakeOff -> damageBeforeTakeOff.getValue((EnderDragon) (Object) this))
+				.orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "onCrystalDestroyed", at = @At(value = "CONSTANT", args = "floatValue=10.0"))

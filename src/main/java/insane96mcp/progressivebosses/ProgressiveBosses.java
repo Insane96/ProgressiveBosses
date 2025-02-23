@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses;
 
 import insane96mcp.progressivebosses.commands.PBCommand;
+import insane96mcp.progressivebosses.data.ComponentRegistry;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinitionReloadListener;
 import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
@@ -71,6 +72,7 @@ public class ProgressiveBosses {
 
 	private void commonSetup(final FMLCommonSetupEvent event) {
 		NetworkHandler.init();
+		ComponentRegistry.init();
 	}
 
 	@SubscribeEvent

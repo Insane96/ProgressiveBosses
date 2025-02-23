@@ -3,8 +3,7 @@ package insane96mcp.progressivebosses.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
-import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.SittingAttackComponent;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.AreaEffectCloud;
@@ -32,13 +31,11 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=200", ordinal = 0))
 	public int progressivebosses$sittingFlamingTime(int original) {
-		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
-		return stats.map(dragonStats -> {
-			int sittingFlamingTime = dragonStats.sittingFlamingTime;
-			if (DragonAnger.isAngered(this.dragon))
-				sittingFlamingTime /= 2;
-			return sittingFlamingTime;
-		}).orElse(original);
+		return DragonFeature.getDragonStats(this.dragon)
+				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
+				.flatMap(component -> Optional.ofNullable(component.flamingTime))
+				.map(flamingTime -> flamingTime.getIntValue(this.dragon))
+				.orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=10", ordinal = 0))

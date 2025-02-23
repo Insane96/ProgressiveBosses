@@ -5,8 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
-import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.SittingAttackComponent;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -35,13 +34,11 @@ public abstract class DragonSittingAttackingPhaseMixin extends AbstractDragonPha
 	}
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=40"))
-	public int getRoarDuration(int original) {
-		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
-        return stats.map(dragonStats -> {
-			int roarTime = dragonStats.roarTime;
-			if (DragonAnger.isAngered(this.dragon))
-				roarTime /= 2;
-			return roarTime;
-		}).orElse(original);
+	public int progressivebosses$roarTime(int original) {
+		return DragonFeature.getDragonStats(this.dragon)
+				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
+				.flatMap(component -> Optional.ofNullable(component.roarTime))
+				.map(roarTime -> roarTime.getIntValue(this.dragon))
+				.orElse(original);
     }
 }

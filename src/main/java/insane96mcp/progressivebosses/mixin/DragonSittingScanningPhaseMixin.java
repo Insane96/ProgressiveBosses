@@ -2,8 +2,7 @@ package insane96mcp.progressivebosses.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
-import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.SittingAttackComponent;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonSittingScanningPhase;
@@ -21,16 +20,14 @@ public abstract class DragonSittingScanningPhaseMixin extends AbstractDragonPhas
 	}
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=100"))
-	public int getSittingScanningIdleTime(int original) {
+	public int progressivebosses$scanningIdleTime(int original) {
 		if (this.dragon.getPhaseManager().getPhase(EnderDragonPhase.SITTING_FLAMING).flameCount == 0)
 			return original;
-		Optional<DragonDefinition> stats = DragonFeature.getDragonStats(this.dragon);
-		return stats.map(dragonStats -> {
-			int sittingScanningIdleTime = dragonStats.sittingScanningIdleTime;
-			if (DragonAnger.isAngered(this.dragon))
-				sittingScanningIdleTime /= 2;
-			return sittingScanningIdleTime;
-		}).orElse(original);
+		return DragonFeature.getDragonStats(this.dragon)
+				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
+				.flatMap(component -> Optional.ofNullable(component.scanningIdleTime))
+				.map(scanningIdleTime -> scanningIdleTime.getIntValue(this.dragon))
+				.orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "floatValue=0.7"))
