@@ -62,20 +62,17 @@ public class DragonDefinition {
     public DragonVulnerabilities vulnerabilities;
     public DragonCrystal crystal;
     @Nullable
-    public DragonLarva larva;
-    @Nullable
     public DragonMinion minion;
     public DragonAttack attack;
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonDefinition(byte level, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonLarva larva, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
+    public DragonDefinition(byte level, int sittingFlamingTime, DragonHealth health, DragonVulnerabilities vulnerabilities, DragonCrystal crystal, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.sittingFlamingTime = sittingFlamingTime;
         this.health = health;
         this.vulnerabilities = vulnerabilities;
         this.crystal = crystal;
-        this.larva = larva;
         this.minion = minion;
         this.attack = attack;
         this.xpDropped = xpDropped;
@@ -87,7 +84,6 @@ public class DragonDefinition {
         dragon.setHealth(stats.health.health);
         dragon.lootTable = null;
         DragonCrystal.moreCrystals(dragon, stats);
-        DragonLarva.setupLarvaCooldown(dragon, stats);
         DragonMinion.setupMinionCooldown(dragon, stats);
     }*/
 

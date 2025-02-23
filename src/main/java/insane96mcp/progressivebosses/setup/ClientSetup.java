@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.setup;
 
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystalRenderer;
-import insane96mcp.progressivebosses.module.dragon.entity.LarvaRenderer;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.entity.PBWitherRenderer;
 import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinionRenderer;
@@ -16,7 +15,6 @@ public class ClientSetup {
 		event.registerEntityRenderer(PBEntities.WITHER.get(), PBWitherRenderer::new);
 		event.registerEntityRenderer(PBEntities.WITHER_SKULL.get(), PBWitherSkullRenderer::new);
 		event.registerEntityRenderer(PBEntities.WITHER_MINION.get(), WitherMinionRenderer::new);
-		event.registerEntityRenderer(PBEntities.LARVA.get(), LarvaRenderer::new);
 		event.registerEntityRenderer(PBEntities.CORRUPTED_END_CRYSTAL.get(), CorruptedEndCrystalRenderer::new);
 	}
 

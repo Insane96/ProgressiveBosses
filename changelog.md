@@ -1,6 +1,8 @@
 # Changelog
 
 ## Upcoming
+* Removed Dragon Larva
+  * And anything related to it: config, textures, entities, etc
 * Fixed client-server desync with dragon anger
 * Fixed dragon being able to be stuck in angered mode forever
 * Lowered chance to strafe when angered and to blast when not

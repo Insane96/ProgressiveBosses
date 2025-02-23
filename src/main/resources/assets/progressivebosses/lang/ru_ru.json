@@ -5,7 +5,6 @@
   "entity.progressivebosses.wither_minion": "Визер-прислужник",
   "death.attack.progressivebosses:wither_charge_attack": "%1$s был атакован %2$s.",
 
-  "entity.progressivebosses.larva": "Личинка дракона",
   "progressivebosses:dragon_minion": "Прислужник дракона",
   "death.attack.progressivebosses:dragon_fireball": "%1$s был уничтожен взрывом %2$s.",
 

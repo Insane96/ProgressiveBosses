@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses;
 import insane96mcp.progressivebosses.commands.PBCommand;
 import insane96mcp.progressivebosses.data.ComponentRegistry;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinitionReloadListener;
-import insane96mcp.progressivebosses.module.dragon.entity.Larva;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonHoldingPatternPhase;
@@ -83,6 +82,5 @@ public class ProgressiveBosses {
 	public void registerAttributes(EntityAttributeCreationEvent event) {
 		event.put(PBEntities.WITHER.get(), PBWither.prepareAttributes().build());
 		event.put(PBEntities.WITHER_MINION.get(), WitherMinion.prepareAttributes().build());
-		event.put(PBEntities.LARVA.get(), Larva.prepareAttributes().build());
 	}
 }

@@ -81,14 +81,6 @@ public class PBCommand {
                         .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_MINION, IntegerArgumentType.getInteger(context, "lvl"), false))
                     )
                 )
-                .then(Commands.literal(Strings.Tags.DRAGON_LARVA)
-                    .then(Commands.argument("difficulty", IntegerArgumentType.integer(0, insane96mcp.progressivebosses.module.dragon.feature.DifficultyFeature.maxDifficulty))
-                        .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, IntegerArgumentType.getInteger(context, "lvl"), false))
-                    )
-                )
-                .then(Commands.literal(Strings.Tags.ELDER_MINION)
-                    .executes(context -> summon(context.getSource(), Strings.Tags.DRAGON_LARVA, 0, false))
-                )
             )
         );*/
     }

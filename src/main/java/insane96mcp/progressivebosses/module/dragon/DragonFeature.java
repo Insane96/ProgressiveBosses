@@ -200,7 +200,6 @@ public class DragonFeature extends Feature {
 
         //dragon.level().players().forEach(player -> player.displayClientMessage(Component.literal("x: %.1f, y: %.1f, z: %.1f".formatted(dragon.position().x, dragon.position().y, dragon.position().z)), true));
         DragonHealth.tryHeal(dragon);
-        DragonLarva.tick(dragon);
         DragonMinion.tick(dragon);
         tryDropEggPerPlayer(dragon);
 
