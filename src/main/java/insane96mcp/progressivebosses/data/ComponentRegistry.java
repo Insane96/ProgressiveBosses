@@ -19,6 +19,7 @@ public class ComponentRegistry {
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "blast_attack"), BlastAttackComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "strafe_player"), StrafePlayerComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "acidball"), AcidballComponent.class);
+        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "melee_damage"), MeleeDamageComponent.class);
     }
 
     public static void registerComponent(ResourceLocation id, Type type) {

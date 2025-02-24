@@ -87,6 +87,11 @@
             "impact_range": 5,
             "impact_damage": 12,
             "is_3d_cloud": true
+        },
+        {
+            "id": "progressivebosses:melee_damage",
+            "wing_damage": 25,
+            "head_damage": 35
         }
     ]
 }

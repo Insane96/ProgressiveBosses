@@ -31,8 +31,10 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.monster.Shulker;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.phys.AABB;
@@ -101,6 +103,15 @@ public class DragonFeature extends Feature {
         event.setNewPhase(EnderDragonPhase.LANDING_APPROACH);
     }
 
+    @Nullable
+    public static Player getRandomPlayer(EnderDragon dragon, Level level, int range) {
+        List<Player> players = level.getEntitiesOfClass(Player.class, dragon.getBoundingBox().inflate(range));
+        if (players.isEmpty())
+            return null;
+
+        return players.get(Mth.nextInt(level.random, 0, players.size() - 1));
+    }
+
     @SubscribeEvent
     public void onEntityJoinLevel(EntityJoinLevelEvent event) {
         if (!this.isEnabled()
@@ -142,16 +153,16 @@ public class DragonFeature extends Feature {
                 || event.getDroppedExperience() == 0)
             return;
 
-        Optional<DragonDefinition> stats = getDragonDefinition(dragon);
-        if (stats.isEmpty())
+        Optional<DragonDefinition> definition = getDragonDefinition(dragon);
+        if (definition.isEmpty())
             return;
         //This will 100% break if any other mod changes experience dropped
         if (event.getDroppedExperience() == Mth.floor(12000 * 0.08F)
                 || event.getDroppedExperience() == Mth.floor(500 * 0.08F))
-            event.setDroppedExperience(Mth.floor(stats.get().xpDropped * 0.08f));
+            event.setDroppedExperience(Mth.floor(definition.get().xpDropped * 0.08f));
         else if (event.getDroppedExperience() == Mth.floor(12000 * 0.2F)
                 || event.getDroppedExperience() == Mth.floor(500 * 0.2F))
-            event.setDroppedExperience(Mth.floor(stats.get().xpDropped * 0.2f));
+            event.setDroppedExperience(Mth.floor(definition.get().xpDropped * 0.2f));
     }
 
     @SubscribeEvent

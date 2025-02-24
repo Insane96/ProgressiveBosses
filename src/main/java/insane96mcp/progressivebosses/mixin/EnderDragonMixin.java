@@ -190,16 +190,20 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@ModifyExpressionValue(method = "hurt(Ljava/util/List;)V", at = @At(value = "CONSTANT", args = "floatValue=10.0"))
 	public float progressiveBosses$headDamage(float original) {
-		if (!Feature.isEnabled(DragonFeature.class))
-			return original;
-		return DragonAttack.meleeHeadDamage((EnderDragon) (Object) this, original);
+		return DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
+				.flatMap(stats -> stats.getComponent(MeleeDamageComponent.class))
+				.flatMap(component -> Optional.ofNullable(component.headDamage))
+				.map(headDamage -> headDamage.getValue((EnderDragon) (Object) this))
+				.orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "knockBack(Ljava/util/List;)V", at = @At(value = "CONSTANT", args = "floatValue=5.0"))
 	public float progressiveBosses$bodyDamage(float original) {
-		if (!Feature.isEnabled(DragonFeature.class))
-			return original;
-		return DragonAttack.meleeDamage((EnderDragon) (Object) this, original);
+		return DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
+				.flatMap(stats -> stats.getComponent(MeleeDamageComponent.class))
+				.flatMap(component -> Optional.ofNullable(component.wingDamage))
+				.map(wingDamage -> wingDamage.getValue((EnderDragon) (Object) this))
+				.orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=5.5", ordinal = 0))

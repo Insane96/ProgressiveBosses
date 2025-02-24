@@ -6,6 +6,7 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -68,7 +69,7 @@ public class BlastAttackComponent implements BossComponent, PhaseChanger {
             return false;
         if (DragonBlastAttackPhase.isInCooldown(dragon, dragon.level(), component))
             return false;
-        if (DragonAttack.getRandomPlayer(dragon, dragon.level(), component.range.getIntValue(dragon)) == null)
+        if (DragonFeature.getRandomPlayer(dragon, dragon.level(), component.range.getIntValue(dragon)) == null)
             return false;
         if (isForcedToBlast(dragon))
             return true;

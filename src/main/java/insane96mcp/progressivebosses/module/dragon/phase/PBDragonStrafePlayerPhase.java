@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.phase;
 import com.mojang.logging.LogUtils;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.AcidballComponent;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import insane96mcp.progressivebosses.module.dragon.data.StrafePlayerComponent;
 import net.minecraft.core.Vec3i;
@@ -187,7 +186,7 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
             return;
         this.fireballsToShoot = component.getAcidballShot(this.dragon, this.dragon.getRandom());
 
-        Player player = DragonAttack.getRandomPlayer(dragon, dragon.level(), 96);
+        Player player = DragonFeature.getRandomPlayer(dragon, dragon.level(), 96);
         if (player == null)
             return;
         this.setTarget(player);
