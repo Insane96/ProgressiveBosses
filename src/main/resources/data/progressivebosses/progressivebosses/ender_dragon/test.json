@@ -1,5 +1,5 @@
 {
-    "level": 1,
+    "level": 4,
     "components": [
         {
             "id": "progressivebosses:health",
@@ -103,6 +103,25 @@
         {
             "id": "progressivebosses:land",
             "chance": 0.35
+        },
+        {
+            "id": "progressivebosses:spikes",
+            "cages": 7,
+            "corrupted_chance": 0.4,
+            "crystals_inside": 3,
+            "inside_corrupted_chance": 0.6
+        },
+        {
+            "id": "progressivebosses:crystal_respawn",
+            "min_respawn_chance": 0,
+            "min_respawn_chance_at_health": 0.6,
+            "max_respawn_chance": 0.75,
+            "max_respawn_chance_at_health": 0,
+            "respawned": 4,
+            "phantom_count": 3,
+            "phantom_size": 5,
+            "caged_chance": 1,
+            "cooldown": 6000
         }
     ]
 }

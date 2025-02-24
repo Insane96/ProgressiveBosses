@@ -84,6 +84,7 @@ public class DragonFeature extends Feature {
     @Label(name = "Dragon Egg per Dragon", description = "If true, all the dragons killed will drop an egg")
     public static Boolean dragonEggPerDragon = true;
 
+    /// Temp variable to keep track of the level of the dragon between placing the End Crystal and summoning the dragon
     public static byte dragonLvl = 0;
 
     public DragonFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
@@ -285,8 +286,10 @@ public class DragonFeature extends Feature {
             return;
         if (fight.getCrystalsAlive() > 0)
             DragonAnger.onCrystalDestroyed(dragon, stats);
-        else
+        else {
             BlastAttackComponent.setForcedToBlast(dragon, true);
+            DragonAnger.addAnger(dragon, DragonAnger.MAX_ANGER);
+        }
     }
 
     @SubscribeEvent
@@ -320,12 +323,12 @@ public class DragonFeature extends Feature {
     }
 
     public static byte getDragonLvl(List<EndCrystal> respawningCrystals) {
+        byte corrupted = 0;
         for (EndCrystal crystal : respawningCrystals) {
-            if (crystal instanceof CorruptedEndCrystal) {
-                return 1;
-            }
+            if (crystal instanceof CorruptedEndCrystal)
+                corrupted++;
         }
-        return 0;
+        return corrupted;
     }
 
     @Nullable

@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.SpikesComponent;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -26,7 +27,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Mixin(EndDragonFight.class)
 public class EndDragonFightMixin {
@@ -48,26 +48,32 @@ public class EndDragonFightMixin {
 		}
 
 		byte lvl = DragonFeature.getDragonLvl(respawnCrystals);
+		DragonDefinition definition = DragonFeature.getDragonDefinition(lvl).orElse(null);
+		if (definition == null) {
+			LogHelper.warn("Failed to get Dragon Definition for level %s. Summoning a lvl 0", lvl);
+			lvl = 0;
+			definition = DragonFeature.getDragonDefinition(lvl).orElse(null);
+			if (definition == null) {
+				LogHelper.warn("Failed to get Dragon Definition for level %s. Dragon will be vanilla", lvl);
+				return;
+			}
+		}
 		DragonFeature.dragonLvl = lvl;
+		SpikesComponent component = definition.getComponent(SpikesComponent.class).orElse(null);
+		if (component == null)
+			return;
 
 		//Setup caged pillars
 		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel(this.level));
 		//Order from smaller towers to bigger ones
 		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
-		Optional<DragonDefinition> stats = DragonFeature.getDragonDefinition(lvl);
-		if (stats.isEmpty() || stats.get().crystal == null) {
-			LogHelper.warn("Failed to get Dragon Stats for level %s", lvl);
-			return;
-		}
-
-		int cages = stats.get().crystal.cages;
 
 		//Reset all spikes
 		for (SpikeFeature.EndSpike spike : spikes) {
 			spike.guarded = false;
 		}
 
-		for (int i = 0; i < cages; i++) {
+		for (int i = 0; i < component.cages; i++) {
 			if (i >= spikes.size())
 				break;
 			spikes.get(i).guarded = true;

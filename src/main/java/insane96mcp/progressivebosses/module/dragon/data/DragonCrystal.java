@@ -8,34 +8,20 @@ import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
-import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
 
 @JsonAdapter(DragonCrystal.Serializer.class)
 public class DragonCrystal {
@@ -45,10 +31,7 @@ public class DragonCrystal {
 
     public static final String LAST_RESPAWN_TAG = ProgressiveBosses.RESOURCE_PREFIX + "last_respawn";
 
-    private static final ResourceLocation ENDERGETIC_CRYSTAL_LOCATION = new ResourceLocation("endergetic:crystal_holder");
     private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> VALID_CRYSTAL_RESPAWN_PHASES = List.of(DragonBlastAttackPhase.getPhaseType());
-    public int cages;
-    public int bonusCrystals;
     public int crystalsRespawned;
     public int timeToRespawn;
     public int phantomCount;
@@ -58,9 +41,7 @@ public class DragonCrystal {
     public float maxRespawnChance;
     public float maxRespawnChanceAtHealth;
 
-    public DragonCrystal(int cages, int bonusCrystals, int crystalsRespawned, int timeToRespawn, int phantomCount, int phantomSize, float respawnCagedChance, float respawnCrystalsBelowHealth, float maxRespawnChance, float maxRespawnChanceAtHealth) {
-        this.cages = cages;
-        this.bonusCrystals = bonusCrystals;
+    public DragonCrystal(int crystalsRespawned, int timeToRespawn, int phantomCount, int phantomSize, float respawnCagedChance, float respawnCrystalsBelowHealth, float maxRespawnChance, float maxRespawnChanceAtHealth) {
         this.crystalsRespawned = crystalsRespawned;
         this.timeToRespawn = timeToRespawn;
         this.phantomCount = phantomCount;
@@ -74,8 +55,7 @@ public class DragonCrystal {
     public static class Serializer implements JsonSerializer<DragonCrystal>, JsonDeserializer<DragonCrystal> {
         @Override
         public DragonCrystal deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            return new DragonCrystal(GsonHelper.getAsInt(json.getAsJsonObject(), "cages"),
-                    GsonHelper.getAsInt(json.getAsJsonObject(), "bonus_crystals"),
+            return new DragonCrystal(
                     GsonHelper.getAsInt(json.getAsJsonObject(), "crystals_respawned"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "time_to_respawn"),
                     GsonHelper.getAsInt(json.getAsJsonObject(), "phantom_count"),
@@ -89,8 +69,6 @@ public class DragonCrystal {
         @Override
         public JsonElement serialize(DragonCrystal src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("cages", src.cages);
-            jsonObject.addProperty("bonus_crystals", src.bonusCrystals);
             jsonObject.addProperty("crystals_respawned", src.crystalsRespawned);
             jsonObject.addProperty("time_to_respawn", src.timeToRespawn);
             jsonObject.addProperty("phantom_count", src.phantomCount);
@@ -101,55 +79,6 @@ public class DragonCrystal {
             jsonObject.addProperty("max_respawn_chance_at_health", src.maxRespawnChanceAtHealth);
             return jsonObject;
         }
-    }
-
-    public static void moreCrystals(EnderDragon dragon, DragonDefinition stats) {
-        if (stats.crystal == null || stats.crystal.bonusCrystals <= 0)
-            return;
-        List<EndCrystal> crystals = new ArrayList<>();
-
-        //Order from smaller towers to bigger ones
-        List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel) dragon.level()));
-        spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
-
-        for(SpikeFeature.EndSpike spike : spikes) {
-            crystals.addAll(dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox(), EndCrystal::showsBottom));
-        }
-
-        int crystalSpawned = 0;
-
-        for (EndCrystal crystal : crystals) {
-            generateCrystalInTower(dragon.level(), crystal.getBlockX(), crystal.getBlockY(), crystal.getBlockZ());
-
-            if (++crystalSpawned >= stats.crystal.bonusCrystals)
-                break;
-        }
-    }
-
-    public static void generateCrystalInTower(Level level, int x, int y, int z) {
-        BlockPos centerPodium = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
-        while (!level.getBlockState(centerPodium).is(Blocks.BEDROCK) && centerPodium.getY() > level.getSeaLevel()) {
-            centerPodium = centerPodium.below();
-        }
-
-        int spawnY = y - 16;
-        if (spawnY < centerPodium.getY())
-            spawnY = centerPodium.getY();
-        BlockPos crystalPos = new BlockPos(x, spawnY, z);
-
-        Stream<BlockPos> blocks = BlockPos.betweenClosedStream(crystalPos.offset(-1, -1, -1), crystalPos.offset(1, 1, 1));
-
-        blocks.forEach(pos -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
-
-        BlockState baseBlockState = Blocks.BEDROCK.defaultBlockState();
-        if (ModList.get().isLoaded("endergetic"))
-            baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_LOCATION).defaultBlockState();
-        level.setBlockAndUpdate(crystalPos.offset(0, -1, 0), baseBlockState);
-
-        //level.explode(null, crystalPos.getX() + .5f, crystalPos.getY(), crystalPos.getZ() + .5, 5f, Level.ExplosionInteraction.BLOCK);
-
-        EndCrystal crystal = new EndCrystal(level, crystalPos.getX() + .5, crystalPos.getY(), crystalPos.getZ() + .5);
-        level.addFreshEntity(crystal);
     }
 
     public static boolean shouldRespawnCrystals(EnderDragon dragon, DragonDefinition stats) {

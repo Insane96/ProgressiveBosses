@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(targets = "net/minecraft/world/level/dimension/end/DragonRespawnAnimation$4")
-public class DragonRespawnAnimationMixin {
+public class DragonRespawnAnimationSummoningDragonMixin {
 	@WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/level/ServerLevel;levelEvent(ILnet/minecraft/core/BlockPos;I)V", ordinal = 0))
     public void onPlayDragonSound(ServerLevel instance, int type, BlockPos blockPos, int flags, Operation<Void> original, ServerLevel serverLevel, EndDragonFight endDragonFight, List<EndCrystal> crystals, int ticks, BlockPos pos) {
         if (ticks % 5 != 0
