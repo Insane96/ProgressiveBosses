@@ -270,7 +270,6 @@ public class DragonFeature extends Feature {
         if (definition == null)
             return;
 
-        DragonAttack.onChargeBegin(event, event.getDragon());
         definition.components.forEach(component -> {
             if (component instanceof PhaseChanger phaseChanger)
                 phaseChanger.onPhaseBegin(event, event.getDragon());
@@ -362,7 +361,6 @@ public class DragonFeature extends Feature {
     }
 
     public enum Phases {
-        CHARGE(0, EnderDragonPhase.CHARGING_PLAYER, DragonAttack::shouldCharge, DragonAttack::charge),
         LAND(0, EnderDragonPhase.LANDING_APPROACH, (dragon, stats) -> dragon.getRandom().nextInt(3) == 0 && !DragonAnger.isAngered(dragon), DragonFeature::land),
         RESPAWN(1, DragonCrystalRespawnPhase.getPhaseType(), DragonCrystal::shouldRespawnCrystals, DragonCrystal::respawnCrystals);
 

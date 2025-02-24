@@ -6,6 +6,7 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import net.minecraft.util.GsonHelper;
@@ -25,7 +26,6 @@ public class StrafePlayerComponent implements BossComponent, PhaseChanger {
     public DragonValue cooldownBetweenShots;
     public DragonValue acidballPerShot;
 
-    static final String FORCE_CHARGE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_charge";
     private static final String FORCE_STRAFE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_strafe";
 
     public static boolean isForcedToStrafe(EnderDragon dragon) {
@@ -64,6 +64,8 @@ public class StrafePlayerComponent implements BossComponent, PhaseChanger {
     public boolean shouldExecute(EnderDragon dragon, DragonDefinition definition) {
         StrafePlayerComponent component = definition.getComponent(StrafePlayerComponent.class).orElse(null);
         if (component == null)
+            return false;
+        if (DragonFeature.getRandomPlayer(dragon, dragon.level(), 96) == null)
             return false;
         if (isForcedToStrafe(dragon))
             return true;

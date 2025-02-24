@@ -61,16 +61,13 @@ public class DragonDefinition {
     public DragonCrystal crystal;
     @Nullable
     public DragonMinion minion;
-    @Nullable
-    public DragonAttack attack;
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonDefinition(byte level, DragonCrystal crystal, @Nullable DragonMinion minion, DragonAttack attack, int xpDropped, ResourceLocation lootTable) {
+    public DragonDefinition(byte level, DragonCrystal crystal, @Nullable DragonMinion minion, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
         this.crystal = crystal;
         this.minion = minion;
-        this.attack = attack;
         this.xpDropped = xpDropped;
         this.lootTable = lootTable;
     }

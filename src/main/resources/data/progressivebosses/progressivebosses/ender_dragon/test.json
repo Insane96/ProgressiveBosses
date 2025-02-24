@@ -92,6 +92,13 @@
             "id": "progressivebosses:melee_damage",
             "wing_damage": 25,
             "head_damage": 35
+        },
+        {
+            "id": "progressivebosses:charge_player",
+            "chance": {
+                "base": 0.5,
+                "angered": 1.0
+            }
         }
     ]
 }
