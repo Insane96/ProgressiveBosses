@@ -46,11 +46,9 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.logging.log4j.util.TriConsumer;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 
 @Label(name = "Ender Dragon Feature")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon", canBeDisabled = false)
@@ -94,32 +92,13 @@ public class DragonFeature extends Feature {
         super(module, enabledByDefault, canBeDisabled);
     }
 
-    @Nullable
-    public static Phases getPhase(EnderDragon dragon, DragonDefinition stats) {
-        List<Phases> phases = new ArrayList<>();
-        for (Phases phase : Phases.PHASES) {
-            if (phase.shouldExecute.test(dragon, stats))
-                phases.add(phase);
-        }
-
-        if (phases.isEmpty())
-            return null;
-
-        int maxPriority = phases.stream().mapToInt(Phases::getPriority).max().getAsInt();
-        phases = phases.stream()
-                .filter(phase -> phase.getPriority() == maxPriority)
-                .collect(Collectors.toList());
-
-        return phases.get(dragon.getRandom().nextInt(phases.size()));
-    }
-
-    public static void onHoldingPatternEnd(DragonPhaseEvent.Change event, EnderDragon dragon, DragonDefinition stats) {
-        Phases phases = getPhase(dragon, stats);
-        if (phases == null) {
+    public static void onHoldingPatternEnd(DragonPhaseEvent.Change event, EnderDragon dragon) {
+        PhaseChanger phaseChanger = PhaseChanger.getPhaseChanger(dragon);
+        if (phaseChanger == null) {
             event.setNewPhase(EnderDragonPhase.HOLDING_PATTERN);
             return;
         }
-        phases.applyPhase.accept(event, dragon, false);
+        phaseChanger.execute(event, dragon, false);
     }
 
     public static void land(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
@@ -258,18 +237,18 @@ public class DragonFeature extends Feature {
         if (event.getNewPhase().equals(EnderDragonPhase.STRAFE_PLAYER))
             event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
 
-        if (DragonAttack.isForcedToBlast(dragon)) {
-            DragonAttack.blast(event, dragon, false);
+        if (BlastAttackComponent.isForcedToBlast(dragon)) {
+            BlastAttackComponent.blast(event, dragon, false);
             return;
         }
         if (event.getOldPhase() == PBDragonHoldingPatternPhase.getPhaseType() && event.getNewPhase() == EnderDragonPhase.LANDING_APPROACH)
-            onHoldingPatternEnd(event, dragon, stats);
+            onHoldingPatternEnd(event, dragon);
         if (DragonAnger.isAngered(dragon)) {
             if (((event.getOldPhase() == EnderDragonPhase.CHARGING_PLAYER || event.getOldPhase() == PBDragonStrafePlayerPhase.getPhaseType()) && event.getNewPhase() == PBDragonHoldingPatternPhase.getPhaseType())
                         || (event.getOldPhase() == DragonBlastAttackPhase.getPhaseType() && event.getNewPhase() == EnderDragonPhase.TAKEOFF)) {
-                Phases newPhase = getPhase(dragon, stats);
-                if (newPhase != null)
-                    newPhase.applyPhase.accept(event, dragon, event.getOldPhase() != newPhase.phase);
+                PhaseChanger phaseChanger = PhaseChanger.getPhaseChanger(dragon);
+                if (phaseChanger != null)
+                    phaseChanger.execute(event, dragon, event.getOldPhase() != phaseChanger.getPhase());
             }
         }
     }
@@ -301,7 +280,7 @@ public class DragonFeature extends Feature {
         if (fight.getCrystalsAlive() > 0)
             DragonAnger.onCrystalDestroyed(dragon, stats);
         else
-            DragonAttack.setForcedToBlast(dragon, true);
+            BlastAttackComponent.setForcedToBlast(dragon, true);
     }
 
     @SubscribeEvent
@@ -375,7 +354,6 @@ public class DragonFeature extends Feature {
         CHARGE(0, EnderDragonPhase.CHARGING_PLAYER, DragonAttack::shouldCharge, DragonAttack::charge),
         STRAFE(0, PBDragonStrafePlayerPhase.getPhaseType(), DragonAttack::shouldStrafe, DragonAttack::strafe),
         LAND(0, EnderDragonPhase.LANDING_APPROACH, (dragon, stats) -> dragon.getRandom().nextInt(3) == 0 && !DragonAnger.isAngered(dragon), DragonFeature::land),
-        BLAST(0, DragonBlastAttackPhase.getPhaseType(), DragonAttack::shouldBlast, (event, dragon, forceBegin) -> DragonAttack.setForcedToBlast(dragon, true)),
         RESPAWN(1, DragonCrystalRespawnPhase.getPhaseType(), DragonCrystal::shouldRespawnCrystals, DragonCrystal::respawnCrystals);
 
         private static final List<Phases> PHASES = List.of(Phases.values());

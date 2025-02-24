@@ -31,7 +31,7 @@ public class DragonAnger {
         float newAnger = getAnger(dragon) + anger;
         dragon.getPersistentData().putFloat(ANGER_TAG, newAnger);
         if (newAnger >= MAX_ANGER)
-            DragonAttack.setForcedToBlast(dragon, true);
+            BlastAttackComponent.setForcedToBlast(dragon, true);
     }
 
     public static boolean isAngered(EnderDragon dragon) {

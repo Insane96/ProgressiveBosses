@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.phase;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.BlastAttackComponent;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import insane96mcp.progressivebosses.network.BeginBlastAttackPhase;
 import net.minecraft.core.particles.ParticleTypes;
@@ -110,7 +109,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
                 this.dragon.level().playSound(null, this.dragon.getX() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getY() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getZ() + this.dragon.getRandom().nextFloat() * 48f - 24f, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 4f, 0.7f);
             }
             DragonAnger.setAngered(this.dragon, true);
-            this.dragon.getPersistentData().putLong(DragonAttack.LAST_BLAST_TAG, this.dragon.level().getGameTime());
+            this.dragon.getPersistentData().putLong(BlastAttackComponent.LAST_BLAST_TAG, this.dragon.level().getGameTime());
         }
         else if (this.blowUpTick <= -10) {
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
@@ -143,8 +142,10 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         this.timeToBlowUp = this.blowUpTick;
     }
 
-    public static boolean isInCooldown(EnderDragon dragon, Level level) {
-        return level.getGameTime() - dragon.getPersistentData().getLong(DragonAttack.LAST_BLAST_TAG) < 600;
+    public static boolean isInCooldown(EnderDragon dragon, Level level, BlastAttackComponent component) {
+        if (component.cooldown == null)
+            return false;
+        return level.getGameTime() - dragon.getPersistentData().getLong(BlastAttackComponent.LAST_BLAST_TAG) < component.cooldown.getIntValue(dragon);
     }
 
     public @NotNull EnderDragonPhase<DragonBlastAttackPhase> getPhase() {

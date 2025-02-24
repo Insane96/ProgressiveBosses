@@ -43,13 +43,18 @@
         },
         {
             "id": "progressivebosses:blast_attack",
+            "chance": {
+                "base": 0.1,
+                "angered": 0.4
+            },
             "range": 56,
             "knockback": 16,
             "charge_up_time": {
                 "base": 80,
                 "angered": 45
             },
-            "damage": 40
+            "damage": 40,
+            "cooldown": 600
         }
     ]
 }

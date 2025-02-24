@@ -8,7 +8,6 @@ import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
 import insane96mcp.progressivebosses.mixin.ProjectileInvoker;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -47,11 +46,10 @@ public class DragonAttack {
     public DragonValue blastChance;
     public float acidballSpeedMultiplier;
     public float acidballImpactDamage;
-    public float blastDamage;
     public int minAcidballShot;
     public int maxAcidballShot;
 
-    public DragonAttack(float meleeDamage, float meleeHeadDamage, int acidAmplifier, DragonValue chargeChance, DragonValue strafeChance, DragonValue blastChance, float acidballSpeedMultiplier, float acidballImpactDamage, float blastDamage, int minAcidballShot, int maxAcidballShot) {
+    public DragonAttack(float meleeDamage, float meleeHeadDamage, int acidAmplifier, DragonValue chargeChance, DragonValue strafeChance, DragonValue blastChance, float acidballSpeedMultiplier, float acidballImpactDamage, int minAcidballShot, int maxAcidballShot) {
         this.meleeDamage = meleeDamage;
         this.meleeHeadDamage = meleeHeadDamage;
         this.acidAmplifier = acidAmplifier;
@@ -60,7 +58,6 @@ public class DragonAttack {
         this.blastChance = blastChance;
         this.acidballSpeedMultiplier = acidballSpeedMultiplier;
         this.acidballImpactDamage = acidballImpactDamage;
-        this.blastDamage = blastDamage;
         this.minAcidballShot = minAcidballShot;
         this.maxAcidballShot = maxAcidballShot;
     }
@@ -78,7 +75,6 @@ public class DragonAttack {
                     context.deserialize(jObject.get("blast_chance"), DragonValue.class),
                     GsonHelper.getAsFloat(jObject, "acidball_speed_multiplier"),
                     GsonHelper.getAsFloat(jObject, "acidball_impact_damage"),
-                    GsonHelper.getAsFloat(jObject, "blast_damage"),
                     GsonHelper.getAsInt(jObject, "min_acidball_shot"),
                     GsonHelper.getAsInt(jObject, "max_acidball_shot")
             );
@@ -95,7 +91,6 @@ public class DragonAttack {
             jsonObject.add("blast_chance", context.serialize(src.blastChance));
             jsonObject.addProperty("acidball_speed_multiplier", src.acidballSpeedMultiplier);
             jsonObject.addProperty("acidball_impact_damage", src.acidballImpactDamage);
-            jsonObject.addProperty("blast_damage", src.blastDamage);
             jsonObject.addProperty("min_acidball_shot", src.minAcidballShot);
             jsonObject.addProperty("max_acidball_shot", src.maxAcidballShot);
             return jsonObject;
@@ -104,8 +99,6 @@ public class DragonAttack {
 
     private static final String FORCE_CHARGE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_charge";
     private static final String FORCE_STRAFE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_strafe";
-    private static final String FORCE_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_blast";
-    public static final String LAST_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "last_blast";
 
     public static float meleeDamage(EnderDragon dragon, float originalDamage) {
         DragonDefinition stats = DragonFeature.getDragonDefinition(dragon).orElse(null);
@@ -225,41 +218,6 @@ public class DragonAttack {
         if (player == null)
             return;
         dragon.getPhaseManager().getPhase(PBDragonStrafePlayerPhase.getPhaseType()).setTarget(player);
-    }
-
-    public static boolean isForcedToBlast(EnderDragon dragon) {
-        return dragon.getPersistentData().getBoolean(FORCE_BLAST_TAG);
-    }
-
-    public static void setForcedToBlast(EnderDragon dragon, boolean forcedToBlast) {
-        dragon.getPersistentData().putBoolean(FORCE_BLAST_TAG, forcedToBlast);
-    }
-
-    public static boolean shouldBlast(EnderDragon dragon, DragonDefinition stats) {
-        if (isForcedToBlast(dragon))
-            return true;
-        if (DragonBlastAttackPhase.isInCooldown(dragon, dragon.level()) || stats.attack == null)
-            return false;
-
-        double chance = stats.attack.blastChance.getValue(dragon);
-        if (chance == 0f)
-            return false;
-        return dragon.getRandom().nextDouble() < chance;
-    }
-
-    public static void blast(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
-        if (event.getOldPhase() != EnderDragonPhase.HOVERING &&
-                (dragon.getPhaseManager().getPhase(event.getOldPhase()).isSitting() || dragon.getPhaseManager().getPhase(event.getNewPhase()).isSitting())) {
-            event.setNewPhase(DragonBlastAttackPhase.getPhaseType());
-            if (forceBegin) {
-                DragonPhaseInstance phase = dragon.getPhaseManager().getPhase(event.getNewPhase());
-                phase.begin();
-                PBEventFactory.onDragonPhaseBegin(dragon, phase);
-            }
-            setForcedToBlast(dragon, false);
-        }
-        else
-            event.setNewPhase(EnderDragonPhase.LANDING);
     }
 
     @Nullable
