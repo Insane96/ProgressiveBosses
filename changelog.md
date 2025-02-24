@@ -1,5 +1,7 @@
 # Changelog
 
+* Charge player fails as it's in the same spot as the previous charge
+
 ## Upcoming
 * Removed Dragon Larva
   * No longer exists in any form

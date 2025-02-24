@@ -6,6 +6,7 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
+import insane96mcp.progressivebosses.mixin.DragonChargePlayerPhaseAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -44,6 +45,7 @@ public class ChargePlayerComponent implements BossComponent, PhaseChanger {
         if (player == null)
             return;
         dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());
+        ((DragonChargePlayerPhaseAccessor) dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER)).setTimeSinceCharge(0);
     }
 
     @Override

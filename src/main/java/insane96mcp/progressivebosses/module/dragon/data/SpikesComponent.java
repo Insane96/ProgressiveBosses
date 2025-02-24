@@ -2,12 +2,16 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.data.BossComponent;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -34,6 +38,14 @@ public class SpikesComponent implements BossComponent {
     public float insideCorruptedChance;
 
     private static final ResourceLocation ENDERGETIC_CRYSTAL_LOCATION = new ResourceLocation("endergetic:crystal_holder");
+
+    public static boolean onCrystalDamagedByExplosion(DamageSource source) {
+        if (!Feature.isEnabled(DragonFeature.class)
+                || !DragonFeature.explosionImmuneCrystals)
+            return false;
+
+        return source.is(DamageTypeTags.IS_EXPLOSION);
+    }
 
     @Override
     public void apply(EnderDragon dragon) {

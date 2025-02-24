@@ -12,8 +12,8 @@
         },
         {
             "id": "progressivebosses:vulnerabilities",
-            "melee_damage_multiplier_when_sitting": 1,
-            "melee_damage_multiplier_when_flying": 1.5,
+            "melee_damage_multiplier_when_sitting": 0.8,
+            "melee_damage_multiplier_when_flying": 1,
             "explosion_damage_multiplier": 0.4,
             "ranged_damage_multiplier": 1,
             "respawning_crystal_damage_multiplier": 1.5
@@ -121,6 +121,7 @@
             "phantom_count": 3,
             "phantom_size": 5,
             "caged_chance": 1,
+            "corrupted_chance": 1,
             "cooldown": 6000
         }
     ]

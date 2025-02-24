@@ -58,15 +58,12 @@ public class DragonDefinition {
     }
 
     @Nullable
-    public DragonCrystal crystal;
-    @Nullable
     public DragonMinion minion;
     public int xpDropped;
     public ResourceLocation lootTable;
 
-    public DragonDefinition(byte level, DragonCrystal crystal, @Nullable DragonMinion minion, int xpDropped, ResourceLocation lootTable) {
+    public DragonDefinition(byte level, @Nullable DragonMinion minion, int xpDropped, ResourceLocation lootTable) {
         this.level = level;
-        this.crystal = crystal;
         this.minion = minion;
         this.xpDropped = xpDropped;
         this.lootTable = lootTable;
@@ -74,7 +71,6 @@ public class DragonDefinition {
 
     /*public static void apply(EnderDragon dragon, DragonDefinition stats) {
         dragon.lootTable = null;
-        DragonCrystal.moreCrystals(dragon, stats);
         DragonMinion.setupMinionCooldown(dragon, stats);
     }*/
 

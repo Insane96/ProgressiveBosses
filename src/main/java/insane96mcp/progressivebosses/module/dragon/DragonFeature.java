@@ -11,7 +11,6 @@ import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonHoldingPatternPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import insane96mcp.progressivebosses.network.SyncDragonAnger;
@@ -45,12 +44,10 @@ import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import org.apache.logging.log4j.util.TriConsumer;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiPredicate;
 
 @Label(name = "Ender Dragon Feature")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon", canBeDisabled = false)
@@ -176,18 +173,17 @@ public class DragonFeature extends Feature {
 
     @SubscribeEvent
     public void onUpdate(LivingEvent.LivingTickEvent event) {
-        DragonCrystal.tickCrystalPhantom(event);
+        CrystalRespawnComponent.tickCrystalPhantom(event);
         if (!this.isEnabled()
                 || !(event.getEntity() instanceof EnderDragon dragon))
             return;
 
-        DragonDefinition stats = getDragonDefinition(dragon).orElse(null);
-        if (stats == null)
+        DragonDefinition definition = getDragonDefinition(dragon).orElse(null);
+        if (definition == null)
             return;
-        stats.getComponent(HealthComponent.class).ifPresent(health -> health.tick(dragon));
+        definition.getComponent(HealthComponent.class).ifPresent(health -> health.tick(dragon));
         DragonMinion.tick(dragon);
         tryDropEggPerPlayer(dragon);
-
         DragonAnger.tick(dragon);
     }
 
@@ -298,7 +294,7 @@ public class DragonFeature extends Feature {
             return;
 
         DragonMinion.onMinionHurt(event);
-        DragonCrystal.onPhantomHurt(event);
+        CrystalRespawnComponent.onPhantomHurt(event);
         onDragonHurt(event);
     }
 
@@ -331,14 +327,6 @@ public class DragonFeature extends Feature {
         return corrupted;
     }
 
-    @Nullable
-    public static EnderDragon findDragon(ServerLevel level) {
-        EndDragonFight dragonFight = level.getDragonFight();
-        if (dragonFight != null && dragonFight.getDragonUUID() != null)
-            return (EnderDragon) level.getEntity(dragonFight.getDragonUUID());
-        return null;
-    }
-
     public static float neckOffsetXZ() {
         return 3.8f;
     }
@@ -357,27 +345,5 @@ public class DragonFeature extends Feature {
 
     public static float headOffsetY(float original) {
         return original + 1.5f;
-    }
-
-    public enum Phases {
-        RESPAWN(1, DragonCrystalRespawnPhase.getPhaseType(), DragonCrystal::shouldRespawnCrystals, DragonCrystal::respawnCrystals);
-
-        private static final List<Phases> PHASES = List.of(Phases.values());
-
-        public final int priority;
-        public final EnderDragonPhase<?> phase;
-        public final BiPredicate<EnderDragon, DragonDefinition> shouldExecute;
-        public final TriConsumer<DragonPhaseEvent.Change, EnderDragon, Boolean> applyPhase;
-
-        Phases(int priority, EnderDragonPhase<?> phase, BiPredicate<EnderDragon, DragonDefinition> shouldExecute, TriConsumer<DragonPhaseEvent.Change, EnderDragon, Boolean> applyPhase) {
-            this.priority = priority;
-            this.phase = phase;
-            this.shouldExecute = shouldExecute;
-            this.applyPhase = applyPhase;
-        }
-
-        public int getPriority() {
-            return this.priority;
-        }
     }
 }

@@ -8,6 +8,7 @@
     "refmap": "progressivebosses.refmap.json",
     "mixins": [
         "AbstractDragonSittingPhaseMixin",
+        "DragonChargePlayerPhaseAccessor",
         "DragonFireballMixin",
         "DragonLandingPhaseMixin",
         "DragonRespawnAnimationSummoningDragonMixin",

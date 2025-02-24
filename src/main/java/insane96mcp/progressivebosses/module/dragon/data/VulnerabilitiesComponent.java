@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.progressivebosses.data.BossComponent;
+import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +31,7 @@ public class VulnerabilitiesComponent implements BossComponent {
     @Nullable
     public DragonValue respawningCrystalDamageMultiplier;
 
-    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> CENTER_PODIUM_PHASES = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING);
+    private static final List<EnderDragonPhase<? extends DragonPhaseInstance>> CENTER_PODIUM_PHASES = Arrays.asList(EnderDragonPhase.SITTING_SCANNING, EnderDragonPhase.SITTING_ATTACKING, EnderDragonPhase.SITTING_FLAMING, DragonBlastAttackPhase.getPhaseType());
 
     @Override
     public void onLivingHurt(LivingHurtEvent event, EnderDragon dragon) {

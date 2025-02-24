@@ -23,6 +23,7 @@ public class ComponentRegistry {
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "charge_player"), ChargePlayerComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "land"), LandComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "spikes"), SpikesComponent.class);
+        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "crystal_respawn"), CrystalRespawnComponent.class);
     }
 
     public static void registerComponent(ResourceLocation id, Type type) {
