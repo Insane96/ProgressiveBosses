@@ -1,7 +1,10 @@
 package insane96mcp.progressivebosses.mixin;
 
-import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.AcidballComponent;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.level.Level;
@@ -20,7 +23,15 @@ public class DragonFireballMixin extends AbstractHurtingProjectile {
 
 	@Inject(at = @At("HEAD"), method = "onHit(Lnet/minecraft/world/phys/HitResult;)V", cancellable = true)
 	private void onHit(HitResult result, CallbackInfo callback) {
-		if (DragonAttack.onAcidBallImpact((DragonFireball) (Object) this, this.getOwner(), result))
+		if (!(this.getOwner() instanceof EnderDragon dragon))
+			return;
+		DragonDefinition definition = DragonFeature.getDragonDefinition(dragon).orElse(null);
+		if (definition == null)
+			return;
+		AcidballComponent component = definition.getComponent(AcidballComponent.class).orElse(null);
+		if (component == null)
+			return;
+		if (component.onAcidBallImpact((DragonFireball) (Object) this, dragon, result))
 			callback.cancel();
 	}
 }

@@ -2,15 +2,17 @@ package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.mojang.logging.LogUtils;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
+import insane96mcp.progressivebosses.module.dragon.data.AcidballComponent;
 import insane96mcp.progressivebosses.module.dragon.data.DragonAttack;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.StrafePlayerComponent;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
@@ -19,7 +21,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import javax.annotation.Nullable;
-import java.util.Optional;
 
 public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
     private static EnderDragonPhase<PBDragonStrafePlayerPhase> PHASE;
@@ -44,6 +45,12 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
      * Called by dragon's onLivingUpdate. Only used when !worldObj.isRemote.
      */
     public void doServerTick() {
+        DragonDefinition definition = DragonFeature.getDragonDefinition(this.dragon).orElse(null);
+        if (definition == null)
+            return;
+        StrafePlayerComponent component = definition.getComponent(StrafePlayerComponent.class).orElse(null);
+        if (component == null)
+            return;
         if (this.attackTarget == null) {
             LOGGER.warn("Skipping player strafe phase because no player was found");
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
@@ -76,32 +83,37 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         float angleToTarget = (float)(Math.acos(dot) * (double)(180F / (float)Math.PI));
         angleToTarget += 0.5F;
         if (this.fireballCharge >= 5 && angleToTarget >= 0.0F && angleToTarget < 12.5F) {
-            int fired = 1;
-            if (DragonAnger.isAngered(this.dragon))
-                fired = 4;
-            for (int i = 0; i < fired; i++) {
-                Vec3 vec32 = this.dragon.getViewVector(1.0F);
-                double headXOffset = this.dragon.head.getX() - vec32.x;
-                double headYOffset = this.dragon.head.getY(0.5D) + 0.5D;
-                double headZOffset = this.dragon.head.getZ() - vec32.z;
-                double targetXOffset = this.attackTarget.getX() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headXOffset;
-                double targetYOffset = this.attackTarget.getY() - headYOffset;
-                double targetZOffset = this.attackTarget.getZ() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headZOffset;
-                if (!this.dragon.isSilent())
-                    this.dragon.level().levelEvent(null, 1017, this.dragon.blockPosition(), 0);
-
-                DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, targetXOffset, targetYOffset, targetZOffset);
-                DragonAttack.setAcidBallSpeedMultiplier(dragonfireball);
-                dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
-                this.dragon.level().addFreshEntity(dragonfireball);
-            }
-            this.fireballCharge = 2;
-            if (DragonAnger.isAngered(this.dragon))
-                this.fireballCharge = -10;
+            int fired = component.acidballPerShot.getIntValue(this.dragon);
+            AcidballComponent acidballComponent = definition.getComponent(AcidballComponent.class).orElse(null);
+            for (int i = 0; i < fired; i++)
+                summonAcidball(acidballComponent);
+            this.fireballCharge = 5 - component.cooldownBetweenShots.getIntValue(this.dragon);
 
             if (--this.fireballsToShoot <= 0)
                 this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
         }
+    }
+
+    private void summonAcidball(@Nullable AcidballComponent component) {
+        Vec3 vec32 = this.dragon.getViewVector(1.0F);
+        double headXOffset = this.dragon.head.getX() - vec32.x;
+        double headYOffset = this.dragon.head.getY(0.5D) + 0.5D;
+        double headZOffset = this.dragon.head.getZ() - vec32.z;
+        double targetXOffset = this.attackTarget.getX() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headXOffset;
+        double targetYOffset = this.attackTarget.getY() - headYOffset;
+        double targetZOffset = this.attackTarget.getZ() + Mth.randomBetween(this.dragon.getRandom(), -3f, 3f) - headZOffset;
+        if (!this.dragon.isSilent())
+            this.dragon.level().levelEvent(null, 1017, this.dragon.blockPosition(), 0);
+
+        DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, targetXOffset, targetYOffset, targetZOffset);
+        if (component != null && component.speedMultiplier != null) {
+            float speedMultiplier = component.speedMultiplier.getValue(this.dragon);
+            dragonfireball.xPower *= speedMultiplier;
+            dragonfireball.yPower *= speedMultiplier;
+            dragonfireball.zPower *= speedMultiplier;
+        }
+        dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
+        this.dragon.level().addFreshEntity(dragonfireball);
     }
 
     public void findNewTarget() {
@@ -167,13 +179,18 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         this.currentPath = null;
         this.attackTarget = null;
 
-        Optional<DragonDefinition> stats = DragonFeature.getDragonDefinition(this.dragon);
-        if (stats.isEmpty()
-                || stats.get().attack == null)
+        DragonDefinition definition = DragonFeature.getDragonDefinition(this.dragon).orElse(null);
+        if (definition == null)
             return;
-        this.fireballsToShoot = Mth.nextInt(dragon.getRandom(), stats.get().attack.minAcidballShot, stats.get().attack.maxAcidballShot);
-        if (DragonAnger.isAngered(this.dragon))
-            this.fireballsToShoot = Math.max(1, this.fireballsToShoot / 2);
+        StrafePlayerComponent component = definition.getComponent(StrafePlayerComponent.class).orElse(null);
+        if (component == null)
+            return;
+        this.fireballsToShoot = component.getAcidballShot(this.dragon, this.dragon.getRandom());
+
+        Player player = DragonAttack.getRandomPlayer(dragon, dragon.level(), 96);
+        if (player == null)
+            return;
+        this.setTarget(player);
     }
 
     public void setTarget(@NotNull LivingEntity pAttackTarget) {

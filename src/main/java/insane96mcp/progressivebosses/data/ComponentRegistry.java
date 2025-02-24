@@ -1,10 +1,7 @@
 package insane96mcp.progressivebosses.data;
 
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.module.dragon.data.BlastAttackComponent;
-import insane96mcp.progressivebosses.module.dragon.data.HealthComponent;
-import insane96mcp.progressivebosses.module.dragon.data.SittingAttackComponent;
-import insane96mcp.progressivebosses.module.dragon.data.VulnerabilitiesComponent;
+import insane96mcp.progressivebosses.module.dragon.data.*;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +17,8 @@ public class ComponentRegistry {
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "health"), HealthComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "vulnerabilities"), VulnerabilitiesComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "blast_attack"), BlastAttackComponent.class);
+        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "strafe_player"), StrafePlayerComponent.class);
+        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "acidball"), AcidballComponent.class);
     }
 
     public static void registerComponent(ResourceLocation id, Type type) {

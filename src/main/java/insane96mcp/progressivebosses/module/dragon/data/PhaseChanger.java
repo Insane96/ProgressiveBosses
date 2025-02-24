@@ -16,6 +16,7 @@ public interface PhaseChanger {
     EnderDragonPhase<?> getPhase();
     boolean shouldExecute(EnderDragon dragon, DragonDefinition definition);
     void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin);
+    void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon);
 
     @Nullable
     static PhaseChanger getPhaseChanger(EnderDragon dragon) {

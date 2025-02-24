@@ -8,6 +8,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class DragonAnger {
     public static final String ANGER_TAG = ProgressiveBosses.RESOURCE_PREFIX + "anger";
@@ -34,7 +35,7 @@ public class DragonAnger {
             BlastAttackComponent.setForcedToBlast(dragon, true);
     }
 
-    public static boolean isAngered(EnderDragon dragon) {
+    public static boolean isAngered(@NotNull EnderDragon dragon) {
         return dragon.getPersistentData().getBoolean(ANGERED_TAG);
     }
 

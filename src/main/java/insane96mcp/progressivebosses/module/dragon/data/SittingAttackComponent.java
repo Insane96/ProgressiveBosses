@@ -10,6 +10,8 @@ import java.lang.reflect.Type;
 @JsonAdapter(SittingAttackComponent.Serializer.class)
 public class SittingAttackComponent implements BossComponent {
     @Nullable
+    public DragonValue acidAmplifier;
+    @Nullable
     public DragonValue damageBeforeTakeOff;
     @Nullable
     public DragonValue flamesBeforeTakeOff;
@@ -25,6 +27,7 @@ public class SittingAttackComponent implements BossComponent {
         public SittingAttackComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             SittingAttackComponent sittingComponent = new SittingAttackComponent();
             JsonObject jObject = json.getAsJsonObject();
+            sittingComponent.acidAmplifier = context.deserialize(jObject.get("acid_amplifier"), DragonValue.class);
             sittingComponent.damageBeforeTakeOff = context.deserialize(jObject.get("damage_before_take_off"), DragonValue.class);
             sittingComponent.flamesBeforeTakeOff = context.deserialize(jObject.get("flames_before_take_off"), DragonValue.class);
             sittingComponent.roarTime = context.deserialize(jObject.get("roar_time"), DragonValue.class);

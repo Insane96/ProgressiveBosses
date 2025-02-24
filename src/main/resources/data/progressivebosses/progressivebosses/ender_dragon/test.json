@@ -2,7 +2,25 @@
     "level": 1,
     "components": [
         {
+            "id": "progressivebosses:health",
+            "health": 500.0,
+            "passive_regeneration": 0.5,
+            "crystal_regeneration": 2.5,
+            "corrupted_crystal_regeneration": 5.5,
+            "regen_when_hit_ratio": 0.6,
+            "regen_when_hit_duration": 50
+        },
+        {
+            "id": "progressivebosses:vulnerabilities",
+            "melee_damage_multiplier_when_sitting": 1,
+            "melee_damage_multiplier_when_flying": 1.5,
+            "explosion_damage_multiplier": 0.4,
+            "ranged_damage_multiplier": 1,
+            "respawning_crystal_damage_multiplier": 1.5
+        },
+        {
             "id": "progressivebosses:sitting_attack",
+            "acid_amplifier": 2,
             "damage_before_take_off": {
                 "base": 0.15,
                 "angered": 0.10
@@ -25,23 +43,6 @@
             }
         },
         {
-            "id": "progressivebosses:health",
-            "health": 500.0,
-            "passive_regeneration": 0.5,
-            "crystal_regeneration": 2.5,
-            "corrupted_crystal_regeneration": 5.5,
-            "regen_when_hit_ratio": 0.6,
-            "regen_when_hit_duration": 50
-        },
-        {
-            "id": "progressivebosses:vulnerabilities",
-            "melee_damage_multiplier_when_sitting": 1,
-            "melee_damage_multiplier_when_flying": 1.5,
-            "explosion_damage_multiplier": 0.4,
-            "ranged_damage_multiplier": 1,
-            "respawning_crystal_damage_multiplier": 1.5
-        },
-        {
             "id": "progressivebosses:blast_attack",
             "chance": {
                 "base": 0.1,
@@ -55,6 +56,37 @@
             },
             "damage": 40,
             "cooldown": 600
+        },
+        {
+            "id": "progressivebosses:strafe_player",
+            "chance": {
+                "base": 0.5,
+                "angered": 0.2
+            },
+            "min_acidball_shot": {
+                "base": 2,
+                "angered": 1
+            },
+            "max_acidball_shot": {
+                "base": 3,
+                "angered": 1
+            },
+            "cooldown_between_shots": {
+                "base": 2,
+                "angered": 15
+            },
+            "acidball_per_shot": {
+                "base": 1,
+                "angered": 4
+            }
+        },
+        {
+            "id": "progressivebosses:acidball",
+            "acid_amplifier": 2,
+            "speed_multiplier": 3,
+            "impact_range": 5,
+            "impact_damage": 12,
+            "is_3d_cloud": true
         }
     ]
 }

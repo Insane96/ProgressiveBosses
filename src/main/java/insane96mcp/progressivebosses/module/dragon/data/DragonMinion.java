@@ -128,7 +128,7 @@ public class DragonMinion {
         if (stats == null)
             return;
 
-        DragonAttack.setForcedToStrafe(dragon, DragonAttack.getForcedToStrafe(dragon) + 1);
+        StrafePlayerComponent.setForcedToStrafe(dragon, StrafePlayerComponent.getForcedToStrafe(dragon) + 1);
     }
 
     public static void setupMinionCooldown(EnderDragon dragon, DragonDefinition stats) {

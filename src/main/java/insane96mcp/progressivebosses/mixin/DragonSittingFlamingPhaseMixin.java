@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.SittingAttackComponent;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -54,10 +53,11 @@ public abstract class DragonSittingFlamingPhaseMixin extends AbstractDragonPhase
 
 	@ModifyArg(method = "doServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/AreaEffectCloud;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;)V"))
 	public MobEffectInstance progressivebosses$strongerFlamingCloud(MobEffectInstance pEffectInstance) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.strongerFlamingCloud)
-			return pEffectInstance;
-		return new MobEffectInstance(MobEffects.HARM, 1, 1);
+		return DragonFeature.getDragonDefinition(this.dragon)
+				.flatMap(stats -> stats.getComponent(SittingAttackComponent.class))
+				.flatMap(component -> Optional.ofNullable(component.acidAmplifier))
+				.map(acidAmplifier -> new MobEffectInstance(MobEffects.HARM, 1, acidAmplifier.getIntValue(this.dragon)))
+				.orElse(pEffectInstance);
 	}
 
 	@Inject(method = "doServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/AreaEffectCloud;addEffect(Lnet/minecraft/world/effect/MobEffectInstance;)V", shift = At.Shift.AFTER))

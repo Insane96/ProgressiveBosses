@@ -68,6 +68,8 @@ public class BlastAttackComponent implements BossComponent, PhaseChanger {
             return false;
         if (DragonBlastAttackPhase.isInCooldown(dragon, dragon.level(), component))
             return false;
+        if (DragonAttack.getRandomPlayer(dragon, dragon.level(), component.range.getIntValue(dragon)) == null)
+            return false;
         if (isForcedToBlast(dragon))
             return true;
 
@@ -80,6 +82,11 @@ public class BlastAttackComponent implements BossComponent, PhaseChanger {
     @Override
     public void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
         BlastAttackComponent.setForcedToBlast(dragon, true);
+    }
+
+    @Override
+    public void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {
+
     }
 
     public static class Serializer implements JsonDeserializer<BlastAttackComponent> {
