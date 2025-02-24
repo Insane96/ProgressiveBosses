@@ -99,6 +99,10 @@
                 "base": 0.5,
                 "angered": 1.0
             }
+        },
+        {
+            "id": "progressivebosses:land",
+            "chance": 0.35
         }
     ]
 }

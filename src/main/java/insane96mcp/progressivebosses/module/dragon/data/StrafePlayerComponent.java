@@ -7,7 +7,6 @@ import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
@@ -47,30 +46,23 @@ public class StrafePlayerComponent implements BossComponent, PhaseChanger {
     }
 
     @Override
-    public void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {
-    }
-
-    @Override
     public int getPriority() {
         return 0;
     }
 
     @Override
     public EnderDragonPhase<?> getPhase() {
-        return DragonBlastAttackPhase.getPhaseType();
+        return PBDragonStrafePlayerPhase.getPhaseType();
     }
 
     @Override
-    public boolean shouldExecute(EnderDragon dragon, DragonDefinition definition) {
-        StrafePlayerComponent component = definition.getComponent(StrafePlayerComponent.class).orElse(null);
-        if (component == null)
-            return false;
+    public boolean shouldExecute(EnderDragon dragon) {
         if (DragonFeature.getRandomPlayer(dragon, dragon.level(), 96) == null)
             return false;
         if (isForcedToStrafe(dragon))
             return true;
 
-        double chance = component.chance.getValue(dragon);
+        double chance = this.chance.getValue(dragon);
         if (chance == 0f)
             return false;
         return dragon.getRandom().nextDouble() < chance;

@@ -63,18 +63,15 @@ public class BlastAttackComponent implements BossComponent, PhaseChanger {
     }
 
     @Override
-    public boolean shouldExecute(EnderDragon dragon, DragonDefinition definition) {
-        BlastAttackComponent component = definition.getComponent(BlastAttackComponent.class).orElse(null);
-        if (component == null)
+    public boolean shouldExecute(EnderDragon dragon) {
+        if (DragonBlastAttackPhase.isInCooldown(dragon, dragon.level(), this))
             return false;
-        if (DragonBlastAttackPhase.isInCooldown(dragon, dragon.level(), component))
-            return false;
-        if (DragonFeature.getRandomPlayer(dragon, dragon.level(), component.range.getIntValue(dragon)) == null)
+        if (DragonFeature.getRandomPlayer(dragon, dragon.level(), this.range.getIntValue(dragon)) == null)
             return false;
         if (isForcedToBlast(dragon))
             return true;
 
-        double chance = component.chance.getValue(dragon);
+        double chance = this.chance.getValue(dragon);
         if (chance == 0f)
             return false;
         return dragon.getRandom().nextDouble() < chance;
@@ -83,11 +80,6 @@ public class BlastAttackComponent implements BossComponent, PhaseChanger {
     @Override
     public void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
         BlastAttackComponent.setForcedToBlast(dragon, true);
-    }
-
-    @Override
-    public void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {
-
     }
 
     public static class Serializer implements JsonDeserializer<BlastAttackComponent> {

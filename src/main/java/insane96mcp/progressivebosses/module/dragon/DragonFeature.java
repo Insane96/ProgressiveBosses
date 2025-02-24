@@ -99,10 +99,6 @@ public class DragonFeature extends Feature {
         phaseChanger.execute(event, dragon, false);
     }
 
-    public static void land(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
-        event.setNewPhase(EnderDragonPhase.LANDING_APPROACH);
-    }
-
     @Nullable
     public static Player getRandomPlayer(EnderDragon dragon, Level level, int range) {
         List<Player> players = level.getEntitiesOfClass(Player.class, dragon.getBoundingBox().inflate(range));
@@ -240,7 +236,7 @@ public class DragonFeature extends Feature {
         //Replace vanilla Holding Pattern Phase with PB one's
         if (event.getNewPhase() == EnderDragonPhase.HOLDING_PATTERN)
             event.setNewPhase(PBDragonHoldingPatternPhase.getPhaseType());
-        //Replace vanilla Strafe Phase with PB one's
+        //Replace vanilla Strafe Phase with PB one's if the strafe component is present
         if (event.getNewPhase().equals(EnderDragonPhase.STRAFE_PLAYER)
                 && definition.getComponent(StrafePlayerComponent.class).isPresent())
             event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
@@ -361,7 +357,6 @@ public class DragonFeature extends Feature {
     }
 
     public enum Phases {
-        LAND(0, EnderDragonPhase.LANDING_APPROACH, (dragon, stats) -> dragon.getRandom().nextInt(3) == 0 && !DragonAnger.isAngered(dragon), DragonFeature::land),
         RESPAWN(1, DragonCrystalRespawnPhase.getPhaseType(), DragonCrystal::shouldRespawnCrystals, DragonCrystal::respawnCrystals);
 
         private static final List<Phases> PHASES = List.of(Phases.values());

@@ -1,0 +1,46 @@
+package insane96mcp.progressivebosses.module.dragon.data;
+
+import com.google.gson.*;
+import com.google.gson.annotations.JsonAdapter;
+import insane96mcp.progressivebosses.data.BossComponent;
+import insane96mcp.progressivebosses.event.DragonPhaseEvent;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
+
+import java.lang.reflect.Type;
+
+@JsonAdapter(LandComponent.Serializer.class)
+public class LandComponent implements BossComponent, PhaseChanger {
+    public DragonValue chance;
+
+    @Override
+    public int getPriority() {
+        return -1;
+    }
+
+    @Override
+    public EnderDragonPhase<?> getPhase() {
+        return EnderDragonPhase.LANDING_APPROACH;
+    }
+
+    @Override
+    public boolean shouldExecute(EnderDragon dragon) {
+        return dragon.getRandom().nextFloat() < this.chance.getValue(dragon) && !DragonAnger.isAngered(dragon);
+    }
+
+    @Override
+    public void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
+        event.setNewPhase(EnderDragonPhase.LANDING_APPROACH);
+    }
+
+    public static class Serializer implements JsonDeserializer<LandComponent> {
+        @Override
+        public LandComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            LandComponent sittingComponent = new LandComponent();
+            JsonObject jObject = json.getAsJsonObject();
+            sittingComponent.chance = GsonHelper.getAsObject(jObject, "chance", context, DragonValue.class);
+            return sittingComponent;
+        }
+    }
+}

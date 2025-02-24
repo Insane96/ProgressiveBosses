@@ -14,9 +14,9 @@ import java.util.stream.Collectors;
 public interface PhaseChanger {
     int getPriority();
     EnderDragonPhase<?> getPhase();
-    boolean shouldExecute(EnderDragon dragon, DragonDefinition definition);
+    boolean shouldExecute(EnderDragon dragon);
     void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin);
-    void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon);
+    default void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {};
 
     @Nullable
     static PhaseChanger getPhaseChanger(EnderDragon dragon) {
@@ -26,7 +26,7 @@ public interface PhaseChanger {
         List<PhaseChanger> phases = new ArrayList<>();
         for (BossComponent component : definition.components) {
             if (component instanceof PhaseChanger phaseChanger
-                    && phaseChanger.shouldExecute(dragon, definition))
+                    && phaseChanger.shouldExecute(dragon))
                 phases.add(phaseChanger);
         }
 

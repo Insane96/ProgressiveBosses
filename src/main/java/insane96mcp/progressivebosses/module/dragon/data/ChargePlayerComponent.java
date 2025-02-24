@@ -7,7 +7,6 @@ import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
@@ -54,20 +53,17 @@ public class ChargePlayerComponent implements BossComponent, PhaseChanger {
 
     @Override
     public EnderDragonPhase<?> getPhase() {
-        return DragonBlastAttackPhase.getPhaseType();
+        return EnderDragonPhase.CHARGING_PLAYER;
     }
 
     @Override
-    public boolean shouldExecute(EnderDragon dragon, DragonDefinition definition) {
+    public boolean shouldExecute(EnderDragon dragon) {
         if (DragonFeature.getRandomPlayer(dragon, dragon.level(), RANGE) == null)
-            return false;
-        ChargePlayerComponent component = definition.getComponent(ChargePlayerComponent.class).orElse(null);
-        if (component == null)
             return false;
         if (isForcedToCharge(dragon))
             return true;
 
-        double chance = component.chance.getValue(dragon);
+        double chance = this.chance.getValue(dragon);
         if (chance == 0f)
             return false;
 
