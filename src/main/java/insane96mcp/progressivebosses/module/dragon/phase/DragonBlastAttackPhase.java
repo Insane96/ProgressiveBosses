@@ -42,7 +42,8 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
         double y = this.dragon.getY() + 2;
         double z = this.dragon.getZ();
         if (--this.blowUpTick > 30) {
-            for (int i = 0; i < 200; i++) {
+            int particles = (int) ((1f - ((float) this.blowUpTick / this.timeToBlowUp)) * 200);
+            for (int i = 0; i < particles; i++) {
                 double r = 96;
                 double v = r / 2f;
                 double x1 = x + random.nextFloat() * r - v;
@@ -111,7 +112,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
             DragonAnger.setAngered(this.dragon, true);
             this.dragon.getPersistentData().putLong(BlastAttackComponent.LAST_BLAST_TAG, this.dragon.level().getGameTime());
         }
-        else if (this.blowUpTick <= -10) {
+        else if (this.blowUpTick <= -component.timeBeforeTakeoff) {
             this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
         }
         else {

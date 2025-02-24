@@ -55,6 +55,7 @@
                 "angered": 45
             },
             "damage": 40,
+            "time_before_takeoff": 30,
             "cooldown": 600
         },
         {
@@ -108,7 +109,7 @@
             "id": "progressivebosses:spikes",
             "cages": 7,
             "corrupted_chance": 0.4,
-            "crystals_inside": 3,
+            "crystals_inside": 2,
             "inside_corrupted_chance": 0.6
         },
         {

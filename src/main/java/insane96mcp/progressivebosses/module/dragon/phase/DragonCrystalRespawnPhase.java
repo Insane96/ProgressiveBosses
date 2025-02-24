@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
-import insane96mcp.progressivebosses.module.dragon.data.BlastAttackComponent;
 import insane96mcp.progressivebosses.module.dragon.data.CrystalRespawnComponent;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import insane96mcp.progressivebosses.module.dragon.data.VulnerabilitiesComponent;
@@ -208,8 +207,8 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 
 	public static boolean isInCooldown(EnderDragon dragon, Level level, CrystalRespawnComponent component) {
 		if (component.cooldown == null)
-			return false;
-		return level.getGameTime() - dragon.getPersistentData().getLong(BlastAttackComponent.LAST_BLAST_TAG) < component.cooldown.getIntValue(dragon);
+			return true;
+		return level.getGameTime() - dragon.getPersistentData().getLong(CrystalRespawnComponent.LAST_RESPAWN_TAG) < component.cooldown.getIntValue(dragon);
 	}
 
 	public EnderDragonPhase<DragonCrystalRespawnPhase> getPhase() {

@@ -144,6 +144,7 @@ public abstract class EnderDragonMixin extends Mob {
 	public float onAttachedCrystalDamage(float original, EndCrystal pCrystal, BlockPos pPos, DamageSource pDamageSource) {
 		if (!pCrystal.showsBottom())
 			return original;
+		//TODO Configurable
 		float min = pCrystal instanceof CorruptedEndCrystal ? 0.10f : 0.05f;
 		float max = pCrystal instanceof CorruptedEndCrystal ? 0.30f : 0.15f;
 		return Math.max(this.getHealth() * min, this.getHealth() * max);

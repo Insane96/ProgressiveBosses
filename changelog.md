@@ -1,6 +1,7 @@
 # Changelog
 
 * Charge player fails as it's in the same spot as the previous charge
+* respawn component not tested
 
 ## Upcoming
 * Removed Dragon Larva

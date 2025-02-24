@@ -24,6 +24,7 @@ public class BlastAttackComponent implements BossComponent, PhaseChanger {
     public DragonValue knockback;
     public DragonValue chargeUpTime;
     public DragonValue damage;
+    public int timeBeforeTakeoff;
     public DragonValue cooldown;
 
     public static final String LAST_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "last_blast";
@@ -92,6 +93,7 @@ public class BlastAttackComponent implements BossComponent, PhaseChanger {
             sittingComponent.knockback = GsonHelper.getAsObject(jObject, "knockback", null, context, DragonValue.class);
             sittingComponent.chargeUpTime = GsonHelper.getAsObject(jObject, "charge_up_time", context, DragonValue.class);
             sittingComponent.damage = GsonHelper.getAsObject(jObject, "damage", context, DragonValue.class);
+            sittingComponent.timeBeforeTakeoff = GsonHelper.getAsInt(jObject, "time_before_takeoff", 0);
             sittingComponent.cooldown = GsonHelper.getAsObject(jObject, "cooldown", context, DragonValue.class);
             return sittingComponent;
         }
