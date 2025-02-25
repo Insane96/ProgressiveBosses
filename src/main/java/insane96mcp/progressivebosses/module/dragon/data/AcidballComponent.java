@@ -4,7 +4,6 @@ import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.mixin.ProjectileInvoker;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
@@ -27,7 +26,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 @JsonAdapter(AcidballComponent.Serializer.class)
-public class AcidballComponent implements BossComponent {
+public class AcidballComponent implements DragonComponent {
     public DragonValue acidAmplifier;
     @Nullable
     public DragonValue speedMultiplier;

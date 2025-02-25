@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
@@ -18,7 +17,7 @@ import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import java.lang.reflect.Type;
 
 @JsonAdapter(StrafePlayerComponent.Serializer.class)
-public class StrafePlayerComponent implements BossComponent, PhaseChanger {
+public class StrafePlayerComponent implements DragonComponent, PhaseChanger {
     public DragonValue chance;
     public DragonValue minAcidballShot;
     public DragonValue maxAcidballShot;

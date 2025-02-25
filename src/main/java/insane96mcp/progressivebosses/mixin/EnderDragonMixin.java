@@ -175,10 +175,10 @@ public abstract class EnderDragonMixin extends Mob {
 	public void progressivebosses$dropDeathLoot(CallbackInfo ci) {
 		if (progressiveBosses$killerDamageSource == null)
 			return;
-		DragonDefinition stats = DragonFeature.getDragonDefinition((EnderDragon) (Object) this).orElse(null);
-		if (stats == null)
-			return;
-		this.lootTable = stats.lootTable;
+		this.lootTable = DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
+				.flatMap(definition -> definition.getComponent(LootComponent.class))
+				.map(lootComponent -> lootComponent.lootTable)
+				.orElse(LootComponent.VANILLA_LOOT_TABLE);
 		this.dropFromLootTable(progressiveBosses$killerDamageSource, false);
 	}
 

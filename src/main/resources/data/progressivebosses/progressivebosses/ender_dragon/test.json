@@ -21,10 +21,7 @@
         {
             "id": "progressivebosses:sitting_attack",
             "acid_amplifier": 2,
-            "damage_before_take_off": {
-                "base": 0.15,
-                "angered": 0.10
-            },
+            "damage_before_take_off": 0.10,
             "flames_before_take_off": {
                 "base": 4,
                 "angered": 3
@@ -124,6 +121,12 @@
             "caged_chance": 1,
             "corrupted_chance": 1,
             "cooldown": 6000
+        },
+        {
+            "id": "progressivebosses:loot",
+            "xp_dropped": 20000,
+            "loot_table": "progressivebosses:entities/ender_dragon/corrupted",
+            "drops_egg": false
         }
     ]
 }

@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Type;
 
 @JsonAdapter(HealthComponent.Serializer.class)
-public class HealthComponent implements BossComponent {
+public class HealthComponent implements DragonComponent {
     @Nullable
     public Integer health;
     @Nullable

@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
@@ -17,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Type;
 
 @JsonAdapter(BlastAttackComponent.Serializer.class)
-public class BlastAttackComponent implements BossComponent, PhaseChanger {
+public class BlastAttackComponent implements DragonComponent, PhaseChanger {
     public DragonValue chance;
     public DragonValue range;
     @Nullable

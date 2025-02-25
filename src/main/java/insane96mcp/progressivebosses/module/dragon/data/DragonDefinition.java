@@ -5,8 +5,6 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import com.google.gson.annotations.JsonAdapter;
-import insane96mcp.progressivebosses.data.BossComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -21,17 +19,15 @@ import java.util.Optional;
 
 @JsonAdapter(DragonDefinition.Serializer.class)
 public class DragonDefinition {
-    private static final ResourceLocation VANILLA_LOOT_TABLE = new ResourceLocation("entities/ender_dragon");
-
     public byte level;
-    public List<BossComponent> components = new ArrayList<>();
+    public List<DragonComponent> components = new ArrayList<>();
 
-    DragonDefinition(byte level, List<BossComponent> components) {
+    DragonDefinition(byte level, List<DragonComponent> components) {
         this.level = level;
         this.components = components;
     }
 
-    public <T extends BossComponent> Optional<T> getComponent(Class<T> componentClass) {
+    public <T extends DragonComponent> Optional<T> getComponent(Class<T> componentClass) {
         return components.stream()
                 .filter(component -> component.getClass() == componentClass).findFirst()
                 .map(componentClass::cast);
@@ -59,18 +55,13 @@ public class DragonDefinition {
 
     @Nullable
     public DragonMinion minion;
-    public int xpDropped;
-    public ResourceLocation lootTable;
 
-    public DragonDefinition(byte level, @Nullable DragonMinion minion, int xpDropped, ResourceLocation lootTable) {
+    public DragonDefinition(byte level, @Nullable DragonMinion minion) {
         this.level = level;
         this.minion = minion;
-        this.xpDropped = xpDropped;
-        this.lootTable = lootTable;
     }
 
     /*public static void apply(EnderDragon dragon, DragonDefinition stats) {
-        dragon.lootTable = null;
         DragonMinion.setupMinionCooldown(dragon, stats);
     }*/
 
@@ -78,7 +69,7 @@ public class DragonDefinition {
         @Override
         public DragonDefinition deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             byte level = GsonHelper.getAsByte(json.getAsJsonObject(), "level");
-            List<BossComponent> components = BossComponent.deserializeList(json.getAsJsonObject(), "components", context);
+            List<DragonComponent> components = DragonComponent.deserializeList(json.getAsJsonObject(), "components", context);
             return new DragonDefinition(level, components);
         }
     }

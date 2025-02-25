@@ -4,12 +4,15 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.LootComponent;
 import insane96mcp.progressivebosses.module.dragon.data.SpikesComponent;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerBossEvent;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
@@ -37,6 +40,10 @@ public class EndDragonFightMixin {
     public BlockPos portalLocation;
 
 	@Shadow @Nullable private List<EndCrystal> respawnCrystals;
+
+	@Shadow private boolean dragonKilled;
+
+	@Shadow @Final private ServerBossEvent dragonEvent;
 
 	@Inject(method = "respawnDragon", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;respawnCrystals:Ljava/util/List;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
 	private void onAboutToRespawnDragon(List<EndCrystal> respawnCrystals, CallbackInfo callback) {
@@ -80,12 +87,16 @@ public class EndDragonFightMixin {
 		}
 	}
 
+	/// Control egg drop via Definition
 	@ModifyExpressionValue(method = "setDragonKilled", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;previouslyKilled:Z", ordinal = 0))
-	public boolean progressivebosses$onTryPlaceEgg(boolean previouslyKilled) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.dragonEggPerDragon)
+	public boolean progressivebosses$onTryPlaceEgg(boolean previouslyKilled, EnderDragon dragon) {
+		if (!Feature.isEnabled(DragonFeature.class))
 			return previouslyKilled;
-		return false;
+		boolean shouldDropEgg = DragonFeature.getDragonDefinition(dragon)
+				.flatMap(definition -> definition.getComponent(LootComponent.class))
+				.map(component -> component.dropsEgg)
+				.orElse(previouslyKilled);
+		return !shouldDropEgg;
 	}
 
 	@Inject(method = "onCrystalDestroyed", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;updateCrystalCount()V", shift = At.Shift.AFTER))

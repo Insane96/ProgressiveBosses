@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -11,7 +10,7 @@ import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import java.lang.reflect.Type;
 
 @JsonAdapter(LandComponent.Serializer.class)
-public class LandComponent implements BossComponent, PhaseChanger {
+public class LandComponent implements DragonComponent, PhaseChanger {
     public DragonValue chance;
 
     @Override

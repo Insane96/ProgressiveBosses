@@ -2,13 +2,12 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import insane96mcp.progressivebosses.data.BossComponent;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 
 @JsonAdapter(SittingAttackComponent.Serializer.class)
-public class SittingAttackComponent implements BossComponent {
+public class SittingAttackComponent implements DragonComponent {
     @Nullable
     public DragonValue acidAmplifier;
     @Nullable

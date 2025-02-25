@@ -1,6 +1,5 @@
 package insane96mcp.progressivebosses.module.dragon.data;
 
-import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -24,7 +23,7 @@ public interface PhaseChanger {
         if (definition == null)
             return null;
         List<PhaseChanger> phases = new ArrayList<>();
-        for (BossComponent component : definition.components) {
+        for (DragonComponent component : definition.components) {
             if (component instanceof PhaseChanger phaseChanger
                     && phaseChanger.shouldExecute(dragon))
                 phases.add(phaseChanger);

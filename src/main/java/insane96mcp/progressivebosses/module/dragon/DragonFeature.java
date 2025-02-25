@@ -5,7 +5,6 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
@@ -16,7 +15,6 @@ import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPha
 import insane96mcp.progressivebosses.network.SyncDragonAnger;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
-import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -34,9 +32,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
-import net.minecraft.world.phys.AABB;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -72,14 +68,6 @@ public class DragonFeature extends Feature {
              - Fixes entities accumulating knockback when hit by the dragon and then launching like a rocket
              - Sets a portal cooldown to 4 years so she no longer goes through end gates""")
     public static Boolean enableFixes = true;
-
-    @Config
-    @Label(name = "Dragon Egg per Player", description = "If true, whenever a player that has never killed the dragon, kills the dragon, a Dragon Egg will drop. E.g. If 2 players kill the Dragon for the first time, she will drop 2 Dragon Eggs")
-    public static Boolean dragonEggPerPlayer = false;
-
-    @Config
-    @Label(name = "Dragon Egg per Dragon", description = "If true, all the dragons killed will drop an egg")
-    public static Boolean dragonEggPerDragon = true;
 
     /// Temp variable to keep track of the level of the dragon between placing the End Crystal and summoning the dragon
     public static byte dragonLvl = 0;
@@ -147,22 +135,25 @@ public class DragonFeature extends Feature {
                 || event.getDroppedExperience() == 0)
             return;
 
-        Optional<DragonDefinition> definition = getDragonDefinition(dragon);
-        if (definition.isEmpty())
-            return;
-        //This will 100% break if any other mod changes experience dropped
-        if (event.getDroppedExperience() == Mth.floor(12000 * 0.08F)
-                || event.getDroppedExperience() == Mth.floor(500 * 0.08F))
-            event.setDroppedExperience(Mth.floor(definition.get().xpDropped * 0.08f));
-        else if (event.getDroppedExperience() == Mth.floor(12000 * 0.2F)
-                || event.getDroppedExperience() == Mth.floor(500 * 0.2F))
-            event.setDroppedExperience(Mth.floor(definition.get().xpDropped * 0.2f));
+        getDragonDefinition(dragon)
+                .flatMap(definition -> definition.getComponent(LootComponent.class))
+                .map(lootComponent -> lootComponent.xpDropped)
+                .ifPresent(xpDropped -> {
+                    //This will 100% break if any other mod changes experience dropped
+                    if (event.getDroppedExperience() == Mth.floor(12000 * 0.08F)
+                            || event.getDroppedExperience() == Mth.floor(500 * 0.08F))
+                        event.setDroppedExperience(Mth.floor(xpDropped * 0.08f));
+                    else if (event.getDroppedExperience() == Mth.floor(12000 * 0.2F)
+                            || event.getDroppedExperience() == Mth.floor(500 * 0.2F))
+                        event.setDroppedExperience(Mth.floor(xpDropped * 0.2f));
+                });
     }
 
     @SubscribeEvent
-    public void onExpDrop(EntityLeaveLevelEvent event) {
+    public void onEntityLeaveLevel(EntityLeaveLevelEvent event) {
         if (!this.isEnabled()
-                || !(event.getEntity() instanceof EnderDragon dragon))
+                || !(event.getEntity() instanceof EnderDragon dragon)
+                || !dragon.isDeadOrDying())
             return;
 
         List<ShulkerBullet> bullets = dragon.level().getEntitiesOfClass(ShulkerBullet.class, dragon.getBoundingBox().inflate(128));
@@ -181,39 +172,9 @@ public class DragonFeature extends Feature {
         DragonDefinition definition = getDragonDefinition(dragon).orElse(null);
         if (definition == null)
             return;
-        definition.getComponent(HealthComponent.class).ifPresent(health -> health.tick(dragon));
+        definition.components.forEach(component -> component.tick(dragon));
         DragonMinion.tick(dragon);
-        tryDropEggPerPlayer(dragon);
         DragonAnger.tick(dragon);
-    }
-
-    private static void tryDropEggPerPlayer(EnderDragon dragon) {
-        if (!dragonEggPerPlayer
-                || dragon.dragonDeathTime != 100)
-            return;
-
-        int radius = 256;
-        BlockPos pos1 = new BlockPos(-radius, -radius, -radius);
-        BlockPos pos2 = new BlockPos(radius, radius, radius);
-        AABB bb = new AABB(pos1, pos2);
-
-        List<ServerPlayer> players = dragon.level().getEntitiesOfClass(ServerPlayer.class, bb);
-
-        int eggsToDrop = 0;
-        for (ServerPlayer player : players) {
-            if (MCUtils.getOrCreatePersistedData(player).contains(HAS_KILLED_DRAGON))
-                continue;
-            eggsToDrop++;
-            MCUtils.getOrCreatePersistedData(player).putBoolean(HAS_KILLED_DRAGON, true);
-        }
-
-        if (dragon.getDragonFight() != null && !dragon.getDragonFight().hasPreviouslyKilledDragon()) {
-            eggsToDrop--;
-        }
-
-        for (int i = 0; i < eggsToDrop; i++) {
-            dragon.level().setBlockAndUpdate(new BlockPos(0, 255 - i, 0), Blocks.DRAGON_EGG.defaultBlockState());
-        }
     }
 
     @SubscribeEvent
@@ -249,7 +210,7 @@ public class DragonFeature extends Feature {
                         || (event.getOldPhase() == DragonBlastAttackPhase.getPhaseType() && event.getNewPhase() == EnderDragonPhase.TAKEOFF)) {
                 PhaseChanger phaseChanger = PhaseChanger.getPhaseChanger(dragon);
                 if (phaseChanger != null)
-                    phaseChanger.execute(event, dragon, event.getOldPhase() != phaseChanger.getPhase());
+                    phaseChanger.execute(event, dragon, event.getOldPhase() == phaseChanger.getPhase());
             }
         }
     }
@@ -269,6 +230,7 @@ public class DragonFeature extends Feature {
         });
     }
 
+    //TODO Configurable
     public static void onCrystalDestroyed(EndDragonFight fight, EndCrystal crystal, DamageSource damageSource) {
         if (!(crystal.level() instanceof ServerLevel serverLevel)
                 || fight.getDragonUUID() == null)

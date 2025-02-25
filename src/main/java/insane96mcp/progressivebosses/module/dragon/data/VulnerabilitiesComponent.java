@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -19,7 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @JsonAdapter(VulnerabilitiesComponent.Serializer.class)
-public class VulnerabilitiesComponent implements BossComponent {
+public class VulnerabilitiesComponent implements DragonComponent {
     @Nullable
     public DragonValue meleeDamageMultiplierWhenSitting;
     @Nullable

@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import insane96mcp.progressivebosses.utils.Utils;
@@ -19,7 +18,7 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 
 @JsonAdapter(CrystalRespawnComponent.Serializer.class)
-public class CrystalRespawnComponent implements BossComponent, PhaseChanger {
+public class CrystalRespawnComponent implements DragonComponent, PhaseChanger {
 
     public static final String DRAGON_PHANTOM = ProgressiveBosses.RESOURCE_PREFIX + "dragon_phantom";
     public static final String PHANTOM_CRYSTAL = ProgressiveBosses.RESOURCE_PREFIX + "crystal";

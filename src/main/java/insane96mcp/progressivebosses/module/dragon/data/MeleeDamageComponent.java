@@ -2,14 +2,13 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import insane96mcp.progressivebosses.data.BossComponent;
 import net.minecraft.util.GsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
 
 @JsonAdapter(MeleeDamageComponent.Serializer.class)
-public class MeleeDamageComponent implements BossComponent {
+public class MeleeDamageComponent implements DragonComponent {
     @Nullable
     public DragonValue wingDamage;
     @Nullable

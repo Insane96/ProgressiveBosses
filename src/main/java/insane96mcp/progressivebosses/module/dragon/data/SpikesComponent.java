@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.base.Feature;
-import insane96mcp.progressivebosses.data.BossComponent;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import net.minecraft.core.BlockPos;
@@ -31,7 +30,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @JsonAdapter(SpikesComponent.Serializer.class)
-public class SpikesComponent implements BossComponent {
+public class SpikesComponent implements DragonComponent {
     public int cages;
     public float corruptedChance;
     public int crystalsInside;
