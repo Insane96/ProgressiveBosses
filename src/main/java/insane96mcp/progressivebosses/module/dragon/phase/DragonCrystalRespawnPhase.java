@@ -34,10 +34,7 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	private static EnderDragonPhase<DragonCrystalRespawnPhase> CRYSTAL_RESPAWN;
@@ -155,7 +152,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			return;
 
 		List<SpikeFeature.EndSpike> spikes = new ArrayList<>(SpikeFeature.getSpikesForLevel((ServerLevel)dragon.level()));
-		spikes.sort(Comparator.comparingInt(SpikeFeature.EndSpike::getRadius));
+		Collections.shuffle(spikes);
 		int spawned = 0;
 		for (SpikeFeature.EndSpike spike : spikes) {
 			if (!dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).isEmpty())
