@@ -1,5 +1,7 @@
 package insane96mcp.progressivebosses.network;
 
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.AngerComponent;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -33,7 +35,11 @@ public class SyncDragonAnger {
         ctx.get().setPacketHandled(true);
     }
 
-    public static void sync(ServerPlayer player, EnderDragon enderDragon, boolean isAngry) {
+    public static void sync(ServerPlayer player, EnderDragon enderDragon) {
+        boolean isAngry = DragonFeature.getDragonDefinition(enderDragon)
+                .flatMap(definition -> definition.getComponent(AngerComponent.class))
+                .map(angerComponent -> angerComponent.isAngered(enderDragon))
+                .orElse(false);
         Object msg = new SyncDragonAnger(enderDragon.getId(), isAngry);
         NetworkHandler.CHANNEL.sendTo(msg, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }

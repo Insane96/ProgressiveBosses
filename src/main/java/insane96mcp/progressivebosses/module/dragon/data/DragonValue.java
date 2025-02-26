@@ -25,7 +25,7 @@ public class DragonValue {
     public float getValue(EnderDragon dragon) {
         if (this.base == this.angered)
             return this.base;
-        return DragonAnger.isAngered(dragon) ? this.angered : this.base;
+        return AngerComponent.isAngered(dragon) ? this.angered : this.base;
     }
 
     public int getIntValue(EnderDragon dragon) {

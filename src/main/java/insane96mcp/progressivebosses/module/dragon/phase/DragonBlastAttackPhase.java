@@ -1,9 +1,10 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.AngerComponent;
 import insane96mcp.progressivebosses.module.dragon.data.BlastAttackComponent;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.PhaseChanger;
 import insane96mcp.progressivebosses.network.BeginBlastAttackPhase;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -109,11 +110,12 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
             for (int i = 0; i < 8; i++) {
                 this.dragon.level().playSound(null, this.dragon.getX() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getY() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getZ() + this.dragon.getRandom().nextFloat() * 48f - 24f, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 4f, 0.7f);
             }
-            DragonAnger.setAngered(this.dragon, true);
+            definition.getComponent(AngerComponent.class).ifPresent(angerComponent -> AngerComponent.setAngered(this.dragon, true));
             this.dragon.getPersistentData().putLong(BlastAttackComponent.LAST_BLAST_TAG, this.dragon.level().getGameTime());
         }
         else if (this.blowUpTick <= -component.timeBeforeTakeoff) {
-            this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
+            if (!PhaseChanger.trySetNewPhase(this.dragon, definition, this.getPhase()))
+                this.dragon.getPhaseManager().setPhase(EnderDragonPhase.TAKEOFF);
         }
         else {
             if (this.blowUpTick % 5 == 0 && this.blowUpTick > 10) {

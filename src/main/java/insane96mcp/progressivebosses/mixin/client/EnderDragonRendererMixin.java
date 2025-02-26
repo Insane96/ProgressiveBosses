@@ -9,7 +9,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystalRenderer;
-import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
+import insane96mcp.progressivebosses.module.dragon.data.AngerComponent;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EnderDragonRenderer;
@@ -52,6 +52,6 @@ public class EnderDragonRendererMixin {
     @Expression("pBuffer.getBuffer(EYES)")
     @ModifyExpressionValue(method = "render(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
     private VertexConsumer progressivebosses$changeEyesIfAngered(VertexConsumer original, @Local(argsOnly = true) MultiBufferSource pBuffer, @Local(argsOnly = true) EnderDragon dragon) {
-        return DragonAnger.isAngered(dragon) ? pBuffer.getBuffer(ANGERED_EYES) : original;
+        return AngerComponent.isAngered(dragon) ? pBuffer.getBuffer(ANGERED_EYES) : original;
     }
 }

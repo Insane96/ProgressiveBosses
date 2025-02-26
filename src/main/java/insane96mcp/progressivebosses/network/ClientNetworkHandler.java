@@ -1,6 +1,6 @@
 package insane96mcp.progressivebosses.network;
 
-import insane96mcp.progressivebosses.module.dragon.data.DragonAnger;
+import insane96mcp.progressivebosses.module.dragon.data.AngerComponent;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.TickTask;
@@ -19,7 +19,7 @@ public class ClientNetworkHandler {
 
             Entity entity = Minecraft.getInstance().level.getEntity(entityId);
             if (entity instanceof EnderDragon dragon)
-                DragonAnger.setAngered(dragon, isAngry);
+                AngerComponent.setAngered(dragon, isAngry);
         }));
     }
 

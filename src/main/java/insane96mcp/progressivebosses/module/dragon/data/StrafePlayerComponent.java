@@ -68,15 +68,21 @@ public class StrafePlayerComponent implements DragonComponent, PhaseChanger {
     }
 
     @Override
-    public void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
-        event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
+    public void execute(EnderDragon dragon, boolean forceBegin) {
+        dragon.getPhaseManager().setPhase(PBDragonStrafePlayerPhase.getPhaseType());
         if (isForcedToStrafe(dragon))
             setForcedToStrafe(dragon, getForcedToStrafe(dragon) - 1);
         if (forceBegin) {
-            DragonPhaseInstance phase = dragon.getPhaseManager().getPhase(event.getNewPhase());
+            DragonPhaseInstance phase = dragon.getPhaseManager().getPhase(PBDragonStrafePlayerPhase.getPhaseType());
             phase.begin();
             PBEventFactory.onDragonPhaseBegin(dragon, phase);
         }
+    }
+
+    @Override
+    public void onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon) {
+        if (event.getNewPhase().equals(EnderDragonPhase.STRAFE_PLAYER))
+            event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
     }
 
     public static class Serializer implements JsonDeserializer<StrafePlayerComponent> {

@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
@@ -15,7 +14,7 @@ public class LandComponent implements DragonComponent, PhaseChanger {
 
     @Override
     public int getPriority() {
-        return -1;
+        return 0;
     }
 
     @Override
@@ -25,12 +24,12 @@ public class LandComponent implements DragonComponent, PhaseChanger {
 
     @Override
     public boolean shouldExecute(EnderDragon dragon) {
-        return dragon.getRandom().nextFloat() < this.chance.getValue(dragon) && !DragonAnger.isAngered(dragon);
+        return dragon.getRandom().nextFloat() < this.chance.getValue(dragon);
     }
 
     @Override
-    public void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
-        event.setNewPhase(EnderDragonPhase.LANDING_APPROACH);
+    public void execute(EnderDragon dragon, boolean forceBegin) {
+        dragon.getPhaseManager().setPhase(EnderDragonPhase.LANDING_APPROACH);
     }
 
     public static class Serializer implements JsonDeserializer<LandComponent> {

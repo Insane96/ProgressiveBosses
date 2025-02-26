@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.AcidballComponent;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.PhaseChanger;
 import insane96mcp.progressivebosses.module.dragon.data.StrafePlayerComponent;
 import net.minecraft.core.Vec3i;
 import net.minecraft.util.Mth;
@@ -52,7 +53,9 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
             return;
         if (this.attackTarget == null) {
             LOGGER.warn("Skipping player strafe phase because no player was found");
-            this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
+
+            if (!PhaseChanger.trySetNewPhase(this.dragon, definition, this.getPhase()))
+                this.dragon.getPhaseManager().setPhase(EnderDragonPhase.HOLDING_PATTERN);
             return;
         }
         if (this.currentPath != null && this.currentPath.isDone()) {

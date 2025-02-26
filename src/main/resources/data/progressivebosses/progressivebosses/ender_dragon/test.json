@@ -19,12 +19,27 @@
             "respawning_crystal_damage_multiplier": 1.5
         },
         {
+            "id": "progressivebosses:anger",
+            "max_anger": 100,
+            "anger_duration": 60,
+            "damage_to_anger_ratio": 1,
+            "crystal_destroyed_anger": 0.25,
+            "force_angered_when_last_crystal_destroyed": true
+        },
+        {
+            "id": "progressivebosses:land",
+            "chance": 0.35
+        },
+        {
             "id": "progressivebosses:sitting_attack",
             "acid_amplifier": 2,
-            "damage_before_take_off": 0.10,
+            "damage_before_take_off": {
+                "base": 0.05,
+                "angered": 0.1
+            },
             "flames_before_take_off": {
                 "base": 4,
-                "angered": 3
+                "angered": 2
             },
             "roar_time": {
                 "base": 20,
@@ -48,11 +63,11 @@
             "range": 56,
             "knockback": 16,
             "charge_up_time": {
-                "base": 80,
+                "base": 70,
                 "angered": 45
             },
             "damage": 40,
-            "time_before_takeoff": 30,
+            "time_before_takeoff": 20,
             "cooldown": 600
         },
         {
@@ -97,10 +112,6 @@
                 "base": 0.5,
                 "angered": 1.0
             }
-        },
-        {
-            "id": "progressivebosses:land",
-            "chance": 0.35
         },
         {
             "id": "progressivebosses:spikes",

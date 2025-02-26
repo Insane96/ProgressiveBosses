@@ -37,7 +37,7 @@ public class BlastAttackComponent implements DragonComponent, PhaseChanger {
         dragon.getPersistentData().putBoolean(FORCE_BLAST_TAG, forcedToBlast);
     }
 
-    public static void blast(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
+    public void blast(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
         if (event.getOldPhase() != EnderDragonPhase.HOVERING &&
                 (dragon.getPhaseManager().getPhase(event.getOldPhase()).isSitting() || dragon.getPhaseManager().getPhase(event.getNewPhase()).isSitting())) {
             event.setNewPhase(DragonBlastAttackPhase.getPhaseType());
@@ -78,8 +78,14 @@ public class BlastAttackComponent implements DragonComponent, PhaseChanger {
     }
 
     @Override
-    public void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
-        BlastAttackComponent.setForcedToBlast(dragon, true);
+    public void execute(EnderDragon dragon, boolean forceBegin) {
+        setForcedToBlast(dragon, true);
+    }
+
+    @Override
+    public void onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon) {
+        if (isForcedToBlast(dragon) && event.getNewPhase() != EnderDragonPhase.DYING)
+            this.blast(event, dragon, false);
     }
 
     public static class Serializer implements JsonDeserializer<BlastAttackComponent> {

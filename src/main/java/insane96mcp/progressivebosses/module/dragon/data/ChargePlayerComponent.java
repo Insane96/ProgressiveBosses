@@ -70,12 +70,12 @@ public class ChargePlayerComponent implements DragonComponent, PhaseChanger {
     }
 
     @Override
-    public void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
-        event.setNewPhase(EnderDragonPhase.CHARGING_PLAYER);
+    public void execute(EnderDragon dragon, boolean forceBegin) {
+        dragon.getPhaseManager().setPhase(EnderDragonPhase.CHARGING_PLAYER);
         if (isForcedToCharge(dragon))
             setForcedToCharge(dragon, getForcedToCharge(dragon) - 1);
         if (forceBegin) {
-            DragonPhaseInstance phase = dragon.getPhaseManager().getPhase(event.getNewPhase());
+            DragonPhaseInstance phase = dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER);
             phase.begin();
             PBEventFactory.onDragonPhaseBegin(dragon, phase);
         }

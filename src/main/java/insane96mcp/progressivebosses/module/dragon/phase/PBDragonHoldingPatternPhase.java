@@ -1,6 +1,8 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
+import insane96mcp.progressivebosses.module.dragon.data.PhaseChanger;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
@@ -41,8 +43,12 @@ public class PBDragonHoldingPatternPhase extends AbstractDragonPhaseInstance {
 
     private void findNewTarget() {
         if (this.currentPath != null && this.currentPath.isDone()) {
-            DragonFeature.getDragonDefinition(this.dragon)
-                    .ifPresent(stats -> this.dragon.getPhaseManager().setPhase(EnderDragonPhase.LANDING_APPROACH));
+            DragonDefinition definition = DragonFeature.getDragonDefinition(this.dragon).orElse(null);
+            if (definition == null
+                    || !PhaseChanger.trySetNewPhase(this.dragon, definition, this.getPhase())) {
+                this.dragon.getPhaseManager().setPhase(EnderDragonPhase.LANDING_APPROACH);
+                return;
+            }
         }
 
         if (this.currentPath == null || this.currentPath.isDone()) {

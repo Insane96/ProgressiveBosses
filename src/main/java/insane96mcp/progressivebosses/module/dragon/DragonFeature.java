@@ -9,9 +9,7 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonHoldingPatternPhase;
-import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
 import insane96mcp.progressivebosses.network.SyncDragonAnger;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
@@ -76,15 +74,6 @@ public class DragonFeature extends Feature {
         super(module, enabledByDefault, canBeDisabled);
     }
 
-    public static void onHoldingPatternEnd(DragonPhaseEvent.Change event, EnderDragon dragon) {
-        PhaseChanger phaseChanger = PhaseChanger.getPhaseChanger(dragon);
-        if (phaseChanger == null) {
-            event.setNewPhase(EnderDragonPhase.HOLDING_PATTERN);
-            return;
-        }
-        phaseChanger.execute(event, dragon, false);
-    }
-
     @Nullable
     public static Player getRandomPlayer(EnderDragon dragon, Level level, int range) {
         List<Player> players = level.getEntitiesOfClass(Player.class, dragon.getBoundingBox().inflate(range));
@@ -102,9 +91,9 @@ public class DragonFeature extends Feature {
         onDragonJoinLevel(event);
         DragonMinion.onShulkerSpawn(event);
         if (event.getEntity() instanceof EnderDragon dragon)
-            ((ServerLevel) dragon.level()).players().forEach(player -> SyncDragonAnger.sync(player, dragon, DragonAnger.isAngered(dragon)));
+            ((ServerLevel) dragon.level()).players().forEach(player -> SyncDragonAnger.sync(player, dragon));
         else if (event.getEntity() instanceof ServerPlayer player)
-            ((ServerLevel) player.level()).getDragons().forEach(dragon -> SyncDragonAnger.sync(player, dragon, DragonAnger.isAngered(dragon)));
+            ((ServerLevel) player.level()).getDragons().forEach(dragon -> SyncDragonAnger.sync(player, dragon));
     }
 
     public void onDragonJoinLevel(EntityJoinLevelEvent event) {
@@ -172,9 +161,10 @@ public class DragonFeature extends Feature {
         DragonDefinition definition = getDragonDefinition(dragon).orElse(null);
         if (definition == null)
             return;
-        definition.components.forEach(component -> component.tick(dragon));
+        definition.tick(dragon);
+        if (dragon.level().isClientSide)
+            AngerComponent.tickClient(dragon);
         DragonMinion.tick(dragon);
-        DragonAnger.tick(dragon);
     }
 
     @SubscribeEvent
@@ -183,36 +173,15 @@ public class DragonFeature extends Feature {
             return;
 
         EnderDragon dragon = event.getDragon();
-        if (event.getNewPhase() == EnderDragonPhase.DYING) {
-            DragonAnger.setAngered(dragon, false);
-            return;
-        }
         DragonDefinition definition = getDragonDefinition(dragon).orElse(null);
         if (definition == null)
             return;
 
-        //Replace vanilla Holding Pattern Phase with PB one's
+        definition.components.forEach(component -> component.onPhaseChange(event, dragon));
+        if (event.getNewPhase() == EnderDragonPhase.DYING)
+            return;
         if (event.getNewPhase() == EnderDragonPhase.HOLDING_PATTERN)
             event.setNewPhase(PBDragonHoldingPatternPhase.getPhaseType());
-        //Replace vanilla Strafe Phase with PB one's if the strafe component is present
-        if (event.getNewPhase().equals(EnderDragonPhase.STRAFE_PLAYER)
-                && definition.getComponent(StrafePlayerComponent.class).isPresent())
-            event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
-
-        if (BlastAttackComponent.isForcedToBlast(dragon)) {
-            BlastAttackComponent.blast(event, dragon, false);
-            return;
-        }
-        if (event.getOldPhase() == PBDragonHoldingPatternPhase.getPhaseType() && event.getNewPhase() == EnderDragonPhase.LANDING_APPROACH)
-            onHoldingPatternEnd(event, dragon);
-        if (DragonAnger.isAngered(dragon)) {
-            if (((event.getOldPhase() == EnderDragonPhase.CHARGING_PLAYER || event.getOldPhase() == PBDragonStrafePlayerPhase.getPhaseType()) && event.getNewPhase() == PBDragonHoldingPatternPhase.getPhaseType())
-                        || (event.getOldPhase() == DragonBlastAttackPhase.getPhaseType() && event.getNewPhase() == EnderDragonPhase.TAKEOFF)) {
-                PhaseChanger phaseChanger = PhaseChanger.getPhaseChanger(dragon);
-                if (phaseChanger != null)
-                    phaseChanger.execute(event, dragon, event.getOldPhase() == phaseChanger.getPhase());
-            }
-        }
     }
 
     @SubscribeEvent
@@ -230,7 +199,6 @@ public class DragonFeature extends Feature {
         });
     }
 
-    //TODO Configurable
     public static void onCrystalDestroyed(EndDragonFight fight, EndCrystal crystal, DamageSource damageSource) {
         if (!(crystal.level() instanceof ServerLevel serverLevel)
                 || fight.getDragonUUID() == null)
@@ -239,15 +207,11 @@ public class DragonFeature extends Feature {
         EnderDragon dragon = (EnderDragon) serverLevel.getEntity(fight.getDragonUUID());
         if (dragon == null)
             return;
-        DragonDefinition stats = getDragonDefinition(dragon).orElse(null);
-        if (stats == null)
-            return;
-        if (fight.getCrystalsAlive() > 0)
-            DragonAnger.onCrystalDestroyed(dragon, stats);
-        else {
-            BlastAttackComponent.setForcedToBlast(dragon, true);
-            DragonAnger.addAnger(dragon, DragonAnger.MAX_ANGER);
-        }
+        getDragonDefinition(dragon).ifPresent(
+            dragonDefinition -> {
+                dragonDefinition.components.forEach(component -> component.onCrystalDestroyed(dragon, crystal, fight.getCrystalsAlive()));
+            }
+        );
     }
 
     @SubscribeEvent
@@ -257,18 +221,17 @@ public class DragonFeature extends Feature {
 
         DragonMinion.onMinionHurt(event);
         CrystalRespawnComponent.onPhantomHurt(event);
-        onDragonHurt(event);
+
+        if (!(event.getEntity() instanceof EnderDragon dragon))
+            return;
+        getDragonDefinition(dragon).ifPresent(
+                dragonDefinition -> {
+                    dragonDefinition.components.forEach(component -> component.onLivingHurt(event, dragon));
+                }
+        );
     }
 
     public void onDragonHurt(LivingHurtEvent event) {
-        if (!(event.getEntity() instanceof EnderDragon dragon))
-            return;
-        DragonDefinition stats = getDragonDefinition(dragon).orElse(null);
-        if (stats == null)
-            return;
-        stats.onLivingHurt(event, dragon);
-
-        DragonAnger.onHurt(event, dragon, stats);
     }
 
     public static Optional<DragonDefinition> getDragonDefinition(EnderDragon dragon) {

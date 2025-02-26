@@ -14,7 +14,7 @@ public interface PhaseChanger {
     int getPriority();
     EnderDragonPhase<?> getPhase();
     boolean shouldExecute(EnderDragon dragon);
-    void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin);
+    void execute(EnderDragon dragon, boolean forceBegin);
     default void onPhaseBegin(DragonPhaseEvent.Begin event, EnderDragon dragon) {};
 
     @Nullable
@@ -38,5 +38,16 @@ public interface PhaseChanger {
                 .collect(Collectors.toList());
 
         return phases.get(dragon.getRandom().nextInt(phases.size()));
+    }
+
+    static boolean trySetNewPhase(EnderDragon dragon, DragonDefinition definition, EnderDragonPhase<?> currentPhase) {
+        if (BlastAttackComponent.isForcedToBlast(dragon))
+            return false;
+        PhaseChanger phaseChanger = PhaseChanger.getPhaseChanger(dragon);
+        if (phaseChanger != null) {
+            phaseChanger.execute(dragon, currentPhase == phaseChanger.getPhase());
+            return true;
+        }
+        return false;
     }
 }

@@ -16,10 +16,11 @@ public class ComponentRegistry {
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "sitting_attack"), SittingAttackComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "health"), HealthComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "vulnerabilities"), VulnerabilitiesComponent.class);
+        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "anger"), AngerComponent.class);
+        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "melee_damage"), MeleeDamageComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "blast_attack"), BlastAttackComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "strafe_player"), StrafePlayerComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "acidball"), AcidballComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "melee_damage"), MeleeDamageComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "charge_player"), ChargePlayerComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "land"), LandComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "spikes"), SpikesComponent.class);

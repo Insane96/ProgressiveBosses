@@ -3,7 +3,6 @@ package insane96mcp.progressivebosses.module.dragon.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.progressivebosses.ProgressiveBosses;
-import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import insane96mcp.progressivebosses.utils.Utils;
 import net.minecraft.server.level.ServerLevel;
@@ -86,8 +85,8 @@ public class CrystalRespawnComponent implements DragonComponent, PhaseChanger {
     }
 
     @Override
-    public void execute(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {
-        event.setNewPhase(DragonCrystalRespawnPhase.getPhaseType());
+    public void execute(EnderDragon dragon, boolean forceBegin) {
+        dragon.getPhaseManager().setPhase(DragonCrystalRespawnPhase.getPhaseType());
         if (forceBegin)
             dragon.getPhaseManager().getPhase(DragonCrystalRespawnPhase.getPhaseType()).begin();
     }

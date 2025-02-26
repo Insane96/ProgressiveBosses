@@ -6,8 +6,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.data.ComponentRegistry;
+import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -20,6 +22,8 @@ import java.util.List;
 public interface DragonComponent {
     default void tick(EnderDragon dragon) {}
     default void apply(EnderDragon dragon) {}
+    default void onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon) {}
+    default void onCrystalDestroyed(EnderDragon dragon, EndCrystal endCrystal, int crystalsAlive) {}
     default void onEntityJoinLevel(EntityJoinLevelEvent event, EnderDragon dragon) {}
     default void onLivingHurt(LivingHurtEvent event, EnderDragon dragon) {}
     default void onLivingDeath(LivingDeathEvent event, EnderDragon dragon) {}
