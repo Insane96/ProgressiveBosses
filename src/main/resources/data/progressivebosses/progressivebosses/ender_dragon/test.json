@@ -19,6 +19,26 @@
             "respawning_crystal_damage_multiplier": 1.5
         },
         {
+            "id": "progressivebosses:fly_speed",
+            "holding": {
+                "base": 1,
+                "angered": 1.25
+            },
+            "strafe": {
+                "base": 1,
+                "angered": 1.25
+            },
+            "charge": {
+                "base": 1,
+                "angered": 1.5
+            },
+            "respawn": 0.75,
+            "landing": {
+                "base": 0.75,
+                "angered": 1
+            }
+        },
+        {
             "id": "progressivebosses:anger",
             "max_anger": 100,
             "anger_duration": 60,

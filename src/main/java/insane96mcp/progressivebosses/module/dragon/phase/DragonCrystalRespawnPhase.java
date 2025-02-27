@@ -170,13 +170,6 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		return 2F;
 	}
 
-	@Override
-	public float getTurnSpeed() {
-		float f = (float)this.dragon.getDeltaMovement().horizontalDistance() + 1.0F;
-		float f1 = Math.min(f, 40.0F);
-		return f1 / f;
-	}
-
 	/**
 	 * Returns the location the dragon is flying toward
 	 */

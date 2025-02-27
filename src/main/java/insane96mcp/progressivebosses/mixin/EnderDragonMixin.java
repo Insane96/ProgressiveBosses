@@ -160,7 +160,10 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=0.06"))
 	public float progressivebosses$movementSpeedMultiplier(float original) {
-		return original * DragonAnger.flySpeedMultiplier((EnderDragon) (Object) this);
+		return original * DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
+				.flatMap(definition -> definition.getComponent(FlySpeedComponent.class))
+				.map(flySpeedComponent -> flySpeedComponent.getFlySpeedMultiplier((EnderDragon) (Object) this))
+				.orElse(1f);
 	}
 
 	@Unique

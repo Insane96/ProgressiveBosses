@@ -27,7 +27,7 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=10"))
 	public int progressivebosses$timeBeforeHoldingPattern(int original) {
 		return 30;
-    }
+	}
 
 	@WrapOperation(method = "doServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;setPhase(Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhase;)V"))
 	public void progressivebosses$onPhaseChange(EnderDragonPhaseManager instance, EnderDragonPhase<?> pPhase, Operation<Void> original) {
