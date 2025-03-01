@@ -1,6 +1,8 @@
 # Changelog
 
 ## Upcoming
+* Completely reworked the Dragon json, making it modular with components
+  * This has changed some behaviours, and I've made some adjustments to difficulty
 * Removed Dragon Larva
   * No longer exists in any form
 * Enhanced Blast attack animation and particles

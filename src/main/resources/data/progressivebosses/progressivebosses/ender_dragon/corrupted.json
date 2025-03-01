@@ -32,11 +32,7 @@
                 "base": 1.2,
                 "angered": 1.5
             },
-            "respawn": 0.75,
-            "landing": {
-                "base": 0.75,
-                "angered": 1
-            }
+            "respawn": 0.75
         },
         {
             "id": "progressivebosses:anger",
@@ -55,7 +51,7 @@
         },
         {
             "id": "progressivebosses:land",
-            "chance": 0.35
+            "chance": 0.20
         },
         {
             "id": "progressivebosses:sitting_attack",
@@ -100,8 +96,8 @@
         {
             "id": "progressivebosses:strafe_player",
             "chance": {
-                "base": 0.5,
-                "angered": 0.3
+                "base": 0.6,
+                "angered": 0.4
             },
             "min_acidball_shot": {
                 "base": 2,

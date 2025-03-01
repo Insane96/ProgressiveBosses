@@ -19,6 +19,6 @@ public abstract class AbstractDragonPhaseInstanceMixin {
 		return original * DragonFeature.getDragonDefinition(this.dragon)
 				.flatMap(definition -> definition.getComponent(FlySpeedComponent.class))
 				.map(flySpeedComponent -> flySpeedComponent.getFlySpeedMultiplier(this.dragon))
-				.orElse(1f);
+				.orElse(1f) * 1.5f;
 	}
 }

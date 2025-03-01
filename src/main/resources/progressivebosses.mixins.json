@@ -17,6 +17,7 @@
         "DragonSittingAttackingPhaseMixin",
         "DragonSittingFlamingPhaseMixin",
         "DragonSittingScanningPhaseMixin",
+        "DragonTakeoffPhaseMixin",
         "ElderGuardianMixin",
         "EndCrystalMixin",
         "EndDragonFightMixin",
