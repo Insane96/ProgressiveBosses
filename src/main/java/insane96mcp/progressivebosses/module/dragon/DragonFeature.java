@@ -5,6 +5,7 @@ import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
@@ -22,6 +23,8 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
@@ -42,6 +45,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Label(name = "Ender Dragon Feature")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon", canBeDisabled = false)
@@ -49,7 +53,7 @@ public class DragonFeature extends Feature {
     public static final TagKey<Item> DRAGON_INVULNERABLE = ItemTags.create(new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_invulnerable"));
     public static final String LEVEL = ProgressiveBosses.RESOURCE_PREFIX + "level";
 
-    public static final String HAS_KILLED_DRAGON = ProgressiveBosses.RESOURCE_PREFIX + "has_killed_dragon";
+    public static final UUID KNOCKBACK_REDUCTION_UUID = UUID.fromString("db8b06d6-791d-4f3b-867d-35e384af9eab");
 
     @Config
     @Label(name = "Explosion Immune Crystals", description = "Crystals can no longer be destroyed by other explosions.")
@@ -63,7 +67,7 @@ public class DragonFeature extends Feature {
              - When the crystals that respawn the dragon in the center are destroyed, the fire is extinguished
              - Ender Dragon can now rise and fall faster (somewhere around 1.14 the multiplier for the y speed was reduced to 0.01 instead of 0.1 https://bugs.mojang.com/browse/MC-272431)
              - Dragon is moved exactly at the center of the well when landed
-             - Fixes entities accumulating knockback when hit by the dragon and then launching like a rocket
+             - Fixes players accumulating knockback when hit by the dragon and then launching like a rocket
              - Sets a portal cooldown to 4 years so she no longer goes through end gates""")
     public static Boolean enableFixes = true;
 
@@ -101,8 +105,10 @@ public class DragonFeature extends Feature {
                 || dragon.getPersistentData().contains(ProgressiveBosses.RESOURCE_PREFIX + "processed"))
             return;
 
-        if (enableFixes)
+        if (enableFixes) {
             dragon.setPortalCooldown(Integer.MAX_VALUE);
+            MCUtils.applyModifier(dragon, Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_REDUCTION_UUID, "Dragon no knockback", 1.0f, AttributeModifier.Operation.ADDITION, true);
+        }
 
         if (!dragon.getPersistentData().contains(LEVEL))
             dragon.getPersistentData().putByte(LEVEL, dragonLvl);

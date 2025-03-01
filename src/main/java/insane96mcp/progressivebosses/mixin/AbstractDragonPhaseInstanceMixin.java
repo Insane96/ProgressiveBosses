@@ -18,7 +18,7 @@ public abstract class AbstractDragonPhaseInstanceMixin {
 	public float progressivebosses$maxSpeedForTurning(float original) {
 		return original * DragonFeature.getDragonDefinition(this.dragon)
 				.flatMap(definition -> definition.getComponent(FlySpeedComponent.class))
-				.map(flySpeedComponent -> flySpeedComponent.getFlySpeedMultiplier((EnderDragon) (Object) this))
+				.map(flySpeedComponent -> flySpeedComponent.getFlySpeedMultiplier(this.dragon))
 				.orElse(1f);
 	}
 }
