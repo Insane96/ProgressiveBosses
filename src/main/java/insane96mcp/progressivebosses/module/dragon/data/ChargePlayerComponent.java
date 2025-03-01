@@ -84,10 +84,10 @@ public class ChargePlayerComponent implements DragonComponent, PhaseChanger {
     public static class Serializer implements JsonDeserializer<ChargePlayerComponent> {
         @Override
         public ChargePlayerComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            ChargePlayerComponent sittingComponent = new ChargePlayerComponent();
+            ChargePlayerComponent component = new ChargePlayerComponent();
             JsonObject jObject = json.getAsJsonObject();
-            sittingComponent.chance = GsonHelper.getAsObject(jObject, "chance", context, DragonValue.class);
-            return sittingComponent;
+            component.chance = GsonHelper.getAsObject(jObject, "chance", context, DragonValue.class);
+            return component;
         }
     }
 }

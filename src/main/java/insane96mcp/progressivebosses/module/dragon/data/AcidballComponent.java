@@ -100,14 +100,14 @@ public class AcidballComponent implements DragonComponent {
     public static class Serializer implements JsonDeserializer<AcidballComponent> {
         @Override
         public AcidballComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            AcidballComponent sittingComponent = new AcidballComponent();
+            AcidballComponent component = new AcidballComponent();
             JsonObject jObject = json.getAsJsonObject();
-            sittingComponent.acidAmplifier = GsonHelper.getAsObject(jObject, "acid_amplifier", context, DragonValue.class);
-            sittingComponent.speedMultiplier = GsonHelper.getAsObject(jObject, "speed_multiplier", null, context, DragonValue.class);
-            sittingComponent.impactRange = GsonHelper.getAsObject(jObject, "impact_range", context, DragonValue.class);
-            sittingComponent.impactDamage = GsonHelper.getAsObject(jObject, "impact_damage", context, DragonValue.class);
-            sittingComponent.is3DCloud = GsonHelper.getAsBoolean(jObject, "is_3d_cloud", false);
-            return sittingComponent;
+            component.acidAmplifier = GsonHelper.getAsObject(jObject, "acid_amplifier", context, DragonValue.class);
+            component.speedMultiplier = GsonHelper.getAsObject(jObject, "speed_multiplier", null, context, DragonValue.class);
+            component.impactRange = GsonHelper.getAsObject(jObject, "impact_range", context, DragonValue.class);
+            component.impactDamage = GsonHelper.getAsObject(jObject, "impact_damage", context, DragonValue.class);
+            component.is3DCloud = GsonHelper.getAsBoolean(jObject, "is_3d_cloud", false);
+            return component;
         }
     }
 }

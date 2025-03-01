@@ -91,16 +91,16 @@ public class BlastAttackComponent implements DragonComponent, PhaseChanger {
     public static class Serializer implements JsonDeserializer<BlastAttackComponent> {
         @Override
         public BlastAttackComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            BlastAttackComponent sittingComponent = new BlastAttackComponent();
+            BlastAttackComponent component = new BlastAttackComponent();
             JsonObject jObject = json.getAsJsonObject();
-            sittingComponent.chance = GsonHelper.getAsObject(jObject, "chance", context, DragonValue.class);
-            sittingComponent.range = GsonHelper.getAsObject(jObject, "range", context, DragonValue.class);
-            sittingComponent.knockback = GsonHelper.getAsObject(jObject, "knockback", null, context, DragonValue.class);
-            sittingComponent.chargeUpTime = GsonHelper.getAsObject(jObject, "charge_up_time", context, DragonValue.class);
-            sittingComponent.damage = GsonHelper.getAsObject(jObject, "damage", context, DragonValue.class);
-            sittingComponent.timeBeforeTakeoff = GsonHelper.getAsInt(jObject, "time_before_takeoff", 0);
-            sittingComponent.cooldown = GsonHelper.getAsObject(jObject, "cooldown", context, DragonValue.class);
-            return sittingComponent;
+            component.chance = GsonHelper.getAsObject(jObject, "chance", context, DragonValue.class);
+            component.range = GsonHelper.getAsObject(jObject, "range", context, DragonValue.class);
+            component.knockback = GsonHelper.getAsObject(jObject, "knockback", null, context, DragonValue.class);
+            component.chargeUpTime = GsonHelper.getAsObject(jObject, "charge_up_time", context, DragonValue.class);
+            component.damage = GsonHelper.getAsObject(jObject, "damage", context, DragonValue.class);
+            component.timeBeforeTakeoff = GsonHelper.getAsInt(jObject, "time_before_takeoff", 0);
+            component.cooldown = GsonHelper.getAsObject(jObject, "cooldown", context, DragonValue.class);
+            return component;
         }
     }
 }

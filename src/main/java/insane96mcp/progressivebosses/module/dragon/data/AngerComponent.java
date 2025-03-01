@@ -147,15 +147,15 @@ public class AngerComponent implements DragonComponent {
     public static class Serializer implements JsonDeserializer<AngerComponent> {
         @Override
         public AngerComponent deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            AngerComponent sittingComponent = new AngerComponent();
+            AngerComponent component = new AngerComponent();
             JsonObject jObject = json.getAsJsonObject();
-            sittingComponent.maxAnger = GsonHelper.getAsInt(jObject, "max_anger");
-            sittingComponent.angerDuration = GsonHelper.getAsInt(jObject, "anger_duration");
-            sittingComponent.tickDown = ILGsonHelper.getAsNullableFloat(jObject, "tick_down");
-            sittingComponent.damageToAngerRatio = ILGsonHelper.getAsNullableFloat(jObject, "damage_to_anger_ratio");
-            sittingComponent.crystalDestroyedAnger = ILGsonHelper.getAsNullableFloat(jObject, "crystal_destroyed_anger");
-            sittingComponent.forceAngeredWhenLastCrystalDestroyed = GsonHelper.getAsBoolean(jObject, "force_angered_when_last_crystal_destroyed", false);
-            return sittingComponent;
+            component.maxAnger = GsonHelper.getAsInt(jObject, "max_anger");
+            component.angerDuration = GsonHelper.getAsInt(jObject, "anger_duration");
+            component.tickDown = ILGsonHelper.getAsNullableFloat(jObject, "tick_down");
+            component.damageToAngerRatio = ILGsonHelper.getAsNullableFloat(jObject, "damage_to_anger_ratio");
+            component.crystalDestroyedAnger = ILGsonHelper.getAsNullableFloat(jObject, "crystal_destroyed_anger");
+            component.forceAngeredWhenLastCrystalDestroyed = GsonHelper.getAsBoolean(jObject, "force_angered_when_last_crystal_destroyed", false);
+            return component;
         }
     }
 }

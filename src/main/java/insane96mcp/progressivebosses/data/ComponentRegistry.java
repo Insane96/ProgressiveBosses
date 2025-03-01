@@ -26,6 +26,7 @@ public class ComponentRegistry {
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "land"), LandComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "spikes"), SpikesComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "crystal_respawn"), CrystalRespawnComponent.class);
+        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "minion"), MinionComponent.class);
         registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "loot"), LootComponent.class);
     }
 

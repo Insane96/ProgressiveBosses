@@ -155,7 +155,7 @@ public abstract class EnderDragonMixin extends Mob {
 		if (!Feature.isEnabled(DragonFeature.class)
 				|| !DragonFeature.enableFixes)
 			return original;
-		return 0.08d;
+		return 0.075d;
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=0.06"))

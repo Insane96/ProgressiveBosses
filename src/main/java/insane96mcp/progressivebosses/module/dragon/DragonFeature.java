@@ -92,8 +92,9 @@ public class DragonFeature extends Feature {
         if (!this.isEnabled()
                 || event.getLevel().isClientSide)
             return;
+
         onDragonJoinLevel(event);
-        DragonMinion.onShulkerSpawn(event);
+
         if (event.getEntity() instanceof EnderDragon dragon)
             ((ServerLevel) dragon.level()).players().forEach(player -> SyncDragonAnger.sync(player, dragon));
         else if (event.getEntity() instanceof ServerPlayer player)
@@ -153,7 +154,7 @@ public class DragonFeature extends Feature {
 
         List<ShulkerBullet> bullets = dragon.level().getEntitiesOfClass(ShulkerBullet.class, dragon.getBoundingBox().inflate(128));
         bullets.forEach(Entity::discard);
-        List<Shulker> minions = dragon.level().getEntitiesOfClass(Shulker.class, dragon.getBoundingBox().inflate(128), shulker -> shulker.getPersistentData().contains(DragonMinion.DRAGON_MINION));
+        List<Shulker> minions = dragon.level().getEntitiesOfClass(Shulker.class, dragon.getBoundingBox().inflate(128), shulker -> shulker.getPersistentData().contains(MinionComponent.DRAGON_MINION));
         minions.forEach(Entity::discard);
     }
 
@@ -170,7 +171,6 @@ public class DragonFeature extends Feature {
         definition.tick(dragon);
         if (dragon.level().isClientSide)
             AngerComponent.tickClient(dragon);
-        DragonMinion.tick(dragon);
     }
 
     @SubscribeEvent
@@ -225,7 +225,7 @@ public class DragonFeature extends Feature {
         if (!this.isEnabled())
             return;
 
-        DragonMinion.onMinionHurt(event);
+        MinionComponent.onMinionHurt(event);
         CrystalRespawnComponent.onPhantomHurt(event);
 
         if (!(event.getEntity() instanceof EnderDragon dragon))
