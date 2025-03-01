@@ -9,7 +9,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
-import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
@@ -144,10 +143,10 @@ public abstract class EnderDragonMixin extends Mob {
 	public float onAttachedCrystalDamage(float original, EndCrystal pCrystal, BlockPos pPos, DamageSource pDamageSource) {
 		if (!pCrystal.showsBottom())
 			return original;
-		//TODO Configurable
-		float min = pCrystal instanceof CorruptedEndCrystal ? 0.10f : 0.05f;
-		float max = pCrystal instanceof CorruptedEndCrystal ? 0.30f : 0.15f;
-		return Math.max(this.getHealth() * min, this.getHealth() * max);
+		return DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
+				.flatMap(stats -> stats.getComponent(VulnerabilitiesComponent.class))
+				.map(vulnerabilitiesComponent -> vulnerabilitiesComponent.getAttachedCrystalDamage(pCrystal, (EnderDragon) (Object) this))
+				.orElse(original);
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "doubleValue=0.01"))

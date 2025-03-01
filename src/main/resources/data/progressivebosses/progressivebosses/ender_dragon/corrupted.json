@@ -16,7 +16,11 @@
             "melee_damage_multiplier_when_flying": 1,
             "explosion_damage_multiplier": 0.4,
             "ranged_damage_multiplier": 1,
-            "respawning_crystal_damage_multiplier": 1.5
+            "respawning_crystal_damage_multiplier": 1.5,
+            "attached_crystal_damage": 0.1,
+            "attached_crystal_damage_type": "current_health",
+            "attached_corrupted_crystal_damage": 0.1,
+            "attached_corrupted_crystal_damage_type": "max_health"
         },
         {
             "id": "progressivebosses:fly_speed",
@@ -101,11 +105,11 @@
             },
             "min_acidball_shot": {
                 "base": 2,
-                "angered": 1
+                "angered": 2
             },
             "max_acidball_shot": {
                 "base": 3,
-                "angered": 1
+                "angered": 2
             },
             "cooldown_between_shots": {
                 "base": 2,
