@@ -93,7 +93,7 @@
                 "base": 70,
                 "angered": 45
             },
-            "damage": 40,
+            "damage": 50,
             "time_before_takeoff": 20,
             "cooldown": 600
         },
