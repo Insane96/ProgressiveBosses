@@ -6,20 +6,20 @@
             "health": 500.0,
             "passive_regeneration": 0.5,
             "crystal_regeneration": 2.5,
-            "corrupted_crystal_regeneration": 5.5,
-            "regen_when_hit_ratio": 0.6,
-            "regen_when_hit_duration": 50
+            "corrupted_crystal_regeneration": 4.5,
+            "regen_when_hit_ratio": 0.2,
+            "regen_when_hit_duration": 100
         },
         {
             "id": "progressivebosses:vulnerabilities",
-            "melee_damage_multiplier_when_sitting": 0.8,
-            "melee_damage_multiplier_when_flying": 1,
+            "melee_damage_multiplier_when_sitting": 0.6,
+            "melee_damage_multiplier_when_flying": 2,
             "explosion_damage_multiplier": 0.4,
             "ranged_damage_multiplier": 1,
             "respawning_crystal_damage_multiplier": 1.5,
-            "attached_crystal_damage": 0.1,
+            "attached_crystal_damage": 0.25,
             "attached_crystal_damage_type": "current_health",
-            "attached_corrupted_crystal_damage": 0.1,
+            "attached_corrupted_crystal_damage": 0.25,
             "attached_corrupted_crystal_damage_type": "max_health"
         },
         {
@@ -61,7 +61,7 @@
             "id": "progressivebosses:sitting_attack",
             "acid_amplifier": 2,
             "damage_before_take_off": {
-                "base": 0.05,
+                "base": 0.1,
                 "angered": 0.1
             },
             "flames_before_take_off": {
@@ -101,7 +101,7 @@
             "id": "progressivebosses:strafe_player",
             "chance": {
                 "base": 0.6,
-                "angered": 0.4
+                "angered": 0.6
             },
             "min_acidball_shot": {
                 "base": 2,
@@ -137,7 +137,7 @@
             "id": "progressivebosses:charge_player",
             "chance": {
                 "base": 0.5,
-                "angered": 1.0
+                "angered": 0.8
             }
         },
         {
@@ -156,7 +156,7 @@
             "respawned": 3,
             "phantom_count": 3,
             "phantom_size": 5,
-            "caged_chance": 1,
+            "caged_chance": 0.75,
             "corrupted_chance": 1,
             "cooldown": 6000
         },

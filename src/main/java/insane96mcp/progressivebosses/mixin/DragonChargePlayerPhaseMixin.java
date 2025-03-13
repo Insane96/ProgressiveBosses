@@ -35,4 +35,6 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 		if (definition == null || !PhaseChanger.trySetNewPhase(this.dragon, definition, this.getPhase()))
 			original.call(instance, pPhase);
 	}
+
+
 }

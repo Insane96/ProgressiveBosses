@@ -21,4 +21,13 @@ public abstract class AbstractDragonPhaseInstanceMixin {
 				.map(flySpeedComponent -> flySpeedComponent.getFlySpeedMultiplier(this.dragon))
 				.orElse(1f) * 1.5f;
 	}
+
+	@ModifyExpressionValue(method = "getTurnSpeed", at = @At(value = "CONSTANT", args = "floatValue=0.7"))
+	public float progressivebosses$speedReductionForTurning(float original) {
+		float flySpeedBonus = DragonFeature.getDragonDefinition(this.dragon)
+				.flatMap(definition -> definition.getComponent(FlySpeedComponent.class))
+				.map(flySpeedComponent -> flySpeedComponent.getFlySpeedMultiplier(this.dragon))
+				.orElse(1f) - 1f;
+		return original + (flySpeedBonus / 2f);
+	}
 }

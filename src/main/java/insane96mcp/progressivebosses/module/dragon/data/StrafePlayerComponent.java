@@ -10,6 +10,7 @@ import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPha
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
@@ -83,6 +84,11 @@ public class StrafePlayerComponent implements DragonComponent, PhaseChanger {
     public void onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon) {
         if (event.getNewPhase().equals(EnderDragonPhase.STRAFE_PLAYER))
             event.setNewPhase(PBDragonStrafePlayerPhase.getPhaseType());
+    }
+
+    @Override
+    public void onCrystalDestroyed(EnderDragon dragon, EndCrystal endCrystal, int crystalsAlive) {
+        setForcedToStrafe(dragon, getForcedToStrafe(dragon) + 1);
     }
 
     public static class Serializer implements JsonDeserializer<StrafePlayerComponent> {
