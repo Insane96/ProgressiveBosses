@@ -1,10 +1,9 @@
 package insane96mcp.progressivebosses.mixin;
 
-import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.serialization.Codec;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -13,6 +12,8 @@ import net.minecraft.world.level.levelgen.feature.SpikeFeature;
 import net.minecraft.world.level.levelgen.feature.configurations.SpikeConfiguration;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SpikeFeature.class)
 public abstract class SpikeFeatureMixin extends Feature<SpikeConfiguration> {
@@ -21,31 +22,11 @@ public abstract class SpikeFeatureMixin extends Feature<SpikeConfiguration> {
 		super(pCodec);
 	}
 
-	@ModifyExpressionValue(method = "placeSpike", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/feature/SpikeFeature$EndSpike;isGuarded()Z"))
-	public boolean onTryPlaceBars(boolean isGuarded, ServerLevelAccessor level, RandomSource random, SpikeConfiguration configuration, SpikeFeature.EndSpike spike) {
-		if (!isGuarded
-				|| !insane96mcp.insanelib.base.Feature.isEnabled(DragonFeature.class))
-			return isGuarded;
-
-		int j1 = -2;
-		int k1 = 2;
-		int j = 3;
-		BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-
-		for (int x = -2; x <= 2; ++x) {
-			for (int z = -2; z <= 2; ++z) {
-				for (int y = 0; y <= 3; ++y) {
-					boolean isSideX = Mth.abs(x) == 2;
-					boolean isSideZ = Mth.abs(z) == 2;
-					boolean isRoof = y == 3;
-					if (isSideX || isSideZ || isRoof) {
-						this.setBlock(level, blockpos$mutableblockpos.set(spike.getCenterX() + x, spike.getHeight() + y, spike.getCenterZ() + z), Blocks.IRON_BARS.defaultBlockState());
-						if (y == 0 && isSideX && isSideZ) //So if corner
-							this.setBlock(level, blockpos$mutableblockpos.set(spike.getCenterX() + x, spike.getHeight() + y - 1, spike.getCenterZ() + z), Blocks.OBSIDIAN.defaultBlockState());
-					}
-				}
-			}
-		}
-		return false;
+	@Inject(method = "placeSpike", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/feature/SpikeFeature;setBlock(Lnet/minecraft/world/level/LevelWriter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V", ordinal = 2, shift = At.Shift.AFTER))
+	public void onTryPlaceBars(ServerLevelAccessor level, RandomSource random, SpikeConfiguration config, SpikeFeature.EndSpike spike, CallbackInfo ci, @Local(name = "k") int x, @Local(name = "l") int z, @Local(name = "i1") int y, @Local(name = "flag") boolean isSideX, @Local(name = "flag1") boolean isSideZ) {
+		if (!insane96mcp.insanelib.base.Feature.isEnabled(DragonFeature.class) || !DragonFeature.enableFixes)
+			return;
+		if (y == 0 && isSideX && isSideZ) //So if lower corner
+			this.setBlock(level, new BlockPos(spike.getCenterX() + x, spike.getHeight() + y - 1, spike.getCenterZ() + z), Blocks.OBSIDIAN.defaultBlockState());
 	}
 }

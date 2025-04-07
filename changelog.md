@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Fixed wither Barrage not triggering on hit
+* Fixed first dragon fight cages being broken
 
 ## Bata 4.3.2
 * Completely reworked the Dragon json, making it modular with components

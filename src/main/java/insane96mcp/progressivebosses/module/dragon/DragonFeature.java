@@ -62,6 +62,7 @@ public class DragonFeature extends Feature {
     @Config
     @Label(name = "Enable Fixes", description = """
             Enable some fixes for the Ender Dragon:
+             - Small spikes with cages now generate with obsidian on the corners to prevent cheesing.
              - Dragon Head and Neck have been repositioned/resized correctly.
              - Dragon will now play the growl sound only 4 times/second when respawning and when sitting instead of 20/second (so your ears shouldn't blow up anymore)
              - When the crystals that respawn the dragon in the center are destroyed, the fire is extinguished
