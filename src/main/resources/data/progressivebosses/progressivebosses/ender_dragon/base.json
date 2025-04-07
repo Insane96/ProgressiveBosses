@@ -142,7 +142,7 @@
         },
         {
             "id": "progressivebosses:spikes",
-            "cages": 3,
+            "cages": 8,
             "corrupted_chance": 0.1,
             "crystals_inside": 1,
             "inside_corrupted_chance": 0.5

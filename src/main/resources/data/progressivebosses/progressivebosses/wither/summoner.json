@@ -19,7 +19,7 @@
         "attack_to_heal_threshold": 0.35,
         "heal_on_skull_kill": 25,
         "barrage": {
-            "chance": {
+            "chance_on_hit": {
                 "above_half_health": 0.3,
                 "below_half_health": 0.2
             },

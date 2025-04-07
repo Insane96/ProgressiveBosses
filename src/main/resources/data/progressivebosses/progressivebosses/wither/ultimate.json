@@ -43,7 +43,7 @@
             }
         },
         "barrage": {
-            "chance": {
+            "chance_on_hit": {
                 "above_half_health": 0.3,
                 "below_half_health": 0.2
             },
