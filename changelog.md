@@ -1,6 +1,9 @@
 # Changelog
 
 ## Upcoming
+* Ender dragon no longer spawns as soon as you enter the end
+  * She will begin the spawning process once you approach the center podium
+  * This disables itself with YUNG's Better End Island installed
 * Fixed wither Barrage not triggering on hit
 * Fixed first dragon fight cages being broken
 

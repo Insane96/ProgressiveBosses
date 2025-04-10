@@ -34,6 +34,8 @@ import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
+import net.minecraft.world.phys.AABB;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
@@ -75,8 +77,31 @@ public class DragonFeature extends Feature {
     /// Temp variable to keep track of the level of the dragon between placing the End Crystal and summoning the dragon
     public static byte dragonLvl = 0;
 
+    /// Temp variable to let the game know it must run the spawn logic as soon as a player approaches
+    public static boolean spawnDragon = false;
+    public static boolean preventAdvancement = false;
+
     public DragonFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         super(module, enabledByDefault, canBeDisabled);
+    }
+
+    @SubscribeEvent
+    public void levelTick(TickEvent.LevelTickEvent event) {
+        if (!spawnDragon
+                || event.level.isClientSide)
+            return;
+
+        ServerLevel level = (ServerLevel) event.level;
+        if (level.getDragonFight() == null || level.getDragonFight().portalLocation == null)
+            return;
+        if (level.getGameTime() % 40 == 16) {
+            List<Player> closePlayers = level.getEntitiesOfClass(Player.class, new AABB(level.getDragonFight().portalLocation).inflate(48d, 32d, 48d));
+            if (closePlayers.isEmpty())
+                return;
+            level.getDragonFight().tryRespawn();
+            spawnDragon = false;
+            preventAdvancement = true;
+        }
     }
 
     @Nullable

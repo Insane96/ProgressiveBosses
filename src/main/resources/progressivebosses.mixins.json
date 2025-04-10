@@ -6,6 +6,7 @@
     },
     "compatibilityLevel": "JAVA_17",
     "refmap": "progressivebosses.refmap.json",
+    "plugin": "insane96mcp.progressivebosses.mixin.plugin.ModLoadedPlugin",
     "mixins": [
         "AbstractDragonPhaseInstanceMixin",
         "AbstractDragonSittingPhaseMixin",
@@ -21,6 +22,7 @@
         "ElderGuardianMixin",
         "EndCrystalMixin",
         "EndDragonFightMixin",
+        "EndDragonFightPreventSpawnMixin",
         "EnderDragonMixin",
         "EnderDragonPhaseManagerMixin",
         "ItemEntityMixin",
