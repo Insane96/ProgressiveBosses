@@ -1,5 +1,9 @@
 # Changelog
 
+## Upcoming
+* Fixed missing lang entry for Corrupted End Crystal entity
+* Removed italian, chinese and russian language as were outdated
+
 ## 4.3.3
 * Ender dragon no longer spawns as soon as you enter the end
   * She will begin the spawning process once you approach the center podium

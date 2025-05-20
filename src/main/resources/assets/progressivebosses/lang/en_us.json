@@ -11,6 +11,8 @@
   "progressivebosses:dragon_minion": "Dragon Minion",
   "death.attack.progressivebosses:dragon_fireball": "%1$s was acidballed by %2$s",
 
+  "entity.progressivebosses.corrupted_end_crystal": "Corrupted End Crystal",
+
   "progressivebosses:elder_minion": "Elder Minion",
 
   "progressivebosses:command.player_get_wither_difficulty": "%s has summoned %d Withers",
