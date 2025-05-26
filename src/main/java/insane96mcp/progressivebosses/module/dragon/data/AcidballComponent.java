@@ -2,7 +2,7 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import insane96mcp.insanelib.entity.AreaEffectCloud3DEntity;
+import insane96mcp.areaeffectcloud3d.entity.Cloud3DEntity;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.mixin.ProjectileInvoker;
 import net.minecraft.core.particles.ParticleTypes;
@@ -69,7 +69,7 @@ public class AcidballComponent implements DragonComponent {
         if (result.getType() != HitResult.Type.ENTITY || !((EntityHitResult)result).getEntity().is(dragon)) {
             if (!fireball.level().isClientSide) {
                 List<LivingEntity> list = fireball.level().getEntitiesOfClass(LivingEntity.class, fireball.getBoundingBox().inflate(4.0D, 2.0D, 4.0D));
-                AreaEffectCloud3DEntity areaEffectCloud = new AreaEffectCloud3DEntity(fireball.level(), fireball.getX(), fireball.getY(), fireball.getZ());
+                Cloud3DEntity areaEffectCloud = new Cloud3DEntity(fireball.level(), fireball.getX(), fireball.getY(), fireball.getZ());
                 areaEffectCloud.setOwner(dragon);
                 areaEffectCloud.setParticle(ParticleTypes.DRAGON_BREATH);
                 //TODO More configuration!

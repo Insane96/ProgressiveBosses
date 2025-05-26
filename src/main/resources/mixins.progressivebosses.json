@@ -2,10 +2,10 @@
     "required": true,
     "package": "insane96mcp.progressivebosses.mixin",
     "mixinextras": {
-        "minVersion": "0.5.0-beta.5"
+        "minVersion": "0.5.0-rc.2"
     },
     "compatibilityLevel": "JAVA_17",
-    "refmap": "progressivebosses.refmap.json",
+    "refmap": "mixins.progressivebosses.refmap.json",
     "plugin": "insane96mcp.progressivebosses.mixin.plugin.ModLoadedPlugin",
     "mixins": [
         "AbstractDragonPhaseInstanceMixin",

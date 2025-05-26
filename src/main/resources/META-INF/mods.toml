@@ -1,36 +1,44 @@
 modLoader="javafml"
-loaderVersion="[46,)"
-license="MIT License"
-issueTrackerURL="https://github.com/Insane96/ProgressiveBosses/issues/"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+issueTrackerURL="https://github.com/Insane96/ProgressiveBosses/issues"
 [[mods]]
-modId="progressivebosses"
-version="${file.jarVersion}"
-displayName="Progressive Bosses"
-displayURL="https://minecraft.curseforge.com/projects/progressive-bosses"
-# logoFile="examplemod.png"
-authors="Insane96MCP"
-description='''
-Make Bosses harder the more you respawn them. Adding Health, Armor and some Abilities.
-'''
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/progressive-bosses"
+authors="${mod_authors}"
+
 # Catalogue icon
 itemIcon = "progressivebosses:nether_star_shard"
 # Configured background
 configBackground = "minecraft:textures/block/soul_sand.png"
-[[dependencies.progressivebosses]]
+
+description='''${mod_description}'''
+[[dependencies.${mod_id}]]
     modId="forge"
     mandatory=true
-    versionRange="[46,)"
+    versionRange="${forge_version_range}"
     ordering="NONE"
     side="BOTH"
-[[dependencies.progressivebosses]]
+
+[[dependencies.${mod_id}]]
     modId="minecraft"
     mandatory=true
-    versionRange="1.20.1"
+    versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
-[[dependencies.progressivebosses]]
-    modId = "insanelib"
+
+[[dependencies.${mod_id}]]
+    modId="insanelib"
+    mandatory=true
+    versionRange="${lib_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "areaeffectcloud3d"
     mandatory = true
-    versionRange = "[1.18.2,)"
+    versionRange = "${aec3d_version_range}"
     ordering = "NONE"
     side = "BOTH"

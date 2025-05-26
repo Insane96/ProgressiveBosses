@@ -1,6 +1,9 @@
 # Changelog
 
-## Upcoming
+* Let wither change target if can't see it for x secs and not player
+
+## 4.3.4
+* Now requires InsaneLib 1.20.0
 * Fixed missing lang entry for Corrupted End Crystal entity
 * Removed italian, chinese and russian language as were outdated
 
