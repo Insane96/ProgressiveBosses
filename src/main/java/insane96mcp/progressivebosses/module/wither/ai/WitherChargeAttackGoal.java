@@ -16,7 +16,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -163,7 +162,7 @@ public class WitherChargeAttackGoal extends Goal {
 						}
 					});
 				}
-				this.wither.level().getEntitiesOfClass(LivingEntity.class, this.wither.getBoundingBox().inflate(4f)).forEach(living -> damageAndPush(living, DamageTypes.EXPLOSION));
+				this.wither.level().getEntitiesOfClass(LivingEntity.class, this.wither.getBoundingBox().inflate(4f)).forEach(this::damageAndPush);
 				this.wither.stopCharging();
 				if (this.wither.stats.attack.barrage != null)
 					this.wither.initBarrage();
@@ -201,7 +200,7 @@ public class WitherChargeAttackGoal extends Goal {
 				axisAlignedBB = axisAlignedBB.inflate(1.5d);
 				this.wither.level()
 						.getEntitiesOfClass(LivingEntity.class, axisAlignedBB)
-						.forEach(living -> damageAndPush(living, WITHER_CHARGE_DAMAGE_TYPE));
+						.forEach(this::damageAndPush);
 
 				double distance = this.targetPos.distanceToSqr(this.wither.position());
 				//If the wither's charging and is farther from the target point than the last tick OR is closer than sqrt(6) blocks OR is about to finish the invulnerability time then prevent the explosion and stop the attack
@@ -213,10 +212,10 @@ public class WitherChargeAttackGoal extends Goal {
 		}
 	}
 
-	private void damageAndPush(LivingEntity entity, ResourceKey<DamageType> damageSource) {
+	private void damageAndPush(LivingEntity entity) {
 		if (entity == this.wither)
 			return;
-		entity.hurt(entity.damageSources().source(damageSource, this.wither), this.wither.stats.attack.charge == null ? 12f : WitherAttack.WitherCharge.getDamage(this.wither));
+		entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.charge == null ? 12f : WitherAttack.WitherCharge.getDamage(this.wither));
 		float d2 = (float) (entity.getX() - this.wither.getX());
 		float d3 = (float) (entity.getZ() - this.wither.getZ());
 		float d4 = Math.max(d2 * d2 + d3 * d3, 0.1f);
