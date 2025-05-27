@@ -2,6 +2,9 @@
 
 * Let wither change target if can't see it for x secs and not player
 
+## Upcoming
+* Wither charging in place now counts as explosion damage, no longer direct damage
+
 ## 4.3.4
 * Now requires InsaneLib 1.20.0
 * Fixed missing lang entry for Corrupted End Crystal entity
