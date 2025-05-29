@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon;
 
 import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
@@ -49,20 +48,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Label(name = "Ender Dragon Feature")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon", canBeDisabled = false)
 public class DragonFeature extends Feature {
-    public static final TagKey<Item> DRAGON_INVULNERABLE = ItemTags.create(new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_invulnerable"));
+    public static final TagKey<Item> DRAGON_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "dragon_invulnerable"));
     public static final String LEVEL = ProgressiveBosses.RESOURCE_PREFIX + "level";
 
     public static final UUID KNOCKBACK_REDUCTION_UUID = UUID.fromString("db8b06d6-791d-4f3b-867d-35e384af9eab");
 
-    @Config
-    @Label(name = "Explosion Immune Crystals", description = "Crystals can no longer be destroyed by other explosions.")
+    @Config(description = "Crystals can no longer be destroyed by other explosions.")
     public static Boolean explosionImmuneCrystals = true;
 
-    @Config
-    @Label(name = "Enable Fixes", description = """
+    @Config(description = """
             Enable some fixes for the Ender Dragon:
              - Small spikes with cages now generate with obsidian on the corners to prevent cheesing.
              - Dragon Head and Neck have been repositioned/resized correctly.

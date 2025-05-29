@@ -3,6 +3,8 @@
 * Let wither change target if can't see it for x secs and not player
 
 ## Upcoming
+* Minor update for latest InsaneLib
+  * Please note that some config options have been renamed, so you have to set them again
 
 ## 4.3.4
 * Now requires InsaneLib 1.20.0

@@ -1,7 +1,6 @@
 package insane96mcp.progressivebosses.module.wither;
 
 import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.progressivebosses.ProgressiveBosses;
@@ -24,11 +23,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
 
-@Label(name = "Wither Feature")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither", canBeDisabled = false)
 public class WitherFeature extends Feature {
-	public static final TagKey<Item> WITHER_INVULNERABLE = ItemTags.create(new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_invulnerable"));
-	public static final TagKey<Item> WORLD_INVULNERABLE = ItemTags.create(new ResourceLocation(ProgressiveBosses.MOD_ID, "world_invulnerable"));
+	public static final TagKey<Item> WITHER_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "wither_invulnerable"));
+	public static final TagKey<Item> WORLD_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "world_invulnerable"));
 
 	public WitherFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
 		super(module, enabledByDefault, canBeDisabled);

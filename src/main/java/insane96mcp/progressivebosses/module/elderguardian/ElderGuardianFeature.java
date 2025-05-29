@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.module.elderguardian;
 
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.Label;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
@@ -54,7 +53,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Label(name = "Base", description = "Base feature for the Elder Guardian harder fights.")
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian", canBeDisabled = false)
 public class ElderGuardianFeature extends Feature {
 	public static final String LVL = ProgressiveBosses.RESOURCE_PREFIX + "level";
@@ -63,12 +61,10 @@ public class ElderGuardianFeature extends Feature {
 	public static final String ELDER_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion_cooldown";
 	public static final String ELDER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion";
 	public static final String APPROACHING_ELDER_GUARDIAN = "elder_guardian.approach";
-	@Config
-	@Label(name = "Adventure mode", description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby. This also removes Mining Fatigue.")
+	@Config(description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby. This also removes Mining Fatigue.")
 	public static Boolean adventure = true;
 
-	@Config
-	@Label(name = "Adventure mode Range", description = "The range from any Elder Guardian at which players get adventure mode. This range is doubled when YUNG's Better Ocean Monuments is installed.")
+	@Config(description = "The range from any Elder Guardian at which players get adventure mode. This range is doubled when YUNG's Better Ocean Monuments is installed.")
 	public static Double adventureRange = 48d;
 
 	public ElderGuardianFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
@@ -275,7 +271,7 @@ public class ElderGuardianFeature extends Feature {
 		minionTags.putBoolean(ElderGuardianFeature.ELDER_MINION, true);
 
 		elderMinion.setPos(pos.x, pos.y, pos.z);
-		elderMinion.setCustomName(Component.translatable(Util.makeDescriptionId("entity", new ResourceLocation(ELDER_MINION))));
+		elderMinion.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ResourceLocation.parse(ELDER_MINION))));
 		elderMinion.lootTable = BuiltInLootTables.EMPTY;
 
 		MCUtils.applyModifier(elderMinion, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);
