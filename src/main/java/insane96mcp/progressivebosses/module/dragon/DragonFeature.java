@@ -31,15 +31,19 @@ import net.minecraft.world.entity.monster.Shulker;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.phys.AABB;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -69,6 +73,9 @@ public class DragonFeature extends Feature {
              - Fixes players accumulating knockback when hit by the dragon and then launching like a rocket
              - Sets a portal cooldown to 4 years so she no longer goes through end gates""")
     public static Boolean enableFixes = true;
+
+    @Config(description = "Adds a tooltip on the dragon egg to hint that it drops multiple times.")
+    public static Boolean eggTooltip = true;
 
     /// Temp variable to keep track of the level of the dragon between placing the End Crystal and summoning the dragon
     public static byte dragonLvl = 0;
@@ -298,5 +305,17 @@ public class DragonFeature extends Feature {
 
     public static float headOffsetY(float original) {
         return original + 1.5f;
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @SubscribeEvent
+    public void onTooltip(ItemTooltipEvent event) {
+        if (!this.isEnabled()
+                || !eggTooltip
+                || !event.getItemStack().getItem().equals(Items.DRAGON_EGG))
+            return;
+
+        event.getToolTip().add(Component.translatable("tooltip.progressivebosses.dragon_egg"));
+
     }
 }
