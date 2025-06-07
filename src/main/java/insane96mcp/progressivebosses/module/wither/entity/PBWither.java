@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.wither.entity;
 import com.google.common.collect.ImmutableList;
 import insane96mcp.insanelib.data.SerializableAttributeModifier;
 import insane96mcp.progressivebosses.module.ILvl;
+import insane96mcp.progressivebosses.module.wither.WitherFeature;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherInvulnerableGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherRangedAttackGoal;
@@ -214,8 +215,13 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         return getChargingTicks() < 0;
     }
     public boolean canCharge() {
-        return !this.isCharging() && !this.isChargingInCooldown() && this.stats.attack.charge != null && this.getBarrageChargeUpTicks() == 0;
+        return !this.isCharging()
+                && !this.isChargingInCooldown()
+                && this.stats.attack.charge != null
+                && this.getBarrageChargeUpTicks() == 0
+                && (this.getTarget() instanceof Player || WitherFeature.allowChargingNonPlayers);
     }
+
     public void tickCharging() {
         int ticks = this.getChargingTicks();
         if (ticks > 0)
@@ -367,21 +373,19 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             Vec3 vec3 = this.getDeltaMovement().multiply(1.0D, 0D, 1.0D);
             if (!this.level().isClientSide) {
                 if (this.getTarget() != null) {
-                    if (this.getTarget() != null) {
-                        double d0 = 0d;
-                        float f = !this.isPowered() ? 5 : 0;
-                        if (this.getY() >= this.getTarget().getY() + f + 1)
-                            d0 = -0.15d;
-                        if ((this.getY() < this.getTarget().getY() || (this.getY() < this.getTarget().getY() + f))) {
-                            d0 = 0.3D;
-                        }
+                    double d0 = 0d;
+                    float f = !this.isPowered() ? 5 : 0;
+                    if (this.getY() >= this.getTarget().getY() + f + 1)
+                        d0 = -0.15d;
+                    if ((this.getY() < this.getTarget().getY() || (this.getY() < this.getTarget().getY() + f))) {
+                        d0 = 0.3D;
+                    }
 
-                        vec3 = new Vec3(vec3.x, d0, vec3.z);
-                        Vec3 vec31 = new Vec3(this.getTarget().getX() - this.getX(), 0.0D, this.getTarget().getZ() - this.getZ());
-                        if (vec31.horizontalDistanceSqr() > 9.0D) {
-                            Vec3 vec32 = vec31.normalize();
-                            vec3 = vec3.add(vec32.x * 0.3D - vec3.x * 0.6D, 0.0D, vec32.z * 0.3D - vec3.z * 0.6D);
-                        }
+                    vec3 = new Vec3(vec3.x, d0, vec3.z);
+                    Vec3 vec31 = new Vec3(this.getTarget().getX() - this.getX(), 0.0D, this.getTarget().getZ() - this.getZ());
+                    if (vec31.horizontalDistanceSqr() > 9.0D) {
+                        Vec3 vec32 = vec31.normalize();
+                        vec3 = vec3.add(vec32.x * 0.3D - vec3.x * 0.6D, 0.0D, vec32.z * 0.3D - vec3.z * 0.6D);
                     }
                 }
                 else if (this.isInWall()) {
@@ -556,7 +560,12 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 int targetId = this.getAlternativeTarget(i + 1);
                 if (targetId > 0) {
                     LivingEntity targetEntity = (LivingEntity) this.level().getEntity(targetId);
-                    if (targetEntity == null || targetEntity.isDeadOrDying() || !this.canAttack(targetEntity) || !this.getSensing().hasLineOfSight(targetEntity) || targetId == this.getAlternativeTarget(0) || targetEntity.distanceToSqr(this) > 625f) {
+                    if (targetEntity == null
+                            || targetEntity.isDeadOrDying()
+                            || !this.canAttack(targetEntity)
+                            || !this.getSensing().hasLineOfSight(targetEntity)
+                            || targetId == this.getAlternativeTarget(0)
+                            || targetEntity.distanceToSqr(this) > 625f) {
                         this.setAlternativeTarget(i + 1, this.findNewTarget());
                     }
                 }
@@ -881,8 +890,8 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     /**
      * Updates the target entity ID
      */
-    public void setAlternativeTarget(int pTargetOffset, int pNewId) {
-        this.entityData.set(DATA_TARGETS.get(pTargetOffset), pNewId);
+    public void setAlternativeTarget(int head, int pNewId) {
+        this.entityData.set(DATA_TARGETS.get(head), pNewId);
     }
 
     public boolean isPowered() {

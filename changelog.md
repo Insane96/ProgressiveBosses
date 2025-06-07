@@ -1,9 +1,9 @@
 # Changelog
 
-* Let wither change target if can't see it for x secs and not player
-
 ## Upcoming
 * Added tooltip to Dragon Egg to let you know that more drop from dragons
+* Wither no longer charges non-players
+  * Configurable
 * Minor update for latest InsaneLib
   * Please note that some config options have been renamed, so you have to set them again
 
