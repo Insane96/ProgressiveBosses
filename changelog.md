@@ -6,6 +6,7 @@
   * Configurable
 * Minor update for latest InsaneLib
   * Please note that some config options have been renamed, so you have to set them again
+* Fixed Elder Minion missing name
 
 ## 4.3.4
 * Now requires InsaneLib 1.20.0

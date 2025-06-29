@@ -8,9 +8,11 @@ import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LogHelper;
+import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
@@ -71,7 +73,7 @@ public class MinionComponent implements DragonComponent {
         minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 
         shulker.setPos(pos.x, pos.y, pos.z);
-        shulker.setCustomName(Component.translatable(DRAGON_MINION));
+        shulker.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ResourceLocation.parse(DRAGON_MINION))));
         shulker.lootTable = BuiltInLootTables.EMPTY;
         shulker.setPersistenceRequired();
         shulker.setVariant(Optional.of(DyeColor.PURPLE));
