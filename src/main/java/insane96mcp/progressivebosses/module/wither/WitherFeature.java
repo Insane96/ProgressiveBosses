@@ -24,7 +24,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 import java.util.List;
 
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither", canBeDisabled = false)
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
 public class WitherFeature extends Feature {
 	public static final TagKey<Item> WITHER_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "wither_invulnerable"));
 	public static final TagKey<Item> WORLD_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "world_invulnerable"));

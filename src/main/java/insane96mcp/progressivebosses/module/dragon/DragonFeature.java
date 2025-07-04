@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon", canBeDisabled = false)
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class DragonFeature extends Feature {
     public static final TagKey<Item> DRAGON_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "dragon_invulnerable"));
     public static final String LEVEL = ProgressiveBosses.RESOURCE_PREFIX + "level";

@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Config has been updated. Config options may have been reset
+
 ## 4.3.5
 * Added tooltip to Dragon Egg to let you know that more drop from dragons
 * Wither no longer charges non-players

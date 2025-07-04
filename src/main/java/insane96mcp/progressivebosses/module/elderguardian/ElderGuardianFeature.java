@@ -53,7 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian", canBeDisabled = false)
+@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian")
 public class ElderGuardianFeature extends Feature {
 	public static final String LVL = ProgressiveBosses.RESOURCE_PREFIX + "level";
 	public static final String PREVIOUSLY_NEAR_ELDER_GUARDIAN = ProgressiveBosses.RESOURCE_PREFIX + "previously_near_elder_guardian";

@@ -12,10 +12,13 @@ public class Modules {
 
 	public static void init() {
 		wither = Module.Builder.create(ProgressiveBosses.RESOURCE_PREFIX + "wither", "Wither", ModConfig.Type.COMMON, Config.builder)
+				.canBeDisabled(false)
 				.build();
 		dragon = Module.Builder.create(ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon", "Ender Dragon", ModConfig.Type.COMMON, Config.builder)
+				.canBeDisabled(false)
 				.build();
 		elderGuardian = Module.Builder.create(ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian", "Elder Guardian", ModConfig.Type.COMMON, Config.builder)
+				.canBeDisabled(false)
 				.build();
 	}
 }
