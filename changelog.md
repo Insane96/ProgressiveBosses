@@ -1,7 +1,8 @@
 # Changelog
 
-## Upcoming
+## 4.3.6
 * Config has been updated. Config options may have been reset
+* Fixed wither roses not dropping
 
 ## 4.3.5
 * Added tooltip to Dragon Egg to let you know that more drop from dragons
