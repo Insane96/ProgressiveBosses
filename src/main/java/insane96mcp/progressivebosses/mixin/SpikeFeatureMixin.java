@@ -24,7 +24,7 @@ public abstract class SpikeFeatureMixin extends Feature<SpikeConfiguration> {
 
 	@Inject(method = "placeSpike", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/feature/SpikeFeature;setBlock(Lnet/minecraft/world/level/LevelWriter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V", ordinal = 2, shift = At.Shift.AFTER))
 	public void onTryPlaceBars(ServerLevelAccessor level, RandomSource random, SpikeConfiguration config, SpikeFeature.EndSpike spike, CallbackInfo ci, @Local(name = "k") int x, @Local(name = "l") int z, @Local(name = "i1") int y, @Local(name = "flag") boolean isSideX, @Local(name = "flag1") boolean isSideZ) {
-		if (!insane96mcp.insanelib.base.Feature.isEnabled(DragonFeature.class) || !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return;
 		if (y == 0 && isSideX && isSideZ) //So if lower corner
 			this.setBlock(level, new BlockPos(spike.getCenterX() + x, spike.getHeight() + y - 1, spike.getCenterZ() + z), Blocks.OBSIDIAN.defaultBlockState());

@@ -88,6 +88,10 @@ public class DragonFeature extends Feature {
         super(module, enabledByDefault, canBeDisabled);
     }
 
+    public static boolean areFixesEnabled() {
+        return Feature.isEnabled(DragonFeature.class) && enableFixes;
+    }
+
     @SubscribeEvent
     public void levelTick(TickEvent.LevelTickEvent event) {
         if (!spawnDragon

@@ -7,7 +7,6 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import insane96mcp.insanelib.base.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.*;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
@@ -63,8 +62,7 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@ModifyExpressionValue(method = "<init>", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
     private float onHeadSize(float original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return 1.5f;
 	}
@@ -80,8 +78,7 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@Inject(method = "knockBack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;push(DDD)V", shift = At.Shift.AFTER))
 	private void progressivebosses$hurtMarkKnockbackedEntities(List<Entity> pEntities, CallbackInfo ci, @Local Entity entity) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return;
 		entity.hurtMarked = true;
 	}
@@ -98,8 +95,7 @@ public abstract class EnderDragonMixin extends Mob {
 	@Expression("entity instanceof LivingEntity")
 	@WrapOperation(method = "hurt(Ljava/util/List;)V", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
 	public boolean progressivebosses$headOnTryHurtEntity(Object object, Operation<Boolean> original, @Local Entity entity) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original.call(object);
 		boolean isLiving = original.call(object);
 		if (!isLiving)
@@ -115,8 +111,7 @@ public abstract class EnderDragonMixin extends Mob {
 	@Expression("((LivingEntity)entity).getLastHurtByMobTimestamp() < entity.tickCount - 2")
 	@ModifyExpressionValue(method = "knockBack", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
 	public boolean progressivebosses$changeHurtCooldown(boolean original, @Local Entity entity) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 
         return ((LivingEntity)entity).getLastHurtByMobTimestamp() < entity.tickCount - 10 || ((LivingEntity) entity).getLastHurtByMob() != this;
@@ -151,8 +146,7 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "doubleValue=0.01"))
 	public double onYDeltaSpeed(double original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return 0.075d;
 	}
@@ -211,56 +205,49 @@ public abstract class EnderDragonMixin extends Mob {
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=5.5", ordinal = 0))
 	public float neckOffsetX(float original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.neckOffsetXZ();
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=5.5", ordinal = 2))
 	public float neckOffsetZ(float original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.neckOffsetXZ();
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=1.5", ordinal = 3))
 	public float tailOffsetY(float original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.tailOffsetY();
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=6.5", ordinal = 0))
 	public float headOffsetX(float original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.headOffsetXZ();
 	}
 
 	@ModifyReturnValue(method = "getHeadYOffset", at = @At(value = "RETURN", ordinal = 1))
 	public float headOffsetY(float original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.headOffsetY(original);
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=6.5", ordinal = 2))
 	public float headOffsetZ(float original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.headOffsetXZ();
 	}
 
 	@ModifyReturnValue(method = "getHeadYOffset", at = @At(value = "RETURN", ordinal = 0))
 	public float headOffsetSittingY(float original) {
-		if (!Feature.isEnabled(DragonFeature.class)
-				|| !DragonFeature.enableFixes)
+		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.headOffsetSittingY();
 	}
