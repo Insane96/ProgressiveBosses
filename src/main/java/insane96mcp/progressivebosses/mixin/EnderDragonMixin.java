@@ -67,20 +67,20 @@ public abstract class EnderDragonMixin extends Mob {
 		return 1.5f;
 	}
 
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;reallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", shift = At.Shift.AFTER), method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z")
-	private void onReallyHurt(EnderDragonPart part, DamageSource damageSource, float amount, CallbackInfoReturnable<Boolean> callbackInfo) {
-		EnderDragon $this = (EnderDragon) (Object) this;
-		if (this.isDeadOrDying() && $this.getPhaseManager().getCurrentPhase().getPhase().equals(DragonCrystalRespawnPhase.getPhaseType())) {
-			$this.setHealth(1.0F);
-			$this.getPhaseManager().setPhase(EnderDragonPhase.DYING);
+	@WrapOperation(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;reallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"), method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z")
+	private boolean progressivebosses$preventDyingInPlaceWhenRespawningCrystals(EnderDragon instance, DamageSource pDamageSource, float pAmount, Operation<Boolean> original) {
+		if (this.isDeadOrDying() && instance.getPhaseManager().getCurrentPhase().getPhase().equals(DragonCrystalRespawnPhase.getPhaseType())) {
+			instance.setHealth(1.0F);
+			instance.getPhaseManager().setPhase(EnderDragonPhase.DYING);
 		}
+		return original.call(instance, pDamageSource, pAmount);
 	}
 
-	@Inject(method = "knockBack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;push(DDD)V", shift = At.Shift.AFTER))
-	private void progressivebosses$hurtMarkKnockbackedEntities(List<Entity> pEntities, CallbackInfo ci, @Local Entity entity) {
-		if (!DragonFeature.areFixesEnabled())
-			return;
-		entity.hurtMarked = true;
+	@WrapOperation(method = "knockBack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;push(DDD)V"))
+	private void progressivebosses$hurtMarkKnockbackedEntities(Entity instance, double pX, double pY, double pZ, Operation<Void> original) {
+		original.call(instance, pX, pY, pZ);
+		if (DragonFeature.areFixesEnabled())
+			instance.hurtMarked = true;
 	}
 
 	@WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;knockBack(Ljava/util/List;)V"))

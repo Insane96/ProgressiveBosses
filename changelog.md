@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Hopefully fixed startup crash with Ender Trigon
+
 ## 4.3.6
 * Config has been updated. Config options may have been reset
 * Fixed wither roses not dropping
