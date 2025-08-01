@@ -21,6 +21,7 @@
   "progressivebosses.corrupted_soul_sand.corruption_level": "Corruption level: %d",
   "progressivebosses.corrupted_soul_sand.info": "Use it in the middle of the Wither summoning structure",
 
+  "entity.progressivebosses.wither": "Wither",
   "entity.progressivebosses.wither.0": "Wither",
   "entity.progressivebosses.wither.1": "Armored Wither",
   "entity.progressivebosses.wither.2": "Summoner Wither",

@@ -14,6 +14,7 @@
   "progressivebosses:command.summon_invalid_entity": "L'entità %s non è valida",
   "progressivebosses.corrupted_soul_sand.corruption_level": "Livello di corruzione: %d",
   "progressivebosses.corrupted_soul_sand.info": "Da utilizzare al centro della struttura di evocazione di Wither.",
+  "entity.progressivebosses.wither": "Wither",
   "entity.progressivebosses.wither.0": "Wither",
   "entity.progressivebosses.wither.1": "Wither corazzato",
   "entity.progressivebosses.wither.2": "Wither evocatore",
