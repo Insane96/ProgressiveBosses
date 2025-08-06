@@ -14,6 +14,7 @@ import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
 import insane96mcp.progressivebosses.network.NetworkHandler;
 import insane96mcp.progressivebosses.setup.*;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.DispenserBlock;
 import net.minecraftforge.common.MinecraftForge;
@@ -82,4 +83,12 @@ public class ProgressiveBosses {
 		event.put(PBEntities.WITHER.get(), PBWither.prepareAttributes().build());
 		event.put(PBEntities.WITHER_MINION.get(), WitherMinion.prepareAttributes().build());
 	}
+
+    public static ResourceLocation location(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
+    }
+
+    public static String lang(String path) {
+        return MOD_ID + "." + path;
+    }
 }

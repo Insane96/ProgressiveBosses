@@ -1,13 +1,16 @@
 package insane96mcp.progressivebosses.module.dragon.corruptedendcrystal;
 
+import insane96mcp.progressivebosses.ProgressiveBosses;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.EndCrystalItem;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -16,6 +19,8 @@ import net.minecraft.world.phys.AABB;
 import java.util.List;
 
 public class CorruptedEndCrystalItem extends EndCrystalItem {
+    static TagKey<Block> PLACEABLE_ON = TagKey.create(Registries.BLOCK, ProgressiveBosses.location("corrupted_end_crystal_placeable_on"));
+
     public CorruptedEndCrystalItem(Properties pProperties) {
         super(pProperties);
     }
@@ -27,7 +32,7 @@ public class CorruptedEndCrystalItem extends EndCrystalItem {
         Level level = pContext.getLevel();
         BlockPos clickedPos = pContext.getClickedPos();
         BlockState clickedState = level.getBlockState(clickedPos);
-        if (!clickedState.is(Blocks.OBSIDIAN) && !clickedState.is(Blocks.BEDROCK))
+        if (!clickedState.is(PLACEABLE_ON))
             return InteractionResult.FAIL;
 
         BlockPos aboveClickedPos = clickedPos.above();
