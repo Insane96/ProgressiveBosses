@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 4.3.7
 * Hopefully fixed startup crash with Ender Trigon
 * Fixed missing wither name in statistics
 * Corrupted end crystals can now be placed on Endergetic expansion's blocks
