@@ -45,6 +45,7 @@ import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -84,8 +85,9 @@ public class DragonFeature extends Feature {
     public static boolean spawnDragon = false;
     public static boolean preventAdvancement = false;
 
-    public DragonFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-        super(module, enabledByDefault, canBeDisabled);
+    public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+        super.init(module, enabledByDefault, canBeDisabled);
+        ProgressiveBosses.addClientPack("endergetic_integration", "Endergetic Expansion integration", () -> ModList.get().isLoaded("endergetic"));
     }
 
     public static boolean areFixesEnabled() {

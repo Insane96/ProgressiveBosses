@@ -14,6 +14,7 @@ import java.util.function.Supplier;
 public class ModLoadedPlugin implements IMixinConfigPlugin {
     private static final Map<String, Supplier<Boolean>> CONDITIONS = ImmutableMap.<String, Supplier<Boolean>>builder()
             .put("insane96mcp.progressivebosses.mixin.EndDragonFightPreventSpawnMixin", () -> LoadingModList.get().getModFileById("betterendisland") == null)
+            .put("insane96mcp.progressivebosses.mixin.EndDragonFightPreventSpawnEndergeticMixin", () -> LoadingModList.get().getModFileById("endergetic") != null)
             .build();
 
     @Override

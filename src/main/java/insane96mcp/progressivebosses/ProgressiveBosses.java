@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses;
 
+import insane96mcp.insanelib.util.IntegratedPack;
 import insane96mcp.progressivebosses.commands.PBCommand;
 import insane96mcp.progressivebosses.data.ComponentRegistry;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinitionReloadListener;
@@ -30,6 +31,8 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.util.function.BooleanSupplier;
 
 @Mod("progressivebosses")
 public class ProgressiveBosses {
@@ -83,6 +86,10 @@ public class ProgressiveBosses {
 		event.put(PBEntities.WITHER.get(), PBWither.prepareAttributes().build());
 		event.put(PBEntities.WITHER_MINION.get(), WitherMinion.prepareAttributes().build());
 	}
+
+    public static void addClientPack(String path, String description, BooleanSupplier enabled) {
+        IntegratedPack.addClientPack(MOD_ID, path, description, enabled);
+    }
 
     public static ResourceLocation location(String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);

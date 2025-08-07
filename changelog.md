@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Added better integration with Endergetic Expansion
+  * Added a resource pack to change the base of corrupted end crystals (you need to enable it manually)
+  * Fixed the dragon not getting yeeted
+
 ## 4.3.7
 * Hopefully fixed startup crash with Ender Trigon
 * Fixed missing wither name in statistics
