@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 4.3.8
 * Added better integration with Endergetic Expansion
   * Added a resource pack to change the base of corrupted end crystals (you need to enable it manually)
   * Fixed the dragon not getting yeeted
