@@ -1,5 +1,9 @@
 # Changelog
 
+## 4.3.9
+* Fixed startup crash with Ender Trigon
+  * The mods are still incompatible and some features from them will not work
+
 ## 4.3.8
 * Added better integration with Endergetic Expansion
   * Added a resource pack to change the base of corrupted end crystals (you need to enable it manually)

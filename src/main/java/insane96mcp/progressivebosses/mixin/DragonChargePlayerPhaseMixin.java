@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(DragonChargePlayerPhase.class)
+@Mixin(value = DragonChargePlayerPhase.class, priority = 1001)
 public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseInstance {
 
 	@Shadow public abstract EnderDragonPhase<DragonChargePlayerPhase> getPhase();
@@ -26,7 +26,7 @@ public abstract class DragonChargePlayerPhaseMixin extends AbstractDragonPhaseIn
 
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "intValue=10"))
 	public int progressivebosses$timeBeforeHoldingPattern(int original) {
-		return 30;
+		return 20;
 	}
 
 	@WrapOperation(method = "doServerTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;setPhase(Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhase;)V"))
