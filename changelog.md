@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Fixed advancements and added one to warn the player when the wither's about to explode
+* (Hopefully) Fixed vanilla wither not disappearing after replacing it with PB wither (still shows up for 1 tick)
+* Elder guardians from spawners are no longer affected by the Elder Guardian feature
+
 ## 4.3.8
 * Added better integration with Endergetic Expansion
   * Added a resource pack to change the base of corrupted end crystals (you need to enable it manually)

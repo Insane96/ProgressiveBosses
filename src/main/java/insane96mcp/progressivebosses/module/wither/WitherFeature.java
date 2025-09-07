@@ -4,6 +4,8 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.world.scheduled.ScheduledTasks;
+import insane96mcp.insanelib.world.scheduled.ScheduledTickTask;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBEntities;
@@ -39,8 +41,8 @@ public class WitherFeature extends Feature {
 	@Config(description = "If true, Wither can charge any entity and not just players.")
 	public static Boolean allowChargingNonPlayers = false;
 
-	public WitherFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-		super(module, enabledByDefault, canBeDisabled);
+	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super.init(module, enabledByDefault, canBeDisabled);
 	}
 
 	@SubscribeEvent
@@ -77,9 +79,13 @@ public class WitherFeature extends Feature {
 			event.getLevel().addFreshEntity(wither);
 		}
 		//Couldn't find a better way to discard it (still shows the vanilla boss bar for a second), as discard() doesn't work client-side
-		witherBoss.noPhysics = true;
-		witherBoss.move(MoverType.SELF, new Vec3(0, -2000, 0));
-		witherBoss.kill();
+        ScheduledTasks.schedule(new ScheduledTickTask(1) {
+            @Override
+            public void run() {
+                witherBoss.move(MoverType.SELF, new Vec3(0, -2000, 0));
+                witherBoss.discard();
+            }
+        });
 	}
 
 	@SubscribeEvent

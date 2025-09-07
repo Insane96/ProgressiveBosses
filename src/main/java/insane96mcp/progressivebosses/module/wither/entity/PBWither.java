@@ -453,6 +453,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             if (!this.level().isClientSide) {
                 dyingAnimationTicks--;
                 this.setDyingAnimationTicks(dyingAnimationTicks);
+                this.bossEvent.setProgress((dyingAnimationTicks - 4f) / 90f);
                 if (dyingAnimationTicks <= 3) {
                     float explosionRadius = this.stats.death.explosionPower;
                     //List<ItemEntity> droppedBlocks = new ArrayList<>();
@@ -835,7 +836,9 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             this.setHealth(0.01f);
             this.setDyingAnimationTicks(100);
             this.playSound(SoundEvents.WITHER_SPAWN, 4.0F, 0.75F);
+            this.setInvulnerable(true);
             this.deathDamageSource = damageSource;
+            this.level().getEntitiesOfClass(ServerPlayer.class, this.getBoundingBox().inflate(32d), e -> e instanceof ServerPlayer).forEach(serverPlayer -> serverPlayer.awardKillScore(this, 0, this.deathDamageSource));
         }
     }
 
