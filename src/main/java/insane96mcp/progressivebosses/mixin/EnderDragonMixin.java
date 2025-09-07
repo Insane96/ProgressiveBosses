@@ -35,7 +35,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 
-@Mixin(EnderDragon.class)
+@Mixin(value = EnderDragon.class, priority = 1001)
 public abstract class EnderDragonMixin extends Mob {
 
 	@Shadow public float oFlapTime;

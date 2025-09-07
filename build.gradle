@@ -91,8 +91,9 @@ dependencies {
     implementation fg.deobf("jarlib:areaeffectcloud3d:${aec3d_version}")
     annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
 
-    implementation fg.deobf("curse.maven:blueprint-382216:6408581")
-    implementation fg.deobf("curse.maven:endergetic-291509:6157658")
+    compileOnly fg.deobf("curse.maven:blueprint-382216:6408581")
+    compileOnly fg.deobf("curse.maven:endergetic-291509:6157658")
+    implementation fg.deobf("curse.maven:ender-trigon-662563:5388736")
 
     compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixinextras_version}"))
     implementation(jarJar("io.github.llamalad7:mixinextras-forge:${mixinextras_version}")) {
