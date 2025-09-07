@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 4.3.9
 * Fixed advancements and added one to warn the player when the wither's about to explode
 * (Hopefully) Fixed vanilla wither not disappearing after replacing it with PB wither (still shows up for 1 tick)
 * Elder guardians from spawners are no longer affected by the Elder Guardian feature
