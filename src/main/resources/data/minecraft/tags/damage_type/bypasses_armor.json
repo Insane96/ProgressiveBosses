@@ -1,7 +1,6 @@
 {
     "replace": false,
     "values": [
-        "progressivebosses:dragon_fireball",
-        "progressivebosses:wither_charge"
+        "progressivebosses:dragon_fireball"
     ]
 }

@@ -10,12 +10,12 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -32,6 +32,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.ForgeEventFactory;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,7 +44,7 @@ public class WitherChargeAttackGoal extends Goal {
 	private static float DEFAULT_DAMAGE = 8f;
 	private static int DEFAULT_TIME_TO_CHARGE = 50;
 
-	public static ResourceKey<DamageType> WITHER_CHARGE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_charge"));
+	public static ResourceKey<DamageType> WITHER_CHARGE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ProgressiveBosses.location("wither_charge"));
 
 	private final PBWither wither;
 	private Vec3 targetPos;
@@ -119,9 +120,11 @@ public class WitherChargeAttackGoal extends Goal {
 		for (Pair<ItemStack, BlockPos> pair : blocksToDrop) {
 			Block.popResource(this.wither.level(), pair.getSecond(), pair.getFirst());
 		}
+        pushedEntities.clear();
 	}
 
 	ObjectArrayList<Pair<ItemStack, BlockPos>> blocksToDrop = new ObjectArrayList<>();
+    List<Entity> pushedEntities = new ArrayList<>();
 
 	/**
 	 * Keep ticking a continuous task that has already been started
@@ -148,7 +151,7 @@ public class WitherChargeAttackGoal extends Goal {
 			if (this.blowUp) {
 				this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE);
 				((ServerLevel) this.wither.level()).sendParticles(ParticleTypes.EXPLOSION_EMITTER, this.wither.getX(), this.wither.getY(), this.wither.getZ(), 2, 0f, 0f, 0f, 1f);
-				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1f, 2f);
+				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1.5f, 2f).inflate(1.5f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
 				if (ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
 					blocks.forEach(blockPos -> {
@@ -162,7 +165,8 @@ public class WitherChargeAttackGoal extends Goal {
 						}
 					});
 				}
-				this.wither.level().getEntitiesOfClass(LivingEntity.class, this.wither.getBoundingBox().inflate(4f)).forEach(this::damageAndPush);
+                this.getEntitiesToPush(axisAlignedBB)
+                        .forEach(this::damageAndPush);
 				this.wither.stopCharging();
 				if (this.wither.stats.attack.barrage != null)
 					this.wither.initBarrage();
@@ -198,8 +202,7 @@ public class WitherChargeAttackGoal extends Goal {
 					this.wither.level().playSound(null, BlockPos.containing(this.targetPos), SoundEvents.WITHER_BREAK_BLOCK, SoundSource.HOSTILE, 1.0f, 0.75f);
 
 				axisAlignedBB = axisAlignedBB.inflate(1.5d);
-				this.wither.level()
-						.getEntitiesOfClass(LivingEntity.class, axisAlignedBB)
+				this.getEntitiesToPush(axisAlignedBB)
 						.forEach(this::damageAndPush);
 
 				double distance = this.targetPos.distanceToSqr(this.wither.position());
@@ -212,20 +215,24 @@ public class WitherChargeAttackGoal extends Goal {
 		}
 	}
 
+    private List<LivingEntity> getEntitiesToPush(AABB axisAlignedBB) {
+        return this.wither.level()
+                .getEntitiesOfClass(LivingEntity.class, axisAlignedBB, entity -> entity != this.wither && !pushedEntities.contains(entity));
+    }
+
 	private void damageAndPush(LivingEntity entity) {
-		if (entity == this.wither)
-			return;
 		entity.hurt(entity.damageSources().source(WITHER_CHARGE_DAMAGE_TYPE, this.wither), this.wither.stats.attack.charge == null ? 12f : WitherAttack.WitherCharge.getDamage(this.wither));
 		float d2 = (float) (entity.getX() - this.wither.getX());
 		float d3 = (float) (entity.getZ() - this.wither.getZ());
 		float d4 = Math.max(d2 * d2 + d3 * d3, 0.1f);
-		float horizontalPush = (float) (5f * (1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)));
-		float verticalPush = (float) (0.65f * (1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)));
+		float horizontalPush = (float) (25f * (1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)));
+		float verticalPush = (float) (3f * (1.0D - entity.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)));
 		if (entity instanceof ServerPlayer player && player.getAbilities().instabuild)
 			return;
 		entity.push(d2 / d4 * horizontalPush, verticalPush, d3 / d4 * horizontalPush);
 		if (entity instanceof Player player)
 			player.hurtMarked = true;
+        pushedEntities.add(entity);
 	}
 
 	@Override

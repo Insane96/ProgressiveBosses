@@ -1,5 +1,10 @@
 # Changelog
 
+## Upcoming
+* Entities are now only hit once when charged by wither
+* Wither charge damage no longer bypasses armor (and shields) so you can now block it
+  * But damage has been increased by 50%
+
 ## 4.3.9
 * Fixed advancements and added one to warn the player when the wither's about to explode
 * (Hopefully) Fixed vanilla wither not disappearing after replacing it with PB wither (still shows up for 1 tick)

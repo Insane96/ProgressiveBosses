@@ -24,17 +24,17 @@
                     "above_half_health": 0.075,
                     "below_half_health": 0.1
                 },
-                "damage": 10.0,
+                "damage": 15.0,
                 "time_to_charge": 40
             },
             "second_phase": {
-                "damage": 6.5,
+                "damage": 10,
                 "time_to_charge": 40,
                 "times": 3,
                 "tick_reduction": 10
             },
             "target_unseen": {
-                "damage": 6.5,
+                "damage": 10,
                 "time_to_charge": 40,
                 "seconds_unseen": 2,
                 "chance_per_second": 0.04
