@@ -5,14 +5,15 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.module.base.TagsFeature;
 import insane96mcp.insanelib.util.MCUtils;
+import insane96mcp.insanelib.util.ModNBTData;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStats;
 import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStatsReloadListener;
 import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
 import net.minecraft.resources.ResourceLocation;
@@ -22,6 +23,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -55,20 +57,25 @@ import java.util.Optional;
 
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian")
 public class ElderGuardianFeature extends Feature {
-	public static final String LVL = ProgressiveBosses.RESOURCE_PREFIX + "level";
-	public static final String PREVIOUSLY_NEAR_ELDER_GUARDIAN = ProgressiveBosses.RESOURCE_PREFIX + "previously_near_elder_guardian";
-	public static final String ADVENTURE_MESSAGE = ProgressiveBosses.RESOURCE_PREFIX + "adventure_message";
-	public static final String ELDER_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion_cooldown";
-	public static final String ELDER_MINION = ProgressiveBosses.RESOURCE_PREFIX + "elder_minion";
-	public static final String APPROACHING_ELDER_GUARDIAN = "elder_guardian.approach";
+	public static ResourceLocation LEVEL;
+	public static ResourceLocation PREVIOUSLY_NEAR_ELDER_GUARDIAN;
+	public static ResourceLocation ADVENTURE_MESSAGE;
+	public static ResourceLocation ELDER_MINION_COOLDOWN;
+	public static ResourceLocation ELDER_MINION;
+	public static String APPROACHING_ELDER_GUARDIAN = ProgressiveBosses.lang("elder_guardian.approach");
 	@Config(description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby. This also removes Mining Fatigue.")
 	public static Boolean adventure = true;
 
 	@Config(description = "The range from any Elder Guardian at which players get adventure mode. This range is doubled when YUNG's Better Ocean Monuments is installed.")
 	public static Double adventureRange = 48d;
 
-	public ElderGuardianFeature(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-		super(module, enabledByDefault, canBeDisabled);
+	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
+		super.init(module, enabledByDefault, canBeDisabled);
+        LEVEL = this.createDataKey("level");
+        PREVIOUSLY_NEAR_ELDER_GUARDIAN = this.createDataKey("previously_near_elder_guardian");
+        ADVENTURE_MESSAGE = this.createDataKey("adventure_message");
+        ELDER_MINION_COOLDOWN = this.createDataKey("elder_minion_cooldown");
+        ELDER_MINION = this.createDataKey("elder_minion");
 	}
 
 	@SubscribeEvent
@@ -83,22 +90,21 @@ public class ElderGuardianFeature extends Feature {
 		ServerPlayer serverPlayer = (ServerPlayer) event.player;
 		ServerLevel world = (ServerLevel) serverPlayer.level();
 
-		CompoundTag nbt = serverPlayer.getPersistentData();
-		boolean previouslyNearElderGuardian = nbt.getBoolean(PREVIOUSLY_NEAR_ELDER_GUARDIAN);
-		boolean adventureMessage = nbt.getBoolean(ADVENTURE_MESSAGE);
+		boolean previouslyNearElderGuardian = ModNBTData.get(serverPlayer, PREVIOUSLY_NEAR_ELDER_GUARDIAN, Boolean.class);
+		boolean adventureMessage = ModNBTData.get(serverPlayer, ADVENTURE_MESSAGE, Boolean.class);
 
 		float range = adventureRange.floatValue();
 		if (ModList.get().isLoaded("betteroceanmonuments"))
 			range *= 2f;
 		boolean nearElderGuardian = !world.getEntitiesOfClass(ElderGuardian.class, serverPlayer.getBoundingBox().inflate(range)).isEmpty();
-		nbt.putBoolean(PREVIOUSLY_NEAR_ELDER_GUARDIAN, nearElderGuardian);
+        ModNBTData.put(serverPlayer, PREVIOUSLY_NEAR_ELDER_GUARDIAN, nearElderGuardian);
 
 		if (serverPlayer.gameMode.getGameModeForPlayer() == GameType.SURVIVAL && nearElderGuardian) {
 			serverPlayer.gameMode.changeGameModeForPlayer(GameType.ADVENTURE);
 			serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.CHANGE_GAME_MODE, (float)GameType.ADVENTURE.getId()));
 			if (!adventureMessage) {
 				serverPlayer.sendSystemMessage(Component.translatable(APPROACHING_ELDER_GUARDIAN));
-				nbt.putBoolean(ADVENTURE_MESSAGE, true);
+				ModNBTData.put(serverPlayer, ADVENTURE_MESSAGE, true);
 			}
 		}
 		else if (serverPlayer.gameMode.getGameModeForPlayer() == GameType.ADVENTURE && !nearElderGuardian && previouslyNearElderGuardian) {
@@ -114,8 +120,7 @@ public class ElderGuardianFeature extends Feature {
 				|| !(event.getEntity() instanceof ServerPlayer serverPlayer))
 			return;
 
-		CompoundTag nbt = serverPlayer.getPersistentData();
-		boolean previouslyNearElderGuardian = nbt.getBoolean(PREVIOUSLY_NEAR_ELDER_GUARDIAN);
+		boolean previouslyNearElderGuardian = ModNBTData.get(serverPlayer, PREVIOUSLY_NEAR_ELDER_GUARDIAN, Boolean.class);
 
 		if (previouslyNearElderGuardian && serverPlayer.gameMode.getGameModeForPlayer() == GameType.ADVENTURE) {
 			serverPlayer.gameMode.changeGameModeForPlayer(GameType.SURVIVAL);
@@ -148,38 +153,41 @@ public class ElderGuardianFeature extends Feature {
 		if (elderGuardiansNearby.isEmpty())
 			return;
 
-		CompoundTag nbt = elderGuardian.getPersistentData();
-		int newLvl = nbt.getInt(LVL) + 1;
+		int newLvl = getGuardianLvl(elderGuardian) + 1;
 
 		elderGuardian.playSound(SoundEvents.ELDER_GUARDIAN_CURSE, 2f, 0.5f);
 		for (Entity elderGuardianNearby : elderGuardiansNearby) {
-			elderGuardianNearby.getPersistentData().putInt(LVL, newLvl);
+			ModNBTData.put(elderGuardianNearby, LEVEL, newLvl);
 			updateHealth((ElderGuardian) elderGuardianNearby);
 			updateExperienceDropped(elderGuardian);
 		}
 	}
 
+    public static byte getGuardianLvl(ElderGuardian elderGuardian) {
+        return ModNBTData.get(elderGuardian, LEVEL, Byte.class);
+    }
+
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void onSpawn(EntityJoinLevelEvent event) {
 		if (event.getLevel().isClientSide
 				|| !this.isEnabled()
-				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
+				|| !(event.getEntity() instanceof ElderGuardian elderGuardian)
+                || TagsFeature.isSpawnType(MobSpawnType.SPAWNER, elderGuardian))
 			return;
 
-		CompoundTag nbt = elderGuardian.getPersistentData();
-		if (nbt.contains(LVL))
+		if (ModNBTData.contains(elderGuardian, LEVEL))
 			return;
 
-		nbt.putInt(LVL, 0);
+		ModNBTData.put(elderGuardian, LEVEL, 0);
 		Optional<ElderGuardianStats> oElderGuardianStats = getStats(elderGuardian);
 		updateHealth(elderGuardian);
 		updateExperienceDropped(elderGuardian);
-		if (!nbt.contains(ELDER_MINION_COOLDOWN) && oElderGuardianStats.isPresent())
-			nbt.putInt(ELDER_MINION_COOLDOWN, oElderGuardianStats.get().minionCooldown);
+		if (!ModNBTData.contains(elderGuardian, ELDER_MINION_COOLDOWN) && oElderGuardianStats.isPresent())
+			ModNBTData.put(elderGuardian, ELDER_MINION_COOLDOWN, oElderGuardianStats.get().minionCooldown);
 	}
 
 	public static Optional<ElderGuardianStats> getStats(ElderGuardian elderGuardian) {
-		int lvl = elderGuardian.getPersistentData().getInt(LVL);
+		int lvl = getGuardianLvl(elderGuardian);
 		if (!ElderGuardianStatsReloadListener.STATS_MAP.containsKey(lvl))
 			return Optional.empty();
 		return Optional.of(ElderGuardianStatsReloadListener.STATS_MAP.get(lvl));
@@ -230,19 +238,17 @@ public class ElderGuardianFeature extends Feature {
 
 		Level world = event.getEntity().level();
 
-		CompoundTag elderGuardianTags = elderGuardian.getPersistentData();
-
 		if (elderGuardian.getHealth() <= 0)
 			return;
-		int cooldown = elderGuardianTags.getInt(ELDER_MINION_COOLDOWN);
+		int cooldown = ModNBTData.get(elderGuardian, ELDER_MINION_COOLDOWN, Integer.class);
 		if (cooldown > 0) {
-			elderGuardianTags.putInt(ELDER_MINION_COOLDOWN, cooldown - 1);
+			ModNBTData.put(elderGuardian, ELDER_MINION_COOLDOWN, cooldown - 1);
 			return;
 		}
 		Optional<ElderGuardianStats> oElderGuardianStats = getStats(elderGuardian);
 		if (oElderGuardianStats.isEmpty())
 			return;
-		elderGuardianTags.putInt(ELDER_MINION_COOLDOWN, oElderGuardianStats.get().minionCooldown);
+		ModNBTData.put(elderGuardian, ELDER_MINION_COOLDOWN, oElderGuardianStats.get().minionCooldown);
 
 		//If there is no player in a radius from the elderGuardian, don't spawn minions
 		int radius = 24;
@@ -264,14 +270,13 @@ public class ElderGuardianFeature extends Feature {
 
 	public static void summonMinion(Level world, Vec3 pos) {
 		Guardian elderMinion = new Guardian(EntityType.GUARDIAN, world);
-		CompoundTag minionTags = elderMinion.getPersistentData();
+        //TODO Fix
+		//minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 
-		minionTags.putBoolean("mobspropertiesrandomness:processed", true);
-
-		minionTags.putBoolean(ElderGuardianFeature.ELDER_MINION, true);
+		ModNBTData.put(elderMinion, ElderGuardianFeature.ELDER_MINION, true);
 
 		elderMinion.setPos(pos.x, pos.y, pos.z);
-		elderMinion.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ResourceLocation.parse(ELDER_MINION))));
+		elderMinion.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ELDER_MINION)));
 		elderMinion.lootTable = BuiltInLootTables.EMPTY;
 
 		MCUtils.applyModifier(elderMinion, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);

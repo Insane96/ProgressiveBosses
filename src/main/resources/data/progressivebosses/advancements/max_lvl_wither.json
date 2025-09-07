@@ -1,10 +1,14 @@
 {
     "display": {
         "icon": {
-            "item": "progressivebosses:nether_star_shard"
+            "item": "progressivebosses:corrupted_soul_sand"
         },
-        "title": "Hard Withering",
-        "description": "Kill a maximum difficulty Wither",
+        "title": {
+            "translate": "advancement.progressivebosses.max_lvl_wither.title"
+        },
+        "description": {
+            "translate": "advancement.progressivebosses.max_lvl_wither.description"
+        },
         "frame": "challenge",
         "show_toast": true,
         "announce_to_chat": true,
@@ -25,7 +29,7 @@
                         "condition": "minecraft:entity_properties",
                         "entity": "this",
                         "predicate": {
-                            "type": "minecraft:wither"
+                            "type": "progressivebosses:wither"
                         }
                     }
                 ]

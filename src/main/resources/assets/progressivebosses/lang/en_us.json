@@ -32,5 +32,12 @@
   "item.progressivebosses.corrupted_end_crystal": "Corrupted End Crystal",
 
   "elder_guardian.approach": "Seems like you're approaching an Ocean Monument, until you defeat all the Elder guardians ... or unless you flee ... you'll not be able to break blocks.",
-  "tooltip.progressivebosses.dragon_egg": "You may get more than one by slaying Dragons"
+  "tooltip.progressivebosses.dragon_egg": "You may get more than one by slaying Dragons",
+
+    "advancement.progressivebosses.wither_death.title": "It's gonna exploooode",
+    "advancement.progressivebosses.wither_death.description": "Kill a Wither and flee before it explodes",
+    "advancement.progressivebosses.max_lvl_wither.title": "Ultimate Wither",
+    "advancement.progressivebosses.max_lvl_wither.description": "Kill the strongest Wither",
+    "advancement.progressivebosses.max_lvl_dragon.title": "Corrupted Dragon",
+    "advancement.progressivebosses.max_lvl_dragon.description": "Kill the strongest Dragon"
 }

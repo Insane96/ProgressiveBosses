@@ -5,6 +5,7 @@ import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
 import insane96mcp.insanelib.util.MCUtils;
+import insane96mcp.insanelib.util.ModNBTData;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
@@ -56,7 +57,8 @@ import java.util.UUID;
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class DragonFeature extends Feature {
     public static final TagKey<Item> DRAGON_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "dragon_invulnerable"));
-    public static final String LEVEL = ProgressiveBosses.RESOURCE_PREFIX + "level";
+    public static ResourceLocation LEVEL;
+    public static ResourceLocation PROCESSED;
 
     public static final UUID KNOCKBACK_REDUCTION_UUID = UUID.fromString("db8b06d6-791d-4f3b-867d-35e384af9eab");
 
@@ -88,6 +90,8 @@ public class DragonFeature extends Feature {
     public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         super.init(module, enabledByDefault, canBeDisabled);
         ProgressiveBosses.addClientPack("endergetic_integration", "Endergetic Expansion integration", () -> ModList.get().isLoaded("endergetic"));
+        LEVEL = this.createDataKey("level");
+        PROCESSED = this.createDataKey("processed");
     }
 
     public static boolean areFixesEnabled() {
@@ -138,7 +142,7 @@ public class DragonFeature extends Feature {
 
     public void onDragonJoinLevel(EntityJoinLevelEvent event) {
         if (!(event.getEntity() instanceof EnderDragon dragon)
-                || dragon.getPersistentData().contains(ProgressiveBosses.RESOURCE_PREFIX + "processed"))
+                || ModNBTData.get(dragon, PROCESSED, Boolean.class))
             return;
 
         if (enableFixes) {
@@ -146,17 +150,19 @@ public class DragonFeature extends Feature {
             MCUtils.applyModifier(dragon, Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_REDUCTION_UUID, "Dragon no knockback", 1.0f, AttributeModifier.Operation.ADDITION, true);
         }
 
-        if (!dragon.getPersistentData().contains(LEVEL))
-            dragon.getPersistentData().putByte(LEVEL, dragonLvl);
+        if (!ModNBTData.contains(dragon, LEVEL))
+            ModNBTData.put(dragon, LEVEL, dragonLvl);
+        else
+            dragonLvl = ModNBTData.get(dragon, LEVEL, Byte.class);
 
         DragonDefinition stats = getDragonDefinition(dragon).orElse(null);
         if (stats == null) {
-            LogHelper.warn("Failed to get Dragon Stats for level %s", dragon.getPersistentData().getByte(LEVEL));
+            LogHelper.warn("Failed to get Dragon Stats for level %s", dragonLvl);
             return;
         }
         stats.apply(dragon);
-        dragon.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(dragon.getType())) + "." + dragon.getPersistentData().getByte(LEVEL)));
-        dragon.getPersistentData().putBoolean(ProgressiveBosses.RESOURCE_PREFIX + "processed", true);
+        dragon.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(dragon.getType())) + "." + dragonLvl));
+        ModNBTData.put(dragon, PROCESSED, true);
     }
 
     @SubscribeEvent
@@ -276,12 +282,15 @@ public class DragonFeature extends Feature {
     }
 
     public static Optional<DragonDefinition> getDragonDefinition(EnderDragon dragon) {
-        byte lvl = dragon.getPersistentData().getByte(LEVEL);
-        return getDragonDefinition(lvl);
+        return getDragonDefinition(getDragonLvl(dragon));
     }
 
     public static Optional<DragonDefinition> getDragonDefinition(byte lvl) {
         return Optional.ofNullable(DragonDefinitionReloadListener.STATS_MAP.get(lvl));
+    }
+
+    public static byte getDragonLvl(EnderDragon dragon) {
+        return ModNBTData.get(dragon, LEVEL, Byte.class);
     }
 
     public static byte getDragonLvl(List<EndCrystal> respawningCrystals) {

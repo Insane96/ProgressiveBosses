@@ -3,12 +3,14 @@ package insane96mcp.progressivebosses.loot;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
+import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import insane96mcp.progressivebosses.module.elderguardian.ElderGuardianFeature;
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBLoot;
-import insane96mcp.progressivebosses.setup.Strings;
-import insane96mcp.progressivebosses.utils.LvlHelper;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
+import net.minecraft.world.entity.monster.ElderGuardian;
 import net.minecraft.world.level.storage.loot.IntRange;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
@@ -32,14 +34,17 @@ public class LvlCondition implements LootItemCondition {
     @Override
     public boolean test(LootContext lootContext) {
         Entity entity = lootContext.getParamOrNull(this.entityTarget.getParam());
-        if (!(entity instanceof Mob mob))
+        int lvl = -1;
+        if (entity instanceof PBWither wither)
+            lvl = wither.getLvl();
+        else if (entity instanceof EnderDragon dragon)
+            lvl = DragonFeature.getDragonLvl(dragon);
+        else if (entity instanceof ElderGuardian elderGuardian)
+            lvl = ElderGuardianFeature.getGuardianLvl(elderGuardian);
+        if (lvl == -1)
             return false;
 
-        if (!mob.getPersistentData().contains(Strings.Tags.DIFFICULTY))
-            return false;
-
-        float lvl = LvlHelper.getLvl(mob);
-        return this.lvl.test(lootContext, (int) lvl);
+        return this.lvl.test(lootContext, lvl);
     }
 
     public static LootItemCondition.Builder withLvl(LootContext.EntityTarget entityTarget, IntRange lvl) {
