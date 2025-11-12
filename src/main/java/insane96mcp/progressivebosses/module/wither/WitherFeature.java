@@ -4,8 +4,6 @@ import insane96mcp.insanelib.base.Feature;
 import insane96mcp.insanelib.base.LoadFeature;
 import insane96mcp.insanelib.base.Module;
 import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.world.scheduled.ScheduledTasks;
-import insane96mcp.insanelib.world.scheduled.ScheduledTickTask;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBEntities;
@@ -16,7 +14,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -25,7 +22,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.level.BlockEvent;
@@ -77,15 +73,8 @@ public class WitherFeature extends Feature {
 			}
 
 			event.getLevel().addFreshEntity(wither);
+            event.setCanceled(true);
 		}
-		//Couldn't find a better way to discard it (still shows the vanilla boss bar for a second), as discard() doesn't work client-side
-        ScheduledTasks.schedule(new ScheduledTickTask(1) {
-            @Override
-            public void run() {
-                witherBoss.move(MoverType.SELF, new Vec3(0, -2000, 0));
-                witherBoss.discard();
-            }
-        });
 	}
 
 	@SubscribeEvent

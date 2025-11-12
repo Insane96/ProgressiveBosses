@@ -1,5 +1,8 @@
 # Changelog
 
+## Upcoming
+* Wither no longer spawns and despawns 1 tick later
+
 ## 4.3.10
 * Entities are now only hit once when charged by wither
 * Wither charge damage no longer bypasses armor (and shields) so you can now block it
