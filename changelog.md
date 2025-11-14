@@ -2,6 +2,7 @@
 
 ## Upcoming
 * Wither no longer spawns and despawns 1 tick later
+* Lowered respawned crystals
 
 ## 4.3.10
 * Entities are now only hit once when charged by wither

@@ -153,7 +153,7 @@
             "min_respawn_chance_at_health": 0.6,
             "max_respawn_chance": 0.75,
             "max_respawn_chance_at_health": 0,
-            "respawned": 3,
+            "respawned": 2,
             "phantom_count": 3,
             "phantom_size": 5,
             "caged_chance": 0.75,
