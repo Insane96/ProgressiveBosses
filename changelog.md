@@ -14,7 +14,7 @@
 * (Hopefully) Fixed vanilla wither not disappearing after replacing it with PB wither (still shows up for 1 tick)
 * Elder guardians from spawners are no longer affected by the Elder Guardian feature
 * Fixed startup crash with Ender Trigon
-    * The mods are still incompatible and some features from them will not work
+  * The mods are still incompatible and some features from them will not work
 
 ## 4.3.8
 * Added better integration with Endergetic Expansion
