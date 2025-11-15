@@ -1,6 +1,6 @@
 # Changelog
 
-## Upcoming
+## 4.3.11
 * Wither no longer spawns and despawns 1 tick later
 * Lowered respawned crystals
 
