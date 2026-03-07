@@ -1,5 +1,8 @@
 # Changelog
 
+## 4.3.12
+* Fixed missing translation key for approaching elder guardian monument
+
 ## 4.3.11
 * Wither no longer spawns and despawns 1 tick later
 * Lowered respawned crystals
