@@ -2,6 +2,7 @@
 
 Source: `C:\Users\delvi\source\repos\Insane96\ProgressiveBosses_1.20.1`  
 Target: this project (1.21.1 NeoForge)
+InsaneLib: `C:\Users\delvi\source\repos\Insane96\InsaneLib`
 
 ---
 
@@ -172,13 +173,13 @@ These are needed by all modules, not just dragon.
 | File | Notes |
 |------|-------|
 | `data/ComponentRegistry.java` | Gson type registry; if replacing with self-registering components (see enhancements), rethink this |
-| `data/Difficulty.java` | Data class; no change |
-| `module/ILvl.java` | Interface; no change |
+| `data/DifficultyValue.java` | Renamed from `Difficulty` — data class; no other change |
+| ~~`module/ILvl.java`~~ | **Dropped** — replace all `ILvl` usages with `LvlHelper.getLvl(entity)` / `LvlHelper.setLvl(entity, lvl)` |
 | `loot/LvlCondition.java` | Custom loot condition; `LootItemConditionType` registration may differ |
 | `loot/RandomChanceWithLvlCondition.java` | Same |
 | `loot/SetCountPerLvl.java` | Same |
-| `utils/LogHelper.java` | Simple wrapper; replace `LogManager` with `LogUtils` |
-| `utils/LvlHelper.java` | Utility class; no API dependencies |
+| ~~`utils/LogHelper.java`~~ | **Dropped** — all callers use `ProgressiveBosses.LOGGER` directly |
+| `utils/LvlHelper.java` | **Simplified** — no `ILvl` interface; just reads/writes `ModNBTData` with key `ProgressiveBosses.id("lvl")` (`LvlHelper.LEVEL_KEY`) |
 | `commands/PBCommand.java` | Command registration; `RegisterCommandsEvent` package change |
 
 ### Phase 2 — Registration stubs (items, entities, blocks)
