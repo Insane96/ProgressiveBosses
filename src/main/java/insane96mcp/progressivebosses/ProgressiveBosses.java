@@ -25,4 +25,8 @@ public class ProgressiveBosses {
     public static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
+
+    public static String lang(String path) {
+        return MOD_ID + "." + path;
+    }
 }
