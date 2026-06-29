@@ -1,101 +1,28 @@
 package insane96mcp.progressivebosses;
 
-import insane96mcp.insanelib.util.IntegratedPack;
-import insane96mcp.progressivebosses.commands.PBCommand;
-import insane96mcp.progressivebosses.data.ComponentRegistry;
-import insane96mcp.progressivebosses.module.dragon.data.DragonDefinitionReloadListener;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
-import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
-import insane96mcp.progressivebosses.module.dragon.phase.PBDragonHoldingPatternPhase;
-import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
-import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStatsReloadListener;
-import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
-import insane96mcp.progressivebosses.module.wither.dispenser.WitherSkullDispenseBehavior;
-import insane96mcp.progressivebosses.module.wither.entity.PBWither;
-import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
-import insane96mcp.progressivebosses.network.NetworkHandler;
-import insane96mcp.progressivebosses.setup.*;
+import com.mojang.logging.LogUtils;
+import insane96mcp.insanelib.setup.ILModConfig;
+import insane96mcp.progressivebosses.module.PBModules;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.DispenserBlock;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AddReloadListenerEvent;
-import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import org.slf4j.Logger;
 
-import java.util.function.BooleanSupplier;
-
-@Mod("progressivebosses")
+@Mod(ProgressiveBosses.MOD_ID)
 public class ProgressiveBosses {
+    public static final String MOD_ID = "progressivebosses";
+    public static final Logger LOGGER = LogUtils.getLogger();
 
-	public static final String MOD_ID = "progressivebosses";
-	public static final String RESOURCE_PREFIX = MOD_ID + ":";
+    public static ILModConfig CONFIG;
 
-	public static final Logger LOGGER = LogManager.getLogger();
-
-	public ProgressiveBosses(FMLJavaModLoadingContext modContext) {
-		modContext.registerConfig(ModConfig.Type.COMMON, Config.COMMON_SPEC);
-		MinecraftForge.EVENT_BUS.register(this);
-		final IEventBus modEventBus = modContext.getModEventBus();
-		modEventBus.addListener(ClientSetup::registerEntityRenderers);
-		modEventBus.addListener(ClientSetup::creativeTabsBuildContents);
-		modEventBus.addListener(this::commonSetup);
-		modEventBus.addListener(this::registerAttributes);
-		PBItems.REGISTRY.register(modEventBus);
-		PBEntities.REGISTRY.register(modEventBus);
-		PBBlocks.BLOCKS.register(modEventBus);
-		PBBlocks.BLOCK_ENTITY_TYPES.register(modEventBus);
-		PBLoot.LOOT_CONDITIONS.register(modEventBus);
-		PBLoot.LOOT_FUNCTION.register(modEventBus);
-
-		DragonCrystalRespawnPhase.init();
-		PBDragonStrafePlayerPhase.init();
-		PBDragonHoldingPatternPhase.init();
-		DragonBlastAttackPhase.init();
-
-		DispenserBlock.registerBehavior(Items.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());
-	}
-
-	@SubscribeEvent(priority = EventPriority.LOW)
-	public void onAddReloadListener(AddReloadListenerEvent event) {
-		event.addListener(DragonDefinitionReloadListener.INSTANCE);
-		event.addListener(WitherStatsReloadListener.INSTANCE);
-		event.addListener(ElderGuardianStatsReloadListener.INSTANCE);
-	}
-
-	private void commonSetup(final FMLCommonSetupEvent event) {
-		NetworkHandler.init();
-		ComponentRegistry.init();
-	}
-
-	@SubscribeEvent
-	public void registerCommands(RegisterCommandsEvent event) {
-		PBCommand.register(event.getDispatcher());
-	}
-
-	public void registerAttributes(EntityAttributeCreationEvent event) {
-		event.put(PBEntities.WITHER.get(), PBWither.prepareAttributes().build());
-		event.put(PBEntities.WITHER_MINION.get(), WitherMinion.prepareAttributes().build());
-	}
-
-    public static void addClientPack(String path, String description, BooleanSupplier enabled) {
-        IntegratedPack.addClientPack(MOD_ID, path, description, enabled);
+    public ProgressiveBosses(IEventBus eventBus, ModContainer modContainer) {
+        CONFIG = new ILModConfig(MOD_ID, ModConfig.Type.COMMON, eventBus, PBModules::init, ProgressiveBosses.class.getClassLoader());
+        modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec);
     }
 
-    public static ResourceLocation location(String path) {
+    public static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-    }
-
-    public static String lang(String path) {
-        return MOD_ID + "." + path;
     }
 }

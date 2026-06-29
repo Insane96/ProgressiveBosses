@@ -1,1 +1,0 @@
-execute as @e[type=progressivebosses:wither] run data modify entity @s Health set value 251

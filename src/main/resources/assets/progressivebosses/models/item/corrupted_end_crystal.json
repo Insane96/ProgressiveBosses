@@ -1,6 +1,0 @@
-{
-  "parent": "item/generated",
-  "textures": {
-    "layer0": "progressivebosses:item/corrupted_end_crystal"
-  }
-}

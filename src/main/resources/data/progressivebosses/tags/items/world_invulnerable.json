@@ -1,7 +1,0 @@
-{
-    "replace": false,
-    "values": [
-        "minecraft:nether_star",
-        "progressivebosses:nether_star_shard"
-    ]
-}
