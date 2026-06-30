@@ -9,10 +9,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
 public class PBWitherRenderer extends MobRenderer<PBWither, PBWitherModel<PBWither>> {
-    private static final ResourceLocation WITHER_CHARGING_LOCATION = new ResourceLocation(ProgressiveBosses.MOD_ID, "textures/entity/wither/wither_charge.png");
-    private static final ResourceLocation WITHER_INVULNERABLE_LOCATION = new ResourceLocation("textures/entity/wither/wither_invulnerable.png");
-    private static final ResourceLocation WITHER_DYING_LOCATION = new ResourceLocation("textures/entity/wither/wither_dying.png");
-    private static final ResourceLocation WITHER_LOCATION = new ResourceLocation("textures/entity/wither/wither.png");
+    private static final ResourceLocation WITHER_CHARGING_LOCATION = ProgressiveBosses.id("textures/entity/wither/wither_charge.png");
+    private static final ResourceLocation WITHER_INVULNERABLE_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/wither/wither_invulnerable.png");
+    private static final ResourceLocation WITHER_DYING_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/wither/wither_dying.png");
+    private static final ResourceLocation WITHER_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/wither/wither.png");
 
     public PBWitherRenderer(EntityRendererProvider.Context context) {
         super(context, new PBWitherModel<>(context.bakeLayer(ModelLayers.WITHER)), 1.0F);

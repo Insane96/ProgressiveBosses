@@ -61,7 +61,7 @@ public class WitherMinionStats {
         int radius = 48;
         BlockPos pos1 = wither.blockPosition().offset(-radius, -radius, -radius);
         BlockPos pos2 = wither.blockPosition().offset(radius, radius, radius);
-        AABB bb = new AABB(pos1, pos2);
+        AABB bb = AABB.encapsulatingFullBlocks(pos1, pos2);
         List<ServerPlayer> players = wither.level().getEntitiesOfClass(ServerPlayer.class, bb);
 
         if (!force && players.isEmpty())

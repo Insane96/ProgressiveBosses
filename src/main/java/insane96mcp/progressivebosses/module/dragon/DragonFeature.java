@@ -56,6 +56,7 @@ import java.util.UUID;
 
 @LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
 public class DragonFeature extends Feature {
+    //TODO data gen
     public static final TagKey<Item> DRAGON_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "dragon_invulnerable"));
     public static ResourceLocation LEVEL;
     public static ResourceLocation PROCESSED;

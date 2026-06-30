@@ -30,7 +30,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
+import net.neoforged.neoforge.event.EventHooks;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -44,7 +44,7 @@ public class WitherChargeAttackGoal extends Goal {
 	private static float DEFAULT_DAMAGE = 8f;
 	private static int DEFAULT_TIME_TO_CHARGE = 50;
 
-	public static ResourceKey<DamageType> WITHER_CHARGE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ProgressiveBosses.location("wither_charge"));
+	public static ResourceKey<DamageType> WITHER_CHARGE_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ProgressiveBosses.id("wither_charge"));
 
 	private final PBWither wither;
 	private Vec3 targetPos;
@@ -149,15 +149,15 @@ public class WitherChargeAttackGoal extends Goal {
 		}
 		else {
 			if (this.blowUp) {
-				this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE);
+				this.wither.level().playSound(null, this.wither.blockPosition(), SoundEvents.GENERIC_EXPLODE.value(), SoundSource.HOSTILE);
 				((ServerLevel) this.wither.level()).sendParticles(ParticleTypes.EXPLOSION_EMITTER, this.wither.getX(), this.wither.getY(), this.wither.getZ(), 2, 0f, 0f, 0f, 1f);
 				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1.5f, 2f).inflate(1.5f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
-				if (ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
+				if (EventHooks.canEntityGrief(wither.level(), wither)) {
 					blocks.forEach(blockPos -> {
 						BlockState state = wither.level().getBlockState(blockPos);
 						if (this.wither.canDestroyBlock(blockPos, state)
-								&& ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
+								&& EventHooks.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
 							BlockEntity tileentity = state.hasBlockEntity() ? this.wither.level().getBlockEntity(blockPos) : null;
 							LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel)this.wither.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, tileentity);
 							state.getDrops(lootcontext$builder).forEach(itemStack -> addBlockDrops(blocksToDrop, itemStack, blockPos));
@@ -184,13 +184,13 @@ public class WitherChargeAttackGoal extends Goal {
 				AABB axisAlignedBB = this.wither.getBoundingBox().inflate(2f, 1.5f, 2f);
 				Stream<BlockPos> blocks = BlockPos.betweenClosedStream(axisAlignedBB);
 				AtomicBoolean hasBrokenBlocks = new AtomicBoolean(false);
-				if (ForgeEventFactory.getMobGriefingEvent(wither.level(), wither)) {
+				if (EventHooks.canEntityGrief(wither.level(), wither)) {
 					blocks.forEach(blockPos -> {
 						BlockState state = wither.level().getBlockState(blockPos);
 						if (this.wither.canDestroyBlock(blockPos, state)
-								&& ForgeEventFactory.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
-							BlockEntity tileentity = state.hasBlockEntity() ? this.wither.level().getBlockEntity(blockPos) : null;
-							LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel)this.wither.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, tileentity);
+								&& EventHooks.onEntityDestroyBlock(wither, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
+							BlockEntity tileEntity = state.hasBlockEntity() ? this.wither.level().getBlockEntity(blockPos) : null;
+							LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel)this.wither.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, tileEntity);
 							state.getDrops(lootcontext$builder).forEach(itemStack -> addBlockDrops(blocksToDrop, itemStack, blockPos));
 							wither.level().setBlockAndUpdate(blockPos, Blocks.AIR.defaultBlockState());
 							hasBrokenBlocks.set(true);

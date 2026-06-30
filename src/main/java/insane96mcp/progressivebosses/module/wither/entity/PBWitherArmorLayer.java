@@ -9,7 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public class PBWitherArmorLayer extends EnergySwirlLayer<PBWither, PBWitherModel<PBWither>> {
-    private static final ResourceLocation WITHER_ARMOR_LOCATION = new ResourceLocation("textures/entity/wither/wither_armor.png");
+    private static final ResourceLocation WITHER_ARMOR_LOCATION = ResourceLocation.withDefaultNamespace("textures/entity/wither/wither_armor.png");
     private final PBWitherModel<PBWither> model;
     public PBWitherArmorLayer(RenderLayerParent<PBWither, PBWitherModel<PBWither>> pRenderer, EntityModelSet pModelSet) {
         super(pRenderer);

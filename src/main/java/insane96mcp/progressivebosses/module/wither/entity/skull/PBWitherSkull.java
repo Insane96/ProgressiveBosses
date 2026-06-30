@@ -9,7 +9,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
@@ -22,15 +22,18 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.event.EventHooks;
 
 public class PBWitherSkull extends AbstractHurtingProjectile {
-    static ResourceKey<DamageType> DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_skull"));
-    static final TagKey<EntityType<?>> NO_WITHER_ROSE = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "no_wither_rose"));
+    static ResourceKey<DamageType> DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ProgressiveBosses.id("wither_skull"));
+    static final TagKey<EntityType<?>> NO_WITHER_ROSE = TagKey.create(Registries.ENTITY_TYPE, ProgressiveBosses.id("no_wither_rose"));
     LivingEntity originalOwner;
 
     private static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(PBWitherSkull.class, EntityDataSerializers.BOOLEAN);
@@ -39,11 +42,10 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
     }
 
     public PBWitherSkull(Level pLevel, LivingEntity pShooter, double pOffsetX, double pOffsetY, double pOffsetZ) {
-        super(PBEntities.WITHER_SKULL.get(), pShooter, pOffsetX, pOffsetY, pOffsetZ, pLevel);
+        super(PBEntities.WITHER_SKULL.get(), pShooter, new Vec3(pOffsetX, pOffsetY, pOffsetZ), pLevel);
         if (pShooter instanceof PBWither wither) {
-            this.xPower *= wither.stats.attack.skullSpeedMultiplier;
-            this.yPower *= wither.stats.attack.skullSpeedMultiplier;
-            this.zPower *= wither.stats.attack.skullSpeedMultiplier;
+            this.accelerationPower *= wither.stats.attack.skullSpeedMultiplier;
+            this.setDeltaMovement(this.getDeltaMovement().scale(wither.stats.attack.skullSpeedMultiplier));
         }
         this.originalOwner = pShooter;
     }
@@ -67,7 +69,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
      */
     protected void onHitEntity(EntityHitResult pResult) {
         super.onHitEntity(pResult);
-        if (!this.level().isClientSide) {
+        if (this.level() instanceof ServerLevel serverLevel) {
             Entity entityHit = pResult.getEntity();
             Entity owner = this.originalOwner;
             boolean hasHurtEntity;
@@ -75,10 +77,11 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
                 float damage = 8f;
                 if (owner instanceof PBWither wither)
                     damage = wither.stats.attack.skullDamage;
-                hasHurtEntity = entityHit.hurt(this.damageSources().source(DAMAGE_TYPE, this, livingOwner), damage);
+                DamageSource damageSource = this.damageSources().source(DAMAGE_TYPE, this, livingOwner);
+                hasHurtEntity = entityHit.hurt(damageSource, damage);
                 if (hasHurtEntity) {
                     if (entityHit.isAlive()) {
-                        this.doEnchantDamageEffects(livingOwner, entityHit);
+                        EnchantmentHelper.doPostAttackEffects(serverLevel, entityHit, damageSource);
                     }
                     else {
                         float heal = 5f;
@@ -96,7 +99,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
             if (hasHurtEntity && entityHit instanceof LivingEntity livingEntityHit) {
                 int duration = 10;
                 if (owner instanceof PBWither wither)
-                    duration = wither.stats.attack.effectDuration.getInt(this.level());
+                    duration = wither.stats.attack.effectDuration.getInt(serverLevel);
 
                 int amplifier = 1;
                 if (owner instanceof PBWither wither)
@@ -104,7 +107,6 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
 
                 livingEntityHit.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * duration, amplifier), this.getEffectSource());
             }
-
         }
     }
 
@@ -129,17 +131,16 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
      */
     public boolean hurt(DamageSource pSource, float pAmount) {
         if (this.isDangerous() && !(pSource.getDirectEntity() instanceof PBWitherSkull)) {
-            boolean ret = super.hurt(pSource, pAmount);
-            this.xPower *= 1.5f;
-            this.yPower *= 1.5f;
-            this.zPower *= 1.5f;
-            return ret;
+            this.accelerationPower *= 1.5;
+            this.setDeltaMovement(this.getDeltaMovement().scale(1.5));
+            return true;
         }
         return false;
     }
 
-    protected void defineSynchedData() {
-        this.entityData.define(DATA_DANGEROUS, false);
+    @Override
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        builder.define(DATA_DANGEROUS, false);
     }
 
     /**
@@ -164,7 +165,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
         if (entityHit.getType().is(NO_WITHER_ROSE) || !(entityHit instanceof LivingEntity))
             return;
         boolean hasPlacedRose = false;
-        if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this.originalOwner)) {
+        if (EventHooks.canEntityGrief(this.level(), this.originalOwner)) {
             BlockPos blockpos = entityHit.blockPosition();
             BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
             if (this.level().isEmptyBlock(blockpos) && blockstate.canSurvive(this.level(), blockpos)) {

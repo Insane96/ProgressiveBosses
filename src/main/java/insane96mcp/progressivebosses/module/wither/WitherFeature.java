@@ -1,10 +1,10 @@
 package insane96mcp.progressivebosses.module.wither;
 
-import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.LoadFeature;
-import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.core.feature.Feature;
+import insane96mcp.insanelib.core.feature.LoadFeature;
+import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.PBModules;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import net.minecraft.advancements.CriteriaTriggers;
@@ -22,24 +22,21 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.level.BlockEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.EventHooks;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 import java.util.List;
 
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "wither")
+@LoadFeature(module = PBModules.WITHER)
 public class WitherFeature extends Feature {
 	public static final TagKey<Item> WITHER_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "wither_invulnerable"));
 	public static final TagKey<Item> WORLD_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "world_invulnerable"));
 
 	@Config(description = "If true, Wither can charge any entity and not just players.")
 	public static Boolean allowChargingNonPlayers = false;
-
-	public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
-		super.init(module, enabledByDefault, canBeDisabled);
-	}
 
 	@SubscribeEvent
 	public void onSkullPlaced(BlockEvent.EntityPlaceEvent event) {
@@ -84,7 +81,7 @@ public class WitherFeature extends Feature {
 			return;
 
 		boolean hasPlacedRose = false;
-		if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(event.getEntity().level(), wither)) {
+		if (EventHooks.canEntityGrief(event.getEntity().level(), wither)) {
 			BlockPos blockpos = event.getEntity().blockPosition();
 			BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
 			if (event.getEntity().level().isEmptyBlock(blockpos) && blockstate.canSurvive(event.getEntity().level(), blockpos)) {

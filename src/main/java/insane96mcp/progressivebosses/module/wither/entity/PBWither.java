@@ -14,7 +14,9 @@ import insane96mcp.progressivebosses.module.wither.entity.skull.PBWitherSkull;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -28,6 +30,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 import net.minecraft.world.Difficulty;
@@ -62,10 +65,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.registries.ForgeRegistries;
-import org.jetbrains.annotations.Nullable;
+import net.neoforged.neoforge.event.EventHooks;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -90,7 +92,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     //private final int[] idleHeadUpdates = new int[2];
     public int destroyBlocksTick;
     public final ServerBossEvent bossEvent = (ServerBossEvent)(new ServerBossEvent(this.getDisplayName(), BossEvent.BossBarColor.PURPLE, BossEvent.BossBarOverlay.PROGRESS)).setDarkenScreen(true);
-    public static final Predicate<LivingEntity> NO_UNDEAD_SELECTOR = (livingEntity) -> livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
+    public static final Predicate<LivingEntity> NO_UNDEAD_SELECTOR = (livingEntity) -> !livingEntity.getType().is(EntityTypeTags.WITHER_FRIENDS) && livingEntity.attackable();
     private static final TargetingConditions TARGETING_CONDITIONS = TargetingConditions.forCombat().range(48d).selector(NO_UNDEAD_SELECTOR);
     private static final TargetingConditions TARGETING_CONDITIONS_NEEDS_HEALING = TargetingConditions.forCombat().range(48d).selector(LivingEntity::attackable);
     public int barrageTicks;
@@ -137,15 +139,15 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         Component component = this.getCustomName();
         if (component != null)
             return super.getName();
-        return Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(this.getType())) + "." + this.getLvl());
+        return Component.translatable(Util.makeDescriptionId("entity", BuiltInRegistries.ENTITY_TYPE.getKey(this.getType())) + "." + this.getLvl());
     }
 
     @SuppressWarnings("deprecation")
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData, @Nullable CompoundTag pDataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor pLevel, DifficultyInstance pDifficulty, MobSpawnType pReason, @Nullable SpawnGroupData pSpawnData) {
         this.stats.finalizeSpawn(this);
-        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData, pDataTag);
+        return super.finalizeSpawn(pLevel, pDifficulty, pReason, pSpawnData);
     }
 
     @Override
@@ -172,16 +174,16 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_TARGET_A, 0);
-        this.entityData.define(DATA_TARGET_B, 0);
-        this.entityData.define(DATA_TARGET_C, 0);
-        this.entityData.define(DATA_ID_INV, 0);
-        this.entityData.define(DATA_ID_DYING, 0);
-        this.entityData.define(LVL, 0);
-        this.entityData.define(CHARGING, 0);
-        this.entityData.define(BARRAGE_CHARGE_UP, 0);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_TARGET_A, 0);
+        builder.define(DATA_TARGET_B, 0);
+        builder.define(DATA_TARGET_C, 0);
+        builder.define(DATA_ID_INV, 0);
+        builder.define(DATA_ID_DYING, 0);
+        builder.define(LVL, 0);
+        builder.define(CHARGING, 0);
+        builder.define(BARRAGE_CHARGE_UP, 0);
     }
 
     private void updateStats(boolean wasPowered) {
@@ -191,10 +193,10 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             List<SerializableAttributeModifier> listToRemove = wasPowered ? this.stats.attributeModifiers.belowHalfHealth : this.stats.attributeModifiers.aboveHalfHealth;
             List<SerializableAttributeModifier> listToAdd = wasPowered ? this.stats.attributeModifiers.aboveHalfHealth : this.stats.attributeModifiers.belowHalfHealth;
             for (SerializableAttributeModifier modifier : listToRemove) {
-                this.getAttribute(modifier.attribute().get()).removeModifier(modifier.uuid());
+                this.getAttribute(modifier.attribute()).removeModifier(modifier.id());
             }
             for (SerializableAttributeModifier modifier : listToAdd) {
-                this.getAttribute(modifier.attribute().get()).addPermanentModifier(modifier.getModifier());
+                this.getAttribute(modifier.attribute()).addPermanentModifier(modifier.getModifier());
             }
         }
     }
@@ -438,13 +440,13 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
             double headZ = this.getHeadZ(l);
             this.level().addParticle(ParticleTypes.SMOKE, headX + this.random.nextGaussian() * 0.3f, headY + this.random.nextGaussian() * 0.3f, headZ + this.random.nextGaussian() * 0.3f, 0.0D, 0.0D, 0.0D);
             if (isPowered && this.level().random.nextInt(4) == 0) {
-                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, headX + this.random.nextGaussian() * 0.3f, headY + this.random.nextGaussian() * 0.3f, headZ + this.random.nextGaussian() * 0.3f, 0.7F, 0.7F, 0.5D);
+                this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0.7F, 0.7F, 0.5F), headX + this.random.nextGaussian() * 0.3f, headY + this.random.nextGaussian() * 0.3f, headZ + this.random.nextGaussian() * 0.3f, 0.0D, 0.0D, 0.0D);
             }
         }
 
         if (this.getInvulnerableTicks() > 0) {
             for(int i = 0; i < 3; ++i) {
-                this.level().addParticle(ParticleTypes.ENTITY_EFFECT, this.getX() + this.random.nextGaussian(), this.getY() + (double)(this.random.nextFloat() * 3.3F), this.getZ() + this.random.nextGaussian(), 0.7F, 0.7F, 0.9F);
+                this.level().addParticle(ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, 0.7F, 0.7F, 0.9F), this.getX() + this.random.nextGaussian(), this.getY() + (double)(this.random.nextFloat() * 3.3F), this.getZ() + this.random.nextGaussian(), 0.0D, 0.0D, 0.0D);
             }
         }
 
@@ -457,11 +459,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 if (dyingAnimationTicks <= 3) {
                     float explosionRadius = this.stats.death.explosionPower;
                     //List<ItemEntity> droppedBlocks = new ArrayList<>();
-                    if (dyingAnimationTicks == 3 && ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
+                    if (dyingAnimationTicks == 3 && EventHooks.canEntityGrief(this.level(), this)) {
                         BlockPos.betweenClosedStream(this.getBoundingBox().inflate(4f)).forEach(blockPos -> {
                             BlockState state = this.level().getBlockState(blockPos);
                             if (this.canDestroyBlock(blockPos, state)
-                                    && ForgeEventFactory.onEntityDestroyBlock(this, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
+                                    && EventHooks.onEntityDestroyBlock(this, blockPos, state) && !state.getBlock().equals(Blocks.AIR)) {
                                 BlockEntity blockEntity = state.hasBlockEntity() ? this.level().getBlockEntity(blockPos) : null;
                                 LootParams.Builder lootcontext$builder = (new LootParams.Builder((ServerLevel) this.level())).withParameter(LootContextParams.ORIGIN, Vec3.atCenterOf(blockPos)).withParameter(LootContextParams.TOOL, ItemStack.EMPTY).withOptionalParameter(LootContextParams.BLOCK_ENTITY, blockEntity).withParameter(LootContextParams.EXPLOSION_RADIUS, explosionRadius);
                                 //state.getDrops(lootcontext$builder).forEach(itemStack -> droppedBlocks.add(new ItemEntity(this.level(), blockPos.getX(), blockPos.getY(), blockPos.getZ(), itemStack)));
@@ -582,7 +584,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
             if (this.destroyBlocksTick > 0) {
                 --this.destroyBlocksTick;
-                if (this.destroyBlocksTick == 0 && net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this)) {
+                if (this.destroyBlocksTick == 0 && EventHooks.canEntityGrief(this.level(), this)) {
                     int y = Mth.floor(this.getY());
                     int x = Mth.floor(this.getX());
                     int z = Mth.floor(this.getZ());
@@ -596,7 +598,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                                 int zToBreak = z + z1;
                                 BlockPos blockPos = new BlockPos(xToBreak, yToBreak, zToBreak);
                                 BlockState blockState = this.level().getBlockState(blockPos);
-                                if (canDestroyBlock(blockPos, blockState) && net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(this, blockPos, blockState)) {
+                                if (canDestroyBlock(blockPos, blockState) && EventHooks.onEntityDestroyBlock(this, blockPos, blockState)) {
                                     hasDestroyedBlock = this.level().destroyBlock(blockPos, true, this) || hasDestroyedBlock;
                                 }
                             }
@@ -798,7 +800,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         }
 
         Entity damagingEntity = pSource.getEntity();
-        if (!(damagingEntity instanceof Player) && damagingEntity instanceof LivingEntity && ((LivingEntity) damagingEntity).getMobType() == this.getMobType()) {
+        if (!(damagingEntity instanceof Player) && damagingEntity instanceof LivingEntity && damagingEntity.getType().is(EntityTypeTags.UNDEAD)) {
             return false;
         }
         else {
@@ -855,7 +857,7 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     }
 
     public boolean canBeAffected(MobEffectInstance pPotioneffect) {
-        return pPotioneffect.getEffect().isInstantenous() && super.canBeAffected(pPotioneffect);
+        return pPotioneffect.getEffect().value().isInstantenous() && super.canBeAffected(pPotioneffect);
     }
 
     public float getHeadYRot(int pHead) {
@@ -899,10 +901,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
 
     public boolean isPowered() {
         return this.getHealth() <= this.getMaxHealth() / 2.0F;
-    }
-
-    public MobType getMobType() {
-        return MobType.UNDEAD;
     }
 
     protected boolean canRide(Entity pEntity) {

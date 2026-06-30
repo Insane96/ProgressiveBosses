@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.module.wither.block;
 
 import insane96mcp.progressivebosses.setup.PBBlocks;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,21 +18,20 @@ public class CorruptedSoulSandBlockEntity extends BlockEntity {
         return this.lvl;
     }
 
-    /**
-     * Get an NBT compound to sync to the client with SPacketChunkData, used for initial loading of the chunk or when
-     * many blocks change at once. This compound comes back to you clientside in {@link BlockEntity#handleUpdateTag(CompoundTag)}
-     */
-    public CompoundTag getUpdateTag() {
-        return this.saveWithoutMetadata();
+    @Override
+    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        return this.saveWithoutMetadata(registries);
     }
 
-    public void load(CompoundTag pTag) {
-        super.load(pTag);
+    @Override
+    public void loadAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.loadAdditional(pTag, registries);
         this.lvl = pTag.getInt("lvl");
     }
 
-    protected void saveAdditional(CompoundTag pTag) {
-        super.saveAdditional(pTag);
+    @Override
+    protected void saveAdditional(CompoundTag pTag, HolderLookup.Provider registries) {
+        super.saveAdditional(pTag, registries);
         pTag.putInt("lvl", this.lvl);
     }
 }

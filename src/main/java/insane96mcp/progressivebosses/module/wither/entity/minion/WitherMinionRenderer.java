@@ -8,12 +8,12 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.HumanoidMobRenderer;
 import net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 
 @OnlyIn(Dist.CLIENT)
 public class WitherMinionRenderer extends HumanoidMobRenderer<WitherMinion, WitherMinionModel<WitherMinion>> {
-	private static final ResourceLocation MINION_TEXTURES = new ResourceLocation(ProgressiveBosses.MOD_ID, "textures/entity/wither_minion.png");
+	private static final ResourceLocation MINION_TEXTURES = ProgressiveBosses.id("textures/entity/wither_minion.png");
 
 	public WitherMinionRenderer(EntityRendererProvider.Context context) {
 		this(context, ModelLayers.SKELETON, ModelLayers.SKELETON_INNER_ARMOR, ModelLayers.SKELETON_OUTER_ARMOR);

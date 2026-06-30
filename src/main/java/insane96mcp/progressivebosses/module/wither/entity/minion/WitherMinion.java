@@ -4,17 +4,20 @@ import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.mixin.accessor.AbstractSkeletonAccessor;
 import insane96mcp.progressivebosses.module.ILvl;
 import insane96mcp.progressivebosses.module.wither.ai.RangedMinionAttackGoal;
 import insane96mcp.progressivebosses.module.wither.data.WitherMinionStats;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.entity.PBWither;
 import insane96mcp.progressivebosses.setup.PBEntities;
-import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LogHelper;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
@@ -39,7 +42,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
+import net.neoforged.neoforge.common.NeoForgeMod;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -47,9 +50,11 @@ import java.util.function.Predicate;
 
 public class WitherMinion extends AbstractSkeleton implements ILvl {
 
+	public static final ResourceLocation MOVEMENT_SPEED_BONUS_ID = ProgressiveBosses.id("wither_minion_movement_speed_bonus");
+
 	protected final RangedMinionAttackGoal minionBowGoal = new RangedMinionAttackGoal(this, 1.0D, 40, 15.0F);
 
-	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && livingEntity.getMobType() != MobType.UNDEAD && livingEntity.attackable();
+	private static final Predicate<LivingEntity> NOT_UNDEAD = livingEntity -> livingEntity != null && !livingEntity.getType().is(EntityTypeTags.WITHER_FRIENDS) && livingEntity.attackable();
 
 	WitherMinionStats stats;
 	int lvl;
@@ -89,7 +94,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 			minion.setHealth((float) maxHealth.getValue());
 		}
 
-		MCUtils.applyModifier(minion, Attributes.MOVEMENT_SPEED, Strings.AttributeModifiers.MOVEMENT_SPEED_BONUS_UUID, ProgressiveBosses.RESOURCE_PREFIX + "movement_speed_bonus", minion.stats.bonusMovementSpeed.getValue(isPowered), AttributeModifier.Operation.MULTIPLY_BASE);
+		MCUtils.applyModifier(minion, Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED_BONUS_ID, minion.stats.bonusMovementSpeed.getValue(isPowered), AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 
 		level.addFreshEntity(minion);
 		return minion;
@@ -114,23 +119,24 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		float bowChance = this.stats.bowChance.getValue(this.summonedByPoweredWither);
 		ItemStack item;
 
+		var enchantments = this.level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
 		if (this.random.nextFloat() < bowChance) {
 			item = new ItemStack(Items.BOW);
 			int powerLevel = MathHelper.getAmountWithDecimalChance(this.getRandom(), this.stats.powerChance);
 			if (powerLevel > 0)
-				item.enchant(Enchantments.POWER_ARROWS, powerLevel);
+				item.enchant(enchantments.getOrThrow(Enchantments.POWER), powerLevel);
 			int punchLevel = MathHelper.getAmountWithDecimalChance(this.getRandom(), this.stats.punchChance);
 			if (punchLevel > 0)
-				item.enchant(Enchantments.PUNCH_ARROWS, punchLevel);
+				item.enchant(enchantments.getOrThrow(Enchantments.PUNCH), punchLevel);
 		}
 		else {
 			item = new ItemStack(Items.STONE_SWORD);
 			int sharpnessLevel = MathHelper.getAmountWithDecimalChance(this.getRandom(), this.stats.sharpnessChance);
 			if (sharpnessLevel > 0)
-				item.enchant(Enchantments.SHARPNESS, sharpnessLevel);
+				item.enchant(enchantments.getOrThrow(Enchantments.SHARPNESS), sharpnessLevel);
 			int knockbackLevel = MathHelper.getAmountWithDecimalChance(this.getRandom(), this.stats.knockbackChance);
 			if (knockbackLevel > 0)
-				item.enchant(Enchantments.KNOCKBACK, knockbackLevel);
+				item.enchant(enchantments.getOrThrow(Enchantments.KNOCKBACK), knockbackLevel);
 		}
 		this.setItemSlot(EquipmentSlot.MAINHAND, item);
 	}
@@ -200,8 +206,8 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 	}
 
 	@Nullable
-	public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn, @Nullable CompoundTag dataTag) {
-		SpawnGroupData spawnGroupData = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+	public SpawnGroupData finalizeSpawn(ServerLevelAccessor worldIn, DifficultyInstance difficultyIn, MobSpawnType reason, @Nullable SpawnGroupData spawnDataIn) {
+		SpawnGroupData spawnGroupData = super.finalizeSpawn(worldIn, difficultyIn, reason, spawnDataIn);
 		this.reassessWeaponGoal();
 		return spawnGroupData;
 	}
@@ -215,14 +221,15 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 
 	private void reassesMinionWeapon() {
 		if (!this.level().isClientSide) {
-			this.goalSelector.removeGoal(this.meleeGoal);
-			this.goalSelector.removeGoal(this.bowGoal);
+			AbstractSkeletonAccessor accessor = (AbstractSkeletonAccessor) (Object) this;
+			this.goalSelector.removeGoal(accessor.getMeleeGoal());
+			this.goalSelector.removeGoal(accessor.getBowGoal());
 			this.goalSelector.removeGoal(this.minionBowGoal);
 			ItemStack itemstack = this.getItemInHand(ProjectileUtil.getWeaponHoldingHand(this, item -> item instanceof net.minecraft.world.item.BowItem));
 			if (itemstack.is(Items.BOW)) {
 				this.goalSelector.addGoal(4, this.minionBowGoal);
 			} else {
-				this.goalSelector.addGoal(4, this.meleeGoal);
+				this.goalSelector.addGoal(4, accessor.getMeleeGoal());
 			}
 
 		}
@@ -270,7 +277,7 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 				.add(Attributes.FOLLOW_RANGE, 64.0d)
 				.add(Attributes.MOVEMENT_SPEED, 0.25d)
 				.add(Attributes.ATTACK_KNOCKBACK, 1d)
-				.add(ForgeMod.SWIM_SPEED.get(), 3d);
+				.add(NeoForgeMod.SWIM_SPEED, 3d);
 	}
 
 	public static class HelpWitherGoal extends Goal {

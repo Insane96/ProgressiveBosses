@@ -46,6 +46,7 @@ public class ProgressiveBosses {
     public static ILModConfig CONFIG;
 
     public ProgressiveBosses(IEventBus eventBus, ModContainer modContainer) {
+        //TODO One module only, with dragon, wither and guardian being features
         CONFIG = new ILModConfig(MOD_ID, ModConfig.Type.COMMON, eventBus, PBModules::init, ProgressiveBosses.class.getClassLoader());
         modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec);
         eventBus.addListener(ClientSetup::registerEntityRenderers);
