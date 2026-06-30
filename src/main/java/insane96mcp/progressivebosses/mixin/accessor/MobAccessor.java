@@ -10,4 +10,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface MobAccessor {
     @Accessor
     void setLootTable(ResourceKey<LootTable> lootTable);
+
+    @Accessor
+    void setXpReward(int xpReward);
 }

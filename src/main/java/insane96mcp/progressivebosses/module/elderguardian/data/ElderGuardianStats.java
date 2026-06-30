@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @JsonAdapter(ElderGuardianStats.Serializer.class)
 public class ElderGuardianStats {
-    private static final ResourceLocation VANILLA_LOOT_TABLE = new ResourceLocation("entities/elder_guardian");
+    private static final ResourceLocation VANILLA_LOOT_TABLE = ResourceLocation.withDefaultNamespace("entities/elder_guardian");
 
     public int level;
     public float bonusDamage;

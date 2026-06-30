@@ -1,17 +1,18 @@
 package insane96mcp.progressivebosses.module.elderguardian;
 
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
-import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.LoadFeature;
-import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.base.config.Config;
-import insane96mcp.insanelib.module.base.TagsFeature;
+import insane96mcp.insanelib.core.ModNBTData;
+import insane96mcp.insanelib.core.feature.Feature;
+import insane96mcp.insanelib.core.feature.LoadFeature;
+import insane96mcp.insanelib.core.feature.Module;
+import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.insanelib.util.MCUtils;
-import insane96mcp.insanelib.util.ModNBTData;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.mixin.accessor.ExplosionAccessor;
+import insane96mcp.progressivebosses.mixin.accessor.MobAccessor;
+import insane96mcp.progressivebosses.module.PBModules;
 import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStats;
 import insane96mcp.progressivebosses.module.elderguardian.data.ElderGuardianStatsReloadListener;
-import insane96mcp.progressivebosses.setup.Strings;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -39,24 +40,25 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.level.ExplosionEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
+import net.neoforged.neoforge.common.NeoForgeMod;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
+import net.neoforged.neoforge.event.level.ExplosionEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "elder_guardian")
+@LoadFeature(module = PBModules.ELDER_GUARDIAN)
 public class ElderGuardianFeature extends Feature {
+	public static final ResourceLocation ELDER_MINION_BONUS = ProgressiveBosses.id("elder_minion_bonus");
+
 	public static ResourceLocation LEVEL;
 	public static ResourceLocation PREVIOUSLY_NEAR_ELDER_GUARDIAN;
 	public static ResourceLocation ADVENTURE_MESSAGE;
@@ -79,37 +81,36 @@ public class ElderGuardianFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onPlayerTick(TickEvent.PlayerTickEvent event) {
-		if (event.player.level().isClientSide
-				|| !this.isEnabled()
+	public void onPlayerTick(PlayerTickEvent.Pre event) {
+		if (!this.isEnabled()
 				|| !adventure
-				|| event.player.tickCount % 20 != 0
-				|| !event.player.isAlive())
+				|| !(event.getEntity() instanceof ServerPlayer player)
+				|| (player.tickCount + player.getId()) % 20 != 0
+				|| !player.isAlive())
 			return;
 
-		ServerPlayer serverPlayer = (ServerPlayer) event.player;
-		ServerLevel world = (ServerLevel) serverPlayer.level();
+		ServerLevel world = (ServerLevel) player.level();
 
-		boolean previouslyNearElderGuardian = ModNBTData.get(serverPlayer, PREVIOUSLY_NEAR_ELDER_GUARDIAN, Boolean.class);
-		boolean adventureMessage = ModNBTData.get(serverPlayer, ADVENTURE_MESSAGE, Boolean.class);
+		boolean previouslyNearElderGuardian = ModNBTData.get(player, PREVIOUSLY_NEAR_ELDER_GUARDIAN, Boolean.class);
+		boolean adventureMessage = ModNBTData.get(player, ADVENTURE_MESSAGE, Boolean.class);
 
 		float range = adventureRange.floatValue();
 		if (ModList.get().isLoaded("betteroceanmonuments"))
 			range *= 2f;
-		boolean nearElderGuardian = !world.getEntitiesOfClass(ElderGuardian.class, serverPlayer.getBoundingBox().inflate(range)).isEmpty();
-        ModNBTData.put(serverPlayer, PREVIOUSLY_NEAR_ELDER_GUARDIAN, nearElderGuardian);
+		boolean nearElderGuardian = !world.getEntitiesOfClass(ElderGuardian.class, player.getBoundingBox().inflate(range)).isEmpty();
+        ModNBTData.put(player, PREVIOUSLY_NEAR_ELDER_GUARDIAN, nearElderGuardian);
 
-		if (serverPlayer.gameMode.getGameModeForPlayer() == GameType.SURVIVAL && nearElderGuardian) {
-			serverPlayer.gameMode.changeGameModeForPlayer(GameType.ADVENTURE);
-			serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.CHANGE_GAME_MODE, (float)GameType.ADVENTURE.getId()));
+		if (player.gameMode.getGameModeForPlayer() == GameType.SURVIVAL && nearElderGuardian) {
+			player.gameMode.changeGameModeForPlayer(GameType.ADVENTURE);
+			player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.CHANGE_GAME_MODE, (float)GameType.ADVENTURE.getId()));
 			if (!adventureMessage) {
-				serverPlayer.sendSystemMessage(Component.translatable(APPROACHING_ELDER_GUARDIAN));
-				ModNBTData.put(serverPlayer, ADVENTURE_MESSAGE, true);
+				player.sendSystemMessage(Component.translatable(APPROACHING_ELDER_GUARDIAN));
+				ModNBTData.put(player, ADVENTURE_MESSAGE, true);
 			}
 		}
-		else if (serverPlayer.gameMode.getGameModeForPlayer() == GameType.ADVENTURE && !nearElderGuardian && previouslyNearElderGuardian) {
-			serverPlayer.gameMode.changeGameModeForPlayer(GameType.SURVIVAL);
-			serverPlayer.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.CHANGE_GAME_MODE, (float)GameType.SURVIVAL.getId()));
+		else if (player.gameMode.getGameModeForPlayer() == GameType.ADVENTURE && !nearElderGuardian && previouslyNearElderGuardian) {
+			player.gameMode.changeGameModeForPlayer(GameType.SURVIVAL);
+			player.connection.send(new ClientboundGameEventPacket(ClientboundGameEventPacket.CHANGE_GAME_MODE, (float)GameType.SURVIVAL.getId()));
 		}
 	}
 
@@ -132,14 +133,14 @@ public class ElderGuardianFeature extends Feature {
 	public void onExplosionDetonate(ExplosionEvent.Start event) {
 		if (!this.isEnabled()
 				|| !adventure
-				|| event.getExplosion().getExploder() == null
-				|| event.getExplosion().blockInteraction == Explosion.BlockInteraction.KEEP)
+				|| event.getExplosion().getIndirectSourceEntity() == null
+				|| event.getExplosion().getBlockInteraction() == Explosion.BlockInteraction.KEEP)
 			return;
 
-		boolean nearElderGuardian = !event.getLevel().getEntitiesOfClass(ElderGuardian.class, event.getExplosion().getExploder().getBoundingBox().inflate(adventureRange)).isEmpty();
+		boolean nearElderGuardian = !event.getLevel().getEntitiesOfClass(ElderGuardian.class, event.getExplosion().getIndirectSourceEntity().getBoundingBox().inflate(adventureRange)).isEmpty();
 		if (nearElderGuardian) {
 			event.setCanceled(true);
-			event.getLevel().explode(event.getExplosion().getExploder(), event.getExplosion().getPosition().x, event.getExplosion().getPosition().y, event.getExplosion().getPosition().z, event.getExplosion().radius, event.getExplosion().fire, Level.ExplosionInteraction.NONE);
+			event.getLevel().explode(event.getExplosion().getIndirectSourceEntity(), event.getExplosion().center().x, event.getExplosion().center().y, event.getExplosion().center().z, event.getExplosion().radius(), ((ExplosionAccessor) event.getExplosion()).isFire(), Level.ExplosionInteraction.NONE);
 		}
 	}
 
@@ -172,7 +173,7 @@ public class ElderGuardianFeature extends Feature {
 		if (event.getLevel().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof ElderGuardian elderGuardian)
-                || TagsFeature.isSpawnType(MobSpawnType.SPAWNER, elderGuardian))
+                || elderGuardian.getSpawnType() == MobSpawnType.SPAWNER)
 			return;
 
 		if (ModNBTData.contains(elderGuardian, LEVEL))
@@ -194,7 +195,7 @@ public class ElderGuardianFeature extends Feature {
 	}
 
 	@SubscribeEvent
-	public void onDamageDealt(LivingHurtEvent event) {
+	public void onDamageDealt(LivingDamageEvent.Pre event) {
 		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getSource().getEntity() instanceof ElderGuardian elderGuardian))
@@ -203,7 +204,7 @@ public class ElderGuardianFeature extends Feature {
 		if (oElderGuardianStats.isEmpty())
 			return;
 
-		event.setAmount(event.getAmount() * (1f + oElderGuardianStats.get().bonusDamage));
+		event.setNewDamage(event.getNewDamage() * (1f + oElderGuardianStats.get().bonusDamage));
 		if (!event.getSource().is(DamageTypes.THORNS))
 			elderGuardian.heal(oElderGuardianStats.get().regenOnAttack / 2f);
 	}
@@ -230,7 +231,7 @@ public class ElderGuardianFeature extends Feature {
 	 * Minions
 	 */
 	@SubscribeEvent
-	public void update(LivingEvent.LivingTickEvent event) {
+	public void update(EntityTickEvent.Post event) {
 		if (event.getEntity().level().isClientSide
 				|| !this.isEnabled()
 				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
@@ -254,7 +255,7 @@ public class ElderGuardianFeature extends Feature {
 		int radius = 24;
 		BlockPos pos1 = elderGuardian.blockPosition().offset(-radius, -radius, -radius);
 		BlockPos pos2 = elderGuardian.blockPosition().offset(radius, radius, radius);
-		AABB bb = new AABB(pos1, pos2);
+		AABB bb = AABB.encapsulatingFullBlocks(pos1, pos2);
 		List<ServerPlayer> players = world.getEntitiesOfClass(ServerPlayer.class, bb);
 
 		if (players.isEmpty())
@@ -277,13 +278,13 @@ public class ElderGuardianFeature extends Feature {
 
 		elderMinion.setPos(pos.x, pos.y, pos.z);
 		elderMinion.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ELDER_MINION)));
-		elderMinion.lootTable = BuiltInLootTables.EMPTY;
+		((MobAccessor) elderMinion).setLootTable(BuiltInLootTables.EMPTY);
 
-		MCUtils.applyModifier(elderMinion, ForgeMod.SWIM_SPEED.get(), Strings.AttributeModifiers.SWIM_SPEED_BONUS_UUID, Strings.AttributeModifiers.SWIM_SPEED_BONUS, 2d, AttributeModifier.Operation.MULTIPLY_BASE);
-		MCUtils.applyModifier(elderMinion, Attributes.MAX_HEALTH, Strings.AttributeModifiers.BONUS_HEALTH_UUID, Strings.AttributeModifiers.BONUS_HEALTH, -0.5d, AttributeModifier.Operation.MULTIPLY_BASE);
+		MCUtils.applyModifier(elderMinion, NeoForgeMod.SWIM_SPEED, ELDER_MINION_BONUS, 2d, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
+		MCUtils.applyModifier(elderMinion, Attributes.MAX_HEALTH, ELDER_MINION_BONUS, -0.5d, AttributeModifier.Operation.ADD_MULTIPLIED_BASE);
 
 		ArrayList<Goal> goalsToRemove = new ArrayList<>();
-		for (WrappedGoal prioritizedGoal : elderMinion.targetSelector.availableGoals) {
+		for (WrappedGoal prioritizedGoal : elderMinion.targetSelector.getAvailableGoals()) {
 			if (!(prioritizedGoal.getGoal() instanceof NearestAttackableTargetGoal))
 				continue;
 
@@ -303,14 +304,14 @@ public class ElderGuardianFeature extends Feature {
 		Optional<ElderGuardianStats> oElderGuardianStats = ElderGuardianFeature.getStats(elderGuardian);
 		if (oElderGuardianStats.isEmpty())
 			return;
-		elderGuardian.xpReward = oElderGuardianStats.get().xpDropped;
+		((MobAccessor) elderGuardian).setXpReward(oElderGuardianStats.get().xpDropped);
 	}
 
 	/*
 	 * Resistances
 	 */
 	@SubscribeEvent
-	public void onElderGuardianDamage(LivingDamageEvent event) {
+	public void onElderGuardianDamage(LivingDamageEvent.Pre event) {
 		if (!this.isEnabled()
 				|| !(event.getEntity() instanceof ElderGuardian elderGuardian))
 			return;
@@ -320,6 +321,6 @@ public class ElderGuardianFeature extends Feature {
 			return;
 		float damageReduction = oElderGuardianStats.get().damageResistance;
 
-		event.setAmount(event.getAmount() * (1f - damageReduction));
+		event.setNewDamage(event.getNewDamage() * (1f - damageReduction));
 	}
 }

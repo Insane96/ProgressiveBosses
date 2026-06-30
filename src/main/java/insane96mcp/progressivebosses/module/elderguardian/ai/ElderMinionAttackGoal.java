@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.elderguardian.ai;
 
+import insane96mcp.progressivebosses.mixin.accessor.GuardianAccessor;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -50,7 +51,7 @@ public class ElderMinionAttackGoal extends Goal {
 	 * Reset the task's internal state. Called when this task is interrupted by another one
 	 */
 	public void stop() {
-		this.guardian.setActiveAttackTarget(0);
+		((GuardianAccessor) this.guardian).callSetActiveAttackTarget(0);
 		this.guardian.setTarget(null);
 	}
 
@@ -63,7 +64,7 @@ public class ElderMinionAttackGoal extends Goal {
 		this.guardian.getLookControl().setLookAt(livingentity, 90.0F, 90.0F);
 		++this.attackTime;
 		if (this.attackTime == 0) {
-			this.guardian.setActiveAttackTarget(this.guardian.getTarget().getId());
+			((GuardianAccessor) this.guardian).callSetActiveAttackTarget(this.guardian.getTarget().getId());
 			if (!this.guardian.isSilent()) {
 				this.guardian.level().broadcastEntityEvent(this.guardian, (byte)21);
 			}

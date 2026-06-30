@@ -26,6 +26,7 @@
     "SpikeFeatureMixin",
     "accessor.DragonSittingFlamingPhaseAccessor",
     "accessor.EndDragonFightAccessor",
+    "accessor.ExplosionAccessor",
     "accessor.GuardianAccessor",
     "accessor.MobAccessor",
     "accessor.ProjectileAccessor",
