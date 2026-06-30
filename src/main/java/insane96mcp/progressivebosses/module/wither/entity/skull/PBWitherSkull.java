@@ -1,0 +1,181 @@
+package insane96mcp.progressivebosses.module.wither.entity.skull;
+
+import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
+import insane96mcp.progressivebosses.setup.PBEntities;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+
+public class PBWitherSkull extends AbstractHurtingProjectile {
+    static ResourceKey<DamageType> DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "wither_skull"));
+    static final TagKey<EntityType<?>> NO_WITHER_ROSE = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "no_wither_rose"));
+    LivingEntity originalOwner;
+
+    private static final EntityDataAccessor<Boolean> DATA_DANGEROUS = SynchedEntityData.defineId(PBWitherSkull.class, EntityDataSerializers.BOOLEAN);
+    public PBWitherSkull(EntityType<? extends PBWitherSkull> pEntityType, Level pLevel) {
+        super(PBEntities.WITHER_SKULL.get(), pLevel);
+    }
+
+    public PBWitherSkull(Level pLevel, LivingEntity pShooter, double pOffsetX, double pOffsetY, double pOffsetZ) {
+        super(PBEntities.WITHER_SKULL.get(), pShooter, pOffsetX, pOffsetY, pOffsetZ, pLevel);
+        if (pShooter instanceof PBWither wither) {
+            this.xPower *= wither.stats.attack.skullSpeedMultiplier;
+            this.yPower *= wither.stats.attack.skullSpeedMultiplier;
+            this.zPower *= wither.stats.attack.skullSpeedMultiplier;
+        }
+        this.originalOwner = pShooter;
+    }
+
+    /**
+     * Return the motion factor for this projectile. The factor is multiplied by the original motion.
+     */
+    protected float getInertia() {
+        return this.isDangerous() ? 0.73F : super.getInertia();
+    }
+
+    /**
+     * Returns {@code true} if the entity is on fire. Used by render to add the fire effect on rendering.
+     */
+    public boolean isOnFire() {
+        return false;
+    }
+
+    /**
+     * Called when the arrow hits an entity
+     */
+    protected void onHitEntity(EntityHitResult pResult) {
+        super.onHitEntity(pResult);
+        if (!this.level().isClientSide) {
+            Entity entityHit = pResult.getEntity();
+            Entity owner = this.originalOwner;
+            boolean hasHurtEntity;
+            if (owner instanceof LivingEntity livingOwner) {
+                float damage = 8f;
+                if (owner instanceof PBWither wither)
+                    damage = wither.stats.attack.skullDamage;
+                hasHurtEntity = entityHit.hurt(this.damageSources().source(DAMAGE_TYPE, this, livingOwner), damage);
+                if (hasHurtEntity) {
+                    if (entityHit.isAlive()) {
+                        this.doEnchantDamageEffects(livingOwner, entityHit);
+                    }
+                    else {
+                        float heal = 5f;
+                        if (owner instanceof PBWither wither)
+                            heal = wither.stats.attack.healOnSkullKill;
+                        livingOwner.heal(heal);
+                        this.createWitherRose(entityHit);
+                    }
+                }
+            }
+            else {
+                hasHurtEntity = entityHit.hurt(this.damageSources().magic(), 5.0F);
+            }
+
+            if (hasHurtEntity && entityHit instanceof LivingEntity livingEntityHit) {
+                int duration = 10;
+                if (owner instanceof PBWither wither)
+                    duration = wither.stats.attack.effectDuration.getInt(this.level());
+
+                int amplifier = 1;
+                if (owner instanceof PBWither wither)
+                    amplifier = wither.stats.attack.effectAmplifier;
+
+                livingEntityHit.addEffect(new MobEffectInstance(MobEffects.WITHER, 20 * duration, amplifier), this.getEffectSource());
+            }
+
+        }
+    }
+
+    /**
+     * Called when this EntityFireball hits a block or entity.
+     */
+    protected void onHit(HitResult pResult) {
+        super.onHit(pResult);
+        if (!this.level().isClientSide) {
+            this.level().explode(this, this.getX(), this.getY(), this.getZ(), this.isDangerous() ? 1.5f : 1f, false, Level.ExplosionInteraction.MOB);
+            this.discard();
+        }
+    }
+
+    @Override
+    public boolean isPickable() {
+        return this.isDangerous();
+    }
+
+    /**
+     * Called when the entity is attacked.
+     */
+    public boolean hurt(DamageSource pSource, float pAmount) {
+        if (this.isDangerous() && !(pSource.getDirectEntity() instanceof PBWitherSkull)) {
+            boolean ret = super.hurt(pSource, pAmount);
+            this.xPower *= 1.5f;
+            this.yPower *= 1.5f;
+            this.zPower *= 1.5f;
+            return ret;
+        }
+        return false;
+    }
+
+    protected void defineSynchedData() {
+        this.entityData.define(DATA_DANGEROUS, false);
+    }
+
+    /**
+     * Return whether this skull comes from an invulnerable (aura) wither boss.
+     */
+    public boolean isDangerous() {
+        return this.entityData.get(DATA_DANGEROUS);
+    }
+
+    /**
+     * Set whether this skull comes from an invulnerable (aura) wither boss.
+     */
+    public void setDangerous(boolean pInvulnerable) {
+        this.entityData.set(DATA_DANGEROUS, pInvulnerable);
+    }
+
+    protected boolean shouldBurn() {
+        return false;
+    }
+
+    public void createWitherRose(Entity entityHit) {
+        if (entityHit.getType().is(NO_WITHER_ROSE) || !(entityHit instanceof LivingEntity))
+            return;
+        boolean hasPlacedRose = false;
+        if (net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(this.level(), this.originalOwner)) {
+            BlockPos blockpos = entityHit.blockPosition();
+            BlockState blockstate = Blocks.WITHER_ROSE.defaultBlockState();
+            if (this.level().isEmptyBlock(blockpos) && blockstate.canSurvive(this.level(), blockpos)) {
+                this.level().setBlock(blockpos, blockstate, 3);
+                hasPlacedRose = true;
+            }
+        }
+
+        if (!hasPlacedRose) {
+            ItemEntity itementity = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), new ItemStack(Items.WITHER_ROSE));
+            this.level().addFreshEntity(itementity);
+        }
+    }
+}

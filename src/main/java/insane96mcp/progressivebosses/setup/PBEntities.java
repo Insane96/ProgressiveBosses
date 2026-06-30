@@ -1,0 +1,50 @@
+package insane96mcp.progressivebosses.setup;
+
+import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
+import insane96mcp.progressivebosses.module.wither.entity.PBWither;
+import insane96mcp.progressivebosses.module.wither.entity.minion.WitherMinion;
+import insane96mcp.progressivebosses.module.wither.entity.skull.PBWitherSkull;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
+
+public class PBEntities {
+	public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, ProgressiveBosses.MOD_ID);
+
+	public static final DeferredHolder<EntityType<?>, EntityType<PBWither>> WITHER = REGISTRY.register("wither", () -> EntityType.Builder.of(PBWither::new, MobCategory.MONSTER)
+			.fireImmune()
+			.immuneTo(Blocks.WITHER_ROSE)
+			.sized(0.8f, 2.5f)
+			.clientTrackingRange(8)
+			.build("wither"));
+
+	public static final DeferredHolder<EntityType<?>, EntityType<PBWitherSkull>> WITHER_SKULL = REGISTRY.register("wither_skull", () -> EntityType.Builder.of((EntityType<PBWitherSkull> pEntityType, Level pLevel) -> new PBWitherSkull(pEntityType, pLevel), MobCategory.MISC)
+			.fireImmune()
+			.immuneTo(Blocks.WITHER_ROSE)
+			.sized(0.3125F, 0.3125F)
+			.clientTrackingRange(4)
+			.updateInterval(1)
+			.build("wither_skull"));
+
+	public static final DeferredHolder<EntityType<?>, EntityType<WitherMinion>> WITHER_MINION = REGISTRY.register("wither_minion", () -> EntityType.Builder.of(WitherMinion::new, MobCategory.MONSTER)
+			.sized(0.55f, 1.5f)
+			.fireImmune()
+			.immuneTo(Blocks.WITHER_ROSE)
+			.clientTrackingRange(8)
+			.build("wither_minion"));
+
+	public static final DeferredHolder<EntityType<?>, EntityType<CorruptedEndCrystal>> CORRUPTED_END_CRYSTAL = REGISTRY.register(
+			"corrupted_end_crystal",
+			() -> EntityType.Builder.of((EntityType<CorruptedEndCrystal> pEntityType, Level pLevel) -> new CorruptedEndCrystal(pEntityType, pLevel),
+			MobCategory.MISC)
+				.sized(2.0F, 2.0F)
+				.clientTrackingRange(16)
+				.updateInterval(Integer.MAX_VALUE)
+				.build("corrupted_end_crystal")
+	);
+}
