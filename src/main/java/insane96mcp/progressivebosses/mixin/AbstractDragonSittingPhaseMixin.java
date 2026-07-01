@@ -20,7 +20,7 @@ public abstract class AbstractDragonSittingPhaseMixin extends AbstractDragonPhas
 
 	//TODO Config option
 	@WrapOperation(method = "onHurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;igniteForSeconds(F)V"))
-	public void onProjectileSetOnFire(Entity instance, float seconds, Operation<Void> original, DamageSource source, float amount) {
+	public void progressivebosses$deflectArrows(Entity instance, float seconds, Operation<Void> original, DamageSource source, float amount) {
 		if (source.getDirectEntity() instanceof AbstractArrow abstractArrow) {
 			abstractArrow.setYRot(abstractArrow.getYRot() + 180.0F);
 			abstractArrow.yRotO += 180.0F;

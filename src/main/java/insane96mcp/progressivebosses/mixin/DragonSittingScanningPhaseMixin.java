@@ -33,7 +33,7 @@ public abstract class DragonSittingScanningPhaseMixin extends AbstractDragonPhas
 
 	//TODO Config option
 	@ModifyExpressionValue(method = "doServerTick", at = @At(value = "CONSTANT", args = "floatValue=0.7"))
-	public float getMaxRotation(float original) {
+	public float progressivebosses$scanningMaxRotation(float original) {
 		return 2.5f;
 	}
 }

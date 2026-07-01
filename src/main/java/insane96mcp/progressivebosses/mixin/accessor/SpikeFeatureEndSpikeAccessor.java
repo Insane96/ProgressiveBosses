@@ -7,8 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(SpikeFeature.EndSpike.class)
 public interface SpikeFeatureEndSpikeAccessor {
-    @Accessor
-    boolean isGuarded();
     @Mutable
     @Accessor
     void setGuarded(boolean guarded);

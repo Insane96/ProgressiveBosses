@@ -4,8 +4,6 @@ import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonLandingPhase;
-import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
-import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -16,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import javax.annotation.Nullable;
 
 @Mixin(DragonLandingPhase.class)
-public class DragonLandingPhaseMixin extends AbstractDragonPhaseInstance {
+public abstract class DragonLandingPhaseMixin extends AbstractDragonPhaseInstance {
 
 	@Shadow @Nullable private Vec3 targetLocation;
 
@@ -38,15 +36,10 @@ public class DragonLandingPhaseMixin extends AbstractDragonPhaseInstance {
 	}*/
 
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;setPhase(Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhase;)V", shift = At.Shift.AFTER), method = "doServerTick")
-	private void setCorrectSittingPosition(CallbackInfo ci) {
+	private void progressivebosses$setCorrectSittingPosition(CallbackInfo ci) {
 		if (!DragonFeature.areFixesEnabled())
 			return;
 		//noinspection ConstantConditions since I call it after the dragon reaches the center podium it shouldn't be null
 		this.dragon.setPos(this.targetLocation);
-	}
-
-	@Override
-	public EnderDragonPhase<? extends DragonPhaseInstance> getPhase() {
-		return EnderDragonPhase.LANDING;
 	}
 }

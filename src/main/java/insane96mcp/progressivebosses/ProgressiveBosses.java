@@ -68,7 +68,7 @@ public class ProgressiveBosses {
 
         DispenserBlock.registerBehavior(Items.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());
 
-        NeoForge.EVENT_BUS.addListener(RegisterCommandsEvent.class, event -> PBCommand.register(event.getDispatcher()));
+        NeoForge.EVENT_BUS.register(this);
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)

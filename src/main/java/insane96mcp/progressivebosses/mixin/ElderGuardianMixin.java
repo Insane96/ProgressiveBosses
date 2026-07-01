@@ -25,7 +25,7 @@ public class ElderGuardianMixin extends Guardian {
 	}
 
 	@Inject(at = @At("HEAD"), method = "getAttackDuration()I", cancellable = true)
-	private void getAttackDuration(CallbackInfoReturnable<Integer> callback) {
+	private void progressivebosses$modifyAttackDuration(CallbackInfoReturnable<Integer> callback) {
 		Optional<ElderGuardianStats> stats = ElderGuardianFeature.getStats((ElderGuardian) (Object) this);
 		if (stats.isEmpty())
 			return;
@@ -36,7 +36,7 @@ public class ElderGuardianMixin extends Guardian {
 	}
 
 	@ModifyConstant(method = "customServerAiStep", constant = @Constant(doubleValue = 50d))
-	public double onMiningFatigueRange(double range) {
+	public double progressivebosses$miningFatigueRange(double range) {
 		if (Feature.isEnabled(ElderGuardianFeature.class) && ElderGuardianFeature.adventure)
 			return 0;
 		return range;

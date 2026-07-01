@@ -77,7 +77,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			SpikeFeature.EndSpike spike = spikesToRespawn.get(0);
 			SpikeFeatureEndSpikeAccessor spikeAccessor = (SpikeFeatureEndSpikeAccessor) spike;
 			boolean shouldBeGuarded = component.cagedChance != null && this.dragon.getRandom().nextFloat() < component.cagedChance.getValue(this.dragon);
-			boolean wasGuarded = spikeAccessor.isGuarded();
+			boolean wasGuarded = spike.isGuarded();
 			spikeAccessor.setGuarded(shouldBeGuarded);
 			this.dragon.level().explode(null, spike.getCenterX() + 0.5F, spike.getHeight(), spike.getCenterZ() + 0.5F, 5.0F, Level.ExplosionInteraction.BLOCK);
 			RandomSource yungRandom = RandomSource.create(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island spikes to generate guarded

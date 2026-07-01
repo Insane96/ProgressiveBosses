@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class EndCrystalMixin {
 
 	@Inject(at = @At("HEAD"), method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z", cancellable = true)
-	private void hurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {
+	private void progressivebosses$preventExplosionDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> callback) {
 		if (SpikesComponent.onCrystalDamagedByExplosion(source))
 			callback.setReturnValue(false);
 	}

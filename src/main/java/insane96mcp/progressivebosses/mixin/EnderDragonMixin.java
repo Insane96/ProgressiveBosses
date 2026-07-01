@@ -63,7 +63,7 @@ public abstract class EnderDragonMixin extends Mob {
 	}
 
 	@ModifyExpressionValue(method = "<init>", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
-    private float onHeadSize(float original) {
+    private float progressivebosses$biggerHeadHitbox(float original) {
 		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return 1.5f;
@@ -120,7 +120,7 @@ public abstract class EnderDragonMixin extends Mob {
 	}
 
 	@ModifyExpressionValue(method = "checkCrystals", at = @At(value = "CONSTANT", args = "floatValue=1.0"))
-	public float onCrystalHeal(float original) {
+	public float progressivebosses$crystalHealAmount(float original) {
 		return DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
 				.flatMap(stats -> stats.getComponent(HealthComponent.class))
 				.map(healthComponent -> healthComponent.getHealingFromCrystal((EnderDragon) (Object) this, this.nearestCrystal, original))
@@ -137,7 +137,7 @@ public abstract class EnderDragonMixin extends Mob {
 	}
 
 	@ModifyExpressionValue(method = "onCrystalDestroyed", at = @At(value = "CONSTANT", args = "floatValue=10.0"))
-	public float onAttachedCrystalDamage(float original, EndCrystal pCrystal, BlockPos pPos, DamageSource pDamageSource) {
+	public float progressivebosses$attachedCrystalDamage(float original, EndCrystal pCrystal, BlockPos pPos, DamageSource pDamageSource) {
 		if (!pCrystal.showsBottom())
 			return original;
 		return DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
@@ -147,7 +147,7 @@ public abstract class EnderDragonMixin extends Mob {
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "doubleValue=0.01"))
-	public double onYDeltaSpeed(double original) {
+	public double progressivebosses$yDeltaSpeed(double original) {
 		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return 0.075d;
@@ -162,33 +162,33 @@ public abstract class EnderDragonMixin extends Mob {
 	}
 
 	@Unique
-	private DamageSource progressiveBosses$killerDamageSource;
+	private DamageSource progressivebosses$killerDamageSource;
 
 	@Inject(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhaseManager;setPhase(Lnet/minecraft/world/entity/boss/enderdragon/phases/EnderDragonPhase;)V", shift = At.Shift.AFTER, ordinal = 0))
 	public void progressivebosses$storeKillerDamageSource(EnderDragonPart pPart, DamageSource pSource, float pDamage, CallbackInfoReturnable<Boolean> cir) {
-		this.progressiveBosses$killerDamageSource = pSource;
+		this.progressivebosses$killerDamageSource = pSource;
 	}
 
 	@Inject(method = "tickDeath", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/ExperienceOrb;award(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/phys/Vec3;I)V", shift = At.Shift.AFTER, ordinal = 1))
 	public void progressivebosses$dropDeathLoot(CallbackInfo ci) {
-		if (progressiveBosses$killerDamageSource == null)
+		if (progressivebosses$killerDamageSource == null)
 			return;
 		((MobAccessor) this).setLootTable(DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
 				.flatMap(definition -> definition.getComponent(LootComponent.class))
 				.map(lootComponent -> lootComponent.lootTable)
 				.orElse(LootComponent.VANILLA_LOOT_TABLE));
-		this.dropFromLootTable(progressiveBosses$killerDamageSource, false);
+		this.dropFromLootTable(progressivebosses$killerDamageSource, false);
 	}
 
 	@ModifyVariable(method = "hurt(Lnet/minecraft/world/entity/boss/EnderDragonPart;Lnet/minecraft/world/damagesource/DamageSource;F)Z", at = @At(value = "STORE", ordinal = 0), argsOnly = true)
-	public float onDamageAmount(float original, EnderDragonPart part, DamageSource source, float amount) {
+	public float progressivebosses$bodyPartDamageMultiplier(float original, EnderDragonPart part, DamageSource source, float amount) {
 		if (!part.name.equals("wing") && !part.name.equals("neck") && !part.name.equals("tail"))
 			return original;
 		return original * 1.5f;
 	}
 
 	@ModifyExpressionValue(method = "hurt(Ljava/util/List;)V", at = @At(value = "CONSTANT", args = "floatValue=10.0"))
-	public float progressiveBosses$headDamage(float original) {
+	public float progressivebosses$headDamage(float original) {
 		return DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
 				.flatMap(stats -> stats.getComponent(MeleeDamageComponent.class))
 				.flatMap(component -> Optional.ofNullable(component.headDamage))
@@ -197,7 +197,7 @@ public abstract class EnderDragonMixin extends Mob {
 	}
 
 	@ModifyExpressionValue(method = "knockBack", at = @At(value = "CONSTANT", args = "floatValue=5.0"))
-	public float progressiveBosses$bodyDamage(float original) {
+	public float progressivebosses$bodyDamage(float original) {
 		return DragonFeature.getDragonDefinition((EnderDragon) (Object) this)
 				.flatMap(stats -> stats.getComponent(MeleeDamageComponent.class))
 				.flatMap(component -> Optional.ofNullable(component.wingDamage))
@@ -206,49 +206,49 @@ public abstract class EnderDragonMixin extends Mob {
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=5.5", ordinal = 0))
-	public float neckOffsetX(float original) {
+	public float progressivebosses$neckOffsetX(float original) {
 		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.neckOffsetXZ();
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=5.5", ordinal = 2))
-	public float neckOffsetZ(float original) {
+	public float progressivebosses$neckOffsetZ(float original) {
 		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.neckOffsetXZ();
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=1.5", ordinal = 3))
-	public float tailOffsetY(float original) {
+	public float progressivebosses$tailOffsetY(float original) {
 		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.tailOffsetY();
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=6.5", ordinal = 0))
-	public float headOffsetX(float original) {
+	public float progressivebosses$headOffsetX(float original) {
 		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.headOffsetXZ();
 	}
 
 	@ModifyReturnValue(method = "getHeadYOffset", at = @At(value = "RETURN", ordinal = 1))
-	public float headOffsetY(float original) {
+	public float progressivebosses$headOffsetY(float original) {
 		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.headOffsetY(original);
 	}
 
 	@ModifyExpressionValue(method = "aiStep", at = @At(value = "CONSTANT", args = "floatValue=6.5", ordinal = 2))
-	public float headOffsetZ(float original) {
+	public float progressivebosses$headOffsetZ(float original) {
 		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.headOffsetXZ();
 	}
 
 	@ModifyReturnValue(method = "getHeadYOffset", at = @At(value = "RETURN", ordinal = 0))
-	public float headOffsetSittingY(float original) {
+	public float progressivebosses$headOffsetSittingY(float original) {
 		if (!DragonFeature.areFixesEnabled())
 			return original;
 		return DragonFeature.headOffsetSittingY();

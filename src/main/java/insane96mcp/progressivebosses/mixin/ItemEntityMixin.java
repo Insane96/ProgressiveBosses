@@ -28,7 +28,7 @@ public abstract class ItemEntityMixin extends Entity implements TraceableEntity 
 	@Shadow public abstract ItemStack getItem();
 
 	@Inject(at = @At("HEAD"), method = "hurt", cancellable = true)
-	public void onItemHurt(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+	public void progressivebosses$preventBossItemDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
 		if (!this.getItem().isEmpty()
 				&& ((this.getItem().is(WitherFeature.WITHER_INVULNERABLE) && source.getEntity() instanceof WitherBoss)
 				|| (this.getItem().is(WitherFeature.WORLD_INVULNERABLE) && !source.is(DamageTypeTags.BYPASSES_RESISTANCE))

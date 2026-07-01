@@ -24,7 +24,7 @@ public abstract class DragonSittingAttackingPhaseMixin extends AbstractDragonPha
 	}
 
 	@WrapOperation(method = "doClientTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;playLocalSound(DDDLnet/minecraft/sounds/SoundEvent;Lnet/minecraft/sounds/SoundSource;FFZ)V"))
-	public void onPlayGrowlSound(Level instance, double pX, double pY, double pZ, SoundEvent pSound, SoundSource pCategory, float pVolume, float pPitch, boolean pDistanceDelay, Operation<Void> original) {
+	public void progressivebosses$throttleGrowlSound(Level instance, double pX, double pY, double pZ, SoundEvent pSound, SoundSource pCategory, float pVolume, float pPitch, boolean pDistanceDelay, Operation<Void> original) {
 		if (this.dragon.tickCount % 5 != 0
 				|| !DragonFeature.areFixesEnabled())
 			return;

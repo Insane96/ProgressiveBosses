@@ -19,7 +19,7 @@ public abstract class ShulkerMixin extends AbstractGolem implements Enemy {
 	}
 
 	@Inject(at = @At("HEAD"), method = "hitByShulkerBullet()V", cancellable = true)
-	public void hitByShulkerBullet(CallbackInfo callback) {
+	public void progressivebosses$preventMinionSelfLevitation(CallbackInfo callback) {
 		if (this.getPersistentData().contains(MinionComponent.DRAGON_MINION))
 			callback.cancel();
 	}

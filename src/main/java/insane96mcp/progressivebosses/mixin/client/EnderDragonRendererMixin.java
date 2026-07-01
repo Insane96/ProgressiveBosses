@@ -30,17 +30,17 @@ public class EnderDragonRendererMixin {
     private static final RenderType ANGERED_EYES = RenderType.eyes(ANGERED_EYES_LOCATION);
 
     @Unique
-    private static boolean progressiveBosses$isCorrupted;
+    private static boolean progressivebosses$isCorrupted;
 
     @Inject(method = "render(Lnet/minecraft/world/entity/boss/enderdragon/EnderDragon;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V", ordinal = 2))
     private void progressivebosses$saveIfCorrupted(EnderDragon pEntity, float pEntityYaw, float pPartialTicks, PoseStack pMatrixStack, MultiBufferSource pBuffer, int pPackedLight, CallbackInfo ci) {
-        progressiveBosses$isCorrupted = pEntity.nearestCrystal instanceof CorruptedEndCrystal;
+        progressivebosses$isCorrupted = pEntity.nearestCrystal instanceof CorruptedEndCrystal;
     }
 
     @ModifyArg(method = "renderCrystalBeams", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/MultiBufferSource;getBuffer(Lnet/minecraft/client/renderer/RenderType;)Lcom/mojang/blaze3d/vertex/VertexConsumer;"))
-    private static RenderType progressivebosses$saveIfCorrupted(RenderType pRenderType) {
-        if (progressiveBosses$isCorrupted) {
-            progressiveBosses$isCorrupted = false;
+    private static RenderType progressivebosses$useCorruptedBeam(RenderType pRenderType) {
+        if (progressivebosses$isCorrupted) {
+            progressivebosses$isCorrupted = false;
             return CorruptedEndCrystalRenderer.BEAM;
         }
         return pRenderType;

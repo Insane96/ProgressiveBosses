@@ -22,7 +22,7 @@ public class DragonFireballMixin extends AbstractHurtingProjectile {
 	}
 
 	@Inject(at = @At("HEAD"), method = "onHit(Lnet/minecraft/world/phys/HitResult;)V", cancellable = true)
-	private void onHit(HitResult result, CallbackInfo callback) {
+	private void progressivebosses$onAcidBallHit(HitResult result, CallbackInfo callback) {
 		if (!(this.getOwner() instanceof EnderDragon dragon))
 			return;
 		DragonDefinition definition = DragonFeature.getDragonDefinition(dragon).orElse(null);

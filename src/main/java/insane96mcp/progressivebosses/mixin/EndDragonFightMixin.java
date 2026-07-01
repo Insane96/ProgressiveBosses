@@ -47,7 +47,7 @@ public class EndDragonFightMixin {
 	@Shadow @Final private ServerBossEvent dragonEvent;
 
 	@Inject(method = "respawnDragon", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;respawnCrystals:Ljava/util/List;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
-	private void onAboutToRespawnDragon(List<EndCrystal> respawnCrystals, CallbackInfo callback) {
+	private void progressivebosses$setupStrongerDragonRespawn(List<EndCrystal> respawnCrystals, CallbackInfo callback) {
 		List<EndCrystal> endCrystals = this.level.getEntitiesOfClass(EndCrystal.class, new AABB(this.portalLocation).inflate(48d), EndCrystal::showsBottom);
 		for (EndCrystal endCrystal : endCrystals) {
 			endCrystal.level().explode(endCrystal, endCrystal.getX(), endCrystal.getY(), endCrystal.getZ(), 6.0F, Level.ExplosionInteraction.NONE);
@@ -90,7 +90,7 @@ public class EndDragonFightMixin {
 
 	/// Control egg drop via Definition
 	@ModifyExpressionValue(method = "setDragonKilled", at = @At(value = "FIELD", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;previouslyKilled:Z", ordinal = 0))
-	public boolean progressivebosses$onTryPlaceEgg(boolean previouslyKilled, EnderDragon dragon) {
+	public boolean progressivebosses$controlEggDrop(boolean previouslyKilled, EnderDragon dragon) {
 		if (!Feature.isEnabled(DragonFeature.class))
 			return previouslyKilled;
 		boolean shouldDropEgg = DragonFeature.getDragonDefinition(dragon)
@@ -101,7 +101,7 @@ public class EndDragonFightMixin {
 	}
 
 	@Inject(method = "onCrystalDestroyed", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;updateCrystalCount()V", shift = At.Shift.AFTER))
-	public void progressivebosses$onTryPlaceEgg(EndCrystal pCrystal, DamageSource pDmgSrc, CallbackInfo ci) {
+	public void progressivebosses$onCrystalDestroyed(EndCrystal pCrystal, DamageSource pDmgSrc, CallbackInfo ci) {
 		DragonFeature.onCrystalDestroyed((EndDragonFight) (Object) this, pCrystal, pDmgSrc);
 	}
 }

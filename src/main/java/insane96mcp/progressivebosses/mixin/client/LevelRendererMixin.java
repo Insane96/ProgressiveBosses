@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(LevelRenderer.class)
 public class LevelRendererMixin {
 	@ModifyExpressionValue(method = "levelEvent", at = @At(value = "CONSTANT", args = "floatValue=64.0"))
-    public float onPlayDragonSound(float original) {
+    public float progressivebosses$increaseDragonSoundRange(float original) {
         return 128f;
     }
 }

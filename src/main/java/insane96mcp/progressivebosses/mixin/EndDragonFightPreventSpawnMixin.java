@@ -32,7 +32,7 @@ public abstract class EndDragonFightPreventSpawnMixin {
 	@Definition(id = "dragonKilled", field = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;dragonKilled:Z")
 	@Expression("this.dragonKilled = false")
 	@WrapOperation(method = "scanState", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 1))
-	private void onAboutToRespawnDragon(EndDragonFight instance, boolean value, Operation<Void> original) {
+	private void progressivebosses$spawnGuardianCrystals(EndDragonFight instance, boolean value, Operation<Void> original) {
 		this.dragonKilled = true;
 		for (Direction direction : Direction.Plane.HORIZONTAL) {
 			EndCrystal crystal = EntityType.END_CRYSTAL.create(this.level);
@@ -48,7 +48,7 @@ public abstract class EndDragonFightPreventSpawnMixin {
 	@Definition(id = "enderdragon", local = @Local(type = EnderDragon.class))
 	@Expression("enderdragon != null")
 	@WrapOperation(method = "setRespawnStage", at = @At("MIXINEXTRAS:EXPRESSION"))
-	public boolean onTryGiveAdvancement(Object left, Object right, Operation<Boolean> original) {
+	public boolean progressivebosses$preventDragonAdvancement(Object left, Object right, Operation<Boolean> original) {
 		if (DragonFeature.preventAdvancement) {
 			DragonFeature.preventAdvancement = false;
 			return false;

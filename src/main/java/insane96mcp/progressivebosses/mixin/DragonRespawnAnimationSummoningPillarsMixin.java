@@ -20,7 +20,7 @@ import java.util.List;
 @Mixin(targets = "net/minecraft/world/level/dimension/end/DragonRespawnAnimation$3")
 public class DragonRespawnAnimationSummoningPillarsMixin {
     @Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/feature/Feature;place(Lnet/minecraft/world/level/levelgen/feature/configurations/FeatureConfiguration;Lnet/minecraft/world/level/WorldGenLevel;Lnet/minecraft/world/level/chunk/ChunkGenerator;Lnet/minecraft/util/RandomSource;Lnet/minecraft/core/BlockPos;)Z", shift = At.Shift.AFTER))
-    public void onDestroyRespawningCrystals(ServerLevel serverLevel, EndDragonFight endDragonFight, List<EndCrystal> crystals, int respawningTicks, BlockPos pos, CallbackInfo ci, @Local SpikeFeature.EndSpike endSpike) {
+    public void progressivebosses$corruptSpikeCrystal(ServerLevel serverLevel, EndDragonFight endDragonFight, List<EndCrystal> crystals, int respawningTicks, BlockPos pos, CallbackInfo ci, @Local SpikeFeature.EndSpike endSpike) {
         float chance = DragonFeature.getDragonDefinition(DragonFeature.dragonLvl)
                 .flatMap(dragonDefinition -> dragonDefinition.getComponent(SpikesComponent.class))
                 .map(spikesComponent -> spikesComponent.corruptedChance)

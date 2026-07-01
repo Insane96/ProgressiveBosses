@@ -1,9 +1,9 @@
 package insane96mcp.progressivebosses.module.wither.data;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonSyntaxException;
+import insane96mcp.insanelib.InsaneLib;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WitherStatsReloadListener extends SimpleJsonResourceReloadListener {
-    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().disableHtmlEscaping().create();
+    private static final Gson GSON = InsaneLib.createGsonBuilder().disableHtmlEscaping().create();
     public static final WitherStatsReloadListener INSTANCE;
 
     public static final Map<Integer, WitherStats> STATS_MAP = new HashMap<>();
