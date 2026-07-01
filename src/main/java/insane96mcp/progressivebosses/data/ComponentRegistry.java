@@ -13,21 +13,21 @@ public class ComponentRegistry {
     private static final Map<ResourceLocation, Type> COMPONENTS = new HashMap<>();
 
     public static void init() {
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "sitting_attack"), SittingAttackComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "health"), HealthComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "vulnerabilities"), VulnerabilitiesComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "fly_speed"), FlySpeedComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "anger"), AngerComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "melee_damage"), MeleeDamageComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "blast_attack"), BlastAttackComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "strafe_player"), StrafePlayerComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "acidball"), AcidballComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "charge_player"), ChargePlayerComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "land"), LandComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "spikes"), SpikesComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "crystal_respawn"), CrystalRespawnComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "minion"), MinionComponent.class);
-        registerComponent(new ResourceLocation(ProgressiveBosses.MOD_ID, "loot"), LootComponent.class);
+        registerComponent(ProgressiveBosses.id("sitting_attack"), SittingAttackComponent.class);
+        registerComponent(ProgressiveBosses.id("health"), HealthComponent.class);
+        registerComponent(ProgressiveBosses.id("vulnerabilities"), VulnerabilitiesComponent.class);
+        registerComponent(ProgressiveBosses.id("fly_speed"), FlySpeedComponent.class);
+        registerComponent(ProgressiveBosses.id("anger"), AngerComponent.class);
+        registerComponent(ProgressiveBosses.id("melee_damage"), MeleeDamageComponent.class);
+        registerComponent(ProgressiveBosses.id("blast_attack"), BlastAttackComponent.class);
+        registerComponent(ProgressiveBosses.id("strafe_player"), StrafePlayerComponent.class);
+        registerComponent(ProgressiveBosses.id("acidball"), AcidballComponent.class);
+        registerComponent(ProgressiveBosses.id("charge_player"), ChargePlayerComponent.class);
+        registerComponent(ProgressiveBosses.id("land"), LandComponent.class);
+        registerComponent(ProgressiveBosses.id("spikes"), SpikesComponent.class);
+        registerComponent(ProgressiveBosses.id("crystal_respawn"), CrystalRespawnComponent.class);
+        registerComponent(ProgressiveBosses.id("minion"), MinionComponent.class);
+        registerComponent(ProgressiveBosses.id("loot"), LootComponent.class);
     }
 
     public static void registerComponent(ResourceLocation id, Type type) {

@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.mixin.accessor;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import org.spongepowered.asm.mixin.Mixin;
@@ -11,4 +12,6 @@ public interface EndDragonFightAccessor {
     void setDragonKilled(boolean dragonKilled);
     @Accessor
     ServerLevel getLevel();
+    @Accessor
+    BlockPos getPortalLocation();
 }

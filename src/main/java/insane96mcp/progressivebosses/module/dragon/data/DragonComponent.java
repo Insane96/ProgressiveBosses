@@ -11,9 +11,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public interface DragonComponent {
     default void onPhaseChange(DragonPhaseEvent.Change event, EnderDragon dragon) {}
     default void onCrystalDestroyed(EnderDragon dragon, EndCrystal endCrystal, int crystalsAlive) {}
     default void onEntityJoinLevel(EntityJoinLevelEvent event, EnderDragon dragon) {}
-    default void onLivingHurt(LivingHurtEvent event, EnderDragon dragon) {}
+    default void onLivingHurt(LivingDamageEvent.Pre event, EnderDragon dragon) {}
     default void onLivingDeath(LivingDeathEvent event, EnderDragon dragon) {}
 
     static List<DragonComponent> deserializeList(JsonObject jObject, String memberName, JsonDeserializationContext context) {

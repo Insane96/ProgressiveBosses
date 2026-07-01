@@ -2,7 +2,7 @@
 
 NeoForge mod that allows to summon stronger versions of the Wither and Ender Dragon, plus makes the Elder Guardian fights slightly harder. Three modules: Ender Dragon, Wither, Elder Guardian.
 
-**Status**: Porting from 1.20.1 (`C:\Users\delvi\source\repos\Insane96\ProgressiveBosses_1.20.1`). The scaffolding runs but no modules are implemented yet. See `DRAGON_PORT_PLAN.md` for the in-progress dragon module port plan.
+**Status**: Porting from 1.20.1 (`C:\Users\delvi\source\repos\Insane96\ProgressiveBosses_1.20.1`).
 
 ## Key facts
 

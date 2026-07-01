@@ -14,7 +14,7 @@ import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Type;
@@ -49,34 +49,34 @@ public class VulnerabilitiesComponent implements DragonComponent {
     }
 
     @Override
-    public void onLivingHurt(LivingHurtEvent event, EnderDragon dragon) {
+    public void onLivingHurt(LivingDamageEvent.Pre event, EnderDragon dragon) {
         meleeDamageMultiplier(event, dragon);
         rangedDamageMultiplier(event, dragon);
         explosionDamageMultiplier(event, dragon);
     }
 
-    private void meleeDamageMultiplier(LivingHurtEvent event, EnderDragon dragon) {
+    private void meleeDamageMultiplier(LivingDamageEvent.Pre event, EnderDragon dragon) {
         if (!(event.getSource().getDirectEntity() instanceof LivingEntity))
             return;
         DragonValue multiplier = CENTER_PODIUM_PHASES.contains(dragon.getPhaseManager().getCurrentPhase().getPhase())
                 ? meleeDamageMultiplierWhenSitting
                 : meleeDamageMultiplierWhenFlying;
         if (multiplier != null)
-            event.setAmount(event.getAmount() * multiplier.getValue(dragon));
+            event.setNewDamage(event.getNewDamage() * multiplier.getValue(dragon));
     }
 
-    private void rangedDamageMultiplier(LivingHurtEvent event, EnderDragon dragon) {
+    private void rangedDamageMultiplier(LivingDamageEvent.Pre event, EnderDragon dragon) {
         if (!(event.getSource().getDirectEntity() instanceof Projectile)
                 || this.rangedDamageMultiplier == null)
             return;
-        event.setAmount(event.getAmount() * this.rangedDamageMultiplier.getValue(dragon));
+        event.setNewDamage(event.getNewDamage() * this.rangedDamageMultiplier.getValue(dragon));
     }
 
-    private void explosionDamageMultiplier(LivingHurtEvent event, EnderDragon dragon) {
+    private void explosionDamageMultiplier(LivingDamageEvent.Pre event, EnderDragon dragon) {
         if (!(event.getSource().is(DamageTypeTags.IS_EXPLOSION) && !event.getSource().is(DamageTypes.FIREWORKS))
                 || this.explosionDamageMultiplier == null)
             return;
-        event.setAmount(event.getAmount() * this.explosionDamageMultiplier.getValue(dragon));
+        event.setNewDamage(event.getNewDamage() * this.explosionDamageMultiplier.getValue(dragon));
     }
 
     public static class Serializer implements JsonDeserializer<VulnerabilitiesComponent> {

@@ -8,7 +8,6 @@ import insane96mcp.progressivebosses.mixin.accessor.ProjectileAccessor;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -35,7 +34,7 @@ public class AcidballComponent implements DragonComponent {
     public DragonValue impactDamage;
     public boolean is3DCloud;
 
-    static ResourceKey<DamageType> DRAGON_FIREBALL_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, new ResourceLocation(ProgressiveBosses.MOD_ID, "dragon_fireball"));
+    static ResourceKey<DamageType> DRAGON_FIREBALL_DAMAGE_TYPE = ResourceKey.create(Registries.DAMAGE_TYPE, ProgressiveBosses.id("dragon_fireball"));
 
     /// Returns true if the vanilla cloud must be canceled
     public boolean onAcidBallImpact(DragonFireball fireball, EnderDragon dragon, HitResult result) {

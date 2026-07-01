@@ -1,19 +1,22 @@
 package insane96mcp.progressivebosses.module.dragon;
 
-import insane96mcp.insanelib.base.Feature;
-import insane96mcp.insanelib.base.LoadFeature;
-import insane96mcp.insanelib.base.Module;
-import insane96mcp.insanelib.base.config.Config;
+import insane96mcp.insanelib.core.ModNBTData;
+import insane96mcp.insanelib.core.feature.Feature;
+import insane96mcp.insanelib.core.feature.LoadFeature;
+import insane96mcp.insanelib.core.feature.Module;
+import insane96mcp.insanelib.core.feature.config.Config;
 import insane96mcp.insanelib.util.MCUtils;
-import insane96mcp.insanelib.util.ModNBTData;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
+import insane96mcp.progressivebosses.mixin.accessor.EndDragonFightAccessor;
+import insane96mcp.progressivebosses.module.PBModules;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.*;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonHoldingPatternPhase;
 import insane96mcp.progressivebosses.network.SyncDragonAnger;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -36,28 +39,28 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.EntityLeaveLevelEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingExperienceDropEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.ItemTooltipEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingExperienceDropEvent;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
+import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@LoadFeature(module = ProgressiveBosses.RESOURCE_PREFIX + "ender_dragon")
+@LoadFeature(module = PBModules.ENDER_DRAGON)
 public class DragonFeature extends Feature {
+    public static final ResourceLocation NO_KNOCKBACK_ID = ProgressiveBosses.id("no_knockback");
+
     //TODO data gen
-    public static final TagKey<Item> DRAGON_INVULNERABLE = ItemTags.create(ResourceLocation.fromNamespaceAndPath(ProgressiveBosses.MOD_ID, "dragon_invulnerable"));
+    public static final TagKey<Item> DRAGON_INVULNERABLE = ItemTags.create(ProgressiveBosses.id("dragon_invulnerable"));
     public static ResourceLocation LEVEL;
     public static ResourceLocation PROCESSED;
 
@@ -90,7 +93,7 @@ public class DragonFeature extends Feature {
 
     public void init(Module module, boolean enabledByDefault, boolean canBeDisabled) {
         super.init(module, enabledByDefault, canBeDisabled);
-        ProgressiveBosses.addClientPack("endergetic_integration", "Endergetic Expansion integration", () -> ModList.get().isLoaded("endergetic"));
+        //ProgressiveBosses.addClientPack("endergetic_integration", "Endergetic Expansion integration", () -> ModList.get().isLoaded("endergetic"));
         LEVEL = this.createDataKey("level");
         PROCESSED = this.createDataKey("processed");
     }
@@ -100,16 +103,16 @@ public class DragonFeature extends Feature {
     }
 
     @SubscribeEvent
-    public void levelTick(TickEvent.LevelTickEvent event) {
+    public void levelTick(LevelTickEvent.Pre event) {
         if (!spawnDragon
-                || event.level.isClientSide)
+                || event.getLevel().isClientSide)
             return;
 
-        ServerLevel level = (ServerLevel) event.level;
-        if (level.getDragonFight() == null || level.getDragonFight().portalLocation == null)
+        ServerLevel level = (ServerLevel) event.getLevel();
+        if (level.getDragonFight() == null || ((EndDragonFightAccessor) level.getDragonFight()).getPortalLocation() == null)
             return;
         if (level.getGameTime() % 40 == 16) {
-            List<Player> closePlayers = level.getEntitiesOfClass(Player.class, new AABB(level.getDragonFight().portalLocation).inflate(48d, 32d, 48d));
+            List<Player> closePlayers = level.getEntitiesOfClass(Player.class, new AABB(((EndDragonFightAccessor) level.getDragonFight()).getPortalLocation()).inflate(48d, 32d, 48d));
             if (closePlayers.isEmpty())
                 return;
             level.getDragonFight().tryRespawn();
@@ -148,7 +151,7 @@ public class DragonFeature extends Feature {
 
         if (enableFixes) {
             dragon.setPortalCooldown(Integer.MAX_VALUE);
-            MCUtils.applyModifier(dragon, Attributes.KNOCKBACK_RESISTANCE, KNOCKBACK_REDUCTION_UUID, "Dragon no knockback", 1.0f, AttributeModifier.Operation.ADDITION, true);
+            MCUtils.applyModifier(dragon, Attributes.KNOCKBACK_RESISTANCE, NO_KNOCKBACK_ID, 1.0f, AttributeModifier.Operation.ADD_VALUE, true);
         }
 
         if (!ModNBTData.contains(dragon, LEVEL))
@@ -162,7 +165,7 @@ public class DragonFeature extends Feature {
             return;
         }
         stats.apply(dragon);
-        dragon.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ForgeRegistries.ENTITY_TYPES.getKey(dragon.getType())) + "." + dragonLvl));
+        dragon.setCustomName(Component.translatable(Util.makeDescriptionId("entity", BuiltInRegistries.ENTITY_TYPE.getKey(dragon.getType())) + "." + dragonLvl));
         ModNBTData.put(dragon, PROCESSED, true);
     }
 
@@ -201,7 +204,7 @@ public class DragonFeature extends Feature {
     }
 
     @SubscribeEvent
-    public void onUpdate(LivingEvent.LivingTickEvent event) {
+    public void onUpdate(EntityTickEvent.Post event) {
         CrystalRespawnComponent.tickCrystalPhantom(event);
         if (!this.isEnabled()
                 || !(event.getEntity() instanceof EnderDragon dragon))
@@ -263,7 +266,7 @@ public class DragonFeature extends Feature {
     }
 
     @SubscribeEvent
-    public void onLivingHurt(LivingHurtEvent event) {
+    public void onLivingHurt(LivingDamageEvent.Pre event) {
         if (!this.isEnabled())
             return;
 
@@ -277,9 +280,6 @@ public class DragonFeature extends Feature {
                     dragonDefinition.components.forEach(component -> component.onLivingHurt(event, dragon));
                 }
         );
-    }
-
-    public void onDragonHurt(LivingHurtEvent event) {
     }
 
     public static Optional<DragonDefinition> getDragonDefinition(EnderDragon dragon) {

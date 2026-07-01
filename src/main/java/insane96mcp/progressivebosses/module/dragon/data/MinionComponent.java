@@ -5,8 +5,8 @@ import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
+import insane96mcp.progressivebosses.mixin.accessor.MobAccessor;
 import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
-import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
@@ -32,7 +32,7 @@ import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -41,6 +41,8 @@ import java.util.Optional;
 
 @JsonAdapter(MinionComponent.Serializer.class)
 public class MinionComponent implements DragonComponent {
+    public static final ResourceLocation FOLLOW_RANGE_BONUS_ID = ProgressiveBosses.id("follow_range_bonus");
+
     public DragonValue health;
     public DragonValue spawned;
     public DragonValue averageCooldown;
@@ -49,7 +51,7 @@ public class MinionComponent implements DragonComponent {
     public static final String DRAGON_MINION = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion";
     public static final String DRAGON_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion_cooldown";
 
-    public static void onMinionHurt(LivingHurtEvent event) {
+    public static void onMinionHurt(LivingDamageEvent.Pre event) {
         if (!(event.getEntity() instanceof Shulker shulker))
             return;
 
@@ -58,7 +60,8 @@ public class MinionComponent implements DragonComponent {
             return;
 
         if (event.getSource().getEntity() instanceof EnderDragon)
-            event.setCanceled(true);
+            //TODO More damage hooks
+            event.setNewDamage(0f);
     }
 
     public void summonMinion(EnderDragon dragon, Level world, Vec3 pos) {
@@ -74,12 +77,12 @@ public class MinionComponent implements DragonComponent {
 
         shulker.setPos(pos.x, pos.y, pos.z);
         shulker.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ResourceLocation.parse(DRAGON_MINION))));
-        shulker.lootTable = BuiltInLootTables.EMPTY;
+        ((MobAccessor) shulker).setLootTable(BuiltInLootTables.EMPTY);
         shulker.setPersistenceRequired();
         shulker.setVariant(Optional.of(DyeColor.PURPLE));
 
         shulker.getAttribute(Attributes.MAX_HEALTH).setBaseValue(this.health.getValue(dragon));
-        MCUtils.applyModifier(shulker, Attributes.FOLLOW_RANGE, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS_UUID, Strings.AttributeModifiers.FOLLOW_RANGE_BONUS, 96, AttributeModifier.Operation.ADDITION);
+        MCUtils.applyModifier(shulker, Attributes.FOLLOW_RANGE, FOLLOW_RANGE_BONUS_ID, 96, AttributeModifier.Operation.ADD_VALUE);
 
         world.addFreshEntity(shulker);
         setMinionAI(shulker);
@@ -87,7 +90,7 @@ public class MinionComponent implements DragonComponent {
 
     public static void setMinionAI(Shulker shulker) {
         ArrayList<Goal> toRemove = new ArrayList<>();
-        shulker.goalSelector.availableGoals.forEach(goal -> {
+        shulker.goalSelector.getAvailableGoals().forEach(goal -> {
             if (goal.getGoal() instanceof Shulker.ShulkerAttackGoal)
                 toRemove.add(goal.getGoal());
         });
@@ -95,7 +98,7 @@ public class MinionComponent implements DragonComponent {
         shulker.goalSelector.addGoal(4, new DragonMinionAttackGoal(shulker, 200));
 
         toRemove.clear();
-        shulker.targetSelector.availableGoals.forEach(goal -> {
+        shulker.targetSelector.getAvailableGoals().forEach(goal -> {
             if (goal.getGoal() instanceof NearestAttackableTargetGoal)
                 toRemove.add(goal.getGoal());
             if (goal.getGoal() instanceof HurtByTargetGoal)
@@ -119,7 +122,7 @@ public class MinionComponent implements DragonComponent {
         }
 
         //If there is no player on the main island don't spawn minions
-        BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+        BlockPos centerPodium = dragon.level().getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.getLocation(BlockPos.ZERO));
         AABB bb = new AABB(centerPodium).inflate(96d);
         List<ServerPlayer> players = level.getEntitiesOfClass(ServerPlayer.class, bb);
 

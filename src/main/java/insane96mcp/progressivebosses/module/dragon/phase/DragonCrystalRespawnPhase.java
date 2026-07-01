@@ -2,6 +2,10 @@ package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.google.common.collect.ImmutableList;
 import insane96mcp.insanelib.util.MathHelper;
+import insane96mcp.progressivebosses.mixin.accessor.EnderDragonAccessor;
+import insane96mcp.progressivebosses.mixin.accessor.EnderDragonPhaseAccessor;
+import insane96mcp.progressivebosses.mixin.accessor.MobAccessor;
+import insane96mcp.progressivebosses.mixin.accessor.SpikeFeatureEndSpikeAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.corruptedendcrystal.CorruptedEndCrystal;
 import insane96mcp.progressivebosses.module.dragon.data.CrystalRespawnComponent;
@@ -62,7 +66,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			if (this.spikesToRespawn.isEmpty()) {
 				//dragon.getPhaseManager().setPhase(DragonBlastAttackPhase.getPhaseType());
 				dragon.getPhaseManager().setPhase(EnderDragonPhase.LANDING);
-				dragon.sittingDamageReceived = 0f;
+				((EnderDragonAccessor) dragon).setSittingDamageReceived(0f);
 				return;
 			}
 			this.targetLocation = new Vec3(spikesToRespawn.get(0).getCenterX() + 0.5, spikesToRespawn.get(0).getHeight() + 1, spikesToRespawn.get(0).getCenterZ() + 0.5);
@@ -71,13 +75,14 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		double distanceToTarget = this.targetLocation.distanceToSqr(dragon.getX(), dragon.getY(), dragon.getZ());
 		if (distanceToTarget < 9d) { //sqrt = 3
 			SpikeFeature.EndSpike spike = spikesToRespawn.get(0);
+			SpikeFeatureEndSpikeAccessor spikeAccessor = (SpikeFeatureEndSpikeAccessor) spike;
 			boolean shouldBeGuarded = component.cagedChance != null && this.dragon.getRandom().nextFloat() < component.cagedChance.getValue(this.dragon);
-			boolean wasGuarded = spike.guarded;
-			spike.guarded = shouldBeGuarded;
+			boolean wasGuarded = spikeAccessor.isGuarded();
+			spikeAccessor.setGuarded(shouldBeGuarded);
 			this.dragon.level().explode(null, spike.getCenterX() + 0.5F, spike.getHeight(), spike.getCenterZ() + 0.5F, 5.0F, Level.ExplosionInteraction.BLOCK);
 			RandomSource yungRandom = RandomSource.create(-1157087832721040245L); // Generates 0.0058419704 for Yung's Better End Island spikes to generate guarded
 			net.minecraft.world.level.levelgen.feature.Feature.END_SPIKE.place(new SpikeConfiguration(true, ImmutableList.of(spike), null), (ServerLevel) this.dragon.level(), ((ServerLevel) this.dragon.level()).getChunkSource().getGenerator(), shouldBeGuarded ? yungRandom : this.dragon.getRandom(), new BlockPos(spike.getCenterX(), 45, spike.getCenterZ()));
-			spike.guarded = wasGuarded;
+			spikeAccessor.setGuarded(wasGuarded);
 			EndCrystal crystal = this.dragon.level().getEntitiesOfClass(EndCrystal.class, spike.getTopBoundingBox()).stream().filter(c -> !(c instanceof CorruptedEndCrystal)).findFirst().orElse(null);
 			if (crystal != null) {
 				if (component.corruptedChance != null && this.dragon.getRandom().nextFloat() < component.corruptedChance.getValue(this.dragon)) {
@@ -117,9 +122,9 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		phantom.getAttribute(Attributes.MAX_HEALTH).setBaseValue(phantom.getAttributeBaseValue(Attributes.MAX_HEALTH) * 0.5f);
 		phantom.setHealth((float) phantom.getAttributeValue(Attributes.MAX_HEALTH));
 		phantom.getPersistentData().putUUID(CrystalRespawnComponent.PHANTOM_CRYSTAL, crystal.getUUID());
-		phantom.lootTable = BuiltInLootTables.EMPTY;
+		((MobAccessor) phantom).setLootTable(BuiltInLootTables.EMPTY);
 		List<WrappedGoal> toRemoveList = new ArrayList<>();
-		for (WrappedGoal wrappedGoal : phantom.targetSelector.availableGoals) {
+		for (WrappedGoal wrappedGoal : phantom.targetSelector.getAvailableGoals()) {
 			if (wrappedGoal.getGoal() instanceof PhantomAttackPlayerTargetGoal) {
 				toRemoveList.add(wrappedGoal);
 				phantom.targetSelector.addGoal(1, new PhantomAttackPlayerTargetGoal(phantom));
@@ -210,7 +215,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	}
 
 	public static void init() {
-		CRYSTAL_RESPAWN = EnderDragonPhase.create(DragonCrystalRespawnPhase.class, "CrystalRespawn");
+		CRYSTAL_RESPAWN = EnderDragonPhaseAccessor.invokeCreate(DragonCrystalRespawnPhase.class, "CrystalRespawn");
 	}
 
 	static class PhantomAttackPlayerTargetGoal extends Goal {

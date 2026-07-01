@@ -19,7 +19,7 @@ import net.minecraft.world.phys.AABB;
 import java.util.List;
 
 public class CorruptedEndCrystalItem extends EndCrystalItem {
-    static TagKey<Block> PLACEABLE_ON = TagKey.create(Registries.BLOCK, ProgressiveBosses.location("corrupted_end_crystal_placeable_on"));
+    static TagKey<Block> PLACEABLE_ON = TagKey.create(Registries.BLOCK, ProgressiveBosses.id("corrupted_end_crystal_placeable_on"));
 
     public CorruptedEndCrystalItem(Properties pProperties) {
         super(pProperties);

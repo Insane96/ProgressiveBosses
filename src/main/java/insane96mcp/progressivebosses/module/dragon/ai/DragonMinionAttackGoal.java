@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.ai;
 
+import insane96mcp.progressivebosses.mixin.accessor.ShulkerAccessor;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,11 +36,11 @@ public class DragonMinionAttackGoal extends Goal {
     }
 
     public void start() {
-        shulker.setRawPeekAmount(100);
+        ((ShulkerAccessor) shulker).callSetRawPeekAmount(100);
     }
 
     public void stop() {
-        shulker.setRawPeekAmount(0);
+        ((ShulkerAccessor) shulker).callSetRawPeekAmount(0);
     }
 
     public void tick() {

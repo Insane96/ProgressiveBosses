@@ -2,10 +2,11 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
-import insane96mcp.insanelib.base.Feature;
+import insane96mcp.insanelib.core.feature.Feature;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.DamageTypeTags;
@@ -20,8 +21,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.EndPodiumFeature;
 import net.minecraft.world.level.levelgen.feature.SpikeFeature;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.ForgeRegistries;
+import net.neoforged.fml.ModList;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class SpikesComponent implements DragonComponent {
     public int crystalsInside;
     public float insideCorruptedChance;
 
-    private static final ResourceLocation ENDERGETIC_CRYSTAL_LOCATION = new ResourceLocation("endergetic:crystal_holder");
+    private static final ResourceLocation ENDERGETIC_CRYSTAL_LOCATION = ResourceLocation.parse("endergetic:crystal_holder");
 
     public static boolean onCrystalDamagedByExplosion(DamageSource source) {
         if (!Feature.isEnabled(DragonFeature.class)
@@ -70,7 +70,7 @@ public class SpikesComponent implements DragonComponent {
     }
 
     public void generateCrystalInTower(Level level, int x, int y, int z) {
-        BlockPos centerPodium = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.END_PODIUM_LOCATION);
+        BlockPos centerPodium = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EndPodiumFeature.getLocation(BlockPos.ZERO));
         while (!level.getBlockState(centerPodium).is(Blocks.BEDROCK) && centerPodium.getY() > level.getSeaLevel()) {
             centerPodium = centerPodium.below();
         }
@@ -86,7 +86,7 @@ public class SpikesComponent implements DragonComponent {
 
         BlockState baseBlockState = Blocks.BEDROCK.defaultBlockState();
         if (ModList.get().isLoaded("endergetic"))
-            baseBlockState = ForgeRegistries.BLOCKS.getValue(ENDERGETIC_CRYSTAL_LOCATION).defaultBlockState();
+            baseBlockState = BuiltInRegistries.BLOCK.get(ENDERGETIC_CRYSTAL_LOCATION).defaultBlockState();
         level.setBlockAndUpdate(crystalPos.offset(0, -1, 0), baseBlockState);
 
         EndCrystal crystal = level.random.nextFloat() < this.insideCorruptedChance ? PBEntities.CORRUPTED_END_CRYSTAL.get().create(level) : EntityType.END_CRYSTAL.create(level);

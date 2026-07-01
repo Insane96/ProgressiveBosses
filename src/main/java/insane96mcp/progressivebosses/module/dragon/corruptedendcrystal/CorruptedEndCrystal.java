@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.corruptedendcrystal;
 
+import insane96mcp.progressivebosses.mixin.accessor.AreaEffectCloudAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.setup.PBEntities;
 import insane96mcp.progressivebosses.setup.PBItems;
@@ -65,7 +66,7 @@ public class CorruptedEndCrystal extends EndCrystal {
             cloud.setRadius(4f);
             cloud.setRadiusPerTick(0f);
             cloud.setWaitTime(0);
-            cloud.reapplicationDelay = 10;
+            ((AreaEffectCloudAccessor) cloud).setReapplicationDelay(10);
             cloud.setPos(this.position());
             level.addFreshEntity(cloud);
         }

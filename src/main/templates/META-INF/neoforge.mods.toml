@@ -35,3 +35,20 @@ config = "${mod_id}.mixins.json"
     versionRange = "${minecraft_version_range}"
     ordering = "NONE"
     side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "insanelib"
+    type = "required"
+    versionRange = "${insanelib_version_range}"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "areaeffectcloud3d"
+    type = "required"
+    versionRange = "${area_effect_cloud_3d_version_range}"
+    ordering = "NONE"
+    side = "BOTH"
+    [dependencies.${mod_id}.mc-publish]
+        modrinth = "area-effect-clouds-3d"
+        curseforge = "area-effect-clouds-3d"

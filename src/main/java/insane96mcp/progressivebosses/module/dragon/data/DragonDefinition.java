@@ -7,9 +7,9 @@ import com.google.gson.JsonParseException;
 import com.google.gson.annotations.JsonAdapter;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -45,7 +45,7 @@ public class DragonDefinition {
         components.forEach(component -> component.onEntityJoinLevel(event, dragon));
     }
 
-    public void onLivingHurt(LivingHurtEvent event, EnderDragon dragon) {
+    public void onLivingHurt(LivingDamageEvent.Pre event, EnderDragon dragon) {
         components.forEach(component -> component.onLivingHurt(event, dragon));
     }
 

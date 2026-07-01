@@ -5,6 +5,7 @@ import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.util.json.ILGsonHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
+import insane96mcp.progressivebosses.mixin.accessor.EnderDragonAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.network.SyncDragonAnger;
 import net.minecraft.core.particles.ParticleTypes;
@@ -15,7 +16,7 @@ import net.minecraft.world.entity.boss.enderdragon.EndCrystal;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -102,7 +103,7 @@ public class AngerComponent implements DragonComponent {
 
     public static void tickClient(EnderDragon dragon) {
         if (isAngered(dragon) && !dragon.getPhaseManager().getCurrentPhase().isSitting()) {
-            dragon.growlTime -= 4;
+            ((EnderDragonAccessor) dragon).setGrowlTime(((EnderDragonAccessor) dragon).getGrowlTime() - 4);
             Vec3 vec3 = dragon.getHeadLookVector(1.0F).normalize();
             vec3.yRot((-(float) Math.PI / 4F));
             double d0 = dragon.head.getX();
@@ -128,10 +129,10 @@ public class AngerComponent implements DragonComponent {
     }
 
     @Override
-    public void onLivingHurt(LivingHurtEvent event, EnderDragon dragon) {
+    public void onLivingHurt(LivingDamageEvent.Pre event, EnderDragon dragon) {
         if (this.damageToAngerRatio == null)
             return;
-        this.addAnger(dragon, this.damageToAngerRatio * event.getAmount());
+        this.addAnger(dragon, this.damageToAngerRatio * event.getNewDamage());
     }
 
     @Override

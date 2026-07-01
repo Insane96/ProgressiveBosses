@@ -10,8 +10,8 @@ import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
-import net.minecraftforge.event.entity.living.LivingEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -38,15 +38,16 @@ public class CrystalRespawnComponent implements DragonComponent, PhaseChanger {
     @Nullable
     public DragonValue cooldown;
 
-    public static void onPhantomHurt(LivingHurtEvent event) {
+    public static void onPhantomHurt(LivingDamageEvent.Pre event) {
+        //TODO Migrate to ModNBTData
         if (!event.getEntity().getPersistentData().contains(DRAGON_PHANTOM)
                 || !(event.getSource().getEntity() instanceof EnderDragon))
             return;
 
-        event.setAmount(event.getAmount() * 0.1f);
+        event.setNewDamage(event.getNewDamage() * 0.1f);
     }
 
-    public static void tickCrystalPhantom(LivingEvent.LivingTickEvent event) {
+    public static void tickCrystalPhantom(EntityTickEvent.Post event) {
         if (event.getEntity().level().isClientSide
                 || event.getEntity().tickCount % 30 != 0
                 || !event.getEntity().getPersistentData().contains(CrystalRespawnComponent.PHANTOM_CRYSTAL))

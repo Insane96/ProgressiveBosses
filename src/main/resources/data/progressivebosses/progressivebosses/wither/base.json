@@ -1,0 +1,65 @@
+{
+    "level": 0,
+    "attack": {
+        "skull_damage": 8.0,
+        "skull_speed_multiplier": 2,
+        "dangerous_skull_chance": {
+            "above_half_health": 0.4,
+            "below_half_health": 0.3
+        },
+        "attack_speed_near": 50,
+        "attack_speed_far": 40,
+        "side_heads_attack_speed_multiplier": 1.1,
+        "effect_amplifier": 0,
+        "effect_duration": {
+            "easy": 10,
+            "normal": 10,
+            "hard": 20
+        },
+        "attack_to_heal_threshold": 0,
+        "heal_on_skull_kill": 5,
+        "barrage": {
+            "chance_on_hit": {
+                "above_half_health": 0.3,
+                "below_half_health": 0.2
+            },
+            "min_duration": 50,
+            "max_duration": 100,
+            "attack_speed": 4,
+            "attack_cooldown_on_end": 50,
+            "inaccuracy": 1
+        },
+        "charge": {
+            "second_phase": {
+                "damage": 10,
+                "time_to_charge": 40,
+                "times": 2,
+                "barrage": true
+            },
+            "target_unseen": {
+                "damage": 10,
+                "time_to_charge": 40,
+                "seconds_unseen": 2,
+                "chance_per_second": 0.03
+            }
+        }
+    },
+    "health": {
+        "health": 500.0,
+        "regeneration": 1.0,
+        "regen_when_hit": 1.0,
+        "regen_when_hit_duration": 30
+    },
+    "death": {
+        "explosion_power": 8.0,
+        "explosion_causes_fire": false
+    },
+    "misc": {
+        "explosion_power": 7.0,
+        "explosion_causes_fire": false,
+        "ignore_wither_proof_blocks": false,
+        "nether_only": false
+    },
+    "xp_dropped": 500,
+    "loot_table": "progressivebosses:entities/wither/base"
+}

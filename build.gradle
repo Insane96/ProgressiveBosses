@@ -82,6 +82,7 @@ configurations {
 
 dependencies {
     implementation "maven.modrinth:insanelib:${insanelib_version}"
+    implementation "maven.modrinth:area-effect-clouds-3d:${area_effect_cloud_3d_version}"
 
     implementation(jarJar("io.github.llamalad7:mixinextras-neoforge:0.5.3"))
 }
@@ -96,6 +97,10 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
             mod_name               : mod_name,
             mod_license            : mod_license,
             mod_version            : mod_version,
+            insanelib_version      : insanelib_version,
+            insanelib_version_range: insanelib_version_range,
+            area_effect_cloud_3d_version      : area_effect_cloud_3d_version,
+            area_effect_cloud_3d_version_range: area_effect_cloud_3d_version_range,
     ]
     inputs.properties replaceProperties
     expand replaceProperties

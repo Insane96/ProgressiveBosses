@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(EnderDragonRenderer.class)
 public class EnderDragonRendererMixin {
     @Unique
-    private static final ResourceLocation ANGERED_EYES_LOCATION = new ResourceLocation(ProgressiveBosses.MOD_ID, "textures/entity/enderdragon/angered_dragon_eyes.png");
+    private static final ResourceLocation ANGERED_EYES_LOCATION = ProgressiveBosses.id("textures/entity/enderdragon/angered_dragon_eyes.png");
     @Unique
     private static final RenderType ANGERED_EYES = RenderType.eyes(ANGERED_EYES_LOCATION);
 

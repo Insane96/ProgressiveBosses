@@ -1,0 +1,12 @@
+{
+    "level": 1,
+    "bonus_damage": 0,
+    "attack_duration": 35,
+    "damage_resistance": 0.2,
+    "minion_cooldown": 105,
+    "health": 120,
+    "absorption": 30,
+    "regen_on_attack": 5,
+    "xp_dropped": 100,
+    "loot_table": "progressivebosses:entities/elder_guardian_1"
+}

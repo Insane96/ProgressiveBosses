@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.mojang.logging.LogUtils;
+import insane96mcp.progressivebosses.mixin.accessor.EnderDragonPhaseAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.AcidballComponent;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
@@ -107,13 +108,12 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         if (!this.dragon.isSilent())
             this.dragon.level().levelEvent(null, 1017, this.dragon.blockPosition(), 0);
 
-        DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, targetXOffset, targetYOffset, targetZOffset);
+        Vec3 power = new Vec3(targetXOffset, targetYOffset, targetZOffset);
         if (component != null && component.speedMultiplier != null) {
             float speedMultiplier = component.speedMultiplier.getValue(this.dragon);
-            dragonfireball.xPower *= speedMultiplier;
-            dragonfireball.yPower *= speedMultiplier;
-            dragonfireball.zPower *= speedMultiplier;
+            power = power.scale(speedMultiplier);
         }
+        DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, power);
         dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
         this.dragon.level().addFreshEntity(dragonfireball);
     }
@@ -231,6 +231,6 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
     }
 
     public static void init() {
-        PHASE = EnderDragonPhase.create(PBDragonStrafePlayerPhase.class, "PBStrafePlayer");
+        PHASE = EnderDragonPhaseAccessor.invokeCreate(PBDragonStrafePlayerPhase.class, "PBStrafePlayer");
     }
 }

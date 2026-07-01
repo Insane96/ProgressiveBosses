@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
+import insane96mcp.progressivebosses.mixin.accessor.EnderDragonPhaseAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.AngerComponent;
 import insane96mcp.progressivebosses.module.dragon.data.BlastAttackComponent;
@@ -160,6 +161,6 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
     }
 
     public static void init() {
-        PHASE = EnderDragonPhase.create(DragonBlastAttackPhase.class, "BlastAttack");
+        PHASE = EnderDragonPhaseAccessor.invokeCreate(DragonBlastAttackPhase.class, "BlastAttack");
     }
 }

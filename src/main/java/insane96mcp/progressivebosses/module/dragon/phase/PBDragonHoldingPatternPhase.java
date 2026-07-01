@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
+import insane96mcp.progressivebosses.mixin.accessor.EnderDragonPhaseAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.DragonDefinition;
 import insane96mcp.progressivebosses.module.dragon.data.PhaseChanger;
@@ -111,6 +112,6 @@ public class PBDragonHoldingPatternPhase extends AbstractDragonPhaseInstance {
     }
 
     public static void init() {
-        PHASE = EnderDragonPhase.create(PBDragonHoldingPatternPhase.class, "PBHoldPattern");
+        PHASE = EnderDragonPhaseAccessor.invokeCreate(PBDragonHoldingPatternPhase.class, "PBHoldPattern");
     }
 }
