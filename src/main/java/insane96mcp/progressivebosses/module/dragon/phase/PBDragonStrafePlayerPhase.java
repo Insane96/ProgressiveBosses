@@ -1,7 +1,7 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.mojang.logging.LogUtils;
-import insane96mcp.progressivebosses.mixin.IAccelerationPowerSync;
+import insane96mcp.progressivebosses.duck.IAccelerationPowerSync;
 import insane96mcp.progressivebosses.mixin.accessor.EnderDragonPhaseAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.AcidballComponent;

@@ -1,4 +1,4 @@
-package insane96mcp.progressivebosses.mixin;
+package insane96mcp.progressivebosses.duck;
 
 /**
  * Duck interface implemented (via mixin) by {@link net.minecraft.world.entity.projectile.AbstractHurtingProjectile}

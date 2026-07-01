@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
+import insane96mcp.progressivebosses.duck.IAccelerationPowerSync;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
