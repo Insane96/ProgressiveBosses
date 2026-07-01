@@ -45,9 +45,10 @@ public class ChargePlayerComponent implements DragonComponent, PhaseChanger {
         dragon.getPhaseManager().getPhase(EnderDragonPhase.CHARGING_PLAYER).setTarget(player.position());
     }
 
+    //TODO Configurable
     @Override
     public int getPriority() {
-        return 0;
+        return 1;
     }
 
     @Override

@@ -7,7 +7,7 @@
             "entries": [
                 {
                     "type": "minecraft:loot_table",
-                    "name": "minecraft:entities/ender_dragon"
+                    "value": "minecraft:entities/ender_dragon"
                 }
             ]
         },

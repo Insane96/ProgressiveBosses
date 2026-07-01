@@ -228,11 +228,14 @@ public class DragonFeature extends Feature {
         if (definition == null)
             return;
 
+        //LogHelper.chat(dragon, "[Phase] Change: %s -> %s (angered=%b)", event.getOldPhase(), event.getNewPhase(), AngerComponent.isAngered(dragon));
         definition.components.forEach(component -> component.onPhaseChange(event, dragon));
         if (event.getNewPhase() == EnderDragonPhase.DYING)
             return;
         if (event.getNewPhase() == EnderDragonPhase.HOLDING_PATTERN)
             event.setNewPhase(PBDragonHoldingPatternPhase.getPhaseType());
+        //if (event.getNewPhase() != event.getOldPhase())
+        //    LogHelper.chat(dragon, "[Phase] Resolved new phase: %s", event.getNewPhase());
     }
 
     @SubscribeEvent
@@ -244,6 +247,7 @@ public class DragonFeature extends Feature {
         if (definition == null)
             return;
 
+        //LogHelper.chat(event.getDragon(), "[Phase] Begin: %s (angered=%b)", event.getPhaseInstance().getPhase(), AngerComponent.isAngered(event.getDragon()));
         definition.components.forEach(component -> {
             if (component instanceof PhaseChanger phaseChanger)
                 phaseChanger.onPhaseBegin(event, event.getDragon());

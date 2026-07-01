@@ -2,13 +2,13 @@
 
 NeoForge mod that allows to summon stronger versions of the Wither and Ender Dragon, plus makes the Elder Guardian fights slightly harder. Three modules: Ender Dragon, Wither, Elder Guardian.
 
-**Status**: Porting from 1.20.1 (`C:\Users\delvi\source\repos\Insane96\ProgressiveBosses_1.20.1`).
+**Status**: Ported from 1.20.1 (`C:\Users\delvi\source\repos\Insane96\ProgressiveBosses_1.20.1`) now playtesting.
 
 ## Key facts
 
 - **Loader**: NeoForge (was MinecraftForge in 1.20.1)
 - **Java**: 21
-- **InsaneLib**: custom library by the same author; jar on Modrinth — check `gradle.properties` for version
+- **InsaneLib**: custom library by the same author; jar on Modrinth — check `gradle.properties` for version, code in `C:\Users\delvi\source\repos\InsaneLib`
 - **MixinExtras**: 0.5.3 (jarJar'd)
 - **Mixin config**: `src/main/resources/progressivebosses.mixins.json` (NeoForge embeds Mixin — no Gradle plugin needed)
 
@@ -33,7 +33,7 @@ src/main/resources/
 
 ### Module/Feature system
 
-The 1.21.1 insanelib does not use `@LoadFeature`. Modules are created via `Module.Builder.create(...)` in `PBModules.java`. Features register their own event listeners by receiving the `IEventBus` at construction.
+The 1.21.1 insanelib does use `@LoadFeature`. Modules are created via `Module.Builder.create(...)` in `PBModules.java`. Features register their own event listeners by receiving the `IEventBus` at construction.
 
 ### ModNBTData
 

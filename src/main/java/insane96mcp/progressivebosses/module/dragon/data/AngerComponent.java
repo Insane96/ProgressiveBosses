@@ -43,11 +43,16 @@ public class AngerComponent implements DragonComponent {
     }
 
     public void addAnger(EnderDragon dragon, float anger) {
-        if (isAngered(dragon))
+        if (isAngered(dragon)) {
+            //LogHelper.chat(dragon, "[Anger] addAnger(+%.2f) ignored, dragon already angered (anger=%.2f)", anger, getAnger(dragon));
             return;
-        float newAnger = getAnger(dragon) + anger;
+        }
+        float oldAnger = getAnger(dragon);
+        float newAnger = oldAnger + anger;
         dragon.getPersistentData().putFloat(ANGER_TAG, newAnger);
+        //LogHelper.chat(dragon, "[Anger] addAnger: %.2f -> %.2f (+%.2f, maxAnger=%d)", oldAnger, newAnger, anger, this.maxAnger);
         if (newAnger >= this.maxAnger) {
+            //LogHelper.chat(dragon, "[Anger] reached maxAnger (%.2f >= %d), triggering blast or angering", newAnger, this.maxAnger);
             DragonFeature.getDragonDefinition(dragon)
                     .flatMap(stats -> stats.getComponent(BlastAttackComponent.class))
                     .ifPresentOrElse(
@@ -80,8 +85,10 @@ public class AngerComponent implements DragonComponent {
             tickDown = this.tickDown;
         else
             return;
+        float before = anger;
         anger -= tickDown;
         dragon.getPersistentData().putFloat(ANGER_TAG, anger);
+        //LogHelper.chat(dragon, "[Anger] tickAnger: %.2f -> %.2f (tickDown=%.3f, angered=%b, maxAnger=%d, duration=%d)", before, anger, tickDown, angered, this.maxAnger, this.angerDuration);
         if (anger <= 0f) {
             dragon.getPersistentData().putFloat(ANGER_TAG, 0f);
             setAngered(dragon, false);
@@ -89,6 +96,8 @@ public class AngerComponent implements DragonComponent {
     }
 
     public static void setAngered(EnderDragon dragon, boolean angered) {
+        //if (isAngered(dragon) != angered)
+        //    LogHelper.chat(dragon, "[Anger] setAngered: %b -> %b (anger=%.2f)", isAngered(dragon), angered, getAnger(dragon));
         dragon.getPersistentData().putBoolean(ANGERED_TAG, angered);
         if (!dragon.level().isClientSide)
             ((ServerLevel) dragon.level()).players()
