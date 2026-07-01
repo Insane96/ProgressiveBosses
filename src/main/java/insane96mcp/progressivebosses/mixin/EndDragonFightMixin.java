@@ -84,7 +84,7 @@ public class EndDragonFightMixin {
 		for (int i = 0; i < component.cages; i++) {
 			if (i >= spikes.size())
 				break;
-			((SpikeFeatureEndSpikeAccessor) spikes.get(i)).setGuarded(false);
+			((SpikeFeatureEndSpikeAccessor) spikes.get(i)).setGuarded(true);
 		}
 	}
 
