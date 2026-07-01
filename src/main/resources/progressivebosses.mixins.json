@@ -5,6 +5,7 @@
   "mixins": [
 	  "AbstractDragonPhaseInstanceMixin",
 	  "AbstractDragonSittingPhaseMixin",
+	  "AbstractHurtingProjectileMixin",
 	  "DragonChargePlayerPhaseMixin",
 	  "DragonFireballMixin",
 	  "DragonLandingPhaseMixin",

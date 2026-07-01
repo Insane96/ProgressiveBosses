@@ -14,8 +14,12 @@
     }
   ],
   "result": {
-    "item": "progressivebosses:corrupted_soul_sand",
+    "id": "progressivebosses:corrupted_soul_sand",
     "count": 1,
-    "nbt": "{BlockEntityTag:{lvl:1}}"
+    "components": {
+      "minecraft:block_entity_data": {
+        "lvl": 1
+      }
+    }
   }
 }

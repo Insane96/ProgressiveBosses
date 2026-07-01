@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.mojang.logging.LogUtils;
+import insane96mcp.progressivebosses.mixin.IAccelerationPowerSync;
 import insane96mcp.progressivebosses.mixin.accessor.EnderDragonPhaseAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.AcidballComponent;
@@ -112,10 +113,12 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
         DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, power);
         //The constructor normalizes the power vector down to accelerationPower (0.1), so the speed
         //multiplier has to be applied to accelerationPower (per-tick acceleration) and the initial
-        //velocity after construction, otherwise it gets discarded.
+        //velocity after construction, otherwise it gets discarded. accelerationPower is set through the
+        //sync interface so it lands in the spawn packet (vanilla no longer networks it), keeping the
+        //client-side speed correct from the first tick instead of snapping a few ticks later.
         if (component != null && component.speedMultiplier != null) {
             float speedMultiplier = component.speedMultiplier.getValue(this.dragon);
-            dragonfireball.accelerationPower *= speedMultiplier;
+            ((IAccelerationPowerSync) dragonfireball).progressivebosses$setAccelerationPower(dragonfireball.accelerationPower * speedMultiplier);
             dragonfireball.setDeltaMovement(dragonfireball.getDeltaMovement().scale(speedMultiplier));
         }
         dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
