@@ -109,11 +109,15 @@ public class PBDragonStrafePlayerPhase extends AbstractDragonPhaseInstance {
             this.dragon.level().levelEvent(null, 1017, this.dragon.blockPosition(), 0);
 
         Vec3 power = new Vec3(targetXOffset, targetYOffset, targetZOffset);
+        DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, power);
+        //The constructor normalizes the power vector down to accelerationPower (0.1), so the speed
+        //multiplier has to be applied to accelerationPower (per-tick acceleration) and the initial
+        //velocity after construction, otherwise it gets discarded.
         if (component != null && component.speedMultiplier != null) {
             float speedMultiplier = component.speedMultiplier.getValue(this.dragon);
-            power = power.scale(speedMultiplier);
+            dragonfireball.accelerationPower *= speedMultiplier;
+            dragonfireball.setDeltaMovement(dragonfireball.getDeltaMovement().scale(speedMultiplier));
         }
-        DragonFireball dragonfireball = new DragonFireball(this.dragon.level(), this.dragon, power);
         dragonfireball.moveTo(headXOffset, headYOffset, headZOffset, 0.0F, 0.0F);
         this.dragon.level().addFreshEntity(dragonfireball);
     }
