@@ -131,8 +131,13 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
      */
     public boolean hurt(DamageSource pSource, float pAmount) {
         if (this.isDangerous() && !(pSource.getDirectEntity() instanceof PBWitherSkull)) {
-            this.accelerationPower *= 1.5;
-            this.setDeltaMovement(this.getDeltaMovement().scale(1.5));
+            Entity attacker = pSource.getEntity();
+            if (attacker == null)
+                return false;
+            this.markHurt();
+            this.setDeltaMovement(attacker.getLookAngle().scale(1.5));
+            this.hasImpulse = true;
+            this.setOwner(attacker);
             return true;
         }
         return false;
@@ -140,6 +145,7 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
 
     @Override
     protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
         builder.define(DATA_DANGEROUS, false);
     }
 
@@ -153,8 +159,8 @@ public class PBWitherSkull extends AbstractHurtingProjectile {
     /**
      * Set whether this skull comes from an invulnerable (aura) wither boss.
      */
-    public void setDangerous(boolean pInvulnerable) {
-        this.entityData.set(DATA_DANGEROUS, pInvulnerable);
+    public void setDangerous(boolean dangerous) {
+        this.entityData.set(DATA_DANGEROUS, dangerous);
     }
 
     protected boolean shouldBurn() {

@@ -2,7 +2,7 @@
 
 NeoForge mod that allows to summon stronger versions of the Wither and Ender Dragon, plus makes the Elder Guardian fights slightly harder. Three modules: Ender Dragon, Wither, Elder Guardian.
 
-**Status**: Ported from 1.20.1 (`C:\Users\delvi\source\repos\Insane96\ProgressiveBosses_1.20.1`) now playtesting.
+**Status**: Fully ported from 1.20.1 (`C:\Users\delvi\source\repos\Insane96\ProgressiveBosses_1.20.1`); all three modules (Ender Dragon, Wither, Elder Guardian) are implemented. Now in playtesting/bugfixing.
 
 ## Key facts
 
@@ -19,15 +19,23 @@ src/main/java/insane96mcp/progressivebosses/
   ProgressiveBosses.java          — mod entry point, wires up all registries/events
   module/
     PBModules.java                — registers the three modules with InsaneLib
-    dragon/                       — Ender Dragon module (NOT YET PORTED)
-    wither/                       — Wither module (NOT YET PORTED)
-    elderguardian/                — Elder Guardian module (NOT YET PORTED)
-  mixin/                          — all mixins (empty; filled during porting)
-  utils/
-    Utils.java
+    dragon/                       — Ender Dragon module: component-based (DragonComponent/DragonDefinition/ComponentRegistry),
+                                     JSON-driven per-level definitions, custom phases, corrupted end crystal
+    wither/                       — Wither module: custom PBWither entity/renderer, minions, corrupted soul sand,
+                                     fixed-field stat classes (WitherStats etc.)
+    elderguardian/                — Elder Guardian module: fixed-field stat class (ElderGuardianStats)
+  mixin/                          — ~22 core mixins + accessor/ + client/ subpackages (see mixins.json)
+  loot/                           — custom loot conditions/functions (LvlCondition, RandomChanceWithLvlCondition, SetCountPerLvl)
+  network/                        — CustomPacketPayload records (BeginBlastAttackPhase, SyncDragonAnger)
+  setup/                          — DeferredRegister holders (PBBlocks, PBEntities, PBItems, PBLoot, ClientSetup, Strings)
+  data/, event/, commands/, duck/, utils/
 src/main/resources/
-  progressivebosses.mixins.json   — mixin registry (currently empty)
+  progressivebosses.mixins.json   — mixin registry (fully populated)
+  data/progressivebosses/         — dragon/wither/elder_guardian level-definition datapacks, loot tables, recipes, tags
+  integrated_packs/               — compat packs for other mods (e.g. endergetic_integration)
 ```
+
+Note: the Wither and Elder Guardian modules use fixed-field stat classes, NOT the component system. Only the dragon module uses the JSON component architecture (see `component_system_enhancements.md` in repo root for known limitations/ideas — not yet acted on).
 
 ## InsaneLib patterns
 
