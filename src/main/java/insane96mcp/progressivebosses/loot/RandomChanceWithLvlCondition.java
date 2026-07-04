@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import insane96mcp.progressivebosses.setup.PBLoot;
-import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LvlHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -42,7 +41,7 @@ public class RandomChanceWithLvlCondition implements LootItemCondition {
         if (!(entity instanceof Mob mob))
             return false;
 
-        if (!mob.getPersistentData().contains(Strings.Tags.DIFFICULTY))
+        if (!LvlHelper.hasLvl(mob))
             return false;
 
         float lvl = LvlHelper.getLvl(mob);

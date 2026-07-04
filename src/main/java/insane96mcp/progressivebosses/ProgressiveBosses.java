@@ -39,8 +39,6 @@ import java.util.function.BooleanSupplier;
 @Mod(ProgressiveBosses.MOD_ID)
 public class ProgressiveBosses {
     public static final String MOD_ID = "progressivebosses";
-    @Deprecated
-    public static final String RESOURCE_PREFIX = MOD_ID + ":";
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public static final ResourceLocation LVL = id("lvl");

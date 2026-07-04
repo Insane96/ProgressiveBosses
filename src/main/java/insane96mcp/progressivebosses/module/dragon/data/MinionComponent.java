@@ -3,6 +3,7 @@ package insane96mcp.progressivebosses.module.dragon.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import insane96mcp.insanelib.ai.ILNearestAttackableTargetGoal;
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.mixin.accessor.MobAccessor;
@@ -10,7 +11,6 @@ import insane96mcp.progressivebosses.module.dragon.ai.DragonMinionAttackGoal;
 import insane96mcp.progressivebosses.utils.LogHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -48,19 +48,18 @@ public class MinionComponent implements DragonComponent {
     public DragonValue averageCooldown;
     public DragonValue deltaCooldown;
 
-    public static final String DRAGON_MINION = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion";
-    public static final String DRAGON_MINION_COOLDOWN = ProgressiveBosses.RESOURCE_PREFIX + "dragon_minion_cooldown";
+    public static final ResourceLocation DRAGON_MINION = ProgressiveBosses.id("dragon_minion");
+    public static final ResourceLocation DRAGON_MINION_COOLDOWN = ProgressiveBosses.id("dragon_minion_cooldown");
 
     public static void onMinionHurt(LivingDamageEvent.Pre event) {
         if (!(event.getEntity() instanceof Shulker shulker))
             return;
 
-        CompoundTag compoundNBT = shulker.getPersistentData();
-        if (!compoundNBT.contains(DRAGON_MINION))
+        if (!ModNBTData.get(shulker, DRAGON_MINION, Boolean.class))
             return;
 
         if (event.getSource().getEntity() instanceof EnderDragon)
-            //TODO More damage hooks
+            //TODO More damage hooks, so I can cancel the damage
             event.setNewDamage(0f);
     }
 
@@ -70,13 +69,13 @@ public class MinionComponent implements DragonComponent {
             LogHelper.warn("Failed to summon Dragon Minion");
             return;
         }
-        CompoundTag minionTags = shulker.getPersistentData();
-        minionTags.putBoolean(DRAGON_MINION, true);
+        ModNBTData.put(shulker, DRAGON_MINION, true);
 
-        minionTags.putBoolean("mobspropertiesrandomness:processed", true);
+        //TODO fix?
+        //minionTags.putBoolean("mobspropertiesrandomness:processed", true);
 
         shulker.setPos(pos.x, pos.y, pos.z);
-        shulker.setCustomName(Component.translatable(Util.makeDescriptionId("entity", ResourceLocation.parse(DRAGON_MINION))));
+        shulker.setCustomName(Component.translatable(Util.makeDescriptionId("entity", DRAGON_MINION)));
         ((MobAccessor) shulker).setLootTable(BuiltInLootTables.EMPTY);
         shulker.setPersistenceRequired();
         shulker.setVariant(Optional.of(DyeColor.PURPLE));
@@ -114,10 +113,9 @@ public class MinionComponent implements DragonComponent {
     public void tick(EnderDragon dragon) {
         Level level = dragon.level();
 
-        CompoundTag dragonTags = dragon.getPersistentData();
-        int cooldown = dragonTags.getInt(DRAGON_MINION_COOLDOWN);
+        int cooldown = ModNBTData.get(dragon, DRAGON_MINION_COOLDOWN, Integer.class);
         if (--cooldown > 0) {
-            dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown);
+            ModNBTData.put(dragon, DRAGON_MINION_COOLDOWN, cooldown);
             return;
         }
 
@@ -130,7 +128,7 @@ public class MinionComponent implements DragonComponent {
             return;
 
         cooldown = (int) level.random.triangle(this.averageCooldown.getIntValue(dragon), this.deltaCooldown.getIntValue(dragon));
-        dragonTags.putInt(DRAGON_MINION_COOLDOWN, cooldown);
+        ModNBTData.put(dragon, DRAGON_MINION_COOLDOWN, cooldown);
         int spawned = this.spawned.getIntValue(dragon);
         for (int i = 0; i < spawned; i++) {
             float angle = level.random.nextFloat() * (float) Math.PI * 2f;
@@ -144,7 +142,7 @@ public class MinionComponent implements DragonComponent {
     @Override
     public void apply(EnderDragon dragon) {
         int cooldown = (int) dragon.getRandom().triangle(this.averageCooldown.getIntValue(dragon), this.deltaCooldown.getIntValue(dragon));
-        dragon.getPersistentData().putInt(DRAGON_MINION_COOLDOWN, cooldown);
+        ModNBTData.put(dragon, DRAGON_MINION_COOLDOWN, cooldown);
     }
 
     public static class Serializer implements JsonDeserializer<MinionComponent> {

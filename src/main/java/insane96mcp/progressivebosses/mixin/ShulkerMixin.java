@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.mixin;
 
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.progressivebosses.module.dragon.data.MinionComponent;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.AbstractGolem;
@@ -20,7 +21,7 @@ public abstract class ShulkerMixin extends AbstractGolem implements Enemy {
 
 	@Inject(at = @At("HEAD"), method = "hitByShulkerBullet()V", cancellable = true)
 	public void progressivebosses$preventMinionSelfLevitation(CallbackInfo callback) {
-		if (this.getPersistentData().contains(MinionComponent.DRAGON_MINION))
+		if (ModNBTData.get(this, MinionComponent.DRAGON_MINION, Boolean.class))
 			callback.cancel();
 	}
 }

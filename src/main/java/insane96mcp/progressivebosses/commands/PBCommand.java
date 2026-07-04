@@ -92,17 +92,17 @@ public class PBCommand {
     private static int summon(CommandSourceStack source, EntityType<? extends LivingEntity> entityType, int lvl, Vec3 pos) {
         LivingEntity entity = entityType.create(source.getLevel());
         if (entity == null) {
-            source.sendFailure(Component.translatable(ProgressiveBosses.RESOURCE_PREFIX + "command.failed_to_summon", entityType));
+            source.sendFailure(Component.translatable(ProgressiveBosses.lang("command.failed_to_summon"), entityType));
             return 0;
         }
         LvlHelper.setLvl(entity, lvl);
         entity.setPos(pos);
         if (source.getLevel().addFreshEntity(entity)) {
-            source.sendSuccess(() -> Component.translatable(ProgressiveBosses.RESOURCE_PREFIX + "command.summoned_entity", entity.getDisplayName(), lvl), true);
+            source.sendSuccess(() -> Component.translatable(ProgressiveBosses.lang("command.summoned_entity"), entity.getDisplayName(), lvl), true);
             return 1;
         }
         else {
-            source.sendFailure(Component.translatable(ProgressiveBosses.RESOURCE_PREFIX + "command.failed_to_summon", entityType));
+            source.sendFailure(Component.translatable(ProgressiveBosses.lang("command.failed_to_summon"), entityType));
             return 0;
         }
     }

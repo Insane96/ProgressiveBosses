@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import insane96mcp.progressivebosses.setup.PBLoot;
-import insane96mcp.progressivebosses.setup.Strings;
 import insane96mcp.progressivebosses.utils.LvlHelper;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
@@ -63,7 +62,7 @@ public class SetCountPerLvl extends LootItemConditionalFunction {
         if (!(entity instanceof Mob mob))
             return itemStack;
 
-        if (!mob.getPersistentData().contains(Strings.Tags.DIFFICULTY))
+        if (!LvlHelper.hasLvl(mob))
             return itemStack;
 
         int lvl = LvlHelper.getLvl(mob);

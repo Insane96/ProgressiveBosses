@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.progressivebosses.module.dragon.data.MinionComponent;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
@@ -19,12 +20,11 @@ public abstract class ShulkerBulletMixin extends Projectile {
 
 	public ShulkerBulletMixin(EntityType<? extends Projectile> entityType, Level world) {
 		super(entityType, world);
-		this.noPhysics = true;
 	}
 
 	@WrapOperation(method = "onHitEntity", at = @At(value = "NEW", target = "(Lnet/minecraft/core/Holder;I)Lnet/minecraft/world/effect/MobEffectInstance;"))
     private MobEffectInstance progressivebosses$levitationDuration(Holder<MobEffect> effect, int amplifier, Operation<MobEffectInstance> original) {
-		if (this.getOwner() != null && this.getOwner().getPersistentData().contains(MinionComponent.DRAGON_MINION))
+		if (this.getOwner() != null && ModNBTData.get(this.getOwner(), MinionComponent.DRAGON_MINION, Boolean.class))
 			return new MobEffectInstance(MobEffects.LEVITATION, 500);
 		return original.call(effect, amplifier);
 	}
