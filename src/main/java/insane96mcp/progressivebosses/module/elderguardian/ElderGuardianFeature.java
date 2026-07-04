@@ -59,15 +59,16 @@ import java.util.Optional;
 public class ElderGuardianFeature extends Feature {
 	public static final ResourceLocation ELDER_MINION_BONUS = ProgressiveBosses.id("elder_minion_bonus");
 
+	public static ResourceLocation ELDER_MINION = ProgressiveBosses.id("elder_minion");
+
 	public static ResourceLocation LEVEL;
 	public static ResourceLocation PREVIOUSLY_NEAR_ELDER_GUARDIAN;
 	public static ResourceLocation ADVENTURE_MESSAGE;
 	public static ResourceLocation ELDER_MINION_COOLDOWN;
-	public static ResourceLocation ELDER_MINION;
 	public static String APPROACHING_ELDER_GUARDIAN = ProgressiveBosses.lang("elder_guardian.approach");
-	@Config(description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby. This also removes Mining Fatigue.")
-	public static Boolean adventure = true;
 
+	@Config(description = "If true, the player will not be able to break blocks when an Elder Guardian is nearby. This also removes Mining Fatigue.")
+	public static Boolean adventure = false;
 	@Config(description = "The range from any Elder Guardian at which players get adventure mode. This range is doubled when YUNG's Better Ocean Monuments is installed.")
 	public static Double adventureRange = 48d;
 
@@ -77,7 +78,6 @@ public class ElderGuardianFeature extends Feature {
         PREVIOUSLY_NEAR_ELDER_GUARDIAN = this.createDataKey("previously_near_elder_guardian");
         ADVENTURE_MESSAGE = this.createDataKey("adventure_message");
         ELDER_MINION_COOLDOWN = this.createDataKey("elder_minion_cooldown");
-        ELDER_MINION = this.createDataKey("elder_minion");
 	}
 
 	@SubscribeEvent
@@ -223,8 +223,14 @@ public class ElderGuardianFeature extends Feature {
 		maxHealth.setBaseValue(oElderGuardianStats.get().health);
 		elderGuardian.heal((float) (oElderGuardianStats.get().health - prevMaxHealth));
 
-		if (oElderGuardianStats.get().absorption > 0)
+		if (oElderGuardianStats.get().absorption > 0) {
+			AttributeInstance maxAbsorption = elderGuardian.getAttribute(Attributes.MAX_ABSORPTION);
+			if (maxAbsorption != null)
+				maxAbsorption.setBaseValue(oElderGuardianStats.get().absorption);
 			elderGuardian.setAbsorptionAmount(oElderGuardianStats.get().absorption);
+		}
+
+		((MobAccessor) elderGuardian).setLootTable(oElderGuardianStats.get().lootTable);
 	}
 
 	/*

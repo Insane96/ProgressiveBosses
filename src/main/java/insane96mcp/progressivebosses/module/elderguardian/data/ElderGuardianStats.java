@@ -3,15 +3,18 @@ package insane96mcp.progressivebosses.module.elderguardian.data;
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.reflect.TypeToken;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
+import net.minecraft.world.level.storage.loot.LootTable;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
 @JsonAdapter(ElderGuardianStats.Serializer.class)
 public class ElderGuardianStats {
-    private static final ResourceLocation VANILLA_LOOT_TABLE = ResourceLocation.withDefaultNamespace("entities/elder_guardian");
+    private static final ResourceKey<LootTable> VANILLA_LOOT_TABLE = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.withDefaultNamespace("entities/elder_guardian"));
 
     public int level;
     public float bonusDamage;
@@ -22,9 +25,9 @@ public class ElderGuardianStats {
     public float absorption;
     public float regenOnAttack;
     public int xpDropped;
-    public ResourceLocation lootTable;
+    public ResourceKey<LootTable> lootTable;
 
-    public ElderGuardianStats(int level, float bonusDamage, int attackDuration, float damageResistance, int minionCooldown, float health, float absorption, float regenOnAttack, int xpDropped, ResourceLocation lootTable) {
+    public ElderGuardianStats(int level, float bonusDamage, int attackDuration, float damageResistance, int minionCooldown, float health, float absorption, float regenOnAttack, int xpDropped, ResourceKey<LootTable> lootTable) {
         this.level = level;
         this.bonusDamage = bonusDamage;
         this.attackDuration = attackDuration;
@@ -43,8 +46,8 @@ public class ElderGuardianStats {
         @Override
         public ElderGuardianStats deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             JsonObject jObject = json.getAsJsonObject();
-            String sLootTable = GsonHelper.getAsString(jObject, "loot_table", VANILLA_LOOT_TABLE.getPath());
-            ResourceLocation lootTable = ResourceLocation.tryParse(sLootTable);
+            String sLootTable = GsonHelper.getAsString(jObject, "loot_table", VANILLA_LOOT_TABLE.location().getPath());
+            ResourceKey<LootTable> lootTable = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.parse(sLootTable));
             return new ElderGuardianStats(GsonHelper.getAsInt(jObject, "level"),
                     GsonHelper.getAsFloat(jObject, "bonus_damage"),
                     GsonHelper.getAsInt(jObject, "attack_duration"),
@@ -70,7 +73,7 @@ public class ElderGuardianStats {
             jObject.addProperty("regen_on_attack", src.regenOnAttack);
             jObject.addProperty("xp_dropped", src.xpDropped);
             if (!src.lootTable.equals(VANILLA_LOOT_TABLE))
-                jObject.addProperty("loot_table", src.lootTable.toString());
+                jObject.addProperty("loot_table", src.lootTable.location().toString());
             return jObject;
         }
     }
