@@ -43,6 +43,8 @@ public class ProgressiveBosses {
     public static final String RESOURCE_PREFIX = MOD_ID + ":";
     public static final Logger LOGGER = LogUtils.getLogger();
 
+    public static final ResourceLocation LVL = id("lvl");
+
     public static ILModConfig CONFIG;
 
     public ProgressiveBosses(IEventBus eventBus, ModContainer modContainer) {

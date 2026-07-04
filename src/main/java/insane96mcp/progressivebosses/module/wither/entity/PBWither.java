@@ -2,7 +2,6 @@ package insane96mcp.progressivebosses.module.wither.entity;
 
 import com.google.common.collect.ImmutableList;
 import insane96mcp.insanelib.data.SerializableAttributeModifier;
-import insane96mcp.progressivebosses.module.ILvl;
 import insane96mcp.progressivebosses.module.wither.WitherFeature;
 import insane96mcp.progressivebosses.module.wither.ai.WitherChargeAttackGoal;
 import insane96mcp.progressivebosses.module.wither.ai.WitherInvulnerableGoal;
@@ -12,6 +11,7 @@ import insane96mcp.progressivebosses.module.wither.data.WitherStats;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
 import insane96mcp.progressivebosses.module.wither.entity.skull.PBWitherSkull;
 import insane96mcp.progressivebosses.utils.LogHelper;
+import insane96mcp.progressivebosses.utils.LvlHelper;
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ColorParticleOption;
@@ -71,7 +71,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 
-public class PBWither extends Monster implements PowerableMob, RangedAttackMob, ILvl {
+public class PBWither extends Monster implements PowerableMob, RangedAttackMob {
     public static final int CHARGE_ATTACK_TICK_CHARGE = 30;
     public static final int BARRAGE_CHARGE_UP_TICKS = 30;
     private static final EntityDataAccessor<Integer> DATA_TARGET_A = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
@@ -80,7 +80,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     private static final List<EntityDataAccessor<Integer>> DATA_TARGETS = ImmutableList.of(DATA_TARGET_A, DATA_TARGET_B, DATA_TARGET_C);
     private static final EntityDataAccessor<Integer> DATA_ID_INV = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_ID_DYING = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> LVL = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> CHARGING = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> BARRAGE_CHARGE_UP = SynchedEntityData.defineId(PBWither.class, EntityDataSerializers.INT);
     private static final int INVULNERABLE_TICKS = 220;
@@ -158,7 +157,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("Invul", this.getInvulnerableTicks());
-        tag.putInt("lvl", this.getLvl());
     }
 
     /**
@@ -167,10 +165,11 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
     public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.setInvulnerableTicks(tag.getInt("Invul"));
-        this.setLvl(tag.getInt("lvl"));
         if (this.hasCustomName()) {
             this.bossEvent.setName(this.getDisplayName());
         }
+
+        this.setLvl(this.getLvl());
     }
 
     @Override
@@ -181,7 +180,6 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
         builder.define(DATA_TARGET_C, 0);
         builder.define(DATA_ID_INV, 0);
         builder.define(DATA_ID_DYING, 0);
-        builder.define(LVL, 0);
         builder.define(CHARGING, 0);
         builder.define(BARRAGE_CHARGE_UP, 0);
     }
@@ -340,14 +338,14 @@ public class PBWither extends Monster implements PowerableMob, RangedAttackMob, 
                 return;
             }
         }
-        this.entityData.set(LVL, lvl);
         this.stats = WitherStatsReloadListener.STATS_MAP.get(lvl);
         this.stats.apply(this);
         this.bossEvent.setName(this.getDisplayName());
+        LvlHelper.setLvl(this, lvl);
     }
 
     public int getLvl() {
-        return this.entityData.get(LVL);
+        return LvlHelper.getLvl(this);
     }
 
     public void setCustomName(@Nullable Component pName) {

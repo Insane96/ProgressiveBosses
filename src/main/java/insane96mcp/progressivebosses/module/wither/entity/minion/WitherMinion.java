@@ -5,7 +5,6 @@ import insane96mcp.insanelib.util.MCUtils;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.mixin.accessor.AbstractSkeletonAccessor;
-import insane96mcp.progressivebosses.module.ILvl;
 import insane96mcp.progressivebosses.module.wither.ai.RangedMinionAttackGoal;
 import insane96mcp.progressivebosses.module.wither.data.WitherMinionStats;
 import insane96mcp.progressivebosses.module.wither.data.WitherStatsReloadListener;
@@ -48,7 +47,7 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.function.Predicate;
 
-public class WitherMinion extends AbstractSkeleton implements ILvl {
+public class WitherMinion extends AbstractSkeleton {
 
 	public static final ResourceLocation MOVEMENT_SPEED_BONUS_ID = ProgressiveBosses.id("wither_minion_movement_speed_bonus");
 
@@ -141,12 +140,10 @@ public class WitherMinion extends AbstractSkeleton implements ILvl {
 		this.setItemSlot(EquipmentSlot.MAINHAND, item);
 	}
 
-	@Override
 	public int getLvl() {
 		return this.lvl;
 	}
 
-	@Override
 	public void setLvl(int lvl) {
 		this.lvl = lvl;
 		if (!WitherStatsReloadListener.STATS_MAP.containsKey(lvl)) {
