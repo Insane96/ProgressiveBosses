@@ -2,9 +2,11 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonCrystalRespawnPhase;
 import insane96mcp.progressivebosses.utils.Utils;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.Entity;
@@ -15,13 +17,14 @@ import net.neoforged.neoforge.event.tick.EntityTickEvent;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
+import java.util.UUID;
 
 @JsonAdapter(CrystalRespawnComponent.Serializer.class)
 public class CrystalRespawnComponent implements DragonComponent, PhaseChanger {
 
-    public static final String DRAGON_PHANTOM = ProgressiveBosses.RESOURCE_PREFIX + "dragon_phantom";
-    public static final String PHANTOM_CRYSTAL = ProgressiveBosses.RESOURCE_PREFIX + "crystal";
-    public static final String LAST_RESPAWN_TAG = ProgressiveBosses.RESOURCE_PREFIX + "last_respawn";
+    public static final ResourceLocation DRAGON_PHANTOM = ProgressiveBosses.id("dragon_phantom");
+    public static final ResourceLocation PHANTOM_CRYSTAL = ProgressiveBosses.id("crystal");
+    public static final ResourceLocation LAST_RESPAWN_TAG = ProgressiveBosses.id("last_respawn");
 
     public DragonValue minRespawnChance;
     public DragonValue minRespawnChanceAtHealth;
@@ -39,8 +42,7 @@ public class CrystalRespawnComponent implements DragonComponent, PhaseChanger {
     public DragonValue cooldown;
 
     public static void onPhantomHurt(LivingDamageEvent.Pre event) {
-        //TODO Migrate to ModNBTData
-        if (!event.getEntity().getPersistentData().contains(DRAGON_PHANTOM)
+        if (!ModNBTData.contains(event.getEntity(), DRAGON_PHANTOM)
                 || !(event.getSource().getEntity() instanceof EnderDragon))
             return;
 
@@ -50,10 +52,10 @@ public class CrystalRespawnComponent implements DragonComponent, PhaseChanger {
     public static void tickCrystalPhantom(EntityTickEvent.Post event) {
         if (event.getEntity().level().isClientSide
                 || event.getEntity().tickCount % 30 != 0
-                || !event.getEntity().getPersistentData().contains(CrystalRespawnComponent.PHANTOM_CRYSTAL))
+                || !ModNBTData.contains(event.getEntity(), CrystalRespawnComponent.PHANTOM_CRYSTAL))
             return;
 
-        Entity crystal = ((ServerLevel)event.getEntity().level()).getEntity(event.getEntity().getPersistentData().getUUID(CrystalRespawnComponent.PHANTOM_CRYSTAL));
+        Entity crystal = ((ServerLevel)event.getEntity().level()).getEntity(ModNBTData.get(event.getEntity(), CrystalRespawnComponent.PHANTOM_CRYSTAL, UUID.class));
         if (crystal == null || crystal.isRemoved()) {
             if (!event.getEntity().getPersistentData().contains("crystal_death")) {
                 event.getEntity().getPersistentData().putLong("crystal_death", event.getEntity().level().getGameTime());

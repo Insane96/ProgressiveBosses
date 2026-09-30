@@ -1,6 +1,7 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
 import com.google.common.collect.ImmutableList;
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.insanelib.util.MathHelper;
 import insane96mcp.progressivebosses.mixin.accessor.EnderDragonAccessor;
 import insane96mcp.progressivebosses.mixin.accessor.EnderDragonPhaseAccessor;
@@ -100,7 +101,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 			spikesToRespawn.remove(0);
 			if (this.spikesToRespawn.isEmpty()) {
 				LogHelper.info("No more crystals to respawn left");
-				this.dragon.getPersistentData().putLong(CrystalRespawnComponent.LAST_RESPAWN_TAG, this.dragon.level().getGameTime());
+				ModNBTData.put(this.dragon, CrystalRespawnComponent.LAST_RESPAWN_TAG, this.dragon.level().getGameTime());
 			}
 			this.targetLocation = null;
 		}
@@ -121,7 +122,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		phantom.getAttribute(Attributes.FOLLOW_RANGE).setBaseValue(32d);
 		phantom.getAttribute(Attributes.MAX_HEALTH).setBaseValue(phantom.getAttributeBaseValue(Attributes.MAX_HEALTH) * 0.5f);
 		phantom.setHealth((float) phantom.getAttributeValue(Attributes.MAX_HEALTH));
-		phantom.getPersistentData().putUUID(CrystalRespawnComponent.PHANTOM_CRYSTAL, crystal.getUUID());
+		ModNBTData.put(phantom, CrystalRespawnComponent.PHANTOM_CRYSTAL, crystal.getUUID());
 		((MobAccessor) phantom).setLootTable(BuiltInLootTables.EMPTY);
 		List<WrappedGoal> toRemoveList = new ArrayList<>();
 		for (WrappedGoal wrappedGoal : phantom.targetSelector.getAvailableGoals()) {
@@ -133,7 +134,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 		for (WrappedGoal toRemove : toRemoveList) {
 			phantom.targetSelector.removeGoal(toRemove);
 		}
-		phantom.getPersistentData().putBoolean(CrystalRespawnComponent.DRAGON_PHANTOM, true);
+		ModNBTData.put(phantom, CrystalRespawnComponent.DRAGON_PHANTOM, true);
 		this.dragon.level().addFreshEntity(phantom);
 	}
 
@@ -203,7 +204,7 @@ public class DragonCrystalRespawnPhase extends AbstractDragonPhaseInstance {
 	public static boolean isInCooldown(EnderDragon dragon, Level level, CrystalRespawnComponent component) {
 		if (component.cooldown == null)
 			return true;
-		return level.getGameTime() - dragon.getPersistentData().getLong(CrystalRespawnComponent.LAST_RESPAWN_TAG) < component.cooldown.getIntValue(dragon);
+		return level.getGameTime() - ModNBTData.get(dragon, CrystalRespawnComponent.LAST_RESPAWN_TAG, Long.class) < component.cooldown.getIntValue(dragon);
 	}
 
 	public EnderDragonPhase<DragonCrystalRespawnPhase> getPhase() {

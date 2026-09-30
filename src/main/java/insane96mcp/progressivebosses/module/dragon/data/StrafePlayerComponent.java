@@ -2,11 +2,13 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.PBDragonStrafePlayerPhase;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -25,18 +27,18 @@ public class StrafePlayerComponent implements DragonComponent, PhaseChanger {
     public DragonValue cooldownBetweenShots;
     public DragonValue acidballPerShot;
 
-    private static final String FORCE_STRAFE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_strafe";
+    private static final ResourceLocation FORCE_STRAFE_TAG = ProgressiveBosses.id("force_strafe");
 
     public static boolean isForcedToStrafe(EnderDragon dragon) {
         return getForcedToStrafe(dragon) > 0;
     }
 
     public static int getForcedToStrafe(EnderDragon dragon) {
-        return dragon.getPersistentData().getInt(FORCE_STRAFE_TAG);
+        return ModNBTData.get(dragon, FORCE_STRAFE_TAG, Integer.class);
     }
 
     public static void setForcedToStrafe(EnderDragon dragon, int forcedToStrafe) {
-        dragon.getPersistentData().putInt(FORCE_STRAFE_TAG, forcedToStrafe);
+        ModNBTData.put(dragon, FORCE_STRAFE_TAG, forcedToStrafe);
     }
 
     public int getAcidballShot(EnderDragon dragon, RandomSource random) {

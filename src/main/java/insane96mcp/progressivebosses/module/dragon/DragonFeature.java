@@ -199,7 +199,7 @@ public class DragonFeature extends Feature {
 
         List<ShulkerBullet> bullets = dragon.level().getEntitiesOfClass(ShulkerBullet.class, dragon.getBoundingBox().inflate(128));
         bullets.forEach(Entity::discard);
-        List<Shulker> minions = dragon.level().getEntitiesOfClass(Shulker.class, dragon.getBoundingBox().inflate(128), shulker -> shulker.getPersistentData().contains(MinionComponent.DRAGON_MINION));
+        List<Shulker> minions = dragon.level().getEntitiesOfClass(Shulker.class, dragon.getBoundingBox().inflate(128), shulker -> ModNBTData.contains(shulker, MinionComponent.DRAGON_MINION));
         minions.forEach(Entity::discard);
     }
 

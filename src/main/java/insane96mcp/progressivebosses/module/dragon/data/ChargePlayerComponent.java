@@ -2,10 +2,12 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
@@ -20,7 +22,7 @@ public class ChargePlayerComponent implements DragonComponent, PhaseChanger {
 
     private static final int RANGE = 96;
 
-    static final String FORCE_CHARGE_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_charge";
+    static final ResourceLocation FORCE_CHARGE_TAG = ProgressiveBosses.id("force_charge");
 
 
     public static boolean isForcedToCharge(EnderDragon dragon) {
@@ -28,11 +30,11 @@ public class ChargePlayerComponent implements DragonComponent, PhaseChanger {
     }
 
     public static int getForcedToCharge(EnderDragon dragon) {
-        return dragon.getPersistentData().getInt(FORCE_CHARGE_TAG);
+        return ModNBTData.get(dragon, FORCE_CHARGE_TAG, Integer.class);
     }
 
     public static void setForcedToCharge(EnderDragon dragon, int forcedToCharge) {
-        dragon.getPersistentData().putInt(FORCE_CHARGE_TAG, forcedToCharge);
+        ModNBTData.put(dragon, FORCE_CHARGE_TAG, forcedToCharge);
     }
 
     @Override

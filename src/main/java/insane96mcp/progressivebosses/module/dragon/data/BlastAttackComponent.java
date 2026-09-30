@@ -2,11 +2,13 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
 import insane96mcp.progressivebosses.event.PBEventFactory;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.phase.DragonBlastAttackPhase;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.DragonPhaseInstance;
@@ -26,15 +28,15 @@ public class BlastAttackComponent implements DragonComponent, PhaseChanger {
     public int timeBeforeTakeoff;
     public DragonValue cooldown;
 
-    public static final String LAST_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "last_blast";
-    private static final String FORCE_BLAST_TAG = ProgressiveBosses.RESOURCE_PREFIX + "force_blast";
+    public static final ResourceLocation LAST_BLAST_TAG = ProgressiveBosses.id("last_blast");
+    private static final ResourceLocation FORCE_BLAST_TAG = ProgressiveBosses.id("force_blast");
 
     public static boolean isForcedToBlast(EnderDragon dragon) {
-        return dragon.getPersistentData().getBoolean(FORCE_BLAST_TAG);
+        return ModNBTData.get(dragon, FORCE_BLAST_TAG, Boolean.class);
     }
 
     public static void setForcedToBlast(EnderDragon dragon, boolean forcedToBlast) {
-        dragon.getPersistentData().putBoolean(FORCE_BLAST_TAG, forcedToBlast);
+        ModNBTData.put(dragon, FORCE_BLAST_TAG, forcedToBlast);
     }
 
     public void blast(DragonPhaseEvent.Change event, EnderDragon dragon, boolean forceBegin) {

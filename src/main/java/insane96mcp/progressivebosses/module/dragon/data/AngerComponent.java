@@ -2,6 +2,7 @@ package insane96mcp.progressivebosses.module.dragon.data;
 
 import com.google.gson.*;
 import com.google.gson.annotations.JsonAdapter;
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.insanelib.util.json.ILGsonHelper;
 import insane96mcp.progressivebosses.ProgressiveBosses;
 import insane96mcp.progressivebosses.event.DragonPhaseEvent;
@@ -9,6 +10,7 @@ import insane96mcp.progressivebosses.mixin.accessor.EnderDragonAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.network.SyncDragonAnger;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.util.RandomSource;
@@ -35,11 +37,11 @@ public class AngerComponent implements DragonComponent {
     public Float crystalDestroyedAnger;
     public boolean forceAngeredWhenLastCrystalDestroyed;
 
-    public static final String ANGER_TAG = ProgressiveBosses.RESOURCE_PREFIX + "anger";
-    public static final String ANGERED_TAG = ProgressiveBosses.RESOURCE_PREFIX + "angered";
+    public static final ResourceLocation ANGER_TAG = ProgressiveBosses.id("anger");
+    public static final ResourceLocation ANGERED_TAG = ProgressiveBosses.id("angered");
 
     public static float getAnger(EnderDragon dragon) {
-        return dragon.getPersistentData().getFloat(ANGER_TAG);
+        return ModNBTData.get(dragon, ANGER_TAG, Float.class);
     }
 
     public void addAnger(EnderDragon dragon, float anger) {
@@ -49,7 +51,7 @@ public class AngerComponent implements DragonComponent {
         }
         float oldAnger = getAnger(dragon);
         float newAnger = oldAnger + anger;
-        dragon.getPersistentData().putFloat(ANGER_TAG, newAnger);
+        ModNBTData.put(dragon, ANGER_TAG, newAnger);
         //LogHelper.chat(dragon, "[Anger] addAnger: %.2f -> %.2f (+%.2f, maxAnger=%d)", oldAnger, newAnger, anger, this.maxAnger);
         if (newAnger >= this.maxAnger) {
             //LogHelper.chat(dragon, "[Anger] reached maxAnger (%.2f >= %d), triggering blast or angering", newAnger, this.maxAnger);
@@ -63,7 +65,7 @@ public class AngerComponent implements DragonComponent {
     }
 
     public static boolean isAngered(@NotNull EnderDragon dragon) {
-        return dragon.getPersistentData().getBoolean(ANGERED_TAG);
+        return ModNBTData.get(dragon, ANGERED_TAG, Boolean.class);
     }
 
     public void tickAnger(EnderDragon dragon) {
@@ -87,10 +89,10 @@ public class AngerComponent implements DragonComponent {
             return;
         float before = anger;
         anger -= tickDown;
-        dragon.getPersistentData().putFloat(ANGER_TAG, anger);
+        ModNBTData.put(dragon, ANGER_TAG, anger);
         //LogHelper.chat(dragon, "[Anger] tickAnger: %.2f -> %.2f (tickDown=%.3f, angered=%b, maxAnger=%d, duration=%d)", before, anger, tickDown, angered, this.maxAnger, this.angerDuration);
         if (anger <= 0f) {
-            dragon.getPersistentData().putFloat(ANGER_TAG, 0f);
+            ModNBTData.put(dragon, ANGER_TAG, 0f);
             setAngered(dragon, false);
         }
     }
@@ -98,7 +100,7 @@ public class AngerComponent implements DragonComponent {
     public static void setAngered(EnderDragon dragon, boolean angered) {
         //if (isAngered(dragon) != angered)
         //    LogHelper.chat(dragon, "[Anger] setAngered: %b -> %b (anger=%.2f)", isAngered(dragon), angered, getAnger(dragon));
-        dragon.getPersistentData().putBoolean(ANGERED_TAG, angered);
+        ModNBTData.put(dragon, ANGERED_TAG, angered);
         if (!dragon.level().isClientSide)
             ((ServerLevel) dragon.level()).players()
                     .forEach(player -> SyncDragonAnger.sync(player, dragon));

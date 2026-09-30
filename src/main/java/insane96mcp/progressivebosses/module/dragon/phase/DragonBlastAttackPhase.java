@@ -1,5 +1,6 @@
 package insane96mcp.progressivebosses.module.dragon.phase;
 
+import insane96mcp.insanelib.core.ModNBTData;
 import insane96mcp.progressivebosses.mixin.accessor.EnderDragonPhaseAccessor;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import insane96mcp.progressivebosses.module.dragon.data.AngerComponent;
@@ -112,7 +113,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
                 this.dragon.level().playSound(null, this.dragon.getX() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getY() + this.dragon.getRandom().nextFloat() * 48f - 24f, this.dragon.getZ() + this.dragon.getRandom().nextFloat() * 48f - 24f, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 4f, 0.7f);
             }
             definition.getComponent(AngerComponent.class).ifPresent(angerComponent -> AngerComponent.setAngered(this.dragon, true));
-            this.dragon.getPersistentData().putLong(BlastAttackComponent.LAST_BLAST_TAG, this.dragon.level().getGameTime());
+            ModNBTData.put(this.dragon, BlastAttackComponent.LAST_BLAST_TAG, this.dragon.level().getGameTime());
         }
         else if (this.blowUpTick <= -component.timeBeforeTakeoff) {
             if (!PhaseChanger.trySetNewPhase(this.dragon, definition, this.getPhase()))
@@ -149,7 +150,7 @@ public class DragonBlastAttackPhase extends AbstractDragonSittingPhase {
     public static boolean isInCooldown(EnderDragon dragon, Level level, BlastAttackComponent component) {
         if (component.cooldown == null)
             return false;
-        return level.getGameTime() - dragon.getPersistentData().getLong(BlastAttackComponent.LAST_BLAST_TAG) < component.cooldown.getIntValue(dragon);
+        return level.getGameTime() - ModNBTData.get(dragon, BlastAttackComponent.LAST_BLAST_TAG, Long.class) < component.cooldown.getIntValue(dragon);
     }
 
     public @NotNull EnderDragonPhase<DragonBlastAttackPhase> getPhase() {
