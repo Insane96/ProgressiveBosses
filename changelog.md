@@ -1,3 +1,6 @@
+# 5.0.0.2-alpha
+* Crash fix again
+
 # 5.0.0.1-alpha
 * Crash fix and bumped Neo and InsaneLib versions
 

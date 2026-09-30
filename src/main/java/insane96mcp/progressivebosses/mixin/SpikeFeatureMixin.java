@@ -1,6 +1,5 @@
 package insane96mcp.progressivebosses.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.serialization.Codec;
 import insane96mcp.progressivebosses.module.dragon.DragonFeature;
 import net.minecraft.core.BlockPos;
@@ -22,11 +21,17 @@ public abstract class SpikeFeatureMixin extends Feature<SpikeConfiguration> {
 		super(pCodec);
 	}
 
-	@Inject(method = "placeSpike", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/levelgen/feature/SpikeFeature;setBlock(Lnet/minecraft/world/level/LevelWriter;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V", ordinal = 2))
-	public void progressivebosses$placeSpikeBaseObsidian(ServerLevelAccessor level, RandomSource random, SpikeConfiguration config, SpikeFeature.EndSpike spike, CallbackInfo ci, @Local(name = "k") int x, @Local(name = "l") int z, @Local(name = "i1") int y, @Local(name = "flag") boolean isSideX, @Local(name = "flag1") boolean isSideZ) {
-		if (!DragonFeature.areFixesEnabled())
+	// Placed at the 4 lower corners of the guard cage (k,l in {-2,2}, i1 == 0 in vanilla's loop), computed
+	// directly from `spike` instead of capturing vanilla's loop locals: those locals proved fragile to
+	// capture by name/ordinal across NeoForge/compiler toolchain differences (see mixin_local_lvt_gotcha memory).
+	@Inject(method = "placeSpike", at = @At("TAIL"))
+	public void progressivebosses$placeSpikeBaseObsidian(ServerLevelAccessor level, RandomSource random, SpikeConfiguration config, SpikeFeature.EndSpike spike, CallbackInfo ci) {
+		if (!DragonFeature.areFixesEnabled() || !spike.isGuarded())
 			return;
-		if (y == 0 && isSideX && isSideZ) //So if lower corner
-			this.setBlock(level, new BlockPos(spike.getCenterX() + x, spike.getHeight() + y - 1, spike.getCenterZ() + z), Blocks.OBSIDIAN.defaultBlockState());
+		for (int x : new int[]{-2, 2}) {
+			for (int z : new int[]{-2, 2}) {
+				this.setBlock(level, new BlockPos(spike.getCenterX() + x, spike.getHeight() - 1, spike.getCenterZ() + z), Blocks.OBSIDIAN.defaultBlockState());
+			}
+		}
 	}
 }
