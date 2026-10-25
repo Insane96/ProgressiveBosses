@@ -1,3 +1,6 @@
+# 5.0.0.3-alpha
+* Fixed crash with Ice and Fire
+
 # 5.0.0.2-alpha
 * Crash fix again
 

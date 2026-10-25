@@ -37,8 +37,8 @@ public abstract class AbstractHurtingProjectileMixin extends Entity implements I
         super(entityType, level);
     }
 
-    @Inject(method = "defineSynchedData", at = @At("TAIL"))
-    private void progressivebosses$defineAccelerationPower(SynchedEntityData.Builder builder, CallbackInfo ci) {
+    @Override
+    public void progressivebosses$defineAccelerationPower(SynchedEntityData.Builder builder) {
         builder.define(PB$ACCELERATION_POWER, 0.1f);
     }
 
