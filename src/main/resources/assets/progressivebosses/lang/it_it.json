@@ -23,7 +23,7 @@
   "entity.minecraft.ender_dragon.4": "Enderdrago corrotto",
   "item.progressivebosses.corrupted_end_crystal": "Cristallo dell'End corrotto",
   "elder_guardian.approach": "Sembra che vi stiate avvicinando a un Monumento Oceanico, finché non sconfiggerai tutti i guardiani anziani... o a meno che non fuggi... non sarai in grado di rompere i blocchi.",
-  "tooltip.progressivebosses.dragon_egg": "È possibile ottenerne più di uno uccidendo i draghi.",
+  "block.minecraft.dragon_egg.tooltip":"È possibile ottenerne più di uno uccidendo i draghi.",
   "advancement.progressivebosses.wither_death.title": "Sta per esplodereeeeee",
   "advancement.progressivebosses.wither_death.description": "Uccidi un wither e fuggi prima che esploda",
   "advancement.progressivebosses.max_lvl_wither.title": "Wither finale",

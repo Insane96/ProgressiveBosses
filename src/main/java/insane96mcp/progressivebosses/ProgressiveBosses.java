@@ -47,8 +47,10 @@ public class ProgressiveBosses {
 
     public ProgressiveBosses(IEventBus eventBus, ModContainer modContainer) {
         //TODO One module only, with dragon, wither and guardian being features
-        CONFIG = new ILModConfig(MOD_ID, ModConfig.Type.COMMON, eventBus, PBModules::init, ProgressiveBosses.class.getClassLoader());
-        modContainer.registerConfig(ModConfig.Type.COMMON, CONFIG.spec);
+        // The modules must be created before the configs loading their features
+        PBModules.init(eventBus);
+        CONFIG = new ILModConfig(MOD_ID, ModConfig.Type.SERVER, eventBus, ProgressiveBosses.class.getClassLoader());
+        modContainer.registerConfig(ModConfig.Type.SERVER, CONFIG.spec, MOD_ID + "/server.toml");
         eventBus.addListener(ClientSetup::registerEntityRenderers);
         eventBus.addListener(ClientSetup::creativeTabsBuildContents);
         eventBus.addListener(NetworkHandler::register);

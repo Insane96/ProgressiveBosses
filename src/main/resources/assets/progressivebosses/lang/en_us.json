@@ -32,7 +32,7 @@
     "item.progressivebosses.corrupted_end_crystal": "Corrupted End Crystal",
 
     "progressivebosses.elder_guardian.approach": "Seems like you're approaching an Ocean Monument, until you defeat all the Elder guardians ... or unless you flee ... you'll not be able to break blocks.",
-    "tooltip.progressivebosses.dragon_egg": "You may get more than one by slaying Dragons",
+    "block.minecraft.dragon_egg.tooltip":"You may get more than one by slaying Dragons",
 
     "advancement.progressivebosses.wither_death.title": "It's gonna exploooode",
     "advancement.progressivebosses.wither_death.description": "Kill a Wither and flee before it explodes",
