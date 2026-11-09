@@ -12,8 +12,6 @@ build/
 out/
 !**/src/**/out/
 
-.run/
-
 ### Eclipse ###
 .apt_generated
 .classpath

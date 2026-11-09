@@ -113,6 +113,8 @@ neoForge.ideSyncTask generateModMetadata
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
+            groupId = 'maven.modrinth'
+            artifactId = modrinth_slug
             from components.java
         }
     }
