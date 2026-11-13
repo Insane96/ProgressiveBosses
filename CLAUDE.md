@@ -83,3 +83,8 @@ The full 1.20.1 implementation is at `C:\Users\delvi\source\repos\Insane96\Progr
 gradlew runClient   # launch game client
 gradlew runServer   # launch dedicated server (headless)
 ```
+
+## Website & Wiki
+
+The website source (if any) is in `D:\Programming\Web Creations\Website\insane96.eu` (git repository, remote `Insane96/Website`). This mod's page is in `projects\mods\<modid>\`, with one folder per Minecraft version.  
+The wiki source (if any) is in this repo's parent folder under `<mod_name>.wiki`.
